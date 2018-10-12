@@ -28,6 +28,7 @@
 #include "gfx/Texture2D.h"
 #include "gfx/VertexBuffer.h"
 #include "gfx/IndexBuffer.h"
+#include "gfx/FrameBuffer.h"
 #include "ProgramLib.h"
 #include "View.h"
 #include "Scene.h"
@@ -59,6 +60,22 @@ void ForwardRenderer::render(Scene* scene)
     const auto& cameras = scene->getCameras();
     for (auto camera : cameras)
         BaseRenderer::render(camera->extractView(_width, _height), scene);
+    
+    scene->removeModels();
+}
+
+void ForwardRenderer::renderCamera(Camera* camera, Scene* scene)
+{
+    //    reset();
+    int width = _width;
+    int height = _height;
+    FrameBuffer* fb = camera->getFrameBuffer();
+    if (nullptr != fb) {
+        width = fb->getWidth();
+        height = fb->getHeight();
+    }
+    View view = camera->extractView(width, height);
+    BaseRenderer::render(view, scene);
     
     scene->removeModels();
 }

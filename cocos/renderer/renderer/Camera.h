@@ -53,6 +53,7 @@ public:
     ~Camera();
     
     ProjectionType getType() const { return _projection; }
+    inline void setType(ProjectionType value) { _projection = value; }
     
     inline float getOrthoHeight() const { return _orthoHeight; }
     inline void setOrthoHeight(float value) { _orthoHeight = value; }

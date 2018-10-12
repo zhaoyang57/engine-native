@@ -51,6 +51,9 @@ public:
     void setStencilBuffer(RenderTarget* rt);
     void setDepthStencilBuffer(RenderTarget* rt);
     
+    inline int getWidth() const { return _width; }
+    inline int getHeight() const { return _height; }
+    
     const std::vector<RenderTarget*>& getColorBuffers() const;
     const RenderTarget* getDepthBuffer() const;
     const RenderTarget* getStencilBuffer() const;

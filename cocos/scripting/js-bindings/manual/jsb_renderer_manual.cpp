@@ -316,6 +316,11 @@ public:
     : _jsNode(jsNode)
     {
     }
+    
+    se::Object* getJSNode() const
+    {
+        return _jsNode.toObject();
+    }
 
     virtual Mat4 getWorldMatrix() const override
     {
@@ -382,6 +387,17 @@ static bool js_renderer_Camera_setNode(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Camera_setNode)
 
+static bool js_renderer_Camera_getNode(se::State& s)
+{
+    cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_getNode : Invalid Native Object");
+    JSNode* node = dynamic_cast<JSNode*>(cobj->getNode());
+    se::Object* retObj = node->getJSNode();
+    s.rval().setObject(retObj);
+    return true;
+}
+SE_BIND_FUNC(js_renderer_Camera_getNode)
+
 static bool js_renderer_Config_addStage(se::State& s)
 {
     const auto& args = s.args();
@@ -429,6 +445,48 @@ static bool js_register_renderer_Config(se::Object* obj)
     return true;
 }
 
+static void _addModelsFromTypedArray(cocos2d::renderer::Scene* scene, se::Object* obj)
+{
+    uint8_t* ptr = nullptr;
+    size_t length = 0;
+    obj->getTypedArrayData(&ptr, &length);
+    double* doublePtr = (double*)ptr;
+    float* floatPtr = (float*)ptr;
+    
+    int numOfModels = (int)*doublePtr++;
+    floatPtr += 2;
+    cocos2d::Mat4 worldMatrix;
+    cocos2d::renderer::InputAssembler ia;
+    for (size_t i = 0; i < numOfModels; ++i)
+    {
+        auto model = cocos2d::renderer::ModelPool::getOrCreateModel();
+        
+        unsigned long addr = (unsigned long)(*doublePtr++);
+        model->addEffect(reinterpret_cast<cocos2d::renderer::Effect*>(addr));
+        addr = (unsigned long)(*doublePtr++);
+        ia.setVertexBuffer(reinterpret_cast<cocos2d::renderer::VertexBuffer*>(addr));
+        addr = (unsigned long)(*doublePtr++);
+        ia.setIndexBuffer(reinterpret_cast<cocos2d::renderer::IndexBuffer*>(addr));
+        
+        floatPtr += 6;
+        
+        model->setDynamicIA((bool)*floatPtr++);
+        model->setViewId((int)*floatPtr++);
+        
+        memcpy(worldMatrix.m, floatPtr, 16);
+        model->setWorldMatix(worldMatrix);
+        floatPtr += 16;
+        
+        ia.setStart(*floatPtr++);
+        ia.setCount(*floatPtr++);
+        model->addInputAssembler(ia);
+        
+        scene->addModel(model);
+        
+        doublePtr += 10;
+    }
+}
+
 static bool js_renderer_ForwardRenderer_render(se::State& s)
 {
     cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
@@ -441,44 +499,7 @@ static bool js_renderer_ForwardRenderer_render(se::State& s)
         ok &= seval_to_native_ptr(args[0], &arg0);
         SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_render : Error processing arguments");
         
-        uint8_t* ptr = nullptr;
-        size_t length = 0;
-        args[1].toObject()->getTypedArrayData(&ptr, &length);
-        double* doublePtr = (double*)ptr;
-        float* floatPtr = (float*)ptr;
-        
-        int numOfModels = (int)*doublePtr++;
-        floatPtr += 2;
-        cocos2d::Mat4 worldMatrix;
-        cocos2d::renderer::InputAssembler ia;
-        for (size_t i = 0; i < numOfModels; ++i)
-        {
-            auto model = cocos2d::renderer::ModelPool::getOrCreateModel();
-            
-            unsigned long addr = (unsigned long)(*doublePtr++);
-            model->addEffect(reinterpret_cast<cocos2d::renderer::Effect*>(addr));
-            addr = (unsigned long)(*doublePtr++);
-            ia.setVertexBuffer(reinterpret_cast<cocos2d::renderer::VertexBuffer*>(addr));
-            addr = (unsigned long)(*doublePtr++);
-            ia.setIndexBuffer(reinterpret_cast<cocos2d::renderer::IndexBuffer*>(addr));
-            
-            floatPtr += 6;
-            
-            model->setDynamicIA((bool)*floatPtr++);
-            model->setViewId((int)*floatPtr++);
-            
-            memcpy(worldMatrix.m, floatPtr, 16);
-            model->setWorldMatix(worldMatrix);
-            floatPtr += 16;
-            
-            ia.setStart(*floatPtr++);
-            ia.setCount(*floatPtr++);
-            model->addInputAssembler(ia);
-            
-            arg0->addModel(model);
-            
-            doublePtr += 10;
-        }
+        _addModelsFromTypedArray(arg0, args[1].toObject());
         
         cobj->render(arg0);
         return true;
@@ -487,6 +508,32 @@ static bool js_renderer_ForwardRenderer_render(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_ForwardRenderer_render);
+
+static bool js_renderer_ForwardRenderer_renderCamera(se::State& s)
+{
+    cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_ForwardRenderer_renderCamera : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 3) {
+        cocos2d::renderer::Camera* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_renderCamera : Error processing arguments");
+        
+        cocos2d::renderer::Scene* arg1 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg1);
+        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_renderCamera : Error processing arguments");
+        
+        _addModelsFromTypedArray(arg1, args[2].toObject());
+        
+        cobj->renderCamera(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_ForwardRenderer_renderCamera);
 
 se::Object* __jsb_cocos2d_renderer_Technique_proto = nullptr;
 se::Class* __jsb_cocos2d_renderer_Technique_class = nullptr;
@@ -660,12 +707,14 @@ bool jsb_register_renderer_manual(se::Object* global)
 
     // Camera
     __jsb_cocos2d_renderer_Camera_proto->defineFunction("setNode", _SE(js_renderer_Camera_setNode));
+    __jsb_cocos2d_renderer_Camera_proto->defineFunction("getNode", _SE(js_renderer_Camera_getNode));
 
     // BaseRenderer
     __jsb_cocos2d_renderer_BaseRenderer_proto->defineProperty("_programLib", _SE(js_renderer_BaseRenderer_prop_getProgramLib), nullptr);
     
     // ForwardRenderer
     __jsb_cocos2d_renderer_ForwardRenderer_proto->defineFunction("renderNative", _SE(js_renderer_ForwardRenderer_render));
+    __jsb_cocos2d_renderer_ForwardRenderer_proto->defineFunction("renderCameraNative", _SE(js_renderer_ForwardRenderer_renderCamera));
     
     // Pass
     __jsb_cocos2d_renderer_Pass_proto->defineFunction("init", _SE(js_renderer_Pass_init));

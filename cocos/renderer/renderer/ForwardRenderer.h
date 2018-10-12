@@ -25,6 +25,7 @@
 #pragma once
 
 #include "BaseRenderer.h"
+#include "Camera.h"
 
 RENDERER_BEGIN
 
@@ -35,6 +36,7 @@ public:
 
     bool init(DeviceGraphics* device, std::vector<ProgramLib::Template>& programTemplates, Texture2D* defaultTexture, int width, int height);
     void render(Scene* scene);
+    void renderCamera(Camera* camera, Scene* scene);
 
 private:
     void transparentStage(const View& view, const std::vector<StageItem>& items);
