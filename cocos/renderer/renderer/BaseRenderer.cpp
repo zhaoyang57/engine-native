@@ -155,13 +155,13 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     
     // render stages
     std::unordered_map<std::string, StageCallback>::iterator foundIter;
-    for (const auto& stageInfo : _stageInfos)
+    for (const auto& stageInfoEntry : _stageInfos)
     {
-        foundIter = _stage2fn.find(stageInfo.stage);
+        foundIter = _stage2fn.find(stageInfoEntry.stage);
         if (_stage2fn.end() != foundIter)
         {
             auto& fn = foundIter->second;
-            fn(view, *stageInfo.items);
+            fn(view, *stageInfoEntry.items);
         }
     }
 }
