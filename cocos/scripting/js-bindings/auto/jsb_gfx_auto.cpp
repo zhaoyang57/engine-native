@@ -1155,6 +1155,42 @@ bool js_register_gfx_DeviceGraphics(se::Object* obj)
 se::Object* __jsb_cocos2d_renderer_FrameBuffer_proto = nullptr;
 se::Class* __jsb_cocos2d_renderer_FrameBuffer_class = nullptr;
 
+static bool js_gfx_FrameBuffer_getHeight(se::State& s)
+{
+    cocos2d::renderer::FrameBuffer* cobj = (cocos2d::renderer::FrameBuffer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_gfx_FrameBuffer_getHeight : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        int result = cobj->getHeight();
+        ok &= int32_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_gfx_FrameBuffer_getHeight : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_gfx_FrameBuffer_getHeight)
+
+static bool js_gfx_FrameBuffer_getWidth(se::State& s)
+{
+    cocos2d::renderer::FrameBuffer* cobj = (cocos2d::renderer::FrameBuffer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_gfx_FrameBuffer_getWidth : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        int result = cobj->getWidth();
+        ok &= int32_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_gfx_FrameBuffer_getWidth : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_gfx_FrameBuffer_getWidth)
+
 static bool js_gfx_FrameBuffer_destroy(se::State& s)
 {
     cocos2d::renderer::FrameBuffer* cobj = (cocos2d::renderer::FrameBuffer*)s.nativeThisObject();
@@ -1197,6 +1233,8 @@ bool js_register_gfx_FrameBuffer(se::Object* obj)
 {
     auto cls = se::Class::create("FrameBuffer", obj, __jsb_cocos2d_renderer_GraphicsHandle_proto, _SE(js_gfx_FrameBuffer_constructor));
 
+    cls->defineFunction("getHeight", _SE(js_gfx_FrameBuffer_getHeight));
+    cls->defineFunction("getWidth", _SE(js_gfx_FrameBuffer_getWidth));
     cls->defineFunction("destroy", _SE(js_gfx_FrameBuffer_destroy));
     cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_FrameBuffer_finalize));
     cls->install();

@@ -110,42 +110,6 @@ BaseRenderer : function (
 };
 
 /**
- * @class ForwardRenderer
- */
-renderer.ForwardRenderer = {
-
-/**
- * @method init
- * @param {cc.renderer::DeviceGraphics} arg0
- * @param {Array} arg1
- * @param {cc.renderer::Texture2D} arg2
- * @param {int} arg3
- * @param {int} arg4
- * @return {bool}
- */
-init : function (
-devicegraphics, 
-array, 
-texture2d, 
-int, 
-int 
-)
-{
-    return false;
-},
-
-/**
- * @method ForwardRenderer
- * @constructor
- */
-ForwardRenderer : function (
-)
-{
-},
-
-};
-
-/**
  * @class View
  */
 renderer.View = {
@@ -227,11 +191,11 @@ getStencil : function (
 },
 
 /**
- * @method setFrameBuffer
- * @param {cc.renderer::FrameBuffer} arg0
+ * @method setType
+ * @param {cc.renderer::ProjectionType} arg0
  */
-setFrameBuffer : function (
-framebuffer 
+setType : function (
+projectiontype 
 )
 {
 },
@@ -242,6 +206,16 @@ framebuffer
  */
 setFar : function (
 float 
+)
+{
+},
+
+/**
+ * @method setFrameBuffer
+ * @param {cc.renderer::FrameBuffer} arg0
+ */
+setFrameBuffer : function (
+framebuffer 
 )
 {
 },
@@ -403,6 +377,42 @@ getClearFlags : function (
  * @constructor
  */
 Camera : function (
+)
+{
+},
+
+};
+
+/**
+ * @class ForwardRenderer
+ */
+renderer.ForwardRenderer = {
+
+/**
+ * @method init
+ * @param {cc.renderer::DeviceGraphics} arg0
+ * @param {Array} arg1
+ * @param {cc.renderer::Texture2D} arg2
+ * @param {int} arg3
+ * @param {int} arg4
+ * @return {bool}
+ */
+init : function (
+devicegraphics, 
+array, 
+texture2d, 
+int, 
+int 
+)
+{
+    return false;
+},
+
+/**
+ * @method ForwardRenderer
+ * @constructor
+ */
+ForwardRenderer : function (
 )
 {
 },

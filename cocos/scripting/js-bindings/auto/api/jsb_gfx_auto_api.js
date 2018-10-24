@@ -596,6 +596,26 @@ getInstance : function (
 gfx.FrameBuffer = {
 
 /**
+ * @method getHeight
+ * @return {int}
+ */
+getHeight : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getWidth
+ * @return {int}
+ */
+getWidth : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method destroy
  */
 destroy : function (

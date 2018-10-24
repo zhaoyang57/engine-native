@@ -236,77 +236,6 @@ bool js_register_renderer_BaseRenderer(se::Object* obj)
     return true;
 }
 
-se::Object* __jsb_cocos2d_renderer_ForwardRenderer_proto = nullptr;
-se::Class* __jsb_cocos2d_renderer_ForwardRenderer_class = nullptr;
-
-static bool js_renderer_ForwardRenderer_init(se::State& s)
-{
-    cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_ForwardRenderer_init : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 5) {
-        cocos2d::renderer::DeviceGraphics* arg0 = nullptr;
-        std::vector<cocos2d::renderer::ProgramLib::Template> arg1;
-        cocos2d::renderer::Texture2D* arg2 = nullptr;
-        int arg3 = 0;
-        int arg4 = 0;
-        ok &= seval_to_native_ptr(args[0], &arg0);
-        ok &= seval_to_std_vector_ProgramLib_Template(args[1], &arg1);
-        ok &= seval_to_native_ptr(args[2], &arg2);
-        do { int32_t tmp = 0; ok &= seval_to_int32(args[3], &tmp); arg3 = (int)tmp; } while(false);
-        do { int32_t tmp = 0; ok &= seval_to_int32(args[4], &tmp); arg4 = (int)tmp; } while(false);
-        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_init : Error processing arguments");
-        bool result = cobj->init(arg0, arg1, arg2, arg3, arg4);
-        ok &= boolean_to_seval(result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_init : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 5);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_ForwardRenderer_init)
-
-SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_ForwardRenderer_finalize)
-
-static bool js_renderer_ForwardRenderer_constructor(se::State& s)
-{
-    cocos2d::renderer::ForwardRenderer* cobj = new (std::nothrow) cocos2d::renderer::ForwardRenderer();
-    s.thisObject()->setPrivateData(cobj);
-    return true;
-}
-SE_BIND_CTOR(js_renderer_ForwardRenderer_constructor, __jsb_cocos2d_renderer_ForwardRenderer_class, js_cocos2d_renderer_ForwardRenderer_finalize)
-
-
-
-extern se::Object* __jsb_cocos2d_renderer_BaseRenderer_proto;
-
-static bool js_cocos2d_renderer_ForwardRenderer_finalize(se::State& s)
-{
-    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::ForwardRenderer)", s.nativeThisObject());
-    cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
-    cobj->release();
-    return true;
-}
-SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_ForwardRenderer_finalize)
-
-bool js_register_renderer_ForwardRenderer(se::Object* obj)
-{
-    auto cls = se::Class::create("ForwardRenderer", obj, __jsb_cocos2d_renderer_BaseRenderer_proto, _SE(js_renderer_ForwardRenderer_constructor));
-
-    cls->defineFunction("init", _SE(js_renderer_ForwardRenderer_init));
-    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_ForwardRenderer_finalize));
-    cls->install();
-    JSBClassType::registerClass<cocos2d::renderer::ForwardRenderer>(cls);
-
-    __jsb_cocos2d_renderer_ForwardRenderer_proto = cls->getProto();
-    __jsb_cocos2d_renderer_ForwardRenderer_class = cls;
-
-    se::ScriptEngine::getInstance()->clearException();
-    return true;
-}
-
 se::Object* __jsb_cocos2d_renderer_View_proto = nullptr;
 se::Class* __jsb_cocos2d_renderer_View_class = nullptr;
 
@@ -460,24 +389,24 @@ static bool js_renderer_Camera_getStencil(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Camera_getStencil)
 
-static bool js_renderer_Camera_setFrameBuffer(se::State& s)
+static bool js_renderer_Camera_setType(se::State& s)
 {
     cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_setFrameBuffer : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_setType : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 1) {
-        cocos2d::renderer::FrameBuffer* arg0 = nullptr;
-        ok &= seval_to_native_ptr(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setFrameBuffer : Error processing arguments");
-        cobj->setFrameBuffer(arg0);
+        cocos2d::renderer::ProjectionType arg0;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (cocos2d::renderer::ProjectionType)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setType : Error processing arguments");
+        cobj->setType(arg0);
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
-SE_BIND_FUNC(js_renderer_Camera_setFrameBuffer)
+SE_BIND_FUNC(js_renderer_Camera_setType)
 
 static bool js_renderer_Camera_setFar(se::State& s)
 {
@@ -497,6 +426,25 @@ static bool js_renderer_Camera_setFar(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_Camera_setFar)
+
+static bool js_renderer_Camera_setFrameBuffer(se::State& s)
+{
+    cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_setFrameBuffer : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::FrameBuffer* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setFrameBuffer : Error processing arguments");
+        cobj->setFrameBuffer(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Camera_setFrameBuffer)
 
 static bool js_renderer_Camera_setRect(se::State& s)
 {
@@ -802,8 +750,9 @@ bool js_register_renderer_Camera(se::Object* obj)
     cls->defineFunction("setStencil", _SE(js_renderer_Camera_setStencil));
     cls->defineFunction("getOrthoHeight", _SE(js_renderer_Camera_getOrthoHeight));
     cls->defineFunction("getStencil", _SE(js_renderer_Camera_getStencil));
-    cls->defineFunction("setFrameBuffer", _SE(js_renderer_Camera_setFrameBuffer));
+    cls->defineFunction("setType", _SE(js_renderer_Camera_setType));
     cls->defineFunction("setFar", _SE(js_renderer_Camera_setFar));
+    cls->defineFunction("setFrameBuffer", _SE(js_renderer_Camera_setFrameBuffer));
     cls->defineFunction("setRect", _SE(js_renderer_Camera_setRect));
     cls->defineFunction("setClearFlags", _SE(js_renderer_Camera_setClearFlags));
     cls->defineFunction("getFar", _SE(js_renderer_Camera_getFar));
@@ -824,6 +773,77 @@ bool js_register_renderer_Camera(se::Object* obj)
 
     __jsb_cocos2d_renderer_Camera_proto = cls->getProto();
     __jsb_cocos2d_renderer_Camera_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
+se::Object* __jsb_cocos2d_renderer_ForwardRenderer_proto = nullptr;
+se::Class* __jsb_cocos2d_renderer_ForwardRenderer_class = nullptr;
+
+static bool js_renderer_ForwardRenderer_init(se::State& s)
+{
+    cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_ForwardRenderer_init : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 5) {
+        cocos2d::renderer::DeviceGraphics* arg0 = nullptr;
+        std::vector<cocos2d::renderer::ProgramLib::Template> arg1;
+        cocos2d::renderer::Texture2D* arg2 = nullptr;
+        int arg3 = 0;
+        int arg4 = 0;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        ok &= seval_to_std_vector_ProgramLib_Template(args[1], &arg1);
+        ok &= seval_to_native_ptr(args[2], &arg2);
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[3], &tmp); arg3 = (int)tmp; } while(false);
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[4], &tmp); arg4 = (int)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_init : Error processing arguments");
+        bool result = cobj->init(arg0, arg1, arg2, arg3, arg4);
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_ForwardRenderer_init : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 5);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_ForwardRenderer_init)
+
+SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_ForwardRenderer_finalize)
+
+static bool js_renderer_ForwardRenderer_constructor(se::State& s)
+{
+    cocos2d::renderer::ForwardRenderer* cobj = new (std::nothrow) cocos2d::renderer::ForwardRenderer();
+    s.thisObject()->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_CTOR(js_renderer_ForwardRenderer_constructor, __jsb_cocos2d_renderer_ForwardRenderer_class, js_cocos2d_renderer_ForwardRenderer_finalize)
+
+
+
+extern se::Object* __jsb_cocos2d_renderer_BaseRenderer_proto;
+
+static bool js_cocos2d_renderer_ForwardRenderer_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::ForwardRenderer)", s.nativeThisObject());
+    cocos2d::renderer::ForwardRenderer* cobj = (cocos2d::renderer::ForwardRenderer*)s.nativeThisObject();
+    cobj->release();
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_ForwardRenderer_finalize)
+
+bool js_register_renderer_ForwardRenderer(se::Object* obj)
+{
+    auto cls = se::Class::create("ForwardRenderer", obj, __jsb_cocos2d_renderer_BaseRenderer_proto, _SE(js_renderer_ForwardRenderer_constructor));
+
+    cls->defineFunction("init", _SE(js_renderer_ForwardRenderer_init));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_ForwardRenderer_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::renderer::ForwardRenderer>(cls);
+
+    __jsb_cocos2d_renderer_ForwardRenderer_proto = cls->getProto();
+    __jsb_cocos2d_renderer_ForwardRenderer_class = cls;
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
