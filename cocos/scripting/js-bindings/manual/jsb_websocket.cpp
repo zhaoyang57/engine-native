@@ -22,9 +22,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
+#include "base/ccConfig.h"
 #include "jsb_websocket.hpp"
-
+#if (USE_NET_WORK > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_global.h"
@@ -442,8 +442,47 @@ SE_BIND_FUNC(WebSocket_send)
 
 static bool WebSocket_close(se::State& s)
 {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+
     WebSocket* cobj = (WebSocket*)s.nativeThisObject();
-    cobj->closeAsync();
+    if(argc == 0)
+    {
+        cobj->closeAsync();
+    }
+    else if (argc == 1)
+    {
+        if (args[0].isNumber())
+        {
+            int reason;
+            seval_to_int32(args[0], &reason);
+            cobj->closeAsync(reason, "no_reason");
+        }
+        else if (args[0].isString())
+        {
+            std::string reason;
+            seval_to_std_string(args[0], &reason);
+            cobj->closeAsync(1005, reason);
+        }
+        else
+        {
+            assert(false);
+        }
+    }
+    else if (argc == 2)
+    {
+        assert(args[0].isNumber());
+        assert(args[1].isString());
+        int reasonCode;
+        std::string reasonString;
+        seval_to_int32(args[0], &reasonCode);
+        seval_to_std_string(args[1], &reasonString);
+        cobj->closeAsync(reasonCode, reasonString);
+    }
+    else 
+    {
+        assert(false);
+    }
     // Attach current WebSocket instance to global object to prevent WebSocket instance
     // being garbage collected after "ws.close(); ws = null;"
     // There is a state that current WebSocket JS instance is being garbaged but its finalize
@@ -473,6 +512,39 @@ static bool WebSocket_getReadyState(se::State& s)
 }
 SE_BIND_PROP_GET(WebSocket_getReadyState)
 
+static bool WebSocket_getBufferedAmount(se::State& s)
+{
+    const auto& args = s.args();
+    int argc = (int)args.size();
+
+    if (argc == 0)
+    {
+        WebSocket* cobj = (WebSocket*)s.nativeThisObject();
+        s.rval().setUint32((uint32_t)cobj->getBufferedAmount());
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting 0", argc);
+    return false;
+}
+SE_BIND_PROP_GET(WebSocket_getBufferedAmount)
+
+static bool WebSocket_getExtensions(se::State& s)
+{
+    const auto& args = s.args();
+    int argc = (int)args.size();
+
+    if (argc == 0)
+    {
+        WebSocket* cobj = (WebSocket*)s.nativeThisObject();
+        s.rval().setString(cobj->getExtensions());
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting 0", argc);
+    return false;
+}
+SE_BIND_PROP_GET(WebSocket_getExtensions)
+
+
 bool register_all_websocket(se::Object* obj)
 {
     se::Class* cls = se::Class::create("WebSocket", obj, nullptr, _SE(WebSocket_constructor));
@@ -481,6 +553,8 @@ bool register_all_websocket(se::Object* obj)
     cls->defineFunction("send", _SE(WebSocket_send));
     cls->defineFunction("close", _SE(WebSocket_close));
     cls->defineProperty("readyState", _SE(WebSocket_getReadyState), nullptr);
+    cls->defineProperty("bufferedAmount", _SE(WebSocket_getBufferedAmount), nullptr);
+    cls->defineProperty("extensions", _SE(WebSocket_getExtensions), nullptr);
 
     cls->install();
 
@@ -499,3 +573,4 @@ bool register_all_websocket(se::Object* obj)
 
     return true;
 }
+#endif //#if (USE_NET_WORK > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

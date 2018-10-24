@@ -83,18 +83,20 @@ Application::Application(const std::string& name, int width, int height)
 
 Application::~Application()
 {
+
+#if USE_AUDIO
+    AudioEngine::end();
+#endif
+
     EventDispatcher::destroy();
     se::ScriptEngine::destroyInstance();
-
-    // close audio device
-    cocos2d::experimental::AudioEngine::end();
     
     delete CAST_VIEW(_view);
     _view = nullptr;
         
     delete _renderTexture;
     _renderTexture = nullptr;
-    
+
     Application::_instance = nullptr;
 }
 

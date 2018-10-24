@@ -40,7 +40,6 @@
 #include <regex>
 
 using namespace cocos2d;
-using namespace cocos2d::experimental;
 
 se::Object* __jsbObj = nullptr;
 se::Object* __glObj = nullptr;
@@ -86,7 +85,7 @@ void jsb_init_file_operation_delegate()
                     SE_REPORT_ERROR("Can't decrypt code for %s", byteCodePath.c_str());
                     return;
                 }
-                
+
                 if (ZipUtils::isGZipBuffer(data,dataLen)) {
                     uint8_t* unpackedData;
                     ssize_t unpackedLen = ZipUtils::inflateMemory(data, dataLen,&unpackedData);
@@ -95,7 +94,7 @@ void jsb_init_file_operation_delegate()
                         SE_REPORT_ERROR("Can't decrypt code for %s", byteCodePath.c_str());
                         return;
                     }
-                    
+
                     readCallback(unpackedData, unpackedLen);
                     free(data);
                     free(unpackedData);
@@ -121,12 +120,12 @@ void jsb_init_file_operation_delegate()
 
                 uint32_t dataLen;
                 uint8_t* data = xxtea_decrypt((uint8_t*)fileData.getBytes(), (uint32_t)fileData.getSize(), (uint8_t*)xxteaKey.c_str(), (uint32_t)xxteaKey.size(), &dataLen);
-                
+
                 if (data == nullptr) {
                     SE_REPORT_ERROR("Can't decrypt code for %s", byteCodePath.c_str());
                     return "";
                 }
-                
+
                 if (ZipUtils::isGZipBuffer(data,dataLen)) {
                     uint8_t* unpackedData;
                     ssize_t unpackedLen = ZipUtils::inflateMemory(data, dataLen,&unpackedData);
@@ -134,11 +133,11 @@ void jsb_init_file_operation_delegate()
                         SE_REPORT_ERROR("Can't decrypt code for %s", byteCodePath.c_str());
                         return "";
                     }
-                    
+
                     std::string ret(reinterpret_cast<const char*>(unpackedData), unpackedLen);
                     free(unpackedData);
                     free(data);
-                    
+
                     return ret;
                 }
                 else {
@@ -642,7 +641,7 @@ namespace
             if (freeData)
                 delete [] data;
         }
-        
+
         uint32_t length = 0;
         uint32_t width = 0;
         uint32_t height = 0;
@@ -655,10 +654,10 @@ namespace
         bool hasAlpha = false;
         bool hasPremultipliedAlpha = false;
         bool compressed = false;
-        
+
         bool freeData = false;
     };
-    
+
     struct ImageInfo* createImageInfo(const Image* img)
     {
         struct ImageInfo* imgInfo = new struct ImageInfo();
@@ -666,18 +665,18 @@ namespace
         imgInfo->width = img->getWidth();
         imgInfo->height = img->getHeight();
         imgInfo->data = img->getData();
-        
+
         const auto& pixelFormatInfo = img->getPixelFormatInfo();
         imgInfo->glFormat = pixelFormatInfo.format;
         imgInfo->glInternalFormat = pixelFormatInfo.internalFormat;
         imgInfo->type = pixelFormatInfo.type;
-        
+
         imgInfo->bpp = img->getBitPerPixel();
         imgInfo->numberOfMipmaps = img->getNumberOfMipmaps();
         imgInfo->hasAlpha = img->hasAlpha();
         imgInfo->hasPremultipliedAlpha = img->hasPremultipliedAlpha();
         imgInfo->compressed = img->isCompressed();
-        
+
         // Convert to RGBA888 because standard web api will return only RGBA888.
         // If not, then it may have issue in glTexSubImage. For example, engine
         // will create a big texture, and update its content with small pictures.
@@ -702,7 +701,7 @@ namespace
             imgInfo->glInternalFormat = GL_RGBA;
             imgInfo->freeData = true;
         }
-        
+
         return imgInfo;
     }
 }
@@ -796,6 +795,7 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
     size_t pos = std::string::npos;
     if (path.find("http://") == 0 || path.find("https://") == 0)
     {
+#if USE_NET_WORK
         auto request = new cocos2d::network::HttpRequest();
         request->setRequestType(cocos2d::network::HttpRequest::Type::GET);
         request->setUrl(path);
@@ -815,6 +815,9 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
         });
         cocos2d::network::HttpClient::getInstance()->send(request);
         request->release();
+#else
+        SE_REPORT_ERROR("can't load remote image if you disable network module!");
+#endif // USE_NET_WORK
     }
     else if (path.find("data:") == 0 && (pos = path.find("base64,")) != std::string::npos)
     {
@@ -836,7 +839,7 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
         std::string fullPath(FileUtils::getInstance()->fullPathForFilename(path));
         if (0 == path.find("file://"))
             fullPath = FileUtils::getInstance()->fullPathForFilename(path.substr(strlen("file://")));
-        
+
         if (fullPath.empty())
         {
             SE_REPORT_ERROR("File (%s) doesn't exist!", path.c_str());
@@ -888,9 +891,11 @@ static bool js_saveImageData(se::State& s)
 
         Image* img = new Image();
         img->initWithRawData(data.getBytes(), data.getSize(), width, height, 8);
-        bool ret = img->saveToFile(filePath);
+        // isToRGB = false, to keep alpha channel
+        bool ret = img->saveToFile(filePath, false);
         s.rval().setBoolean(ret);
 
+        img->release();
         return ret;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
@@ -988,22 +993,22 @@ static bool JSB_showInputBox(se::State& s)
         bool ok;
         se::Value tmp;
         const auto& obj = args[0].toObject();
-        
+
         cocos2d::EditBox::ShowInfo showInfo;
-        
+
         ok = obj->getProperty("defaultValue", &tmp);
         SE_PRECONDITION2(ok && tmp.isString(), false, "defaultValue is invalid!");
         showInfo.defaultValue = tmp.toString();
-        
-        
+
+
         ok = obj->getProperty("maxLength", &tmp);
         SE_PRECONDITION2(ok && tmp.isNumber(), false, "maxLength is invalid!");
         showInfo.maxLength = tmp.toInt32();
-        
+
         ok = obj->getProperty("multiple", &tmp);
         SE_PRECONDITION2(ok && tmp.isBoolean(), false, "multiple is invalid!");
         showInfo.isMultiline = tmp.toBoolean();
-        
+
         if (obj->getProperty("confirmHold", &tmp))
         {
             SE_PRECONDITION2(tmp.isBoolean(), false, "confirmHold is invalid!");
@@ -1011,14 +1016,14 @@ static bool JSB_showInputBox(se::State& s)
                 showInfo.confirmHold = tmp.toBoolean();
         }
 
-        
+
         if (obj->getProperty("confirmType", &tmp))
         {
             SE_PRECONDITION2(tmp.isString(), false, "confirmType is invalid!");
             if (!tmp.isUndefined())
                 showInfo.confirmType = tmp.toString();
         }
-        
+
         if (obj->getProperty("inputType", &tmp))
         {
             SE_PRECONDITION2(tmp.isString(), false, "inputType is invalid!");
@@ -1026,7 +1031,7 @@ static bool JSB_showInputBox(se::State& s)
                 showInfo.inputType = tmp.toString();
         }
 
-        
+
         if (obj->getProperty("originX", &tmp))
         {
             SE_PRECONDITION2(tmp.isNumber(), false, "originX is invalid!");
@@ -1054,12 +1059,12 @@ static bool JSB_showInputBox(se::State& s)
             if (! tmp.isUndefined())
                 showInfo.height = tmp.toInt32();
         }
-        
+
         EditBox::show(showInfo);
-        
+
         return true;
     }
-    
+
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
     return false;
 }
