@@ -1060,3 +1060,234 @@ Scene : function (
 },
 
 };
+
+/**
+ * @class NodeProxy
+ */
+renderer.NodeProxy = {
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method addChild
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+addChild : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method setMatrixDirty
+ */
+setMatrixDirty : function (
+)
+{
+},
+
+/**
+ * @method getParent
+* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
+*/
+getParent : function(
+)
+{
+    return cc.renderer::NodeProxy;
+},
+
+/**
+ * @method setParent
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+setParent : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method visit
+ */
+visit : function (
+)
+{
+},
+
+/**
+ * @method removeAllChildren
+ */
+removeAllChildren : function (
+)
+{
+},
+
+/**
+ * @method addHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addHandle : function (
+str, 
+systemhandle 
+)
+{
+},
+
+/**
+ * @method setGroupID
+ * @param {int} arg0
+ */
+setGroupID : function (
+int 
+)
+{
+},
+
+/**
+ * @method removeChild
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+removeChild : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method getChildren
+* @return {Array|Array}
+*/
+getChildren : function(
+)
+{
+    return new Array();
+},
+
+/**
+ * @method setLocalZOrder
+ * @param {int} arg0
+ */
+setLocalZOrder : function (
+int 
+)
+{
+},
+
+/**
+ * @method setLocalMatrix
+ * @param {mat4_object} arg0
+ */
+setLocalMatrix : function (
+mat4 
+)
+{
+},
+
+/**
+ * @method getChildrenCount
+ * @return {int}
+ */
+getChildrenCount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method setChildrenOrderDirty
+ */
+setChildrenOrderDirty : function (
+)
+{
+},
+
+/**
+ * @method NodeProxy
+ * @constructor
+ */
+NodeProxy : function (
+)
+{
+},
+
+};
+
+/**
+ * @class RenderHandle
+ */
+renderer.RenderHandle = {
+
+/**
+ * @method setEnable
+ * @param {bool} arg0
+ */
+setEnable : function (
+bool 
+)
+{
+},
+
+/**
+ * @method handle
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+handle : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method postHandle
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+postHandle : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method RenderHandle
+ * @constructor
+ */
+RenderHandle : function (
+)
+{
+},
+
+};
+
+/**
+ * @class RenderSystem
+ */
+renderer.RenderSystem = {
+
+/**
+ * @method removeRenderHandle
+ * @param {cc.renderer::RenderHandle} arg0
+ */
+removeRenderHandle : function (
+renderhandle 
+)
+{
+},
+
+/**
+ * @method addRenderHandle
+ * @param {cc.renderer::RenderHandle} arg0
+ */
+addRenderHandle : function (
+renderhandle 
+)
+{
+},
+
+};

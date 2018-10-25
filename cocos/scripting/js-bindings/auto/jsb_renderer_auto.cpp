@@ -3,6 +3,7 @@
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "scripting/js-bindings/manual/jsb_global.h"
 #include "renderer/renderer/Renderer.h"
+#include "renderer/scene/scene-bindings.h"
 
 se::Object* __jsb_cocos2d_renderer_ProgramLib_proto = nullptr;
 se::Class* __jsb_cocos2d_renderer_ProgramLib_class = nullptr;
@@ -2458,6 +2459,529 @@ bool js_register_renderer_Scene(se::Object* obj)
     return true;
 }
 
+se::Object* __jsb_cocos2d_renderer_NodeProxy_proto = nullptr;
+se::Class* __jsb_cocos2d_renderer_NodeProxy_class = nullptr;
+
+static bool js_renderer_NodeProxy_reset(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_reset : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->reset();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_reset)
+
+static bool js_renderer_NodeProxy_addChild(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_addChild : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_addChild : Error processing arguments");
+        cobj->addChild(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_addChild)
+
+static bool js_renderer_NodeProxy_setMatrixDirty(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setMatrixDirty : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setMatrixDirty();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setMatrixDirty)
+
+static bool js_renderer_NodeProxy_getParent(se::State& s)
+{
+    CC_UNUSED bool ok = true;
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2( cobj, false, "js_renderer_NodeProxy_getParent : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    do {
+        if (argc == 0) {
+            const cocos2d::renderer::NodeProxy* result = cobj->getParent();
+            ok &= native_ptr_to_seval<cocos2d::renderer::NodeProxy>((cocos2d::renderer::NodeProxy*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getParent : Error processing arguments");
+            return true;
+        }
+    } while(false);
+
+    do {
+        if (argc == 0) {
+            cocos2d::renderer::NodeProxy* result = cobj->getParent();
+            ok &= native_ptr_to_seval<cocos2d::renderer::NodeProxy>((cocos2d::renderer::NodeProxy*)result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getParent : Error processing arguments");
+            return true;
+        }
+    } while(false);
+
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_getParent)
+
+static bool js_renderer_NodeProxy_setParent(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setParent : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setParent : Error processing arguments");
+        cobj->setParent(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setParent)
+
+static bool js_renderer_NodeProxy_visit(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_visit : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->visit();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_visit)
+
+static bool js_renderer_NodeProxy_removeAllChildren(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_removeAllChildren : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->removeAllChildren();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_removeAllChildren)
+
+static bool js_renderer_NodeProxy_addHandle(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_addHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        std::string arg0;
+        cocos2d::renderer::SystemHandle* arg1 = nullptr;
+        ok &= seval_to_std_string(args[0], &arg0);
+        ok &= seval_to_native_ptr(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_addHandle : Error processing arguments");
+        cobj->addHandle(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_addHandle)
+
+static bool js_renderer_NodeProxy_setGroupID(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setGroupID : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        int arg0 = 0;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setGroupID : Error processing arguments");
+        cobj->setGroupID(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setGroupID)
+
+static bool js_renderer_NodeProxy_removeChild(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_removeChild : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_removeChild : Error processing arguments");
+        cobj->removeChild(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_removeChild)
+
+static bool js_renderer_NodeProxy_getChildren(se::State& s)
+{
+    CC_UNUSED bool ok = true;
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2( cobj, false, "js_renderer_NodeProxy_getChildren : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    do {
+        if (argc == 0) {
+            const cocos2d::Vector<cocos2d::renderer::NodeProxy *>& result = cobj->getChildren();
+            ok &= Vector_to_seval(result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getChildren : Error processing arguments");
+            return true;
+        }
+    } while(false);
+
+    do {
+        if (argc == 0) {
+            cocos2d::Vector<cocos2d::renderer::NodeProxy *>& result = cobj->getChildren();
+            ok &= Vector_to_seval(result, &s.rval());
+            SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getChildren : Error processing arguments");
+            return true;
+        }
+    } while(false);
+
+    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_getChildren)
+
+static bool js_renderer_NodeProxy_setLocalZOrder(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setLocalZOrder : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        int arg0 = 0;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setLocalZOrder : Error processing arguments");
+        cobj->setLocalZOrder(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setLocalZOrder)
+
+static bool js_renderer_NodeProxy_setLocalMatrix(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setLocalMatrix : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::Mat4 arg0;
+        ok &= seval_to_Mat4(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setLocalMatrix : Error processing arguments");
+        cobj->setLocalMatrix(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setLocalMatrix)
+
+static bool js_renderer_NodeProxy_getChildrenCount(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getChildrenCount : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        ssize_t result = cobj->getChildrenCount();
+        ok &= size_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getChildrenCount : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_getChildrenCount)
+
+static bool js_renderer_NodeProxy_setChildrenOrderDirty(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setChildrenOrderDirty : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setChildrenOrderDirty();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setChildrenOrderDirty)
+
+SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_NodeProxy_finalize)
+
+static bool js_renderer_NodeProxy_constructor(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = new (std::nothrow) cocos2d::renderer::NodeProxy();
+    s.thisObject()->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_CTOR(js_renderer_NodeProxy_constructor, __jsb_cocos2d_renderer_NodeProxy_class, js_cocos2d_renderer_NodeProxy_finalize)
+
+
+
+
+static bool js_cocos2d_renderer_NodeProxy_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::NodeProxy)", s.nativeThisObject());
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    cobj->release();
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_NodeProxy_finalize)
+
+bool js_register_renderer_NodeProxy(se::Object* obj)
+{
+    auto cls = se::Class::create("NodeProxy", obj, nullptr, _SE(js_renderer_NodeProxy_constructor));
+
+    cls->defineFunction("reset", _SE(js_renderer_NodeProxy_reset));
+    cls->defineFunction("addChild", _SE(js_renderer_NodeProxy_addChild));
+    cls->defineFunction("setMatrixDirty", _SE(js_renderer_NodeProxy_setMatrixDirty));
+    cls->defineFunction("getParent", _SE(js_renderer_NodeProxy_getParent));
+    cls->defineFunction("setParent", _SE(js_renderer_NodeProxy_setParent));
+    cls->defineFunction("visit", _SE(js_renderer_NodeProxy_visit));
+    cls->defineFunction("removeAllChildren", _SE(js_renderer_NodeProxy_removeAllChildren));
+    cls->defineFunction("addHandle", _SE(js_renderer_NodeProxy_addHandle));
+    cls->defineFunction("setGroupID", _SE(js_renderer_NodeProxy_setGroupID));
+    cls->defineFunction("removeChild", _SE(js_renderer_NodeProxy_removeChild));
+    cls->defineFunction("getChildren", _SE(js_renderer_NodeProxy_getChildren));
+    cls->defineFunction("setLocalZOrder", _SE(js_renderer_NodeProxy_setLocalZOrder));
+    cls->defineFunction("setLocalMatrix", _SE(js_renderer_NodeProxy_setLocalMatrix));
+    cls->defineFunction("getChildrenCount", _SE(js_renderer_NodeProxy_getChildrenCount));
+    cls->defineFunction("setChildrenOrderDirty", _SE(js_renderer_NodeProxy_setChildrenOrderDirty));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_NodeProxy_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::renderer::NodeProxy>(cls);
+
+    __jsb_cocos2d_renderer_NodeProxy_proto = cls->getProto();
+    __jsb_cocos2d_renderer_NodeProxy_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
+se::Object* __jsb_cocos2d_renderer_RenderHandle_proto = nullptr;
+se::Class* __jsb_cocos2d_renderer_RenderHandle_class = nullptr;
+
+static bool js_renderer_RenderHandle_setEnable(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_setEnable : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_setEnable : Error processing arguments");
+        cobj->setEnable(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_setEnable)
+
+static bool js_renderer_RenderHandle_handle(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_handle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_handle : Error processing arguments");
+        cobj->handle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_handle)
+
+static bool js_renderer_RenderHandle_postHandle(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_postHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_postHandle : Error processing arguments");
+        cobj->postHandle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_postHandle)
+
+SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_RenderHandle_finalize)
+
+static bool js_renderer_RenderHandle_constructor(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = new (std::nothrow) cocos2d::renderer::RenderHandle();
+    s.thisObject()->setPrivateData(cobj);
+    se::NonRefNativePtrCreatedByCtorMap::emplace(cobj);
+    return true;
+}
+SE_BIND_CTOR(js_renderer_RenderHandle_constructor, __jsb_cocos2d_renderer_RenderHandle_class, js_cocos2d_renderer_RenderHandle_finalize)
+
+
+
+
+static bool js_cocos2d_renderer_RenderHandle_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::RenderHandle)", s.nativeThisObject());
+    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
+    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
+    {
+        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
+        cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+        delete cobj;
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_RenderHandle_finalize)
+
+bool js_register_renderer_RenderHandle(se::Object* obj)
+{
+    auto cls = se::Class::create("RenderHandle", obj, nullptr, _SE(js_renderer_RenderHandle_constructor));
+
+    cls->defineFunction("setEnable", _SE(js_renderer_RenderHandle_setEnable));
+    cls->defineFunction("handle", _SE(js_renderer_RenderHandle_handle));
+    cls->defineFunction("postHandle", _SE(js_renderer_RenderHandle_postHandle));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_RenderHandle_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::renderer::RenderHandle>(cls);
+
+    __jsb_cocos2d_renderer_RenderHandle_proto = cls->getProto();
+    __jsb_cocos2d_renderer_RenderHandle_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
+se::Object* __jsb_cocos2d_renderer_RenderSystem_proto = nullptr;
+se::Class* __jsb_cocos2d_renderer_RenderSystem_class = nullptr;
+
+static bool js_renderer_RenderSystem_removeRenderHandle(se::State& s)
+{
+    cocos2d::renderer::RenderSystem* cobj = (cocos2d::renderer::RenderSystem*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderSystem_removeRenderHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::RenderHandle* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderSystem_removeRenderHandle : Error processing arguments");
+        cobj->removeRenderHandle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderSystem_removeRenderHandle)
+
+static bool js_renderer_RenderSystem_addRenderHandle(se::State& s)
+{
+    cocos2d::renderer::RenderSystem* cobj = (cocos2d::renderer::RenderSystem*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderSystem_addRenderHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::RenderHandle* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderSystem_addRenderHandle : Error processing arguments");
+        cobj->addRenderHandle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderSystem_addRenderHandle)
+
+
+
+static bool js_cocos2d_renderer_RenderSystem_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::RenderSystem)", s.nativeThisObject());
+    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
+    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
+    {
+        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
+        cocos2d::renderer::RenderSystem* cobj = (cocos2d::renderer::RenderSystem*)s.nativeThisObject();
+        delete cobj;
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_RenderSystem_finalize)
+
+bool js_register_renderer_RenderSystem(se::Object* obj)
+{
+    auto cls = se::Class::create("RenderSystem", obj, nullptr, nullptr);
+
+    cls->defineFunction("removeRenderHandle", _SE(js_renderer_RenderSystem_removeRenderHandle));
+    cls->defineFunction("addRenderHandle", _SE(js_renderer_RenderSystem_addRenderHandle));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_RenderSystem_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::renderer::RenderSystem>(cls);
+
+    __jsb_cocos2d_renderer_RenderSystem_proto = cls->getProto();
+    __jsb_cocos2d_renderer_RenderSystem_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
 bool register_all_renderer(se::Object* obj)
 {
     // Get the ns
@@ -2470,9 +2994,12 @@ bool register_all_renderer(se::Object* obj)
     }
     se::Object* ns = nsVal.toObject();
 
+    js_register_renderer_NodeProxy(ns);
     js_register_renderer_ProgramLib(ns);
+    js_register_renderer_RenderSystem(ns);
     js_register_renderer_Light(ns);
     js_register_renderer_Effect(ns);
+    js_register_renderer_RenderHandle(ns);
     js_register_renderer_Scene(ns);
     js_register_renderer_Camera(ns);
     js_register_renderer_BaseRenderer(ns);

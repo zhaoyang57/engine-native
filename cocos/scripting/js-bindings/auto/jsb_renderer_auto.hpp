@@ -154,4 +154,43 @@ SE_DECLARE_FUNC(js_renderer_Scene_addLight);
 SE_DECLARE_FUNC(js_renderer_Scene_removeLight);
 SE_DECLARE_FUNC(js_renderer_Scene_Scene);
 
-#endif //#if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+extern se::Object* __jsb_cocos2d_renderer_NodeProxy_proto;
+extern se::Class* __jsb_cocos2d_renderer_NodeProxy_class;
+
+bool js_register_cocos2d_renderer_NodeProxy(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_reset);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_addChild);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setMatrixDirty);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getParent);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setParent);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_visit);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_removeAllChildren);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_addHandle);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setGroupID);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_removeChild);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildren);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setLocalZOrder);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setLocalMatrix);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildrenCount);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setChildrenOrderDirty);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_NodeProxy);
+
+extern se::Object* __jsb_cocos2d_renderer_RenderHandle_proto;
+extern se::Class* __jsb_cocos2d_renderer_RenderHandle_class;
+
+bool js_register_cocos2d_renderer_RenderHandle(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_setEnable);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_handle);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_postHandle);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_RenderHandle);
+
+extern se::Object* __jsb_cocos2d_renderer_RenderSystem_proto;
+extern se::Class* __jsb_cocos2d_renderer_RenderSystem_class;
+
+bool js_register_cocos2d_renderer_RenderSystem(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_RenderSystem_removeRenderHandle);
+SE_DECLARE_FUNC(js_renderer_RenderSystem_addRenderHandle);
+

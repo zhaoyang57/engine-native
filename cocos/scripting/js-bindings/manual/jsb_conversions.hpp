@@ -262,6 +262,7 @@ bool long_to_seval(long v, se::Value* ret);
 bool ulong_to_seval(unsigned long v, se::Value* ret);
 bool longlong_to_seval(long long v, se::Value* ret);
 bool ssize_to_seval(ssize_t v, se::Value* ret);
+bool size_to_seval(size_t v, se::Value* ret);
 bool std_string_to_seval(const std::string& v, se::Value* ret);
 
 bool Vec2_to_seval(const cocos2d::Vec2& v, se::Value* ret);

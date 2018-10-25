@@ -1968,6 +1968,12 @@ bool ssize_to_seval(ssize_t v, se::Value* ret)
     return true;
 }
 
+bool size_to_seval(size_t v, se::Value* ret)
+{
+    ret->setLong((unsigned long)v);
+    return true;
+}
+
 bool std_string_to_seval(const std::string& v, se::Value* ret)
 {
     ret->setString(v);
