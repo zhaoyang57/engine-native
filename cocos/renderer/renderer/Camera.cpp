@@ -25,6 +25,7 @@
 #include "Camera.h"
 #include "gfx/FrameBuffer.h"
 #include "INode.h"
+#include "math/MathUtil.h"
 
 RENDERER_BEGIN
 
@@ -124,7 +125,7 @@ const View& Camera::extractView( int width, int height)
     {
         float x = _orthoHeight * aspect;
         float y = _orthoHeight;
-        Mat4::createOrthographic(-x, x, -y, y, &_cachedView.matProj);
+        Mat4::createOrthographicOffCenter(-x, x, -y, y, _near, _far, &_cachedView.matProj);
     }
 
     // view projection
@@ -172,16 +173,15 @@ Vec3& Camera::screenToWorld(Vec3& out, const Vec3& screenPos, int width, int hei
         
         // Transform to world position.
         matInvViewProj.transformPoint(&out);
-        const_cast<Camera*>(this)->_worldPos.set(_node->getWorldPos());
+        const_cast<Camera*>(this)->_worldPos.set(_node->getWorldPosition());
         Vec3 tmpVec3 = _worldPos;
-        out = tmpVec3.lerp(out, screenPos.z / _far);
+        out = tmpVec3.lerp(out, MathUtil::lerp(_near / _far, 1, screenPos.z));
     }
     else
     {
-        float range = _far - _near;
         out.set((screenPos.x - cx) * 2.0f / cw - 1.0f,
                 (screenPos.y - cy) * 2.0f / ch - 1.0f,
-                (_far - screenPos.z) / range * 2.0f - 1.0f);
+                screenPos.z * 2.0f - 1.0f);
         
         // Transform to world position.
         matInvViewProj.transformPoint(&out);
@@ -215,15 +215,10 @@ Vec3& Camera::worldToScreen(Vec3& out, const Vec3& worldPos, int width, int heig
     Mat4 matViewProj;
     Mat4::multiply(matProj, _worldRTInv, &matViewProj);
     
-    // caculate w
-    float w = worldPos.x * matViewProj.m[3] +
-              worldPos.y * matViewProj.m[7] +
-              worldPos.z * matViewProj.m[11] +
-              matViewProj.m[15];
-    
     matViewProj.transformPoint(worldPos, &out);
-    out.x = cx + (out.x / w + 1) * 0.5f * cw;
-    out.y = cy + (out.y / w + 1) * 0.5f * ch;
+    out.x = cx + (out.x + 1) * 0.5f * cw;
+    out.y = cy + (out.y + 1) * 0.5f * ch;
+    out.z = out.z * 0.5 + 0.5;
     
     return out;
 }

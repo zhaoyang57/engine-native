@@ -36,7 +36,7 @@ public:
     virtual ~INode() {}
     virtual Mat4 getWorldMatrix() const = 0;
     virtual Mat4 getWorldRT() const = 0;
-    virtual Vec3 getWorldPos() const = 0;
+    virtual Vec3 getWorldPosition() const = 0;
 };
 
 RENDERER_END
