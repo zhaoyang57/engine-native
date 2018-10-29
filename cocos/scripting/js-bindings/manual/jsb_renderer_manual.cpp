@@ -349,7 +349,7 @@ public:
         return worldRT;
     }
 
-    virtual Vec3 getWorldPos() const override
+    virtual Vec3 getWorldPosition() const override
     {
         Vec3 pos;
         se::Value func;
