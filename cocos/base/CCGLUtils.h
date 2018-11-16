@@ -82,7 +82,8 @@ void ccVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvo
 const VertexAttributePointerInfo* getVertexAttribPointerInfo(GLuint index);
 
 //  Converts pixel if unpackFlipY or premultiplyAlpha is true.
-void ccFlipYOrPremultiptyAlphaIfNeeded(GLenum format, GLsizei width, GLsizei height, uint32_t pixelBytes, GLvoid* pixels);
+void ccFlipYIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLsizei height);
+void ccPremultiptyAlphaIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLenum format, GLenum type);
 
 bool ccIsUnpackFlipY();
 bool ccIsPremultiplyAlpha();

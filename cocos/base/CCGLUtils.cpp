@@ -339,39 +339,6 @@ static void flipPixelsY(GLubyte *pixels, int bytesPerRow, int rows)
     }
 }
 
-static void flipPixelsYByFormat(GLubyte *pixels, GLenum format, uint32_t width, uint32_t height, uint32_t expectedTotalBytes)
-{
-    bool isSupportFlipY = true;
-    GLsizei bytesPerRow = 0;
-    switch (format) {
-        case GL_RGBA:
-            bytesPerRow = width * 4;
-            break;
-        case GL_RGB:
-            bytesPerRow = width * 3;
-            break;
-        case GL_LUMINANCE_ALPHA:
-            bytesPerRow = width * 2;
-            break;
-        case GL_LUMINANCE:
-            bytesPerRow = width;
-            break;
-        default:
-            isSupportFlipY = false;
-            break;
-    }
-
-    if (isSupportFlipY)
-    {
-        assert(expectedTotalBytes == bytesPerRow * height);
-        flipPixelsY((GLubyte*)pixels, bytesPerRow, height);
-    }
-    else
-    {
-        CCLOGERROR("flipPixelsYByFormat: format: 0x%X doesn't support upackFlipY!\n", format);
-    }
-}
-
 // Lookup tables for fast [un]premultiplied alpha color values
 // From https://bugzilla.mozilla.org/show_bug.cgi?id=662130
 static GLubyte* __premultiplyTable = nullptr;
@@ -390,38 +357,6 @@ static const GLubyte* premultiplyTable()
     }
 
     return __premultiplyTable;
-}
-
-void premultiplyPixels(const GLubyte *inPixels, GLubyte *outPixels, GLenum format, uint32_t width, uint32_t height, uint32_t expectedTotalBytes)
-{
-    const GLubyte *table = premultiplyTable();
-    int byteLength = 0;
-    if( format == GL_RGBA )
-    {
-        byteLength = width * height * 4;
-        assert(byteLength == expectedTotalBytes);
-        for( int i = 0; i < byteLength; i += 4 ) {
-            unsigned short a = inPixels[i+3] * 256;
-            outPixels[i+0] = table[ a + inPixels[i+0] ];
-            outPixels[i+1] = table[ a + inPixels[i+1] ];
-            outPixels[i+2] = table[ a + inPixels[i+2] ];
-            outPixels[i+3] = inPixels[i+3];
-        }
-    }
-    else if ( format == GL_LUMINANCE_ALPHA )
-    {
-        byteLength = width * height * 2;
-        assert(byteLength == expectedTotalBytes);
-        for( int i = 0; i < byteLength; i += 2 ) {
-            unsigned short a = inPixels[i+1] * 256;
-            outPixels[i+0] = table[ a + inPixels[i+0] ];
-            outPixels[i+1] = inPixels[i+1];
-        }
-    }
-    else
-    {
-        CCLOGERROR("premultiplyPixels: format: 0x%X doesn't support upackFlipY!\n", format);
-    }
 }
 
 bool ccIsUnpackFlipY()
@@ -469,19 +404,100 @@ void ccPixelStorei(GLenum pname, GLint param)
     }
 }
 
-void ccFlipYOrPremultiptyAlphaIfNeeded(GLenum format, GLsizei width, GLsizei height, uint32_t pixelBytes, GLvoid* pixels)
+void ccFlipYIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLsizei height)
 {
-    if (pixels != nullptr)
+    if (!pixels
+        || !__unpackFlipY
+        || height <= 1)
     {
-        if (__unpackFlipY)
-        {
-            flipPixelsYByFormat((GLubyte*)pixels, format, width, height, pixelBytes);
-        }
+        return;
+    }
+    
+    flipPixelsY((GLubyte*)pixels, pixelBytes / height, height);
+}
 
-        if (__premultiplyAlpha)
+namespace
+{
+    void premultiply5551(GLvoid* pixels, uint32_t pixelBytes)
+    {
+        uint16_t* pointer = (uint16_t*)pixels;
+        uint8_t r = 0;
+        uint8_t g = 0;
+        uint8_t b = 0;
+        uint8_t a = 0;
+        for (int i = 0; i < pixelBytes; i += 2, pointer++)
         {
-            premultiplyPixels((GLubyte*)pixels, (GLubyte*)pixels, format, width, height, pixelBytes);
+            r = (*pointer & 0xF800) >> 11;
+            g = (*pointer & 0x07C0) >> 6;
+            b = (*pointer & 0x003D)  >> 1;
+            a = *pointer & 0x1;
+            *pointer = (r * a << 11 & 0xF800) |
+                       (g * a << 6 & 0x07C0)  |
+                       (b * a << 1 & 0x003D)  |
+                       a;
         }
+    }
+    
+#define TO_4BIT(a, b)  (((a * b) + 14) / 15)
+    void premultiply4444(GLvoid* pixels, uint32_t pixelBytes)
+    {
+        uint16_t* pointer = (uint16_t*)pixels;
+        uint8_t r = 0;
+        uint8_t g = 0;
+        uint8_t b = 0;
+        uint8_t a = 0;
+        for (int i = 0; i < pixelBytes; i += 2, pointer++)
+        {
+            r = (*pointer & 0xF000) >> 12;
+            g = (*pointer & 0x0F00) >> 8;
+            b = (*pointer & 0x00F0) >> 4;
+            a = *pointer & 0xF;
+            *pointer = (TO_4BIT(r, a) << 12 & 0xF000) |
+                       (TO_4BIT(g, a) << 8 & 0x0F00)  |
+                       (TO_4BIT(b, a) << 4 & 0x00F0)  |
+                       (uint8_t)(*pointer & 0xF);
+        }
+    }
+
+    void premultiplyByte(GLvoid* pixels, uint32_t pixelBytes)
+    {
+        uint8_t* pointer = (uint8_t*)pixels;
+        const GLubyte *table = premultiplyTable();
+        for (int i = 0; i < pixelBytes; i += 4)
+        {
+            uint32_t index = pointer[i+3] * 256;
+            pointer[i] = table[index + pointer[i]];
+            pointer[i+1] = table[index + pointer[i+1]];
+            pointer[i+2] = table[index + pointer[i+2]];
+        }
+    }
+}
+
+void ccPremultiptyAlphaIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLenum format, GLenum type)
+{
+    if (!pixels
+        || !__premultiplyAlpha)
+    {
+        return;
+    }
+    
+    switch (type) {
+        case GL_UNSIGNED_SHORT_5_5_5_1:
+            premultiply5551(pixels, pixelBytes);
+            break;
+        case GL_UNSIGNED_SHORT_4_4_4_4:
+            premultiply4444(pixels, pixelBytes);
+            break;
+        case GL_UNSIGNED_BYTE:
+            if (format == GL_RGBA || format == GL_LUMINANCE_ALPHA)
+                premultiplyByte(pixels, pixelBytes);
+            break;
+        case GL_UNSIGNED_SHORT_5_6_5:
+            // no alpha channel
+            break;
+        default:
+            // Doesn't support currently.
+            break;
     }
 }
 

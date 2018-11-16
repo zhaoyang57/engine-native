@@ -2163,13 +2163,19 @@ static bool JSB_glTexImage2D(se::State& s) {
         SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
     }
 #endif
-    ccFlipYOrPremultiptyAlphaIfNeeded(format, width, height, count, pixels);
-    if (alignment > 0)
-        ccPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-    else
-        setUnpackAlignmentByWidthAndFormat(width, format);
+    void* pixelCopy = pixels;
+    if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha())
+    {
+        pixelCopy = malloc(count);
+        if (!pixelCopy) return true;
+        memcpy(pixelCopy, pixels, count);
+    }
+    ccFlipYIfNeeded(pixelCopy, count, height);
+    ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
     
-    JSB_GL_CHECK(glTexImage2D((GLenum)target , (GLint)level , (GLint)internalformat , (GLsizei)width , (GLsizei)height , (GLint)border , (GLenum)format , (GLenum)type , (GLvoid*)pixels));
+    JSB_GL_CHECK(glTexImage2D((GLenum)target , (GLint)level , (GLint)internalformat , (GLsizei)width , (GLsizei)height , (GLint)border , (GLenum)format , (GLenum)type , (GLvoid*)pixelCopy));
+    if (pixelCopy != pixels)
+        free(pixelCopy);
 
     return true;
 }
@@ -2269,13 +2275,20 @@ static bool JSB_glTexSubImage2D(se::State& s) {
         SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
     }
 #endif
-    ccFlipYOrPremultiptyAlphaIfNeeded(format, width, height, count, pixels);
-    if (alignment > 0)
-        ccPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-    else
-        setUnpackAlignmentByWidthAndFormat(width, format);
+    void* pixelCopy = pixels;
+    if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha())
+    {
+        pixelCopy = malloc(count);
+        if (!pixelCopy) return true;
+        memcpy(pixelCopy, pixels, count);
+    }
+    ccFlipYIfNeeded(pixelCopy, count, height);
+    ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
 
-    JSB_GL_CHECK(glTexSubImage2D((GLenum)target , (GLint)level , (GLint)xoffset , (GLint)yoffset , (GLsizei)width , (GLsizei)height , (GLenum)format , (GLenum)type , (GLvoid*)pixels));
+    JSB_GL_CHECK(glTexSubImage2D((GLenum)target , (GLint)level , (GLint)xoffset , (GLint)yoffset , (GLsizei)width , (GLsizei)height , (GLenum)format , (GLenum)type , (GLvoid*)pixelCopy));
+    
+    if (pixelCopy != pixels)
+        free(pixelCopy);
 
     return true;
 }
