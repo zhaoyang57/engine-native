@@ -142,6 +142,11 @@ namespace se {
         bool evalString(const char* scriptStr, ssize_t length = -1, Value* rval = nullptr, const char* fileName = nullptr);
 
         /**
+         * @brief Throw exception from c++ to JavaScript
+         */
+        void ThrowException(const std::string& errorInfo);
+
+        /**
          *  Delegate class for file operation
          */
         class FileOperationDelegate

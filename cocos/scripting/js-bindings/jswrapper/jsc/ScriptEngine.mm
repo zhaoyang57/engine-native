@@ -612,6 +612,11 @@ namespace se {
         return ok;
     }
 
+    void ScriptEngine::ThrowException(const std::string& errorInfo)
+    {
+        // empty implementation
+    }
+
     void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
     {
         _fileOperationDelegate = delegate;

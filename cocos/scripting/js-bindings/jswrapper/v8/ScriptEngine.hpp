@@ -167,6 +167,11 @@ namespace se {
         std::string getCurrentStackTrace();
 
         /**
+         * @brief Throw exception from c++ to JavaScript
+         */
+        void ThrowException(const std::string& errorInfo);
+
+        /**
          *  Delegate class for file operation
          */
         class FileOperationDelegate

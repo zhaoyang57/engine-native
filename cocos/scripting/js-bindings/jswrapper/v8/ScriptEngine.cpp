@@ -681,6 +681,18 @@ namespace se {
         return stackTraceToString(stack);
     }
 
+    void ScriptEngine::ThrowException(const std::string& errorInfo)
+    {
+        if (!_isValid || _isolate == nullptr)
+        {
+            return;
+        }
+
+        v8::HandleScope hs(_isolate);
+        v8::Local<v8::String> exception = v8::String::NewFromUtf8(_isolate, errorInfo.c_str());
+        _isolate->ThrowException(exception);
+    }
+
     void ScriptEngine::setFileOperationDelegate(const FileOperationDelegate& delegate)
     {
         _fileOperationDelegate = delegate;
