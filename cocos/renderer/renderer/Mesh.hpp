@@ -25,18 +25,34 @@
 #pragma once
 
 #include "../Macro.h"
-#include "RenderHandle.hpp"
+#include "base/CCRef.h"
 
 RENDERER_BEGIN
 
-class RenderSystem
+class Mesh
 {
 public:
-    void addRenderHandle(RenderHandle* handle);
-    void removeRenderHandle(RenderHandle* handle);
+    struct Vertex
+    {
+        float x;
+        float y;
+        float z;
+        float u;
+        float v;
+        uint32_t color;
+    };
+    
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices);
+    
+    void updateVertices(const std::vector<Vertex>& vertices);
+    void updateIndices(const std::vector<uint16_t>& indices);
+    
+    const std::vector<Vertex>& getVertices() const { return _vertices; };
+    const std::vector<uint16_t>& getIndices() const { return _indices; };
     
 private:
-    std::vector<RenderHandle*> _handles;
+    std::vector<Vertex> _vertices;
+    std::vector<uint16_t> _indices;
 };
 
 RENDERER_END

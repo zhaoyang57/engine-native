@@ -22,27 +22,24 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "RenderSystem.hpp"
-
-#include <algorithm>
+#include "Mesh.hpp"
 
 RENDERER_BEGIN
 
-void RenderSystem::addRenderHandle(RenderHandle* handle)
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices)
 {
-    if (std::find(_handles.begin(), _handles.end(), handle) == _handles.end())
-    {
-        _handles.push_back(handle);
-    }
+    _vertices = vertices;
+    _indices = indices;
 }
 
-void RenderSystem::removeRenderHandle(RenderHandle* handle)
+void Mesh::updateVertices(const std::vector<Vertex>& vertices)
 {
-    auto it = std::find(_handles.begin(), _handles.end(), handle);
-    if (it != _handles.end())
-    {
-        _handles.erase(it);
-    }
+    _vertices = vertices;
+}
+
+void Mesh::updateIndices(const std::vector<uint16_t>& indices)
+{
+    _indices = indices;
 }
 
 RENDERER_END
