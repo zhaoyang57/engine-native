@@ -27,6 +27,7 @@
 #include "base/ccMacros.h"
 #include "base/CCData.h"
 #include "math/CCGeometry.h"
+#include "CCGL.h"
 
 #include <string>
 
@@ -104,7 +105,8 @@ public:
     void setTransform(float a, float b, float c, float d, float e, float f);
 
 private:
-    void recreateBufferIfNeeded();
+    GLint _maxTextureSize;
+    bool recreateBufferIfNeeded();
 
 public:
 
