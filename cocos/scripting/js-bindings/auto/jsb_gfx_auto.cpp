@@ -849,9 +849,9 @@ static bool js_gfx_DeviceGraphics_draw(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 2) {
-        unsigned int arg0 = 0;
+        size_t arg0 = 0;
         int arg1 = 0;
-        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
+        ok &= seval_to_size(args[0], &arg0);
         do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
         SE_PRECONDITION2(ok, false, "js_gfx_DeviceGraphics_draw : Error processing arguments");
         cobj->draw(arg0, arg1);

@@ -181,6 +181,16 @@ getOrthoHeight : function (
 },
 
 /**
+ * @method setCullingMask
+ * @param {int} arg0
+ */
+setCullingMask : function (
+int 
+)
+{
+},
+
+/**
  * @method getStencil
  * @return {int}
  */
@@ -261,6 +271,16 @@ getFar : function (
  * @return {cc.renderer::ProjectionType}
  */
 getType : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getCullingMask
+ * @return {int}
+ */
+getCullingMask : function (
 )
 {
     return 0;
@@ -389,6 +409,18 @@ Camera : function (
 renderer.ForwardRenderer = {
 
 /**
+ * @method renderCamera
+ * @param {cc.renderer::Camera} arg0
+ * @param {cc.renderer::Scene} arg1
+ */
+renderCamera : function (
+camera, 
+scene 
+)
+{
+},
+
+/**
  * @method init
  * @param {cc.renderer::DeviceGraphics} arg0
  * @param {Array} arg1
@@ -406,6 +438,16 @@ int
 )
 {
     return false;
+},
+
+/**
+ * @method render
+ * @param {cc.renderer::Scene} arg0
+ */
+render : function (
+scene 
+)
+{
 },
 
 /**
@@ -437,9 +479,29 @@ value
 },
 
 /**
+ * @method getHash
+ * @return {double}
+ */
+getHash : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method clear
  */
 clear : function (
+)
+{
+},
+
+/**
+ * @method updateHash
+ * @param {double} arg0
+ */
+updateHash : function (
+double 
 )
 {
 },
@@ -449,6 +511,66 @@ clear : function (
  * @constructor
  */
 Effect : function (
+)
+{
+},
+
+};
+
+/**
+ * @class Mesh
+ */
+renderer.Mesh = {
+
+/**
+ * @method updateVertices
+ * @param {Array} arg0
+ */
+updateVertices : function (
+array 
+)
+{
+},
+
+/**
+ * @method getIndices
+ * @return {Array}
+ */
+getIndices : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method getVertices
+ * @return {Array}
+ */
+getVertices : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method updateIndices
+ * @param {Array} arg0
+ */
+updateIndices : function (
+vector<short> 
+)
+{
+},
+
+/**
+ * @method Mesh
+ * @constructor
+ * @param {Array} arg0
+ * @param {Array} arg1
+ */
+Mesh : function (
+array, 
+vector<short> 
 )
 {
 },
@@ -1093,6 +1215,16 @@ setMatrixDirty : function (
 },
 
 /**
+ * @method visitAsRoot
+ * @param {cc.renderer::RenderFlow} arg0
+ */
+visitAsRoot : function (
+renderflow 
+)
+{
+},
+
+/**
  * @method getParent
 * @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
 */
@@ -1100,6 +1232,16 @@ getParent : function(
 )
 {
     return cc.renderer::NodeProxy;
+},
+
+/**
+ * @method setName
+ * @param {String} arg0
+ */
+setName : function (
+str 
+)
+{
 },
 
 /**
@@ -1113,11 +1255,23 @@ nodeproxy
 },
 
 /**
- * @method visit
+ * @method getName
+ * @return {String}
  */
-visit : function (
+getName : function (
 )
 {
+    return ;
+},
+
+/**
+ * @method getGroupID
+ * @return {int}
+ */
+getGroupID : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -1162,9 +1316,9 @@ nodeproxy
 
 /**
  * @method getChildren
-* @return {Array|Array}
-*/
-getChildren : function(
+ * @return {Array}
+ */
+getChildren : function (
 )
 {
     return new Array();
@@ -1176,6 +1330,16 @@ getChildren : function(
  */
 setLocalZOrder : function (
 int 
+)
+{
+},
+
+/**
+ * @method removeHandle
+ * @param {String} arg0
+ */
+removeHandle : function (
+str 
 )
 {
 },
@@ -1220,16 +1384,162 @@ NodeProxy : function (
 };
 
 /**
+ * @class MeshBuffer
+ */
+renderer.MeshBuffer = {
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method getVertexOffset
+ * @return {unsigned int}
+ */
+getVertexOffset : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getIndexBuffer
+ * @return {cc.renderer::IndexBuffer}
+ */
+getIndexBuffer : function (
+)
+{
+    return cc.renderer::IndexBuffer;
+},
+
+/**
+ * @method updateOffset
+ */
+updateOffset : function (
+)
+{
+},
+
+/**
+ * @method getIndexStart
+ * @return {unsigned int}
+ */
+getIndexStart : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getIndexOffset
+ * @return {unsigned int}
+ */
+getIndexOffset : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method request
+ * @param {unsigned int} arg0
+ * @param {unsigned int} arg1
+ */
+request : function (
+int, 
+int 
+)
+{
+},
+
+/**
+ * @method requestStatic
+ * @param {unsigned int} arg0
+ * @param {unsigned int} arg1
+ */
+requestStatic : function (
+int, 
+int 
+)
+{
+},
+
+/**
+ * @method uploadData
+ */
+uploadData : function (
+)
+{
+},
+
+/**
+ * @method getVertexBuffer
+ * @return {cc.renderer::VertexBuffer}
+ */
+getVertexBuffer : function (
+)
+{
+    return cc.renderer::VertexBuffer;
+},
+
+/**
+ * @method getByteOffset
+ * @return {unsigned int}
+ */
+getByteOffset : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getVertexStart
+ * @return {unsigned int}
+ */
+getVertexStart : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method destroy
+ */
+destroy : function (
+)
+{
+},
+
+/**
+ * @method MeshBuffer
+ * @constructor
+ * @param {cc.renderer::ModelBatcher} arg0
+ * @param {cc.renderer::VertexFormat} arg1
+ */
+MeshBuffer : function (
+modelbatcher, 
+vertexformat 
+)
+{
+},
+
+};
+
+/**
  * @class RenderHandle
  */
 renderer.RenderHandle = {
 
 /**
- * @method setEnable
- * @param {bool} arg0
+ * @method setVertexFormat
+ * @param {cc.renderer::VertexFormat} arg0
  */
-setEnable : function (
-bool 
+setVertexFormat : function (
+vertexformat 
 )
 {
 },
@@ -1237,9 +1547,23 @@ bool
 /**
  * @method handle
  * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::RenderFlow} arg1
  */
 handle : function (
-nodeproxy 
+nodeproxy, 
+renderflow 
+)
+{
+},
+
+/**
+ * @method addMesh
+ * @param {cc.renderer::Mesh} arg0
+ * @param {cc.renderer::Effect} arg1
+ */
+addMesh : function (
+mesh, 
+effect 
 )
 {
 },
@@ -1247,11 +1571,141 @@ nodeproxy
 /**
  * @method postHandle
  * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::RenderFlow} arg1
  */
 postHandle : function (
-nodeproxy 
+nodeproxy, 
+renderflow 
 )
 {
+},
+
+/**
+ * @method updateColor
+ */
+updateColor : function (
+)
+{
+},
+
+/**
+ * @method enabled
+ * @return {bool}
+ */
+enabled : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method getUseModel
+ * @return {bool}
+ */
+getUseModel : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method getMesh
+ * @param {unsigned int} arg0
+ * @return {cc.renderer::Mesh}
+ */
+getMesh : function (
+int 
+)
+{
+    return cc.renderer::Mesh;
+},
+
+/**
+ * @method setVertsDirty
+ */
+setVertsDirty : function (
+)
+{
+},
+
+/**
+ * @method disable
+ */
+disable : function (
+)
+{
+},
+
+/**
+ * @method fillBuffers
+ * @param {cc.renderer::MeshBuffer} arg0
+ * @param {int} arg1
+ * @param {mat4_object} arg2
+ */
+fillBuffers : function (
+meshbuffer, 
+int, 
+mat4 
+)
+{
+},
+
+/**
+ * @method setUseModel
+ * @param {bool} arg0
+ */
+setUseModel : function (
+bool 
+)
+{
+},
+
+/**
+ * @method enable
+ */
+enable : function (
+)
+{
+},
+
+/**
+ * @method getMeshCount
+ * @return {int}
+ */
+getMeshCount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getVertexFormat
+ * @return {cc.renderer::VertexFormat}
+ */
+getVertexFormat : function (
+)
+{
+    return cc.renderer::VertexFormat;
+},
+
+/**
+ * @method setColorDirty
+ */
+setColorDirty : function (
+)
+{
+},
+
+/**
+ * @method getEffect
+ * @param {unsigned int} arg0
+ * @return {cc.renderer::Effect}
+ */
+getEffect : function (
+int 
+)
+{
+    return cc.renderer::Effect;
 },
 
 /**
@@ -1266,26 +1720,165 @@ RenderHandle : function (
 };
 
 /**
- * @class RenderSystem
+ * @class ModelBatcher
  */
-renderer.RenderSystem = {
+renderer.ModelBatcher = {
 
 /**
- * @method removeRenderHandle
- * @param {cc.renderer::RenderHandle} arg0
+ * @method reset
  */
-removeRenderHandle : function (
+reset : function (
+)
+{
+},
+
+/**
+ * @method getFlow
+ * @return {cc.renderer::RenderFlow}
+ */
+getFlow : function (
+)
+{
+    return cc.renderer::RenderFlow;
+},
+
+/**
+ * @method startBatch
+ */
+startBatch : function (
+)
+{
+},
+
+/**
+ * @method setCurrentBuffer
+ * @param {cc.renderer::MeshBuffer} arg0
+ */
+setCurrentBuffer : function (
+meshbuffer 
+)
+{
+},
+
+/**
+ * @method terminateBatch
+ */
+terminateBatch : function (
+)
+{
+},
+
+/**
+ * @method flush
+ */
+flush : function (
+)
+{
+},
+
+/**
+ * @method commit
+ * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::RenderHandle} arg1
+ */
+commit : function (
+nodeproxy, 
 renderhandle 
 )
 {
 },
 
 /**
- * @method addRenderHandle
- * @param {cc.renderer::RenderHandle} arg0
+ * @method getBuffer
+ * @param {cc.renderer::VertexFormat} arg0
+ * @return {cc.renderer::MeshBuffer}
  */
-addRenderHandle : function (
-renderhandle 
+getBuffer : function (
+vertexformat 
+)
+{
+    return cc.renderer::MeshBuffer;
+},
+
+/**
+ * @method getCurrentBuffer
+ * @return {cc.renderer::MeshBuffer}
+ */
+getCurrentBuffer : function (
+)
+{
+    return cc.renderer::MeshBuffer;
+},
+
+/**
+ * @method ModelBatcher
+ * @constructor
+ * @param {cc.renderer::RenderFlow} arg0
+ */
+ModelBatcher : function (
+renderflow 
+)
+{
+},
+
+};
+
+/**
+ * @class RenderFlow
+ */
+renderer.RenderFlow = {
+
+/**
+ * @method getRenderScene
+ * @return {cc.renderer::Scene}
+ */
+getRenderScene : function (
+)
+{
+    return cc.renderer::Scene;
+},
+
+/**
+ * @method getModelBatcher
+ * @return {cc.renderer::ModelBatcher}
+ */
+getModelBatcher : function (
+)
+{
+    return cc.renderer::ModelBatcher;
+},
+
+/**
+ * @method visit
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+visit : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method getDevice
+ * @return {cc.renderer::DeviceGraphics}
+ */
+getDevice : function (
+)
+{
+    return cc.renderer::DeviceGraphics;
+},
+
+/**
+ * @method RenderFlow
+ * @constructor
+ * @param {cc.renderer::DeviceGraphics} arg0
+ * @param {cc.renderer::Scene} arg1
+ * @param {cc.renderer::ForwardRenderer} arg2
+ */
+RenderFlow : function (
+devicegraphics, 
+scene, 
+forwardrenderer 
 )
 {
 },

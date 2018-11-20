@@ -150,7 +150,7 @@ def main():
                     # 'cocos2dx_audioengine.ini' : ('cocos2dx_audioengine', 'jsb_cocos2dx_audioengine_auto'),
                     # 'cocos2dx_extension.ini' : ('cocos2dx_extension', 'jsb_cocos2dx_extension_auto'),
                     # 'cocos2dx_network.ini' : ('cocos2dx_network', 'jsb_cocos2dx_network_auto'),
-                    # 'gfx.ini': ('gfx', 'jsb_gfx_auto'),
+                    'gfx.ini': ('gfx', 'jsb_gfx_auto'),
                     'renderer.ini': ('renderer', 'jsb_renderer_auto'),
                     }
         target = 'spidermonkey'

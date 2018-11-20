@@ -113,6 +113,7 @@ bool sevals_variadic_to_ccvaluevector(const se::ValueArray& args, cocos2d::Value
 bool seval_to_blendfunc(const se::Value& v, cocos2d::BlendFunc* ret);
 bool seval_to_std_vector_string(const se::Value& v, std::vector<std::string>* ret);
 bool seval_to_std_vector_int(const se::Value& v, std::vector<int>* ret);
+bool seval_to_std_vector_uint16(const se::Value& v, std::vector<uint16_t>* ret);
 bool seval_to_std_vector_float(const se::Value& v, std::vector<float>* ret);
 bool seval_to_std_vector_Vec2(const se::Value& v, std::vector<cocos2d::Vec2>* ret);
 //bool seval_to_Rect(const se::Value& v, cocos2d::Rect* rect);
@@ -145,6 +146,7 @@ bool seval_to_TechniqueParameter_not_constructor(const se::Value& v, cocos2d::re
 bool seval_to_TechniqueParameter(const se::Value& v, cocos2d::renderer::Technique::Parameter* ret);
 bool seval_to_std_vector_TechniqueParameter(const se::Value& v, std::vector<cocos2d::renderer::Technique::Parameter>* ret);
 bool seval_to_std_vector_ProgramLib_Template(const se::Value& v, std::vector<cocos2d::renderer::ProgramLib::Template>* ret);
+bool seval_to_std_vector_Vertex(const se::Value& v, std::vector<cocos2d::renderer::Mesh::Vertex>* ret);
 bool std_vector_RenderTarget_to_seval(const std::vector<cocos2d::renderer::RenderTarget*>& v, se::Value* ret);
 #endif
 
@@ -282,6 +284,7 @@ bool ccvaluevector_to_seval(const cocos2d::ValueVector& v, se::Value* ret);
 bool blendfunc_to_seval(const cocos2d::BlendFunc& v, se::Value* ret);
 bool std_vector_string_to_seval(const std::vector<std::string>& v, se::Value* ret);
 bool std_vector_int_to_seval(const std::vector<int>& v, se::Value* ret);
+bool std_vector_uint16_to_seval(const std::vector<uint16_t>& v, se::Value* ret);
 bool std_vector_float_to_seval(const std::vector<float>& v, se::Value* ret);
 //bool std_vector_Touch_to_seval(const std::vector<cocos2d::Touch*>& v, se::Value* ret);
 bool std_map_string_string_to_seval(const std::map<std::string, std::string>& v, se::Value* ret);
@@ -302,6 +305,7 @@ bool EffectProperty_to_seval(const cocos2d::renderer::Effect::Property& v, se::V
 bool VertexFormat_to_seval(const cocos2d::renderer::VertexFormat& v, se::Value* ret);
 bool TechniqueParameter_to_seval(const cocos2d::renderer::Technique::Parameter& v, se::Value* ret);
 bool std_vector_TechniqueParameter_to_seval(const std::vector<cocos2d::renderer::Technique::Parameter>& v, se::Value* ret);
+bool std_vector_Vertex_to_seval(const std::vector<cocos2d::renderer::Mesh::Vertex>& v, se::Value* ret);
 #endif
 
 template<typename T>

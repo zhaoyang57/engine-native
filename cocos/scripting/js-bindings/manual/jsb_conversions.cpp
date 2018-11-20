@@ -335,24 +335,33 @@ bool seval_to_Mat4(const se::Value& v, cocos2d::Mat4* mat)
     assert(v.isObject() && mat != nullptr);
     se::Object* obj = v.toObject();
 
-    if (obj->isArray())
+    if (obj->isTypedArray())
     {
+        // typed array
+        assert(obj->isTypedArray());
+        
+        size_t length = 0;
+        uint8_t* ptr = nullptr;
+        obj->getTypedArrayData(&ptr, &length);
+        
+        memcpy(mat->m, ptr, length);
+    }
+    else {
         bool ok = false;
-        uint32_t len = 0;
-        ok = obj->getArrayLength(&len);
-        SE_PRECONDITION3(ok, false, *mat = cocos2d::Mat4::IDENTITY);
-
-        if (len != 16)
-        {
-            SE_REPORT_ERROR("Array length error: %d, was expecting 16", len);
-            *mat = cocos2d::Mat4::IDENTITY;
-            return false;
-        }
-
         se::Value tmp;
-        for (uint32_t i = 0; i < len; ++i)
+        std::string prefix = "m";
+        for (uint32_t i = 0; i < 16; ++i)
         {
-            ok = obj->getArrayElement(i, &tmp);
+            std::string name;
+            if (i < 10)
+            {
+                name = prefix + "0" + std::to_string(i);
+            }
+            else
+            {
+                name = prefix + std::to_string(i);
+            }
+            ok = obj->getProperty(name.c_str(), &tmp);
             SE_PRECONDITION3(ok, false, *mat = cocos2d::Mat4::IDENTITY);
 
             if (tmp.isNumber())
@@ -368,17 +377,6 @@ bool seval_to_Mat4(const se::Value& v, cocos2d::Mat4* mat)
 
             tmp.setUndefined();
         }
-    }
-    else
-    {
-        // typed array
-        assert(obj->isTypedArray());
-        
-        size_t length = 0;
-        uint8_t* ptr = nullptr;
-        obj->getTypedArrayData(&ptr, &length);
-        
-        memcpy(mat->m, ptr, length);
     }
 
     return true;
@@ -725,7 +723,7 @@ bool seval_to_std_vector_string(const se::Value& v, std::vector<std::string>* re
     }
 
     ret->clear();
-    return false;
+    return true;
 }
 
 bool seval_to_std_vector_int(const se::Value& v, std::vector<int>* ret)
@@ -801,7 +799,62 @@ bool seval_to_std_vector_int(const se::Value& v, std::vector<int>* ret)
     }
 
     ret->clear();
-    return false;
+    return true;
+}
+
+bool seval_to_std_vector_uint16(const se::Value& v, std::vector<uint16_t>* ret)
+{
+    assert(ret != nullptr);
+    assert(v.isObject());
+    se::Object* obj = v.toObject();
+    
+    if (obj->isArray())
+    {
+        uint32_t len = 0;
+        if (obj->getArrayLength(&len))
+        {
+            se::Value value;
+            for (uint32_t i = 0; i < len; ++i)
+            {
+                SE_PRECONDITION3(obj->getArrayElement(i, &value), false, ret->clear());
+                assert(value.isNumber());
+                ret->push_back(value.toUint16());
+            }
+            return true;
+        }
+    }
+    else if (obj->isTypedArray())
+    {
+        size_t bytesPerElements = 0;
+        uint8_t* data = nullptr;
+        size_t dataBytes = 0;
+        se::Object::TypedArrayType type = obj->getTypedArrayType();
+        
+        if (obj->getTypedArrayData(&data, &dataBytes))
+        {
+            for (size_t i = 0; i < dataBytes; i += bytesPerElements)
+            {
+                switch (type) {
+                    case se::Object::TypedArrayType::INT16:
+                    case se::Object::TypedArrayType::UINT16:
+                        ret->push_back(*((uint16_t*)(data + i)));
+                        bytesPerElements = 2;
+                        break;
+                    default:
+                        SE_LOGE("Unsupported typed array: %d\n", (int)type);
+                        assert(false);
+                        break;
+                }
+            }
+        }
+        return true;
+    }
+    else
+    {
+        assert(false);
+    }
+    ret->clear();
+    return true;
 }
 
 bool seval_to_std_vector_float(const se::Value& v, std::vector<float>* ret)
@@ -824,7 +877,7 @@ bool seval_to_std_vector_float(const se::Value& v, std::vector<float>* ret)
     }
 
     ret->clear();
-    return false;
+    return true;
 }
 
 bool seval_to_std_vector_Vec2(const se::Value& v, std::vector<cocos2d::Vec2>* ret)
@@ -847,7 +900,7 @@ bool seval_to_std_vector_Vec2(const se::Value& v, std::vector<cocos2d::Vec2>* re
     }
 
     ret->clear();
-    return false;
+    return true;
 }
 
 //bool seval_to_std_vector_Touch(const se::Value& v, std::vector<cocos2d::Touch*>* ret)
@@ -1191,7 +1244,8 @@ bool seval_to_std_vector_Pass(const se::Value& v, cocos2d::Vector<cocos2d::rende
         return true;
     }
 
-    return false;
+    ret->clear();
+    return true;
 }
 
 bool seval_to_std_vector_Texture(const se::Value& v, std::vector<cocos2d::renderer::Texture*>* ret)
@@ -1215,8 +1269,10 @@ bool seval_to_std_vector_Texture(const se::Value& v, std::vector<cocos2d::render
                 ret->push_back(texture);
             }
         }
+        return true;
     }
 
+    ret->clear();
     return true;
 }
 
@@ -1885,6 +1941,62 @@ bool seval_to_std_vector_ProgramLib_Template(const se::Value& v, std::vector<coc
 
     return true;
 }
+
+bool seval_to_Vertex(const se::Value& val, cocos2d::renderer::Mesh::Vertex* vertex)
+{
+    assert(val.isObject() && vertex != nullptr);
+    se::Object* obj = val.toObject();
+    se::Value x;
+    se::Value y;
+    se::Value u;
+    se::Value v;
+    se::Value color;
+    
+    bool ok = obj->getProperty("x", &x);
+    ok &= obj->getProperty("y", &y);
+    ok &= obj->getProperty("u", &u);
+    ok &= obj->getProperty("v", &v);
+    ok &= obj->getProperty("color", &color);
+    if (!ok) {
+        vertex->x = vertex->y = vertex->u = vertex->v = 0.0f;
+        vertex->color = 0;
+        return false;
+    }
+    vertex->x = x.toFloat();
+    vertex->y = y.toFloat();
+    vertex->u = u.toFloat();
+    vertex->v = v.toFloat();
+    vertex->color = color.toUint32();
+    return true;
+}
+
+bool seval_to_std_vector_Vertex(const se::Value& v, std::vector<cocos2d::renderer::Mesh::Vertex>* ret)
+{
+    assert(ret != nullptr);
+    if (v.isNullOrUndefined())
+    {
+        ret->clear();
+        return true;
+    }
+    assert(v.isObject());
+    
+    se::Object* obj = v.toObject();
+    uint32_t len = 0;
+    obj->getArrayLength(&len);
+    ret->reserve(len);
+    for (uint32_t i = 0; i < len; ++i)
+    {
+        se::Value data;
+        if (obj->getArrayElement(i, &data))
+        {
+            cocos2d::renderer::Mesh::Vertex vertex;
+            seval_to_Vertex(data, &vertex);
+            ret->push_back(std::move(vertex));
+        }
+    }
+    
+    return true;
+}
 #endif // USE_GFX_RENDERER > 0
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -2245,6 +2357,21 @@ bool blendfunc_to_seval(const cocos2d::BlendFunc& v, se::Value* ret)
     return true;
 }
 
+bool vertex_to_seval(const cocos2d::renderer::Mesh::Vertex& v, se::Value* ret)
+{
+    assert(ret != nullptr);
+    se::HandleObject obj(se::Object::createPlainObject());
+    obj->setProperty("x", se::Value(v.x));
+    obj->setProperty("y", se::Value(v.y));
+    obj->setProperty("z", se::Value(v.z));
+    obj->setProperty("u", se::Value(v.u));
+    obj->setProperty("v", se::Value(v.v));
+    obj->setProperty("color", se::Value(v.color));
+    ret->setObject(obj);
+    
+    return true;
+}
+
 namespace {
 
     template<typename T>
@@ -2280,6 +2407,11 @@ bool std_vector_string_to_seval(const std::vector<std::string>& v, se::Value* re
 }
 
 bool std_vector_int_to_seval(const std::vector<int>& v, se::Value* ret)
+{
+    return std_vector_T_to_seval(v, ret);
+}
+
+bool std_vector_uint16_to_seval(const std::vector<uint16_t>& v, se::Value* ret)
 {
     return std_vector_T_to_seval(v, ret);
 }
@@ -3090,6 +3222,23 @@ bool std_vector_TechniqueParameter_to_seval(const std::vector<cocos2d::renderer:
 bool std_vector_RenderTarget_to_seval(const std::vector<cocos2d::renderer::RenderTarget*>& v, se::Value* ret)
 {
     assert(false);
+    return true;
+}
+
+bool std_vector_Vertex_to_seval(const std::vector<cocos2d::renderer::Mesh::Vertex>& v, se::Value* ret)
+{
+    assert(ret != nullptr);
+    se::HandleObject arr(se::Object::createArrayObject(v.size()));
+    ret->setObject(arr);
+    
+    uint32_t i = 0;
+    for (const auto& param : v)
+    {
+        se::Value out = se::Value::Null;
+        vertex_to_seval(param, &out);
+        arr->setArrayElement(i, out);
+        ++i;
+    }
     return true;
 }
 #endif // USE_GFX_RENDERER > 0
