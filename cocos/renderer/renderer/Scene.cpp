@@ -40,7 +40,7 @@ Scene::Scene()
 void Scene::reset()
 {
     for (auto& model : _models)
-        model->setViewId(-1);
+        model->setCullingMask(-1);
 }
 
 void Scene::setDebugCamera(Camera* debugCamera)

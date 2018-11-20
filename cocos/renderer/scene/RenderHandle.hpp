@@ -26,47 +26,62 @@
 
 #include "../Macro.h"
 #include "SystemHandle.hpp"
-#include "NodeProxy.hpp"
+#include "MeshBuffer.hpp"
+#include "math/CCMath.h"
+#include "../renderer/Mesh.hpp"
 #include "../renderer/Effect.h"
 
 RENDERER_BEGIN
 
-struct Vertex
-{
-    float x;
-    float y;
-    float z;
-    float u;
-    float v;
-    uint32_t color;
-};
+class NodeProxy;
+class RenderFlow;
 
 class RenderHandle : SystemHandle
 {
 public:
     RenderHandle();
     virtual ~RenderHandle();
-    virtual void handle(NodeProxy *node) override;
-    virtual void postHandle(NodeProxy *node) override;
+    virtual void handle(NodeProxy *node, RenderFlow* flow) override;
+    virtual void postHandle(NodeProxy *node, RenderFlow* flow) override;
+    
+    virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
     
     virtual void updateRenderData();
+    virtual void updateColor();
+    void addMesh(Mesh* mesh, Effect* effect);
+    Mesh* getMesh(uint32_t index);
+    Effect* getEffect(uint32_t index);
     
-    void setEnable(bool enabled);
+    void enable();
+    void disable();
+    bool enabled() const { return _enabled; };
+    
+    int getMeshCount() const { return _meshCount; };
+    
+    bool getUseModel() const { return _useModel; };
+    void setUseModel(bool useModel) { _useModel = useModel; };
+    
+    VertexFormat* getVertexFormat() const { return _vfmt; };
+    void setVertexFormat(VertexFormat* vfmt) { _vfmt = vfmt; };
+    
+    void setVertsDirty() { _vertsDirty = true; };
+    void setColorDirty() { _colorDirty = true; };
     
 protected:
-//    void updateColor();
 //    void render();
 //    void postUpdateRenderData();
 //    void postRender();
     
 protected:
-    std::vector<std::vector<Vertex>> _meshes;
-    std::vector<Effect> _effects;
-    
-    uint32_t _color;
     bool _enabled;
+    bool _vertsDirty;
+    bool _colorDirty;
     bool _useModel;
-    bool _dirty;
+
+    uint32_t _meshCount;
+    VertexFormat* _vfmt;
+    std::vector<Mesh*> _meshes;
+    std::vector<Effect*> _effects;
 };
 
 RENDERER_END

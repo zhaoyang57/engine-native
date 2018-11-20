@@ -74,8 +74,8 @@ public:
     inline void setWorldMatix(const Mat4& matrix) { _worldMatrix = std::move(matrix); }
     inline const Mat4& getWorldMatrix() const { return _worldMatrix; }
     
-    inline void setViewId(int val) { _viewID = val; }
-    inline int getViewId() const { return _viewID; }
+    inline void setCullingMask(int val) { _cullingMask = val; }
+    inline int getCullingMask() const { return _cullingMask; }
     
     void addInputAssembler(const InputAssembler& ia);
     void clearInputAssemblers();
@@ -93,7 +93,7 @@ private:
     std::vector<InputAssembler> _inputAssemblers;
     std::vector<ValueMap*> _defines;
     bool _dynamicIA = false;
-    int _viewID = -1;
+    int _cullingMask = -1;
 };
 
 RENDERER_END

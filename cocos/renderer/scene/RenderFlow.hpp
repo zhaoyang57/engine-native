@@ -26,34 +26,30 @@
 
 #include "../Macro.h"
 #include "NodeProxy.hpp"
-#include "RenderSystem.hpp"
+#include "ModelBatcher.hpp"
+#include "../renderer/Scene.h"
+#include "../renderer/ForwardRenderer.h"
+#include "../gfx/DeviceGraphics.h"
 
 RENDERER_BEGIN
 
 class RenderFlow
 {
 public:
-    static RenderFlow* getInstance()
-    {
-        if (_instance == nullptr)
-        {
-            _instance = new RenderFlow();
-        }
-        return _instance;
-    }
-    
-    RenderSystem* getRenderSystem() const { return _renderSys; };
+    ModelBatcher* getModelBatcher() const { return _batcher; };
+    DeviceGraphics* getDevice() const { return _device; };
+    Scene* getRenderScene() const { return _scene; };
     
     void visit(NodeProxy* scene);
     
-private:
-    RenderFlow();
+    RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
     ~RenderFlow();
     
 private:
-    static RenderFlow* _instance;
-    
-    RenderSystem* _renderSys;
+    ModelBatcher* _batcher;
+    Scene* _scene;
+    DeviceGraphics* _device;
+    ForwardRenderer* _forward;
 };
 
 RENDERER_END

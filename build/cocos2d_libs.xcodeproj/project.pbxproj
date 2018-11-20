@@ -754,10 +754,10 @@
 		B291B51C1D4A106A00BBB345 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B5181D4A106A00BBB345 /* libpng.a */; };
 		B291B51D1D4A106A00BBB345 /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B5191D4A106A00BBB345 /* libtiff.a */; };
 		B291B51E1D4A106A00BBB345 /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B51A1D4A106A00BBB345 /* libwebp.a */; };
-		BA043787217EEF74006BA60F /* RenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA043785217EEF74006BA60F /* RenderSystem.cpp */; };
-		BA043788217EEF74006BA60F /* RenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA043785217EEF74006BA60F /* RenderSystem.cpp */; };
-		BA043789217EEF74006BA60F /* RenderSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA043786217EEF74006BA60F /* RenderSystem.hpp */; };
-		BA04378A217EEF74006BA60F /* RenderSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA043786217EEF74006BA60F /* RenderSystem.hpp */; };
+		BA043787217EEF74006BA60F /* ModelBatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA043785217EEF74006BA60F /* ModelBatcher.cpp */; };
+		BA043788217EEF74006BA60F /* ModelBatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA043785217EEF74006BA60F /* ModelBatcher.cpp */; };
+		BA043789217EEF74006BA60F /* ModelBatcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA043786217EEF74006BA60F /* ModelBatcher.hpp */; };
+		BA04378A217EEF74006BA60F /* ModelBatcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA043786217EEF74006BA60F /* ModelBatcher.hpp */; };
 		BA04378D217EFD4E006BA60F /* CustomRenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */; };
 		BA04378E217EFD4E006BA60F /* CustomRenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */; };
 		BA04378F217EFD4E006BA60F /* CustomRenderHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA04378C217EFD4E006BA60F /* CustomRenderHandle.hpp */; };
@@ -787,6 +787,14 @@
 		BACCED31217DE136000CDD81 /* RenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BACCED2E217DE136000CDD81 /* RenderHandle.cpp */; };
 		BACCED32217DE136000CDD81 /* RenderHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BACCED2F217DE136000CDD81 /* RenderHandle.hpp */; };
 		BACCED33217DE136000CDD81 /* RenderHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BACCED2F217DE136000CDD81 /* RenderHandle.hpp */; };
+		BADF57E0219AB3A3000B259B /* MeshBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */; };
+		BADF57E1219AB3A3000B259B /* MeshBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */; };
+		BADF57E2219AB3A3000B259B /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
+		BADF57E3219AB3A3000B259B /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
+		BAE6CAA42188B0950059210E /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAE6CAA22188B0950059210E /* Mesh.cpp */; };
+		BAE6CAA52188B0950059210E /* Mesh.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BAE6CAA32188B0950059210E /* Mesh.hpp */; };
+		BAE6CAA62188B17B0059210E /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAE6CAA22188B0950059210E /* Mesh.cpp */; };
+		BAE6CAA72188B17E0059210E /* Mesh.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BAE6CAA32188B0950059210E /* Mesh.hpp */; };
 		BAEA45551E279D5C00FA219F /* tinydir.h in Headers */ = {isa = PBXBuildFile; fileRef = BAEA45541E279D5C00FA219F /* tinydir.h */; };
 		BAEA45561E279D5C00FA219F /* tinydir.h in Headers */ = {isa = PBXBuildFile; fileRef = BAEA45541E279D5C00FA219F /* tinydir.h */; };
 		ED30577D1BEC76C90083C3ED /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = ED3057761BEC76C90083C3ED /* crypt.h */; };
@@ -1250,8 +1258,8 @@
 		B291B5181D4A106A00BBB345 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../external/ios/libs/libpng.a; sourceTree = "<group>"; };
 		B291B5191D4A106A00BBB345 /* libtiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtiff.a; path = ../external/ios/libs/libtiff.a; sourceTree = "<group>"; };
 		B291B51A1D4A106A00BBB345 /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebp.a; path = ../external/ios/libs/libwebp.a; sourceTree = "<group>"; };
-		BA043785217EEF74006BA60F /* RenderSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderSystem.cpp; path = scene/RenderSystem.cpp; sourceTree = "<group>"; };
-		BA043786217EEF74006BA60F /* RenderSystem.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = RenderSystem.hpp; path = scene/RenderSystem.hpp; sourceTree = "<group>"; };
+		BA043785217EEF74006BA60F /* ModelBatcher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ModelBatcher.cpp; path = scene/ModelBatcher.cpp; sourceTree = "<group>"; };
+		BA043786217EEF74006BA60F /* ModelBatcher.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ModelBatcher.hpp; path = scene/ModelBatcher.hpp; sourceTree = "<group>"; };
 		BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CustomRenderHandle.cpp; path = scene/CustomRenderHandle.cpp; sourceTree = "<group>"; };
 		BA04378C217EFD4E006BA60F /* CustomRenderHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = CustomRenderHandle.hpp; path = scene/CustomRenderHandle.hpp; sourceTree = "<group>"; };
 		BA04379121801CD4006BA60F /* RenderFlow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderFlow.cpp; path = scene/RenderFlow.cpp; sourceTree = "<group>"; };
@@ -1275,6 +1283,10 @@
 		BACCED2B217DB797000CDD81 /* scene-bindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "scene-bindings.h"; path = "scene/scene-bindings.h"; sourceTree = "<group>"; };
 		BACCED2E217DE136000CDD81 /* RenderHandle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderHandle.cpp; path = scene/RenderHandle.cpp; sourceTree = "<group>"; };
 		BACCED2F217DE136000CDD81 /* RenderHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = RenderHandle.hpp; path = scene/RenderHandle.hpp; sourceTree = "<group>"; };
+		BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MeshBuffer.cpp; path = scene/MeshBuffer.cpp; sourceTree = "<group>"; };
+		BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = MeshBuffer.hpp; path = scene/MeshBuffer.hpp; sourceTree = "<group>"; };
+		BAE6CAA22188B0950059210E /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		BAE6CAA32188B0950059210E /* Mesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh.hpp; sourceTree = "<group>"; };
 		BAEA45521E279D5C00FA219F /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		BAEA45531E279D5C00FA219F /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
 		BAEA45541E279D5C00FA219F /* tinydir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinydir.h; sourceTree = "<group>"; };
@@ -1945,36 +1957,38 @@
 		46FDDA2D202ACC6A00931238 /* renderer */ = {
 			isa = PBXGroup;
 			children = (
-				46FDDA2E202ACC6A00931238 /* INode.h */,
-				46FDDA2F202ACC6A00931238 /* Pass.cpp */,
-				46FDDA30202ACC6A00931238 /* Scene.cpp */,
-				46FDDA4A202ACC6A00931238 /* Scene.h */,
-				46FDDA31202ACC6A00931238 /* ProgramLib.h */,
-				46FDDA32202ACC6A00931238 /* Config.h */,
-				46FDDA33202ACC6A00931238 /* Light.h */,
-				46FDDA34202ACC6A00931238 /* Camera.cpp */,
-				46FDDA35202ACC6A00931238 /* Camera.h */,
-				46FDDA36202ACC6A00931238 /* Light.cpp */,
 				46FDDA37202ACC6A00931238 /* Renderer.h */,
-				46FDDA38202ACC6A00931238 /* RendererUtils.h */,
-				46FDDA39202ACC6A00931238 /* Technique.h */,
-				46FDDA3A202ACC6A00931238 /* View.h */,
-				46FDDA3B202ACC6A00931238 /* View.cpp */,
-				46FDDA3C202ACC6A00931238 /* Effect.cpp */,
-				46FDDA3D202ACC6A00931238 /* ForwardRenderer.cpp */,
+				46FDDA4A202ACC6A00931238 /* Scene.h */,
+				46FDDA30202ACC6A00931238 /* Scene.cpp */,
+				46FDDA2E202ACC6A00931238 /* INode.h */,
+				46FDDA32202ACC6A00931238 /* Config.h */,
 				46FDDA3E202ACC6A00931238 /* Config.cpp */,
-				46FDDA3F202ACC6A00931238 /* BaseRenderer.h */,
-				46FDDA40202ACC6A00931238 /* Pass.h */,
-				46FDDA41202ACC6A00931238 /* Technique.cpp */,
-				46FDDA42202ACC6A00931238 /* RendererUtils.cpp */,
+				BAE6CAA32188B0950059210E /* Mesh.hpp */,
+				BAE6CAA22188B0950059210E /* Mesh.cpp */,
 				46FDDA43202ACC6A00931238 /* Model.h */,
 				46FDDA44202ACC6A00931238 /* Model.cpp */,
-				46FDDA45202ACC6A00931238 /* Effect.h */,
-				46FDDA46202ACC6A00931238 /* BaseRenderer.cpp */,
-				46FDDA47202ACC6A00931238 /* ProgramLib.cpp */,
 				46FDDA48202ACC6A00931238 /* InputAssembler.h */,
 				46FDDA49202ACC6A00931238 /* InputAssembler.cpp */,
+				46FDDA35202ACC6A00931238 /* Camera.h */,
+				46FDDA34202ACC6A00931238 /* Camera.cpp */,
+				46FDDA3A202ACC6A00931238 /* View.h */,
+				46FDDA3B202ACC6A00931238 /* View.cpp */,
+				46FDDA33202ACC6A00931238 /* Light.h */,
+				46FDDA36202ACC6A00931238 /* Light.cpp */,
+				46FDDA31202ACC6A00931238 /* ProgramLib.h */,
+				46FDDA47202ACC6A00931238 /* ProgramLib.cpp */,
+				46FDDA45202ACC6A00931238 /* Effect.h */,
+				46FDDA3C202ACC6A00931238 /* Effect.cpp */,
+				46FDDA39202ACC6A00931238 /* Technique.h */,
+				46FDDA41202ACC6A00931238 /* Technique.cpp */,
+				46FDDA40202ACC6A00931238 /* Pass.h */,
+				46FDDA2F202ACC6A00931238 /* Pass.cpp */,
+				46FDDA38202ACC6A00931238 /* RendererUtils.h */,
+				46FDDA42202ACC6A00931238 /* RendererUtils.cpp */,
+				46FDDA3F202ACC6A00931238 /* BaseRenderer.h */,
+				46FDDA46202ACC6A00931238 /* BaseRenderer.cpp */,
 				46FDDA4B202ACC6A00931238 /* ForwardRenderer.h */,
+				46FDDA3D202ACC6A00931238 /* ForwardRenderer.cpp */,
 			);
 			path = renderer;
 			sourceTree = "<group>";
@@ -1982,34 +1996,34 @@
 		46FDDA50202ACC6A00931238 /* gfx */ = {
 			isa = PBXGroup;
 			children = (
-				46FDDA51202ACC6A00931238 /* Texture2D.h */,
-				46FDDA52202ACC6A00931238 /* DeviceGraphics.cpp */,
-				46FDDA53202ACC6A00931238 /* VertexBuffer.cpp */,
-				46FDDA54202ACC6A00931238 /* Program.cpp */,
-				46FDDA55202ACC6A00931238 /* IndexBuffer.h */,
-				46FDDA56202ACC6A00931238 /* FrameBuffer.cpp */,
-				46FDDA57202ACC6A00931238 /* VertexFormat.cpp */,
-				46FDDA58202ACC6A00931238 /* DeviceGraphics.h */,
-				46FDDA59202ACC6A00931238 /* State.cpp */,
-				46FDDA5A202ACC6A00931238 /* Texture.cpp */,
-				46FDDA5B202ACC6A00931238 /* FrameBuffer.h */,
-				46FDDA5C202ACC6A00931238 /* RenderTarget.cpp */,
 				46FDDA5D202ACC6A00931238 /* GFX.h */,
-				46FDDA5E202ACC6A00931238 /* RenderBuffer.cpp */,
-				46FDDA5F202ACC6A00931238 /* VertexFormat.h */,
-				46FDDA60202ACC6A00931238 /* GraphicsHandle.h */,
-				46FDDA61202ACC6A00931238 /* RenderBuffer.h */,
-				46FDDA62202ACC6A00931238 /* Texture.h */,
-				46FDDA63202ACC6A00931238 /* Texture2D.cpp */,
-				46FDDA64202ACC6A00931238 /* GraphicsHandle.cpp */,
-				46FDDA65202ACC6A00931238 /* GFXUtils.h */,
-				46FDDA66202ACC6A00931238 /* Program.h */,
-				46FDDA67202ACC6A00931238 /* State.h */,
-				46FDDA68202ACC6A00931238 /* VertexBuffer.h */,
-				46FDDA69202ACC6A00931238 /* RenderTarget.h */,
-				46FDDA6A202ACC6A00931238 /* GFXUtils.cpp */,
 				46FDDA6B202ACC6A00931238 /* GFX.cpp */,
+				46FDDA65202ACC6A00931238 /* GFXUtils.h */,
+				46FDDA6A202ACC6A00931238 /* GFXUtils.cpp */,
+				46FDDA58202ACC6A00931238 /* DeviceGraphics.h */,
+				46FDDA52202ACC6A00931238 /* DeviceGraphics.cpp */,
+				46FDDA67202ACC6A00931238 /* State.h */,
+				46FDDA59202ACC6A00931238 /* State.cpp */,
+				46FDDA62202ACC6A00931238 /* Texture.h */,
+				46FDDA5A202ACC6A00931238 /* Texture.cpp */,
+				46FDDA51202ACC6A00931238 /* Texture2D.h */,
+				46FDDA63202ACC6A00931238 /* Texture2D.cpp */,
+				46FDDA5B202ACC6A00931238 /* FrameBuffer.h */,
+				46FDDA56202ACC6A00931238 /* FrameBuffer.cpp */,
+				46FDDA55202ACC6A00931238 /* IndexBuffer.h */,
 				46FDDA6C202ACC6A00931238 /* IndexBuffer.cpp */,
+				46FDDA68202ACC6A00931238 /* VertexBuffer.h */,
+				46FDDA53202ACC6A00931238 /* VertexBuffer.cpp */,
+				46FDDA5F202ACC6A00931238 /* VertexFormat.h */,
+				46FDDA57202ACC6A00931238 /* VertexFormat.cpp */,
+				46FDDA66202ACC6A00931238 /* Program.h */,
+				46FDDA54202ACC6A00931238 /* Program.cpp */,
+				46FDDA69202ACC6A00931238 /* RenderTarget.h */,
+				46FDDA5C202ACC6A00931238 /* RenderTarget.cpp */,
+				46FDDA61202ACC6A00931238 /* RenderBuffer.h */,
+				46FDDA5E202ACC6A00931238 /* RenderBuffer.cpp */,
+				46FDDA60202ACC6A00931238 /* GraphicsHandle.h */,
+				46FDDA64202ACC6A00931238 /* GraphicsHandle.cpp */,
 			);
 			path = gfx;
 			sourceTree = "<group>";
@@ -2206,18 +2220,20 @@
 			isa = PBXGroup;
 			children = (
 				BACCED2B217DB797000CDD81 /* scene-bindings.h */,
-				BAB85DD8217750B7009DF7DC /* NodeProxy.cpp */,
 				BAB85DD9217750B7009DF7DC /* NodeProxy.hpp */,
-				BACCED27217D9C48000CDD81 /* SystemHandle.cpp */,
+				BAB85DD8217750B7009DF7DC /* NodeProxy.cpp */,
 				BACCED28217D9C48000CDD81 /* SystemHandle.hpp */,
-				BACCED2E217DE136000CDD81 /* RenderHandle.cpp */,
+				BACCED27217D9C48000CDD81 /* SystemHandle.cpp */,
 				BACCED2F217DE136000CDD81 /* RenderHandle.hpp */,
-				BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */,
+				BACCED2E217DE136000CDD81 /* RenderHandle.cpp */,
 				BA04378C217EFD4E006BA60F /* CustomRenderHandle.hpp */,
-				BA043785217EEF74006BA60F /* RenderSystem.cpp */,
-				BA043786217EEF74006BA60F /* RenderSystem.hpp */,
-				BA04379121801CD4006BA60F /* RenderFlow.cpp */,
+				BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */,
+				BA043786217EEF74006BA60F /* ModelBatcher.hpp */,
+				BA043785217EEF74006BA60F /* ModelBatcher.cpp */,
 				BA04379221801CD4006BA60F /* RenderFlow.hpp */,
+				BA04379121801CD4006BA60F /* RenderFlow.cpp */,
+				BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */,
+				BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */,
 			);
 			name = scene;
 			sourceTree = "<group>";
@@ -2329,7 +2345,7 @@
 				4617862920522469008256E1 /* Uri.h in Headers */,
 				469303902046AE05004A3D6C /* MappingUtils.hpp in Headers */,
 				1AAAC8F5205CB6E9005321B9 /* Export.h in Headers */,
-				BA043789217EEF74006BA60F /* RenderSystem.hpp in Headers */,
+				BA043789217EEF74006BA60F /* ModelBatcher.hpp in Headers */,
 				1A28FF5B1F20AFAB007A1D9D /* NSURLRequest+SRWebSocketPrivate.h in Headers */,
 				46FDDAAB202ACC6A00931238 /* Types.h in Headers */,
 				ED30577D1BEC76C90083C3ED /* crypt.h in Headers */,
@@ -2352,11 +2368,13 @@
 				4617863920522469008256E1 /* CCDownloaderImpl-apple.h in Headers */,
 				1A52DB73205BCDC700350EE3 /* Base.h in Headers */,
 				1A28FF551F20AFAB007A1D9D /* SRIOConsumerPool.h in Headers */,
+				BADF57E2219AB3A3000B259B /* MeshBuffer.hpp in Headers */,
 				461786632052607E008256E1 /* jsb_socketio.hpp in Headers */,
 				46FDDBDD202ADDCE00931238 /* TGAlib.h in Headers */,
 				BAEA45551E279D5C00FA219F /* tinydir.h in Headers */,
 				46FDDAB7202ACC6A00931238 /* IndexBuffer.h in Headers */,
 				4617864520522469008256E1 /* HttpAsynConnection-apple.h in Headers */,
+				BAE6CAA52188B0950059210E /* Mesh.hpp in Headers */,
 				4617865D2052607E008256E1 /* jsb_xmlhttprequest.hpp in Headers */,
 				46FDDA7B202ACC6A00931238 /* Camera.h in Headers */,
 				46FDDAA5202ACC6A00931238 /* Scene.h in Headers */,
@@ -2614,7 +2632,7 @@
 				46FDDACE202ACC6A00931238 /* GraphicsHandle.h in Headers */,
 				469303912046AE05004A3D6C /* MappingUtils.hpp in Headers */,
 				46FDDA80202ACC6A00931238 /* Renderer.h in Headers */,
-				BA04378A217EEF74006BA60F /* RenderSystem.hpp in Headers */,
+				BA04378A217EEF74006BA60F /* ModelBatcher.hpp in Headers */,
 				4617864420522469008256E1 /* HttpRequest.h in Headers */,
 				BACCED2D217DB797000CDD81 /* scene-bindings.h in Headers */,
 				46AE3FEE2092F3A600F3A228 /* http_parser.h in Headers */,
@@ -2642,6 +2660,7 @@
 				469303D32046AE05004A3D6C /* jsb_gfx_auto.hpp in Headers */,
 				40AEF7B2216D940200729AA5 /* WebView.h in Headers */,
 				1AAAC8F4205CB6E9005321B9 /* AudioEngine.h in Headers */,
+				BAE6CAA72188B17E0059210E /* Mesh.hpp in Headers */,
 				46FDDA78202ACC6A00931238 /* Light.h in Headers */,
 				1A29D7A420566CAC00168D9A /* CCCanvasRenderingContext2D.h in Headers */,
 				1A52DB7C205BCDD000350EE3 /* SeApi.h in Headers */,
@@ -2650,6 +2669,7 @@
 				469303872046AE05004A3D6C /* Object.hpp in Headers */,
 				1A28FF5E1F20AFAB007A1D9D /* SRProxyConnect.h in Headers */,
 				469303AD2046AE05004A3D6C /* Utils.hpp in Headers */,
+				BADF57E3219AB3A3000B259B /* MeshBuffer.hpp in Headers */,
 				1A28FF4E1F20AFAB007A1D9D /* SRDelegateController.h in Headers */,
 				469301D0203FC696004A3D6C /* CCConfiguration.h in Headers */,
 				46FDDB6E202ADDCE00931238 /* etc1.h in Headers */,
@@ -2885,7 +2905,7 @@
 				46FDDB8D202ADDCE00931238 /* ccTypes.cpp in Sources */,
 				46FDDAA9202ACC6A00931238 /* Types.cpp in Sources */,
 				1A28FF4F1F20AFAB007A1D9D /* SRDelegateController.m in Sources */,
-				BA043787217EEF74006BA60F /* RenderSystem.cpp in Sources */,
+				BA043787217EEF74006BA60F /* ModelBatcher.cpp in Sources */,
 				46FDDBFB202ADDCE00931238 /* ccCArray.cpp in Sources */,
 				1AAAC8E1205CB6E9005321B9 /* AudioPlayer.mm in Sources */,
 				1A28FF631F20AFAB007A1D9D /* SRRunLoopThread.m in Sources */,
@@ -2912,11 +2932,13 @@
 				46AE3FE92092F3A600F3A228 /* inspector_socket_server.cc in Sources */,
 				1A28FF6F1F20AFAB007A1D9D /* SRError.m in Sources */,
 				1A28FF531F20AFAB007A1D9D /* SRIOConsumer.m in Sources */,
+				BADF57E0219AB3A3000B259B /* MeshBuffer.cpp in Sources */,
 				1A29D784205666B200168D9A /* LocalStorage.cpp in Sources */,
 				4617864920522469008256E1 /* CCDownloader.cpp in Sources */,
 				4693039E2046AE05004A3D6C /* Object.mm in Sources */,
 				4043D65E20D2132E00C55611 /* CCGLView-desktop.cpp in Sources */,
 				46AE3FE12092F3A600F3A228 /* node.cc in Sources */,
+				BAE6CAA42188B0950059210E /* Mesh.cpp in Sources */,
 				46FDDA8B202ACC6A00931238 /* ForwardRenderer.cpp in Sources */,
 				50ABBD481925AB0000A911A9 /* Mat4.cpp in Sources */,
 				50ABBD441925AB0000A911A9 /* CCVertex.cpp in Sources */,
@@ -3099,7 +3121,7 @@
 				1A28FF541F20AFAB007A1D9D /* SRIOConsumer.m in Sources */,
 				469303692046AE05004A3D6C /* State.cpp in Sources */,
 				46FDDAAA202ACC6A00931238 /* Types.cpp in Sources */,
-				BA043788217EEF74006BA60F /* RenderSystem.cpp in Sources */,
+				BA043788217EEF74006BA60F /* ModelBatcher.cpp in Sources */,
 				1A29D797205666F500168D9A /* jsb_opengl_utils.cpp in Sources */,
 				40AEF7B6216D982600729AA5 /* jsb_webview_auto.cpp in Sources */,
 				5027253D190BF1B900AAF4ED /* cocos2d.cpp in Sources */,
@@ -3107,6 +3129,7 @@
 				1A28FF881F20AFAB007A1D9D /* SRSIMDHelpers.m in Sources */,
 				50ABBD451925AB0000A911A9 /* CCVertex.cpp in Sources */,
 				294D7D9D1D0E93A2002CE7B7 /* CCDevice-apple.mm in Sources */,
+				BADF57E1219AB3A3000B259B /* MeshBuffer.cpp in Sources */,
 				469303BF2046AE05004A3D6C /* jsb_renderer_auto.cpp in Sources */,
 				4617864F205224D6008256E1 /* HttpAsynConnection-apple.m in Sources */,
 				BA21055921008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp in Sources */,
@@ -3118,6 +3141,7 @@
 				4617861A20522469008256E1 /* SocketIO.cpp in Sources */,
 				46FDDB72202ADDCE00931238 /* base64.cpp in Sources */,
 				46FDDA7E202ACC6A00931238 /* Light.cpp in Sources */,
+				BAE6CAA62188B17B0059210E /* Mesh.cpp in Sources */,
 				469303AB2046AE05004A3D6C /* Class.cpp in Sources */,
 				BA04379421801CD4006BA60F /* RenderFlow.cpp in Sources */,
 				1ABAD24F20C29F3800BC71C0 /* CCCanvasRenderingContext2D-apple.mm in Sources */,

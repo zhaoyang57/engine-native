@@ -100,20 +100,20 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     
     // get all draw items
     _drawItems.clear();
-    int modelViewId = -1;
+    int modelMask = -1;
     uint32_t drawItemCount = 0;
     DrawItem drawItem;
     for (const auto& model : scene->getModels())
     {
-        modelViewId = model->getViewId();
+        modelMask = model->getCullingMask();
         if (view.cullingByID)
         {
-            if (modelViewId != view.id)
+            if ((modelMask & view.cullingMask) == 0)
                 continue;
         }
         else
         {
-            if (-1 != modelViewId)
+            if (-1 != modelMask)
                 continue;
         }
         

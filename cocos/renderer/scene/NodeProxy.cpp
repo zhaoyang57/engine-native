@@ -32,12 +32,15 @@ THE SOFTWARE.
 #include <string>
 #include <regex>
 
+#include "RenderFlow.hpp"
 #include "base/ccMacros.h"
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
 
 RENDERER_BEGIN
+
+int NodeProxy::_worldMatDirty = 0;
 
 NodeProxy::NodeProxy()
 : _parent(nullptr)
@@ -145,7 +148,10 @@ void NodeProxy::removeAllChildren()
 void NodeProxy::setLocalZOrder(int zOrder)
 {
     _localZOrder = zOrder;
-    _parent->setChildrenOrderDirty();
+    if (_parent != nullptr)
+    {
+        _parent->setChildrenOrderDirty();
+    }
 }
 
 void NodeProxy::reorderChildren()
@@ -170,6 +176,11 @@ void NodeProxy::addHandle(const std::string& sysid, SystemHandle* handle)
     _handles[sysid] = handle;
 }
 
+void NodeProxy::removeHandle(const std::string& sysid)
+{
+    _handles.erase(sysid);
+}
+
 void NodeProxy::updateMatrixFromJS()
 {
     if (_matDirty)
@@ -183,13 +194,13 @@ void NodeProxy::updateMatrixFromJS()
         
         se::Value updateMatrixFunc;
         ok = __jsb_cocos2d_renderer_NodeProxy_proto->getProperty("updateLocalMatrix", &updateMatrixFunc);
-        CCASSERT(ok, "NodeProxy_updateMatrixFromJS : NodeProxy updateLocalMatrix is not implemented");
+        CCASSERT(ok, "NodeProxy_updateMatrixFromJS : NodeProxy.prototype.updateLocalMatrix is not implemented");
         
         // Update local matrix
         updateMatrixFunc.toObject()->call(se::EmptyValueArray, jsVal.toObject());
         
         // Update world matrix
-        const cocos2d::Mat4& parentMat = _parent->getWorldMatrix();
+        const cocos2d::Mat4& parentMat = _parent == nullptr ? cocos2d::Mat4::IDENTITY : _parent->getWorldMatrix();
         _worldMat.multiply(parentMat, _localMat, &_worldMat);
         
         _matDirty = false;
@@ -201,25 +212,43 @@ void NodeProxy::setLocalMatrix(const cocos2d::Mat4& matrix)
     _localMat.set(matrix);
 }
 
-void NodeProxy::visit()
+void NodeProxy::visitAsRoot(RenderFlow* flow)
 {
+    _worldMatDirty = false;
+    visit(flow);
+}
+
+void NodeProxy::visit(RenderFlow* flow)
+{
+    bool worldMatUpdated = false;
+    
     reorderChildren();
     
+    if (_matDirty)
+    {
+        _worldMatDirty++;
+        worldMatUpdated = true;
+    }
     updateMatrixFromJS();
     
     for (const auto& handler : _handles)
     {
-        handler.second->handle(this);
+        handler.second->handle(this, flow);
     }
     
     for (const auto& child : _children)
     {
-        child->visit();
+        child->visit(flow);
     }
     
     for (const auto& handler : _handles)
     {
-        handler.second->postHandle(this);
+        handler.second->postHandle(this, flow);
+    }
+    
+    if (worldMatUpdated)
+    {
+        _worldMatDirty--;
     }
 }
 

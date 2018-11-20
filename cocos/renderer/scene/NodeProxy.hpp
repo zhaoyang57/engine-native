@@ -36,6 +36,8 @@
 
 RENDERER_BEGIN
 
+class RenderFlow;
+
 class NodeProxy : public Ref
 {
 public:
@@ -55,7 +57,6 @@ public:
     inline NodeProxy* getParent() { return _parent; };
     inline const NodeProxy* getParent() const { return _parent; };
     
-    inline Vector<NodeProxy*>& getChildren() { return _children; };
     inline const Vector<NodeProxy*>& getChildren() const { return _children; };
     inline ssize_t getChildrenCount() const { return _children.size(); };
     void setLocalZOrder(int zOrder);
@@ -67,30 +68,40 @@ public:
     void setLocalMatrix(const cocos2d::Mat4& matrix);
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
+    inline int getGroupID() const { return _groupID; };
     inline void setGroupID(int groupID) { _groupID = groupID; };
     
+    inline const std::string& getName() const { return _name; };
+    inline void setName(const std::string& name) { _name = name; };
+    
     void addHandle(const std::string& sysid, SystemHandle* handle);
-
-    void visit();
+    void removeHandle(const std::string& sysid);
+    
+    void visitAsRoot(RenderFlow* flow);
     
 private:
+    void visit(RenderFlow* flow);
     void childrenAlloc();
     void detachChild(NodeProxy* child, ssize_t childIndex);
     void reorderChildren();
     
     void updateMatrixFromJS();
 
-protected:
+private:
+    static int _worldMatDirty;
+    
+    bool _childrenOrderDirty;
+    bool _matDirty;
+    int _localZOrder;
+    int _groupID;
+
     cocos2d::Mat4 _localMat;
     cocos2d::Mat4 _worldMat;
-    bool _matDirty;
+    
+    std::string _name;
 
     NodeProxy *_parent;                  ///< weak reference to parent node
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
-    int _localZOrder;
-    bool _childrenOrderDirty;
-    
-    int _groupID;
     
     std::map<std::string, SystemHandle*> _handles;
 };

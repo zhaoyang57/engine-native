@@ -89,6 +89,10 @@ public:
     VertexFormat& operator=(VertexFormat&& o);
 
     const Element& getElement(const std::string& attrName) const;
+    
+    uint32_t getBytes() const { return _bytes; };
+    
+    static VertexFormat* XY_UV_Color;
 
 private:
     std::unordered_map<std::string, Element> _attr2el;

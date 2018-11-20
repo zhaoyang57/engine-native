@@ -26,23 +26,24 @@
 
 RENDERER_BEGIN
 
-RenderFlow* RenderFlow::_instance = nullptr;
-
-RenderFlow::RenderFlow()
+RenderFlow::RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward)
+: _device(device)
+, _scene(scene)
+, _forward(forward)
 {
-    RenderFlow::_instance = this;
-    
-    _renderSys = new RenderSystem();
+    _batcher = new ModelBatcher(this);
 }
 
 RenderFlow::~RenderFlow()
 {
-    RenderFlow::_instance = nullptr;
+    CC_SAFE_DELETE(_batcher);
 }
 
 void RenderFlow::visit(NodeProxy* scene)
 {
-    scene->visit();
+    _batcher->startBatch();
+    scene->visitAsRoot(this);
+    _batcher->terminateBatch();
 }
 
 RENDERER_END

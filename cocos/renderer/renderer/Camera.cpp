@@ -132,6 +132,10 @@ const View& Camera::extractView( int width, int height)
     Mat4::multiply(_cachedView.matProj, _cachedView.matView, &_cachedView.matViewProj);
     _cachedView.matInvViewPorj.set(_cachedView.matViewProj.getInversed());
     
+    // culling mask
+    _cachedView.cullingMask = _cullingMask;
+    _cachedView.cullingByID = true;
+    
     return _cachedView;
 }
 

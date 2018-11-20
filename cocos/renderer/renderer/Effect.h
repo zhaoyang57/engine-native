@@ -59,7 +59,11 @@ public:
     
     const std::unordered_map<std::string, Property>& getProperties() const { return _properties; }
     
+    void updateHash(double hash) { _hash = hash; };
+    double getHash() const { return _hash; };
+
 private:
+    double _hash;
     Vector<Technique*> _techniques;
     std::vector<ValueMap> _defineTemplates;
     ValueMap _cachedNameValues;

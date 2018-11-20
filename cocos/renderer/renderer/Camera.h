@@ -73,6 +73,9 @@ public:
     inline float getDepth() const { return _depth; }
     void setDepth(float depth);
     
+    inline int getCullingMask() const { return _cullingMask; }
+    inline void setCullingMask(int mask) { _cullingMask = mask; }
+    
     inline int getStencil() const { return _stencil; }
     void setStencil(int stencil);
     
@@ -106,6 +109,7 @@ private:
     Color4F _color = {0.2f, 0.3f, 0.47f, 1.f};
     float _depth = 1.f;
     int _stencil = 1;
+    int _cullingMask = 1;
     uint8_t _clearFlags = ClearFlag::COLOR | ClearFlag::DEPTH;
     
     // stage & framebuffer

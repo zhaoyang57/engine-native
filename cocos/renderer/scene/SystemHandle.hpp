@@ -29,13 +29,14 @@
 RENDERER_BEGIN
 
 class NodeProxy;
+class RenderFlow;
 
 class SystemHandle
 {
 public:
     virtual ~SystemHandle() = default;
-    virtual void handle(NodeProxy *node) = 0;
-    virtual void postHandle(NodeProxy *node) = 0;
+    virtual void handle(NodeProxy *node, RenderFlow* flow) = 0;
+    virtual void postHandle(NodeProxy *node, RenderFlow* flow) = 0;
 };
 
 RENDERER_END

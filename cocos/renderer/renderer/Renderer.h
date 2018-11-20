@@ -28,6 +28,7 @@
 #include "Camera.h"
 #include "Config.h"
 #include "Effect.h"
+#include "Mesh.hpp"
 #include "InputAssembler.h"
 #include "Light.h"
 #include "Model.h"

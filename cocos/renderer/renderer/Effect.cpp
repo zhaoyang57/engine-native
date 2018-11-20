@@ -28,6 +28,7 @@
 RENDERER_BEGIN
 
 Effect::Effect()
+: _hash(0)
 {}
 
 void Effect::init(const Vector<Technique*>& techniques,
