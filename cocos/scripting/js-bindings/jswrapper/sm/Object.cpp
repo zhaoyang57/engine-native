@@ -137,7 +137,14 @@ namespace se {
         bool isShared = false;
         JS::AutoCheckCannotGC nogc;
         uint8_t* tmpData = JS_GetArrayBufferData(jsobj, &isShared, nogc);
-        memcpy((void*)tmpData, (const void*)data, byteLength);
+        if (data == nullptr)
+        {
+            memset((void*)tmpData, 0, byteLength);
+        }
+        else
+        {
+            memcpy(tmpData, (const void*)data, byteLength);
+        }
         Object* obj = Object::_createJSObject(nullptr, jsobj);
         return obj;
     }
@@ -199,7 +206,14 @@ namespace se {
                 break;
         }
 
-        memcpy(tmpData, (const void*)data, byteLength);
+        if (data == nullptr)
+        {
+            memset(tmpData, 0, byteLength);
+        }
+        else
+        {
+            memcpy(tmpData, (const void*)data, byteLength);
+        }
 
         Object* obj = Object::_createJSObject(nullptr, arr);
         return obj;
