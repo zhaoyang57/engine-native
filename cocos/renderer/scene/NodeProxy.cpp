@@ -43,11 +43,13 @@ RENDERER_BEGIN
 int NodeProxy::_worldMatDirty = 0;
 
 NodeProxy::NodeProxy()
-: _parent(nullptr)
-, _localZOrder(0)
+: _localZOrder(0)
 , _childrenOrderDirty(false)
 , _matDirty(true)
 , _groupID(0)
+, _jsMatrix(nullptr)
+, _jsMatData(nullptr)
+, _parent(nullptr)
 {
     _localMat = Mat4::IDENTITY;
     _worldMat = Mat4::IDENTITY;
@@ -61,6 +63,11 @@ NodeProxy::~NodeProxy()
     {
         child->_parent = nullptr;
     }
+    
+    _jsMatrix->unroot();
+    _jsMatrix->decRef();
+    _jsMatrix = nullptr;
+    _jsMatData = nullptr;
 }
 
 void NodeProxy::reset()
@@ -181,40 +188,53 @@ void NodeProxy::removeHandle(const std::string& sysid)
     _handles.erase(sysid);
 }
 
-void NodeProxy::updateMatrixFromJS()
+void NodeProxy::generateJSMatrix()
 {
-    if (_matDirty)
+    if (_jsMatrix == nullptr)
     {
         se::ScriptEngine::getInstance()->clearException();
         se::AutoHandleScope hs;
         
         se::Value jsVal;
         bool ok = native_ptr_to_seval<NodeProxy>((NodeProxy*)this, &jsVal);
-        CCASSERT(ok, "NodeProxy_updateMatrixFromJS : JS object missing");
+        CCASSERT(ok, "NodeProxy_generateJSMatrix : JS object missing");
         
-        se::Value updateMatrixFunc;
-        ok = __jsb_cocos2d_renderer_NodeProxy_proto->getProperty("updateLocalMatrix", &updateMatrixFunc);
-        CCASSERT(ok, "NodeProxy_updateMatrixFromJS : NodeProxy.prototype.updateLocalMatrix is not implemented");
-        
-        // Update local matrix
-        updateMatrixFunc.toObject()->call(se::EmptyValueArray, jsVal.toObject());
-        
+        se::Value jsMat;
+        _jsMatrix = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 4 * 16);
+        // root it
+        _jsMatrix->root();
+        // Pass to js
+        jsVal.toObject()->setProperty("_matrix", se::Value(_jsMatrix));
+        // Save to cpp
+        size_t length;
+        _jsMatrix->getTypedArrayData((uint8_t**)(&_jsMatData), &length);
+    }
+}
+
+void NodeProxy::updateMatrix()
+{
+    if (_matDirty)
+    {
+        updateLocalMatrixFromJS();
+    }
+    if (_worldMatDirty > 0)
+    {
         // Update world matrix
         const cocos2d::Mat4& parentMat = _parent == nullptr ? cocos2d::Mat4::IDENTITY : _parent->getWorldMatrix();
         _worldMat.multiply(parentMat, _localMat, &_worldMat);
-        
         _matDirty = false;
     }
 }
 
-void NodeProxy::setLocalMatrix(const cocos2d::Mat4& matrix)
+void NodeProxy::updateLocalMatrixFromJS()
 {
-    _localMat.set(matrix);
+    _localMat.set((float*)_jsMatData);
+    _matDirty = true;
 }
 
 void NodeProxy::visitAsRoot(RenderFlow* flow)
 {
-    _worldMatDirty = false;
+    _worldMatDirty = 0;
     visit(flow);
 }
 
@@ -229,7 +249,7 @@ void NodeProxy::visit(RenderFlow* flow)
         _worldMatDirty++;
         worldMatUpdated = true;
     }
-    updateMatrixFromJS();
+    updateMatrix();
     
     for (const auto& handler : _handles)
     {

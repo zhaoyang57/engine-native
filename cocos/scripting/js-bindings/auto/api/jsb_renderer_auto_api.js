@@ -1189,14 +1189,6 @@ Scene : function (
 renderer.NodeProxy = {
 
 /**
- * @method reset
- */
-reset : function (
-)
-{
-},
-
-/**
  * @method addChild
  * @param {cc.renderer::NodeProxy} arg0
  */
@@ -1215,31 +1207,65 @@ setMatrixDirty : function (
 },
 
 /**
- * @method visitAsRoot
- * @param {cc.renderer::RenderFlow} arg0
+ * @method removeAllChildren
  */
-visitAsRoot : function (
-renderflow 
+removeAllChildren : function (
 )
 {
 },
 
 /**
- * @method getParent
-* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
-*/
-getParent : function(
+ * @method addHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addHandle : function (
+str, 
+systemhandle 
 )
 {
-    return cc.renderer::NodeProxy;
 },
 
 /**
- * @method setName
+ * @method getChildren
+ * @return {Array}
+ */
+getChildren : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method removeHandle
  * @param {String} arg0
  */
-setName : function (
+removeHandle : function (
 str 
+)
+{
+},
+
+/**
+ * @method generateJSMatrix
+ */
+generateJSMatrix : function (
+)
+{
+},
+
+/**
+ * @method setChildrenOrderDirty
+ */
+setChildrenOrderDirty : function (
+)
+{
+},
+
+/**
+ * @method updateLocalMatrixFromJS
+ */
+updateLocalMatrixFromJS : function (
 )
 {
 },
@@ -1265,31 +1291,11 @@ getName : function (
 },
 
 /**
- * @method getGroupID
- * @return {int}
- */
-getGroupID : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method removeAllChildren
- */
-removeAllChildren : function (
-)
-{
-},
-
-/**
- * @method addHandle
+ * @method setName
  * @param {String} arg0
- * @param {cc.renderer::SystemHandle} arg1
  */
-addHandle : function (
-str, 
-systemhandle 
+setName : function (
+str 
 )
 {
 },
@@ -1305,6 +1311,44 @@ int
 },
 
 /**
+ * @method visitAsRoot
+ * @param {cc.renderer::RenderFlow} arg0
+ */
+visitAsRoot : function (
+renderflow 
+)
+{
+},
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method getParent
+* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
+*/
+getParent : function(
+)
+{
+    return cc.renderer::NodeProxy;
+},
+
+/**
+ * @method getGroupID
+ * @return {int}
+ */
+getGroupID : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method removeChild
  * @param {cc.renderer::NodeProxy} arg0
  */
@@ -1312,16 +1356,6 @@ removeChild : function (
 nodeproxy 
 )
 {
-},
-
-/**
- * @method getChildren
- * @return {Array}
- */
-getChildren : function (
-)
-{
-    return new Array();
 },
 
 /**
@@ -1335,26 +1369,6 @@ int
 },
 
 /**
- * @method removeHandle
- * @param {String} arg0
- */
-removeHandle : function (
-str 
-)
-{
-},
-
-/**
- * @method setLocalMatrix
- * @param {mat4_object} arg0
- */
-setLocalMatrix : function (
-mat4 
-)
-{
-},
-
-/**
  * @method getChildrenCount
  * @return {int}
  */
@@ -1362,14 +1376,6 @@ getChildrenCount : function (
 )
 {
     return 0;
-},
-
-/**
- * @method setChildrenOrderDirty
- */
-setChildrenOrderDirty : function (
-)
-{
 },
 
 /**
@@ -1581,11 +1587,13 @@ renderflow
 },
 
 /**
- * @method updateColor
+ * @method getUseModel
+ * @return {bool}
  */
-updateColor : function (
+getUseModel : function (
 )
 {
+    return false;
 },
 
 /**
@@ -1599,13 +1607,13 @@ enabled : function (
 },
 
 /**
- * @method getUseModel
- * @return {bool}
+ * @method setUseModel
+ * @param {bool} arg0
  */
-getUseModel : function (
+setUseModel : function (
+bool 
 )
 {
-    return false;
 },
 
 /**
@@ -1651,16 +1659,6 @@ mat4
 },
 
 /**
- * @method setUseModel
- * @param {bool} arg0
- */
-setUseModel : function (
-bool 
-)
-{
-},
-
-/**
  * @method enable
  */
 enable : function (
@@ -1686,14 +1684,6 @@ getVertexFormat : function (
 )
 {
     return cc.renderer::VertexFormat;
-},
-
-/**
- * @method setColorDirty
- */
-setColorDirty : function (
-)
-{
 },
 
 /**

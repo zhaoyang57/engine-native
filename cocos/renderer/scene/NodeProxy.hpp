@@ -34,6 +34,10 @@
 #include "math/CCMath.h"
 #include "SystemHandle.hpp"
 
+namespace se {
+    class Object;
+}
+
 RENDERER_BEGIN
 
 class RenderFlow;
@@ -64,8 +68,9 @@ public:
 
     /// @} end of Children and Parent
     
+    void generateJSMatrix();
     inline void setMatrixDirty() { _matDirty = true; };
-    void setLocalMatrix(const cocos2d::Mat4& matrix);
+    void updateLocalMatrixFromJS();
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
     inline int getGroupID() const { return _groupID; };
@@ -85,7 +90,7 @@ private:
     void detachChild(NodeProxy* child, ssize_t childIndex);
     void reorderChildren();
     
-    void updateMatrixFromJS();
+    void updateMatrix();
 
 private:
     static int _worldMatDirty;
@@ -100,7 +105,9 @@ private:
     
     std::string _name;
 
-    NodeProxy *_parent;                  ///< weak reference to parent node
+    uint32_t* _jsMatData;
+    se::Object* _jsMatrix;
+    NodeProxy* _parent;                  ///< weak reference to parent node
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
     
     std::map<std::string, SystemHandle*> _handles;
