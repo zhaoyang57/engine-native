@@ -133,6 +133,15 @@ renderer/renderer/Scene.cpp \
 renderer/renderer/Technique.cpp \
 renderer/renderer/View.cpp \
 renderer/renderer/ForwardRenderer.cpp \
+renderer/scene/CustomRenderHandle.cpp \
+renderer/scene/MeshBuffer.cpp \
+renderer/scene/ModelBatcher.cpp \
+renderer/scene/NodeProxy.cpp \
+renderer/scene/RenderFlow.cpp \
+renderer/scene/RenderHandle.cpp \
+renderer/scene/RenderHandle.hpp \
+renderer/scene/SystemHandle.cpp \
+renderer/scene/SystemHandle.hpp \
 scripting/js-bindings/auto/jsb_gfx_auto.cpp \
 scripting/js-bindings/auto/jsb_renderer_auto.cpp \
 scripting/js-bindings/manual/jsb_renderer_manual.cpp \

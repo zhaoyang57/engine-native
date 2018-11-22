@@ -99,8 +99,8 @@ void RenderHandle::updateNativeMesh(uint32_t index, se::Object* vertices, se::Ob
     data->jsIndices = indices;
     data->vertices = nullptr;
     data->indices = nullptr;
-    data->jsVertices->getTypedArrayData(&data->vertices, &data->vBytes);
-    data->jsIndices->getTypedArrayData(&data->indices, &data->iBytes);
+    data->jsVertices->getTypedArrayData(&data->vertices, (std::size_t*)&data->vBytes);
+    data->jsIndices->getTypedArrayData(&data->indices, (std::size_t*)&data->iBytes);
 }
 
 void RenderHandle::updateNativeEffect(uint32_t index, Effect* effect)

@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <map>
+
 #include "../Macro.h"
 #include "RenderHandle.hpp"
 #include "MeshBuffer.hpp"

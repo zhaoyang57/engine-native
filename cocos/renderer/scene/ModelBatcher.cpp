@@ -24,7 +24,6 @@
 
 #include "ModelBatcher.hpp"
 
-#include <algorithm>
 #include "RenderFlow.hpp"
 
 RENDERER_BEGIN
