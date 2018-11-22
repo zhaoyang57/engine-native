@@ -28,6 +28,7 @@
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "renderer/INode.h"
+#include "scene/RenderHandle.hpp"
 #include "jsb_conversions.hpp"
 
 using namespace cocos2d;
@@ -631,6 +632,42 @@ static bool js_renderer_Effect_init(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Effect_init);
 
+static bool js_renderer_RenderHandle_updateNativeMesh(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    CC_UNUSED bool ok = true;
+    const auto& args = s.args();
+    uint32_t index = 0;
+    ok = seval_to_uint32(args[0], &index);
+    SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_updateNativeMesh: Convert index failed!");
+    se::HandleObject vertices(args[1].toObject());
+    se::HandleObject indices(args[2].toObject());
+    cobj->updateNativeMesh(index, vertices, indices);
+    return true;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeMesh);
+
+static bool js_renderer_RenderHandle_updateNativeEffect(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_updateNativeEffect : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        unsigned int arg0 = 0;
+        cocos2d::renderer::Effect* arg1 = nullptr;
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_updateNativeEffect : Error processing arguments");
+        seval_to_native_ptr(args[1], &arg1);
+        cobj->updateNativeEffect(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeEffect)
+
 bool jsb_register_renderer_manual(se::Object* global)
 {
     // Get the ns
@@ -676,6 +713,10 @@ bool jsb_register_renderer_manual(se::Object* global)
 
     // Effect
     __jsb_cocos2d_renderer_Effect_proto->defineFunction("init", _SE(js_renderer_Effect_init));
+    
+    // RenderHandle
+    __jsb_cocos2d_renderer_RenderHandle_proto->defineFunction("updateNativeEffect", _SE(js_renderer_RenderHandle_updateNativeEffect));
+    __jsb_cocos2d_renderer_RenderHandle_proto->defineFunction("updateNativeMesh", _SE(js_renderer_RenderHandle_updateNativeMesh));
 
     return true;
 }

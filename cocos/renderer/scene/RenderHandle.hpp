@@ -28,8 +28,12 @@
 #include "SystemHandle.hpp"
 #include "MeshBuffer.hpp"
 #include "math/CCMath.h"
-#include "../renderer/Mesh.hpp"
 #include "../renderer/Effect.h"
+
+namespace se {
+    class Object;
+    class HandleObject;
+}
 
 RENDERER_BEGIN
 
@@ -45,18 +49,19 @@ public:
     virtual void postHandle(NodeProxy *node, RenderFlow* flow) override;
     
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
-    
-    virtual void updateRenderData();
-    virtual void updateColor();
-    void addMesh(Mesh* mesh, Effect* effect);
-    Mesh* getMesh(uint32_t index);
+//
+//    void getVertices(uint32_t index, uint8_t** buffer, size_t* length);
+//    void getIndices(uint32_t index, uint8_t** buffer, size_t* length);
     Effect* getEffect(uint32_t index);
     
     void enable();
     void disable();
     bool enabled() const { return _enabled; };
     
-    int getMeshCount() const { return _meshCount; };
+    size_t getMeshCount() const { return _datas.size(); };
+    void setMeshCount(uint32_t count);
+    void updateNativeMesh(uint32_t index, const se::HandleObject& vertices, const se::HandleObject& indices);
+    void updateNativeEffect(uint32_t index, Effect* effect);
     
     bool getUseModel() const { return _useModel; };
     void setUseModel(bool useModel) { _useModel = useModel; };
@@ -65,23 +70,28 @@ public:
     void setVertexFormat(VertexFormat* vfmt) { _vfmt = vfmt; };
     
     void setVertsDirty() { _vertsDirty = true; };
-    void setColorDirty() { _colorDirty = true; };
     
 protected:
-//    void render();
+    struct RenderData {
+        ~RenderData ();
+        unsigned long vBytes;
+        unsigned long iBytes;
+        Effect* effect;
+        uint8_t* vertices;
+        uint8_t* indices;
+        se::Object* jsVertices;
+        se::Object* jsIndices;
+    };
 //    void postUpdateRenderData();
 //    void postRender();
     
 protected:
     bool _enabled;
     bool _vertsDirty;
-    bool _colorDirty;
     bool _useModel;
 
-    uint32_t _meshCount;
     VertexFormat* _vfmt;
-    std::vector<Mesh*> _meshes;
-    std::vector<Effect*> _effects;
+    std::vector<RenderData> _datas;
 };
 
 RENDERER_END

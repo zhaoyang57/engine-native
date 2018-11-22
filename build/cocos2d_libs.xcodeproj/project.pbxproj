@@ -791,10 +791,6 @@
 		BADF57E1219AB3A3000B259B /* MeshBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */; };
 		BADF57E2219AB3A3000B259B /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
 		BADF57E3219AB3A3000B259B /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
-		BAE6CAA42188B0950059210E /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAE6CAA22188B0950059210E /* Mesh.cpp */; };
-		BAE6CAA52188B0950059210E /* Mesh.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BAE6CAA32188B0950059210E /* Mesh.hpp */; };
-		BAE6CAA62188B17B0059210E /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAE6CAA22188B0950059210E /* Mesh.cpp */; };
-		BAE6CAA72188B17E0059210E /* Mesh.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BAE6CAA32188B0950059210E /* Mesh.hpp */; };
 		BAEA45551E279D5C00FA219F /* tinydir.h in Headers */ = {isa = PBXBuildFile; fileRef = BAEA45541E279D5C00FA219F /* tinydir.h */; };
 		BAEA45561E279D5C00FA219F /* tinydir.h in Headers */ = {isa = PBXBuildFile; fileRef = BAEA45541E279D5C00FA219F /* tinydir.h */; };
 		ED30577D1BEC76C90083C3ED /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = ED3057761BEC76C90083C3ED /* crypt.h */; };
@@ -1285,8 +1281,6 @@
 		BACCED2F217DE136000CDD81 /* RenderHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = RenderHandle.hpp; path = scene/RenderHandle.hpp; sourceTree = "<group>"; };
 		BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MeshBuffer.cpp; path = scene/MeshBuffer.cpp; sourceTree = "<group>"; };
 		BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = MeshBuffer.hpp; path = scene/MeshBuffer.hpp; sourceTree = "<group>"; };
-		BAE6CAA22188B0950059210E /* Mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
-		BAE6CAA32188B0950059210E /* Mesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh.hpp; sourceTree = "<group>"; };
 		BAEA45521E279D5C00FA219F /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		BAEA45531E279D5C00FA219F /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
 		BAEA45541E279D5C00FA219F /* tinydir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinydir.h; sourceTree = "<group>"; };
@@ -1963,8 +1957,6 @@
 				46FDDA2E202ACC6A00931238 /* INode.h */,
 				46FDDA32202ACC6A00931238 /* Config.h */,
 				46FDDA3E202ACC6A00931238 /* Config.cpp */,
-				BAE6CAA32188B0950059210E /* Mesh.hpp */,
-				BAE6CAA22188B0950059210E /* Mesh.cpp */,
 				46FDDA43202ACC6A00931238 /* Model.h */,
 				46FDDA44202ACC6A00931238 /* Model.cpp */,
 				46FDDA48202ACC6A00931238 /* InputAssembler.h */,
@@ -2374,7 +2366,6 @@
 				BAEA45551E279D5C00FA219F /* tinydir.h in Headers */,
 				46FDDAB7202ACC6A00931238 /* IndexBuffer.h in Headers */,
 				4617864520522469008256E1 /* HttpAsynConnection-apple.h in Headers */,
-				BAE6CAA52188B0950059210E /* Mesh.hpp in Headers */,
 				4617865D2052607E008256E1 /* jsb_xmlhttprequest.hpp in Headers */,
 				46FDDA7B202ACC6A00931238 /* Camera.h in Headers */,
 				46FDDAA5202ACC6A00931238 /* Scene.h in Headers */,
@@ -2660,7 +2651,6 @@
 				469303D32046AE05004A3D6C /* jsb_gfx_auto.hpp in Headers */,
 				40AEF7B2216D940200729AA5 /* WebView.h in Headers */,
 				1AAAC8F4205CB6E9005321B9 /* AudioEngine.h in Headers */,
-				BAE6CAA72188B17E0059210E /* Mesh.hpp in Headers */,
 				46FDDA78202ACC6A00931238 /* Light.h in Headers */,
 				1A29D7A420566CAC00168D9A /* CCCanvasRenderingContext2D.h in Headers */,
 				1A52DB7C205BCDD000350EE3 /* SeApi.h in Headers */,
@@ -2938,7 +2928,6 @@
 				4693039E2046AE05004A3D6C /* Object.mm in Sources */,
 				4043D65E20D2132E00C55611 /* CCGLView-desktop.cpp in Sources */,
 				46AE3FE12092F3A600F3A228 /* node.cc in Sources */,
-				BAE6CAA42188B0950059210E /* Mesh.cpp in Sources */,
 				46FDDA8B202ACC6A00931238 /* ForwardRenderer.cpp in Sources */,
 				50ABBD481925AB0000A911A9 /* Mat4.cpp in Sources */,
 				50ABBD441925AB0000A911A9 /* CCVertex.cpp in Sources */,
@@ -3141,7 +3130,6 @@
 				4617861A20522469008256E1 /* SocketIO.cpp in Sources */,
 				46FDDB72202ADDCE00931238 /* base64.cpp in Sources */,
 				46FDDA7E202ACC6A00931238 /* Light.cpp in Sources */,
-				BAE6CAA62188B17B0059210E /* Mesh.cpp in Sources */,
 				469303AB2046AE05004A3D6C /* Class.cpp in Sources */,
 				BA04379421801CD4006BA60F /* RenderFlow.cpp in Sources */,
 				1ABAD24F20C29F3800BC71C0 /* CCCanvasRenderingContext2D-apple.mm in Sources */,

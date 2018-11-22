@@ -518,66 +518,6 @@ Effect : function (
 };
 
 /**
- * @class Mesh
- */
-renderer.Mesh = {
-
-/**
- * @method updateVertices
- * @param {Array} arg0
- */
-updateVertices : function (
-array 
-)
-{
-},
-
-/**
- * @method getIndices
- * @return {Array}
- */
-getIndices : function (
-)
-{
-    return new Array();
-},
-
-/**
- * @method getVertices
- * @return {Array}
- */
-getVertices : function (
-)
-{
-    return new Array();
-},
-
-/**
- * @method updateIndices
- * @param {Array} arg0
- */
-updateIndices : function (
-vector<short> 
-)
-{
-},
-
-/**
- * @method Mesh
- * @constructor
- * @param {Array} arg0
- * @param {Array} arg1
- */
-Mesh : function (
-array, 
-vector<short> 
-)
-{
-},
-
-};
-
-/**
  * @class Light
  */
 renderer.Light = {
@@ -1541,11 +1481,29 @@ vertexformat
 renderer.RenderHandle = {
 
 /**
+ * @method setMeshCount
+ * @param {unsigned int} arg0
+ */
+setMeshCount : function (
+int 
+)
+{
+},
+
+/**
  * @method setVertexFormat
  * @param {cc.renderer::VertexFormat} arg0
  */
 setVertexFormat : function (
 vertexformat 
+)
+{
+},
+
+/**
+ * @method enable
+ */
+enable : function (
 )
 {
 },
@@ -1558,18 +1516,6 @@ vertexformat
 handle : function (
 nodeproxy, 
 renderflow 
-)
-{
-},
-
-/**
- * @method addMesh
- * @param {cc.renderer::Mesh} arg0
- * @param {cc.renderer::Effect} arg1
- */
-addMesh : function (
-mesh, 
-effect 
 )
 {
 },
@@ -1597,16 +1543,6 @@ getUseModel : function (
 },
 
 /**
- * @method enabled
- * @return {bool}
- */
-enabled : function (
-)
-{
-    return false;
-},
-
-/**
  * @method setUseModel
  * @param {bool} arg0
  */
@@ -1617,29 +1553,19 @@ bool
 },
 
 /**
- * @method getMesh
- * @param {unsigned int} arg0
- * @return {cc.renderer::Mesh}
+ * @method enabled
+ * @return {bool}
  */
-getMesh : function (
-int 
+enabled : function (
 )
 {
-    return cc.renderer::Mesh;
+    return false;
 },
 
 /**
  * @method setVertsDirty
  */
 setVertsDirty : function (
-)
-{
-},
-
-/**
- * @method disable
- */
-disable : function (
 )
 {
 },
@@ -1659,16 +1585,16 @@ mat4
 },
 
 /**
- * @method enable
+ * @method disable
  */
-enable : function (
+disable : function (
 )
 {
 },
 
 /**
  * @method getMeshCount
- * @return {int}
+ * @return {unsigned int}
  */
 getMeshCount : function (
 )

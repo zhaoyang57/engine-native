@@ -83,17 +83,6 @@ SE_DECLARE_FUNC(js_renderer_Effect_clear);
 SE_DECLARE_FUNC(js_renderer_Effect_updateHash);
 SE_DECLARE_FUNC(js_renderer_Effect_Effect);
 
-extern se::Object* __jsb_cocos2d_renderer_Mesh_proto;
-extern se::Class* __jsb_cocos2d_renderer_Mesh_class;
-
-bool js_register_cocos2d_renderer_Mesh(se::Object* obj);
-bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_Mesh_updateVertices);
-SE_DECLARE_FUNC(js_renderer_Mesh_getIndices);
-SE_DECLARE_FUNC(js_renderer_Mesh_getVertices);
-SE_DECLARE_FUNC(js_renderer_Mesh_updateIndices);
-SE_DECLARE_FUNC(js_renderer_Mesh_Mesh);
-
 extern se::Object* __jsb_cocos2d_renderer_Light_proto;
 extern se::Class* __jsb_cocos2d_renderer_Light_class;
 
@@ -223,18 +212,17 @@ extern se::Class* __jsb_cocos2d_renderer_RenderHandle_class;
 
 bool js_register_cocos2d_renderer_RenderHandle(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_setMeshCount);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_setVertexFormat);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_enable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_handle);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_addMesh);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_postHandle);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getUseModel);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_enabled);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_setUseModel);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_getMesh);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_enabled);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_setVertsDirty);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_disable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_fillBuffers);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_enable);
+SE_DECLARE_FUNC(js_renderer_RenderHandle_disable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getMeshCount);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getVertexFormat);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getEffect);

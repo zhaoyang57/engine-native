@@ -1941,62 +1941,6 @@ bool seval_to_std_vector_ProgramLib_Template(const se::Value& v, std::vector<coc
 
     return true;
 }
-
-bool seval_to_Vertex(const se::Value& val, cocos2d::renderer::Mesh::Vertex* vertex)
-{
-    assert(val.isObject() && vertex != nullptr);
-    se::Object* obj = val.toObject();
-    se::Value x;
-    se::Value y;
-    se::Value u;
-    se::Value v;
-    se::Value color;
-    
-    bool ok = obj->getProperty("x", &x);
-    ok &= obj->getProperty("y", &y);
-    ok &= obj->getProperty("u", &u);
-    ok &= obj->getProperty("v", &v);
-    ok &= obj->getProperty("color", &color);
-    if (!ok) {
-        vertex->x = vertex->y = vertex->u = vertex->v = 0.0f;
-        vertex->color = 0;
-        return false;
-    }
-    vertex->x = x.toFloat();
-    vertex->y = y.toFloat();
-    vertex->u = u.toFloat();
-    vertex->v = v.toFloat();
-    vertex->color = color.toUint32();
-    return true;
-}
-
-bool seval_to_std_vector_Vertex(const se::Value& v, std::vector<cocos2d::renderer::Mesh::Vertex>* ret)
-{
-    assert(ret != nullptr);
-    if (v.isNullOrUndefined())
-    {
-        ret->clear();
-        return true;
-    }
-    assert(v.isObject());
-    
-    se::Object* obj = v.toObject();
-    uint32_t len = 0;
-    obj->getArrayLength(&len);
-    ret->reserve(len);
-    for (uint32_t i = 0; i < len; ++i)
-    {
-        se::Value data;
-        if (obj->getArrayElement(i, &data))
-        {
-            cocos2d::renderer::Mesh::Vertex vertex;
-            seval_to_Vertex(data, &vertex);
-            ret->push_back(std::move(vertex));
-        }
-    }
-    
-    return true;
-}
 #endif // USE_GFX_RENDERER > 0
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -2354,21 +2298,6 @@ bool blendfunc_to_seval(const cocos2d::BlendFunc& v, se::Value* ret)
     obj->setProperty("dst", se::Value(v.dst));
     ret->setObject(obj);
 
-    return true;
-}
-
-bool vertex_to_seval(const cocos2d::renderer::Mesh::Vertex& v, se::Value* ret)
-{
-    assert(ret != nullptr);
-    se::HandleObject obj(se::Object::createPlainObject());
-    obj->setProperty("x", se::Value(v.x));
-    obj->setProperty("y", se::Value(v.y));
-    obj->setProperty("z", se::Value(v.z));
-    obj->setProperty("u", se::Value(v.u));
-    obj->setProperty("v", se::Value(v.v));
-    obj->setProperty("color", se::Value(v.color));
-    ret->setObject(obj);
-    
     return true;
 }
 
@@ -3222,23 +3151,6 @@ bool std_vector_TechniqueParameter_to_seval(const std::vector<cocos2d::renderer:
 bool std_vector_RenderTarget_to_seval(const std::vector<cocos2d::renderer::RenderTarget*>& v, se::Value* ret)
 {
     assert(false);
-    return true;
-}
-
-bool std_vector_Vertex_to_seval(const std::vector<cocos2d::renderer::Mesh::Vertex>& v, se::Value* ret)
-{
-    assert(ret != nullptr);
-    se::HandleObject arr(se::Object::createArrayObject(v.size()));
-    ret->setObject(arr);
-    
-    uint32_t i = 0;
-    for (const auto& param : v)
-    {
-        se::Value out = se::Value::Null;
-        vertex_to_seval(param, &out);
-        arr->setArrayElement(i, out);
-        ++i;
-    }
     return true;
 }
 #endif // USE_GFX_RENDERER > 0

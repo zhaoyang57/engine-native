@@ -33,12 +33,18 @@
 
 RENDERER_BEGIN
 
+RenderHandle::RenderData::~RenderData()
+{
+    jsVertices->unroot();
+    jsVertices->decRef();
+    jsIndices->unroot();
+    jsIndices->decRef();
+}
+
 RenderHandle::RenderHandle()
 : _enabled(false)
 , _vertsDirty(true)
-, _colorDirty(true)
 , _useModel(false)
-, _meshCount(0)
 , _vfmt(nullptr)
 {
 }
@@ -64,67 +70,55 @@ void RenderHandle::disable()
     }
 }
 
-void RenderHandle::updateRenderData()
+void RenderHandle::updateNativeMesh(uint32_t index, const se::HandleObject& vertices, const se::HandleObject& indices)
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-    
-    se::Value jsVal;
-    bool ok = native_ptr_to_seval<RenderHandle>((RenderHandle*)this, &jsVal);
-    CCASSERT(ok, "RenderHandle_updateRenderData : JS object missing");
-    
-    se::Value func;
-    ok = __jsb_cocos2d_renderer_RenderHandle_proto->getProperty("_updateRenderData", &func);
-    CCASSERT(ok, "RenderHandle_updateRenderData : RenderHandle.prototype._updateRenderData is not implemented");
-    
-    _meshes.clear();
-    _effects.clear();
-    
-    // Update vertices
-    func.toObject()->call(se::EmptyValueArray, jsVal.toObject());
-}
-
-void RenderHandle::updateColor()
-{
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-    
-    se::Value jsVal;
-    bool ok = native_ptr_to_seval<RenderHandle>((RenderHandle*)this, &jsVal);
-    CCASSERT(ok, "RenderHandle_updateColor : JS object missing");
-    
-    se::Value func;
-    ok = __jsb_cocos2d_renderer_RenderHandle_proto->getProperty("_updateColor", &func);
-    CCASSERT(ok, "RenderHandle_updateColor : RenderHandle.prototype._updateColor is not implemented");
-    
-    // Update color
-    func.toObject()->call(se::EmptyValueArray, jsVal.toObject());
-}
-
-void RenderHandle::addMesh(Mesh* mesh, Effect* effect)
-{
-    _meshes.push_back(mesh);
-    _effects.push_back(effect);
-    _meshCount = (uint32_t)_meshes.size();
-}
-
-Mesh* RenderHandle::getMesh(uint32_t index)
-{
-    if (index < _meshCount)
+    if (index >= _datas.size())
     {
-        return _meshes[index];
+        return;
     }
-    else
+    RenderData* data = &_datas[index];
+    if (data->jsVertices)
     {
-        return nullptr;
+        data->jsVertices->unroot();
+        data->jsVertices->decRef();
     }
+    if (data->jsIndices)
+    {
+        data->jsIndices->unroot();
+        data->jsIndices->decRef();
+    }
+    
+    data->jsVertices = vertices.get();
+    data->jsVertices->root();
+    data->jsVertices->incRef();
+    data->jsIndices = indices.get();
+    data->jsIndices->root();
+    data->jsIndices->incRef();
+    data->vertices = nullptr;
+    data->indices = nullptr;
+    data->jsVertices->getTypedArrayData(&data->vertices, &data->vBytes);
+    data->jsIndices->getTypedArrayData(&data->indices, &data->iBytes);
+}
+
+void RenderHandle::updateNativeEffect(uint32_t index, Effect* effect)
+{
+    if (index >= _datas.size())
+    {
+        return;
+    }
+    _datas[index].effect = effect;
+}
+
+void RenderHandle::setMeshCount(uint32_t count)
+{
+    _datas.resize(count);
 }
 
 Effect* RenderHandle::getEffect(uint32_t index)
 {
-    if (index < _meshCount)
+    if (index < _datas.size())
     {
-        return _effects[index];
+        return _datas[index].effect;
     }
     else
     {
@@ -134,11 +128,6 @@ Effect* RenderHandle::getEffect(uint32_t index)
 
 void RenderHandle::handle(NodeProxy *node, RenderFlow* flow)
 {
-    if (_vertsDirty)
-    {
-        updateRenderData();
-    }
-    
     flow->getModelBatcher()->commit(node, this);
 }
 
@@ -148,50 +137,52 @@ void RenderHandle::postHandle(NodeProxy *node, RenderFlow* flow)
 
 void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat)
 {
-    Mesh* mesh = getMesh(index);
-    if (mesh == nullptr)
+    if (index >= _datas.size())
     {
         return;
     }
+    const RenderData& data = _datas[index];
     
-    uint32_t vDataId = buffer->getByteOffset() / MeshBuffer::VDATA_BYTE;
-    uint32_t iDataId = buffer->getIndexOffset();
-    uint32_t vertexId = buffer->getVertexOffset();
-    
-    const std::vector<Mesh::Vertex>& vertices = mesh->getVertices();
-    const std::vector<uint16_t>& indices = mesh->getIndices();
-    uint32_t vertexCount = (uint32_t)vertices.size();
-    uint32_t indexCount = (uint32_t)indices.size();
-    
+    uint32_t bytesPerVertex = _vfmt->getBytes();
+    CCASSERT(data.vBytes % bytesPerVertex == 0, "RenderHandle::fillBuffers vertices data doesn't follow vertex format");
+    CCASSERT(data.iBytes % 2 == 0, "RenderHandle::fillBuffers indices data is not saved in 16bit");
+    uint32_t vertexCount = (uint32_t)data.vBytes / bytesPerVertex;
+    uint32_t indexCount = (uint32_t)data.iBytes / 2;
+
     buffer->request(vertexCount, indexCount);
     
-    if (_useModel)
+    // Calculate vertices world positions
+    if (!_useModel)
     {
-        for (int i = 0; i < vertexCount; ++i)
+        // Assume position is stored in floats
+        float* vertices = (float*)data.vertices;
+        const VertexFormat::Element& posDesc = _vfmt->getElement(ATTRIB_NAME_POSITION);
+        uint32_t num = posDesc.num;
+        size_t posOffset = posDesc.offset / 4;
+        size_t offset;
+        cocos2d::Vec3 pos(0, 0, 0);
+        for (uint32_t i = 0; i < vertexCount; ++i)
         {
-            Mesh::Vertex vertex = vertices[i];
-            buffer->vData[vDataId++] = vertex.x;
-            buffer->vData[vDataId++] = vertex.y;
-            buffer->vData[vDataId++] = vertex.u;
-            buffer->vData[vDataId++] = vertex.v;
-            buffer->vData[vDataId++] = *reinterpret_cast<float*>(&vertex.color);
-        }
-    }
-    // Not using model matrix, need to calcuclate world position in CPU
-    else
-    {
-        for (int i = 0; i < vertexCount; ++i)
-        {
-            Mesh::Vertex vertex = vertices[i];
-            cocos2d::Vec3 pos(vertex.x, vertex.y, 0);
+            offset = i * bytesPerVertex / 4;
+            pos.x = vertices[offset + posOffset];
+            pos.y = vertices[offset + posOffset + 1];
+            if (num == 3)
+                pos.z = vertices[offset + posOffset + 2];
             worldMat.transformPoint(&pos);
-            buffer->vData[vDataId++] = pos.x;
-            buffer->vData[vDataId++] = pos.y;
-            buffer->vData[vDataId++] = vertex.u;
-            buffer->vData[vDataId++] = vertex.v;
-            buffer->vData[vDataId++] = *reinterpret_cast<float*>(&vertex.color);
+            vertices[offset + posOffset] = pos.x;
+            vertices[offset + posOffset + 1] = pos.y;
+            if (num == 3)
+                vertices[offset + posOffset + 2] = pos.z;
         }
     }
+    // Copy vertex buffer memory
+    uint32_t vDataId = buffer->getByteOffset() / MeshBuffer::VDATA_BYTE;
+    memcpy(&buffer->vData[vDataId], data.vertices, data.vBytes);
+    
+    // Copy index buffer with vertex offset
+    uint32_t iDataId = buffer->getIndexOffset();
+    uint32_t vertexId = buffer->getVertexOffset();
+    uint16_t* indices = (uint16_t*)data.indices;
     for (int i = 0; i < indexCount; ++i)
     {
         buffer->iData[iDataId++] = vertexId + indices[i];
