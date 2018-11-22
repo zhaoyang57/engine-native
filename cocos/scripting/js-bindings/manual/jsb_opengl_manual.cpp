@@ -2973,6 +2973,11 @@ static bool JSB_glVertexAttribPointer(se::State& s) {
             break;
     }
 #endif
+#if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
+    int bufferBinding = -1;
+    JSB_GL_CHECK(glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &bufferBinding));
+    SE_PRECONDITION4(arg5 == 0 || (arg5 > 0  && bufferBinding > 0), false, GL_INVALID_OPERATION);
+#endif
     JSB_GL_CHECK(ccVertexAttribPointer((GLuint)arg0 , (GLint)arg1 , (GLenum)arg2 , (GLboolean)arg3 , (GLsizei)arg4 , (GLvoid*)(intptr_t)arg5  ));
 
     return true;
