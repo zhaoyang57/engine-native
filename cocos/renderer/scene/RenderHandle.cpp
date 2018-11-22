@@ -149,6 +149,10 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
     uint32_t vertexCount = (uint32_t)data.vBytes / bytesPerVertex;
     uint32_t indexCount = (uint32_t)data.iBytes / 2;
 
+    // must retrieve offset before request
+    uint32_t vDataId = buffer->getByteOffset() / MeshBuffer::VDATA_BYTE;
+    uint32_t iDataId = buffer->getIndexOffset();
+    uint32_t vertexId = buffer->getVertexOffset();
     buffer->request(vertexCount, indexCount);
     
     // Calculate vertices world positions
@@ -177,12 +181,9 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
         _vertsDirty = false;
     }
     // Copy vertex buffer memory
-    uint32_t vDataId = buffer->getByteOffset() / MeshBuffer::VDATA_BYTE;
     memcpy(&buffer->vData[vDataId], data.vertices, data.vBytes);
     
     // Copy index buffer with vertex offset
-    uint32_t iDataId = buffer->getIndexOffset();
-    uint32_t vertexId = buffer->getVertexOffset();
     uint16_t* indices = (uint16_t*)data.indices;
     for (int i = 0; i < indexCount; ++i)
     {
