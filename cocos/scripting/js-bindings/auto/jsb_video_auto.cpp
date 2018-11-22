@@ -273,6 +273,25 @@ static bool js_video_VideoPlayer_isKeepAspectRatioEnabled(se::State& s)
 }
 SE_BIND_FUNC(js_video_VideoPlayer_isKeepAspectRatioEnabled)
 
+static bool js_video_VideoPlayer_setObjectFitStyle(se::State& s)
+{
+    cocos2d::VideoPlayer* cobj = (cocos2d::VideoPlayer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_video_VideoPlayer_setObjectFitStyle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= seval_to_std_string(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_video_VideoPlayer_setObjectFitStyle : Error processing arguments");
+        cobj->setObjectFitStyle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_video_VideoPlayer_setObjectFitStyle)
+
 static bool js_video_VideoPlayer_onPlayEvent(se::State& s)
 {
     cocos2d::VideoPlayer* cobj = (cocos2d::VideoPlayer*)s.nativeThisObject();
@@ -393,6 +412,7 @@ bool js_register_video_VideoPlayer(se::Object* obj)
     cls->defineFunction("setURL", _SE(js_video_VideoPlayer_setURL));
     cls->defineFunction("setPlaybackRate", _SE(js_video_VideoPlayer_setPlaybackRate));
     cls->defineFunction("isKeepAspectRatioEnabled", _SE(js_video_VideoPlayer_isKeepAspectRatioEnabled));
+    cls->defineFunction("setObjectFitStyle", _SE(js_video_VideoPlayer_setObjectFitStyle));
     cls->defineFunction("onPlayEvent", _SE(js_video_VideoPlayer_onPlayEvent));
     cls->defineFunction("duration", _SE(js_video_VideoPlayer_duration));
     cls->defineFunction("setLooping", _SE(js_video_VideoPlayer_setLooping));

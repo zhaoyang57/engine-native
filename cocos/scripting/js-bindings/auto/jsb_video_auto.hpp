@@ -22,6 +22,7 @@ SE_DECLARE_FUNC(js_video_VideoPlayer_stop);
 SE_DECLARE_FUNC(js_video_VideoPlayer_setURL);
 SE_DECLARE_FUNC(js_video_VideoPlayer_setPlaybackRate);
 SE_DECLARE_FUNC(js_video_VideoPlayer_isKeepAspectRatioEnabled);
+SE_DECLARE_FUNC(js_video_VideoPlayer_setObjectFitStyle);
 SE_DECLARE_FUNC(js_video_VideoPlayer_onPlayEvent);
 SE_DECLARE_FUNC(js_video_VideoPlayer_duration);
 SE_DECLARE_FUNC(js_video_VideoPlayer_setLooping);

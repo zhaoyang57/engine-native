@@ -170,6 +170,8 @@ class VideoPlayer : public Ref
      * Set the rect of VideoPlayer.
      */
     virtual void setFrame(float x, float y, float width, float height);
+
+    virtual void setObjectFitStyle(std::string objectFit);
     
   protected:
 

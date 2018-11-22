@@ -139,6 +139,16 @@ isKeepAspectRatioEnabled : function (
 },
 
 /**
+ * @method setObjectFitStyle
+ * @param {String} arg0
+ */
+setObjectFitStyle : function (
+str 
+)
+{
+},
+
+/**
  * @method onPlayEvent
  * @param {int} arg0
  * @param {String} arg1
