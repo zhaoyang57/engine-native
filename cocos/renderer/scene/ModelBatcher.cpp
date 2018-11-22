@@ -100,7 +100,7 @@ void ModelBatcher::reset()
 
 void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
 {
-    for (int i = 0, l = handle->getMeshCount(); i < l; ++i)
+    for (uint32_t i = 0, l = handle->getMeshCount(); i < l; ++i)
     {
         // pre check
         VertexFormat* vfmt = handle->getVertexFormat();
@@ -109,7 +109,7 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
             continue;
         }
         
-        Effect* effect = handle->getEffect(i);
+        Effect* effect = handle->getEffect((uint32_t)i);
         int cullingMask = 1 << node->getGroupID();
         const Mat4& worldMat = handle->getUseModel() ? Mat4::IDENTITY : node->getWorldMatrix();
         if (_currEffect == nullptr ||

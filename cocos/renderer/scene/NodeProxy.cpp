@@ -64,9 +64,12 @@ NodeProxy::~NodeProxy()
         child->_parent = nullptr;
     }
     
-    _jsMatrix->unroot();
-    _jsMatrix->decRef();
-    _jsMatrix = nullptr;
+    if (_jsMatrix != nullptr)
+    {
+        _jsMatrix->unroot();
+        _jsMatrix->decRef();
+        _jsMatrix = nullptr;
+    }
     _jsMatData = nullptr;
 }
 

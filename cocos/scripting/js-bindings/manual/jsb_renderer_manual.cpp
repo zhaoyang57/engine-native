@@ -326,6 +326,9 @@ public:
 
     virtual Mat4 getWorldMatrix() const override
     {
+        se::ScriptEngine::getInstance()->clearException();
+        se::AutoHandleScope hs;
+        
         Mat4 worldMatrix;
         se::Value func;
         if (_jsNode.toObject()->getProperty("getWorldMatrix", &func))
@@ -342,6 +345,9 @@ public:
 
     virtual Mat4 getWorldRT() const override
     {
+        se::ScriptEngine::getInstance()->clearException();
+        se::AutoHandleScope hs;
+        
         Mat4 worldRT;
         se::Value func;
         if (_jsNode.toObject()->getProperty("getWorldRT", &func))
@@ -358,6 +364,9 @@ public:
 
     virtual Vec3 getWorldPosition() const override
     {
+        se::ScriptEngine::getInstance()->clearException();
+        se::AutoHandleScope hs;
+        
         Vec3 pos;
         se::Value func;
         if (_jsNode.toObject()->getProperty("getWorldPosition", &func))
@@ -640,9 +649,7 @@ static bool js_renderer_RenderHandle_updateNativeMesh(se::State& s)
     uint32_t index = 0;
     ok = seval_to_uint32(args[0], &index);
     SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_updateNativeMesh: Convert index failed!");
-    se::HandleObject vertices(args[1].toObject());
-    se::HandleObject indices(args[2].toObject());
-    cobj->updateNativeMesh(index, vertices, indices);
+    cobj->updateNativeMesh(index, args[1].toObject(), args[2].toObject());
     return true;
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeMesh);

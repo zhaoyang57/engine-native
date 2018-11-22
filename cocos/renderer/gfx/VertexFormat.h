@@ -88,6 +88,7 @@ public:
     VertexFormat& operator=(const VertexFormat& o);
     VertexFormat& operator=(VertexFormat&& o);
 
+    const std::vector<std::string>& getAttributeNames() const { return _names; };
     const Element& getElement(const std::string& attrName) const;
     
     uint32_t getBytes() const { return _bytes; };
@@ -95,6 +96,7 @@ public:
     static VertexFormat* XY_UV_Color;
 
 private:
+    std::vector<std::string> _names;
     std::unordered_map<std::string, Element> _attr2el;
 #if GFX_DEBUG > 0
     std::vector<Element> _elements;

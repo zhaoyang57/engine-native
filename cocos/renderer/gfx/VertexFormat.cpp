@@ -82,6 +82,7 @@ VertexFormat::VertexFormat(const std::vector<Info>& infos)
         el.normalize = info._normalize;
         el.bytes = info._num * attrTypeBytes(info._type);
 
+        _names.push_back(el.name);
         _attr2el[el.name] = el;
         elements.push_back(&_attr2el[el.name]);
 
@@ -112,6 +113,7 @@ VertexFormat& VertexFormat::operator=(const VertexFormat& o)
 {
     if (this != &o)
     {
+        _names = o._names;
         _attr2el = o._attr2el;
 #if GFX_DEBUG > 0
         _elements = o._elements;
@@ -125,6 +127,7 @@ VertexFormat& VertexFormat::operator=(VertexFormat&& o)
 {
     if (this != &o)
     {
+        _names = std::move(o._names);
         _attr2el = std::move(o._attr2el);
 #if GFX_DEBUG > 0
         _elements = std::move(o._elements);

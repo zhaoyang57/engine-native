@@ -58,9 +58,9 @@ public:
     void disable();
     bool enabled() const { return _enabled; };
     
-    size_t getMeshCount() const { return _datas.size(); };
+    uint32_t getMeshCount() const { return (uint32_t)_datas.size(); };
     void setMeshCount(uint32_t count);
-    void updateNativeMesh(uint32_t index, const se::HandleObject& vertices, const se::HandleObject& indices);
+    void updateNativeMesh(uint32_t index, se::Object* vertices, se::Object* indices);
     void updateNativeEffect(uint32_t index, Effect* effect);
     
     bool getUseModel() const { return _useModel; };
@@ -73,6 +73,15 @@ public:
     
 protected:
     struct RenderData {
+        RenderData ()
+        : vBytes(0)
+        , iBytes(0)
+        , effect(nullptr)
+        , jsVertices(nullptr)
+        , jsIndices(nullptr)
+        {
+            
+        }
         ~RenderData ();
         unsigned long vBytes;
         unsigned long iBytes;

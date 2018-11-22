@@ -3512,7 +3512,7 @@ static bool js_renderer_RenderHandle_getMeshCount(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        size_t result = cobj->getMeshCount();
+        unsigned int result = cobj->getMeshCount();
         ok &= uint32_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_getMeshCount : Error processing arguments");
         return true;
