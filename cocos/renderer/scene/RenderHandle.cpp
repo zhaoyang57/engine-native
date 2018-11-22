@@ -152,7 +152,7 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
     buffer->request(vertexCount, indexCount);
     
     // Calculate vertices world positions
-    if (!_useModel)
+    if (!_useModel && _vertsDirty)
     {
         // Assume position is stored in floats
         float* vertices = (float*)data.vertices;
@@ -174,6 +174,7 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
             if (num == 3)
                 vertices[offset + posOffset + 2] = pos.z;
         }
+        _vertsDirty = false;
     }
     // Copy vertex buffer memory
     uint32_t vDataId = buffer->getByteOffset() / MeshBuffer::VDATA_BYTE;
