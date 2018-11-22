@@ -41,6 +41,14 @@ pause : function (
 },
 
 /**
+ * @method setMute
+ */
+setMute : function (
+)
+{
+},
+
+/**
  * @method setKeepAspectRatioEnabled
  * @param {bool} arg0
  */
@@ -58,6 +66,16 @@ currentTime : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method setVisible
+ * @param {bool} arg0
+ */
+setVisible : function (
+bool 
+)
+{
 },
 
 /**
@@ -101,6 +119,16 @@ str
 },
 
 /**
+ * @method setPlaybackRate
+ * @param {float} arg0
+ */
+setPlaybackRate : function (
+float 
+)
+{
+},
+
+/**
  * @method isKeepAspectRatioEnabled
  * @return {bool}
  */
@@ -113,9 +141,11 @@ isKeepAspectRatioEnabled : function (
 /**
  * @method onPlayEvent
  * @param {int} arg0
+ * @param {String} arg1
  */
 onPlayEvent : function (
-int 
+int, 
+str 
 )
 {
 },
@@ -131,11 +161,9 @@ duration : function (
 },
 
 /**
- * @method setVisible
- * @param {bool} arg0
+ * @method setLooping
  */
-setVisible : function (
-bool 
+setLooping : function (
 )
 {
 },

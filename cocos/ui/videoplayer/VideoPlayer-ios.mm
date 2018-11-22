@@ -552,4 +552,23 @@ void VideoPlayer::setFrame(float x, float y, float width, float height)
                                                   :height/scaleFactor];
 }
 
+void VideoPlayer::setLooping(bool looping)
+{
+    //
+}
+
+void VideoPlayer::setPlaybackRate(float rate)
+{
+    //
+}
+
+void VideoPlayer::setMute()
+{
+    //
+}
+
+void VideoPlayer::removeEventListener(const std::string& name)
+{
+//
+}
 #endif

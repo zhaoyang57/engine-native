@@ -62,7 +62,11 @@ class VideoPlayer : public Ref
         COMPLETED,
         META_LOADED,
         CLICKED,
-        READY_TO_PLAY
+        READY_TO_PLAY,
+        BUFFERING,
+        ERROR_OCUR,
+        PLAY_PROGRESS_UPDATE,
+
     };
 
     VideoPlayer();
@@ -70,7 +74,7 @@ class VideoPlayer : public Ref
     /**
      * A callback which will be called after specific VideoPlayer event happens.
      */
-    typedef std::function<void()> ccVideoPlayerCallback;
+    typedef std::function<void(std::string params)> ccVideoPlayerCallback;
 
 
     /**
@@ -99,6 +103,22 @@ class VideoPlayer : public Ref
      * @param sec   The offset in seconds from the start to seek to.
      */
     virtual void seekTo(float sec);
+
+    /**
+     * @param looping   Specify true to enter loop play mode or false to play once
+     */
+    virtual void setLooping(bool looping = false);
+
+    /**
+     *
+     * @param rate range from 0.5f to 2.0f
+     */
+    virtual void setPlaybackRate(float rate);
+
+    /**
+     * mute mode to play
+     */
+    virtual void setMute();
 
     /**
      * Get the current play time, measure in seconds.
@@ -139,7 +159,7 @@ class VideoPlayer : public Ref
      *
      * @param event @see VideoPlayer::EventType.
      */
-    virtual void onPlayEvent(int event);
+    virtual void onPlayEvent(int event, std::string params);
 
     /**
      * Toggle visibility of VideoPlayer.

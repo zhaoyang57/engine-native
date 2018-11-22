@@ -39,13 +39,14 @@ static const std::string videoHelperClassName = "org/cocos2dx/lib/Cocos2dxVideoH
 
 USING_NS_CC;
 
-static void executeVideoCallback(int index,int event);
+static void executeVideoCallback(int index,int event, std::string params);
 
 #define QUIT_FULLSCREEN 1000
 
 extern "C" {
-    void Java_org_cocos2dx_lib_Cocos2dxVideoHelper_nativeExecuteVideoCallback(JNIEnv * env, jobject obj, jint index,jint event) {
-        executeVideoCallback(index,event);
+    void Java_org_cocos2dx_lib_Cocos2dxVideoHelper_nativeExecuteVideoCallback(JNIEnv * env, jobject obj, jint index,jint event, jstring info) {
+        std::string params = JniHelper::jstring2string(info);
+        executeVideoCallback(index,event, params);
     }
 }
 
@@ -91,7 +92,7 @@ void VideoPlayer::setURL(const std::string& videoUrl)
 {
     if (videoUrl.find("://") == std::string::npos)
     {
-        _videoURL = videoUrl; //FileUtils::getInstance()->fullPathForFilename(videoUrl);
+        _videoURL = FileUtils::getInstance()->fullPathForFilename(videoUrl);
         _videoSource = VideoPlayer::Source::FILENAME;
     }
     else
@@ -170,7 +171,7 @@ void VideoPlayer::addEventListener(const std::string& name, const VideoPlayer::c
     _eventCallback[name] = callback;
 }
 
-void VideoPlayer::onPlayEvent(int event)
+void VideoPlayer::onPlayEvent(int event, std::string params)
 {
     if (event == QUIT_FULLSCREEN)
     {
@@ -183,25 +184,34 @@ void VideoPlayer::onPlayEvent(int event)
 
         switch (videoEvent) {
             case EventType::PLAYING:
-                _eventCallback["play"]();
+                _eventCallback["play"]("");
                 break;
             case EventType::PAUSED:
-                _eventCallback["pause"]();
+                _eventCallback["pause"]("");
                 break;
             case EventType::STOPPED:
-                _eventCallback["stoped"]();
+                _eventCallback["stoped"]("");
                 break;
             case EventType::COMPLETED:
-                _eventCallback["ended"]();
+                _eventCallback["ended"]("");
                 break;
             case EventType::META_LOADED:
-                _eventCallback["loadedmetadata"]();
+                _eventCallback["loadedmetadata"]("");
                 break;
             case EventType::CLICKED:
-                _eventCallback["click"]();
+                _eventCallback["click"]("");
                 break;
             case EventType::READY_TO_PLAY:
-                _eventCallback["suspend"]();
+                _eventCallback["suspend"]("");
+                break;
+            case EventType::BUFFERING:
+                _eventCallback["buffering"](params);
+                break;
+            case EventType::ERROR_OCUR:
+                _eventCallback["error"](params);
+                break;
+            case EventType::PLAY_PROGRESS_UPDATE:
+                _eventCallback["progress_update"](params);
                 break;
             default:
                 break;
@@ -209,12 +219,12 @@ void VideoPlayer::onPlayEvent(int event)
     }
 }
 
-void executeVideoCallback(int index,int event)
+void executeVideoCallback(int index,int event, std::string params)
 {
     auto it = s_allVideoPlayers.find(index);
     if (it != s_allVideoPlayers.end())
     {
-        s_allVideoPlayers[index]->onPlayEvent(event);
+        s_allVideoPlayers[index]->onPlayEvent(event, params);
     }
 }
 
@@ -228,4 +238,18 @@ float VideoPlayer::duration() const
     return JniHelper::callStaticFloatMethod(videoHelperClassName, "getDuration", _videoPlayerIndex);
 }
 
+void VideoPlayer::setLooping(bool looping)
+{
+    return JniHelper::callStaticVoidMethod(videoHelperClassName, "setLooping", _videoPlayerIndex, looping);
+}
+
+void VideoPlayer::setPlaybackRate(float rate)
+{
+    return JniHelper::callStaticVoidMethod(videoHelperClassName, "setPlaybackRate", _videoPlayerIndex, rate);
+}
+
+void VideoPlayer::setMute()
+{
+    return JniHelper::callStaticVoidMethod(videoHelperClassName, "setVolume", _videoPlayerIndex, (float)0);
+}
 #endif
