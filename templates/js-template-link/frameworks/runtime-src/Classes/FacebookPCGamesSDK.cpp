@@ -51,8 +51,9 @@ FacebookPCGamesSDK::~FacebookPCGamesSDK()
 	loginUser.reset();
 }
 
-void FacebookPCGamesSDK::init(unsigned long long appId)
+void FacebookPCGamesSDK::init(std::string strAppId)
 {
+	appId = std::stoull(strAppId);
 	const auto browser = std::make_shared<SystemDefaultBrowser>(appId);
 	FacebookGameSDK::initialize(appId, browser);
 }

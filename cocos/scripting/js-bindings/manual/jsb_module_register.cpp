@@ -117,6 +117,9 @@ bool jsb_register_all_modules()
     se->addRegisterCallback(register_all_audioengine);
 #endif
 
+#if USE_FB_GAMES_SDK
+    se->addRegisterCallback(register_all_facebook_pc_games_sdk);
+#endif
 
 #if USE_NET_WORK
     se->addRegisterCallback(register_all_network);
