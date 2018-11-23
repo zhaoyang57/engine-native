@@ -90,6 +90,7 @@ protected:
         uint8_t* indices;
         se::Object* jsVertices;
         se::Object* jsIndices;
+        std::vector<uint8_t> worldVerts;
     };
 //    void postUpdateRenderData();
 //    void postRender();

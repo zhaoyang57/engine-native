@@ -138,75 +138,19 @@ void RenderHandle::postHandle(NodeProxy *node, RenderFlow* flow)
 {
 }
 
-template<typename T>
-void fillVertexElement(uint8_t* vertices, size_t elOffset, uint32_t num, uint32_t bytesPerVertex, float* buffer, uint32_t byteOffset, uint32_t vertexCount)
-{
-    size_t offset;
-    size_t bytes = sizeof(T);
-    size_t dataOffset = byteOffset / bytes;
-    size_t dataPerVertex = bytesPerVertex / bytes;
-    elOffset = elOffset / bytes;
-    
-    T* src = (T*)vertices;
-    T* dest = (T*)buffer;
-    
-    for (uint32_t i = 0; i < vertexCount; ++i)
-    {
-        for (uint32_t j = 0; j < num; ++j)
-        {
-            offset = i * dataPerVertex + elOffset + j;
-            dest[dataOffset + offset] = src[offset];
-        }
-    }
-}
-
-//        const std::vector<std::string>& names = _vfmt->getAttributeNames();
-//        for (uint32_t i = 0; i < names.size(); ++i) {
-//            if (names[i] == ATTRIB_NAME_POSITION) continue;
-//            const VertexFormat::Element& desc = _vfmt->getElement(names[i]);
-//            AttribType type = desc.type;
-//            num = desc.num;
-//            switch (type) {
-//                case AttribType::INT8:
-//                    fillVertexElement<int8_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::INT16:
-//                    fillVertexElement<int16_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::INT32:
-//                    fillVertexElement<int32_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::UINT8:
-//                    fillVertexElement<uint8_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::UINT16:
-//                    fillVertexElement<uint16_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::UINT32:
-//                    fillVertexElement<uint32_t>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset, vertexCount);
-//                    break;
-//                case AttribType::FLOAT32:
-//                    fillVertexElement<float>(data.vertices, desc.offset, num, bytesPerVertex, buffer->vData.data(), vBufferOffset / sizeof(float), vertexCount);
-//                    break;
-//                default:
-//                    continue;
-//            }
-//        }
-
-
 void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat)
 {
     if (index >= _datas.size())
     {
         return;
     }
-    const RenderData& data = _datas[index];
+    RenderData* data = &_datas[index];
     
     uint32_t bytesPerVertex = _vfmt->getBytes();
     CCASSERT(data.vBytes % bytesPerVertex == 0, "RenderHandle::fillBuffers vertices data doesn't follow vertex format");
     CCASSERT(data.iBytes % 2 == 0, "RenderHandle::fillBuffers indices data is not saved in 16bit");
-    uint32_t vertexCount = (uint32_t)data.vBytes / bytesPerVertex;
-    uint32_t indexCount = (uint32_t)data.iBytes / 2;
+    uint32_t vertexCount = (uint32_t)data->vBytes / bytesPerVertex;
+    uint32_t indexCount = (uint32_t)data->iBytes / 2;
 
     // must retrieve offset before request
     uint32_t vBufferOffset = buffer->getByteOffset();
@@ -217,9 +161,15 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
     // Calculate vertices world positions
     if (!_useModel)
     {
+        if (_vertsDirty)
+        {
+            data->worldVerts.resize(data->vBytes);
+            memcpy(data->worldVerts.data(), data->vertices, data->vBytes);
+            _vertsDirty = false;
+        }
         // Assume position is stored in floats
-        float* vertices = (float*)data.vertices;
-        size_t dataOffset = vBufferOffset / sizeof(float);
+        float* vertices = (float*)data->vertices;
+        float* worldVerts = (float*)data->worldVerts.data();
         const VertexFormat::Element& posDesc = _vfmt->getElement(ATTRIB_NAME_POSITION);
         uint32_t num = posDesc.num;
         size_t dataPerVertex = bytesPerVertex / 4;
@@ -234,37 +184,21 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
             if (num == 3)
                 pos.z = vertices[offset + 2];
             worldMat.transformPoint(&pos);
-            offset += dataOffset;
-            buffer->vData[offset] = pos.x;
-            buffer->vData[offset + 1] = pos.y;
+            worldVerts[offset] = pos.x;
+            worldVerts[offset + 1] = pos.y;
             if (num == 3)
-                buffer->vData[elOffset + 2] = pos.z;
+                worldVerts[offset + 2] = pos.z;
         }
-        const VertexFormat::Element& uvDesc = _vfmt->getElement(ATTRIB_NAME_UV0);
-        elOffset = uvDesc.offset / 4;
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            offset = i * dataPerVertex + elOffset;
-            buffer->vData[dataOffset + offset] = vertices[offset];
-            buffer->vData[dataOffset + offset + 1] = vertices[offset + 1];
-        }
-        uint32_t* colors = (uint32_t*)data.vertices;
-        const VertexFormat::Element& colorDesc = _vfmt->getElement(ATTRIB_NAME_COLOR);
-        elOffset = colorDesc.offset / 4;
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            offset = i * dataPerVertex + elOffset;
-            buffer->vData[dataOffset + offset] = *reinterpret_cast<float*>(&colors[offset]);
-        }
+        memcpy(&buffer->vData[vBufferOffset / 4], (float*)data->worldVerts.data(), data->vBytes);
     }
     else
     {
         // Copy vertex buffer memory
-        memcpy(&buffer->vData[vBufferOffset / 4], (float*)data.vertices, data.vBytes);
+        memcpy(&buffer->vData[vBufferOffset / 4], (float*)data->vertices, data->vBytes);
     }
     
     // Copy index buffer with vertex offset
-    uint16_t* indices = (uint16_t*)data.indices;
+    uint16_t* indices = (uint16_t*)data->indices;
     for (int i = 0; i < indexCount; ++i)
     {
         buffer->iData[iDataId++] = vertexId + indices[i];
