@@ -836,11 +836,12 @@ void HttpClient::networkThread()
         _responseQueueMutex.lock();
         _responseQueue.pushBack(response);
         _responseQueueMutex.unlock();
-        
+
+        Scheduler* scheduler = Application::getInstance()->getScheduler();
         _schedulerMutex.lock();
-        if (nullptr != _scheduler)
+        if (nullptr != scheduler)
         {
-            _scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
+            scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
         }
         _schedulerMutex.unlock();
     }
@@ -865,10 +866,11 @@ void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response
     char responseMessage[RESPONSE_BUFFER_SIZE] = { 0 };
     processResponse(response, responseMessage);
 
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
     _schedulerMutex.lock();
-    if (_scheduler != nullptr)
+    if (scheduler != nullptr)
     {
-        _scheduler->performFunctionInCocosThread([this, response, request]{
+        scheduler->performFunctionInCocosThread([this, response, request]{
             const ccHttpRequestCallback& callback = request->getResponseCallback();
 
             if (callback != nullptr)
@@ -909,11 +911,10 @@ void HttpClient::destroyInstance()
     auto thiz = _httpClient;
     _httpClient = nullptr;
 
-    thiz->_scheduler->unscheduleAllForTarget(thiz);
-
-    thiz->_schedulerMutex.lock();
-    thiz->_scheduler = nullptr;
-    thiz->_schedulerMutex.unlock();
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
+    if (scheduler != nullptr) {
+        scheduler->unscheduleAllForTarget(thiz);
+    }
 
     {
         std::lock_guard<std::mutex> lock(thiz->_requestQueueMutex);
@@ -954,7 +955,6 @@ HttpClient::HttpClient()
 {
     CCLOG("In the constructor of HttpClient!");
     increaseThreadCount();
-    _scheduler = Application::getInstance()->getScheduler();
 }
 
 HttpClient::~HttpClient()

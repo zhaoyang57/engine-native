@@ -74,11 +74,12 @@ void HttpClient::networkThread()
         _responseQueueMutex.lock();
         _responseQueue.pushBack(response);
         _responseQueueMutex.unlock();
-        
+
+        Scheduler* scheduler = Application::getInstance()->getScheduler();
         _schedulerMutex.lock();
-        if (nullptr != _scheduler)
+        if (nullptr != scheduler)
         {
-            _scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
+            scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
         }
         _schedulerMutex.unlock();
     }
@@ -103,10 +104,11 @@ void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response
     char responseMessage[RESPONSE_BUFFER_SIZE] = { 0 };
     processResponse(response, responseMessage);
     
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
     _schedulerMutex.lock();
-    if (nullptr != _scheduler)
+    if (nullptr != scheduler)
     {
-        _scheduler->performFunctionInCocosThread([this, response, request]{
+        scheduler->performFunctionInCocosThread([this, response, request]{
             const ccHttpRequestCallback& callback = request->getResponseCallback();
 
             if (callback != nullptr)
@@ -312,10 +314,10 @@ void HttpClient::destroyInstance()
     auto thiz = _httpClient;
     _httpClient = nullptr;
     
-    thiz->_scheduler->unscheduleAllForTarget(thiz);
-    thiz->_schedulerMutex.lock();
-    thiz->_scheduler = nullptr;
-    thiz->_schedulerMutex.unlock();
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
+    if (scheduler != nullptr) {
+        scheduler->unscheduleAllForTarget(thiz);
+    }
     
     thiz->_requestQueueMutex.lock();
     thiz->_requestQueue.pushBack(thiz->_requestSentinel);
@@ -365,7 +367,6 @@ HttpClient::HttpClient()
 {
     CCLOG("In the constructor of HttpClient!");
     memset(_responseMessage, 0, sizeof(char) * RESPONSE_BUFFER_SIZE);
-    _scheduler = Application::getInstance()->getScheduler();
     increaseThreadCount();
 }
 

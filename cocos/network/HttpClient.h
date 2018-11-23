@@ -185,7 +185,6 @@ private:
     int  _threadCount;
     std::mutex _threadCountMutex;
 
-    Scheduler* _scheduler;
     std::mutex _schedulerMutex;
 
     Vector<HttpRequest*>  _requestQueue;
