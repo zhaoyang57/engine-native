@@ -1147,6 +1147,14 @@ setMatrixDirty : function (
 },
 
 /**
+ * @method generateTypedArray
+ */
+generateTypedArray : function (
+)
+{
+},
+
+/**
  * @method removeAllChildren
  */
 removeAllChildren : function (
@@ -1182,14 +1190,6 @@ getChildren : function (
  */
 removeHandle : function (
 str 
-)
-{
-},
-
-/**
- * @method generateJSMatrix
- */
-generateJSMatrix : function (
 )
 {
 },

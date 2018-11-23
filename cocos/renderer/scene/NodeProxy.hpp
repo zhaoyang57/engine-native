@@ -68,7 +68,7 @@ public:
 
     /// @} end of Children and Parent
     
-    void generateJSMatrix();
+    void generateTypedArray();
     inline void setMatrixDirty() { _matDirty = true; };
     void updateLocalMatrixFromJS();
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
@@ -105,8 +105,8 @@ private:
     
     std::string _name;
 
-    uint32_t* _jsMatData;
-    se::Object* _jsMatrix;
+    float* _jsTRSData;
+    se::Object* _jsTRS;
     NodeProxy* _parent;                  ///< weak reference to parent node
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
     
