@@ -37,6 +37,10 @@
 #ifndef JCLS_VIDEO_HELPER
 #define JCLS_VIDEO_HELPER "org/cocos2dx/lib/Cocos2dxVideoHelper"
 #endif
+#ifndef ORG_VIDEO_HELPER_CLASS_NAME
+#define ORG_VIDEO_HELPER_CLASS_NAME org_cocos2dx_lib_Cocos2dxVideoHelper
+#endif
+#define JNI_VIDEO_HELPER(FUNC) JNI_METHOD1(ORG_VIDEO_HELPER_CLASS_NAME, FUNC)
 
 USING_NS_CC;
 
@@ -45,7 +49,8 @@ static void executeVideoCallback(int index,int event, std::string params);
 #define QUIT_FULLSCREEN 1000
 
 extern "C" {
-    void Java_org_cocos2dx_lib_Cocos2dxVideoHelper_nativeExecuteVideoCallback(JNIEnv * env, jobject obj, jint index,jint event, jstring info) {
+    JNIEXPORT void JNICALL JNI_VIDEO_HELPER(nativeExecuteVideoCallback)(JNIEnv * env, jobject obj, jint index,jint event, jstring info)
+    {
         std::string params = JniHelper::jstring2string(info);
         executeVideoCallback(index,event, params);
     }
