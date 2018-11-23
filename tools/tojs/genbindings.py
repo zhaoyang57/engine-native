@@ -112,6 +112,7 @@ def main():
     cocos_root = os.path.abspath(project_root)
     jsb_root = os.path.abspath(os.path.join(project_root, 'js-bindings'))
     cxx_generator_root = os.path.abspath(os.path.join(project_root, 'tools/bindings-generator'))
+    facebook_sdk_root = os.path.abspath(os.path.join(project_root, 'templates/js-template-link/frameworks/runtime-src/proj.win32/facebooksdk'))
 
     # save config to file
     config = ConfigParser.ConfigParser()
@@ -119,6 +120,7 @@ def main():
     config.set('DEFAULT', 'clangllvmdir', llvm_path)
     config.set('DEFAULT', 'gcc_toolchain_dir', gcc_toolchain_path)
     config.set('DEFAULT', 'cocosdir', cocos_root)
+    config.set('DEFAULT', 'facebook_sdk_dir', facebook_sdk_root)
     config.set('DEFAULT', 'cxxgeneratordir', cxx_generator_root)
     config.set('DEFAULT', 'extra_flags', '')
     
@@ -144,14 +146,15 @@ def main():
         output_dir = '%s/cocos/scripting/js-bindings/auto' % project_root
 
         cmd_args = {
-                    'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto'),
-                    'cocos2dx_webview.ini': ('webview', 'jsb_webview_auto'),
-                    'cocos2dx_video.ini': ('video', 'jsb_video_auto'),
-                    'cocos2dx_audioengine.ini' : ('cocos2dx_audioengine', 'jsb_cocos2dx_audioengine_auto'),
-                    'cocos2dx_extension.ini' : ('cocos2dx_extension', 'jsb_cocos2dx_extension_auto'),
-                    'cocos2dx_network.ini' : ('cocos2dx_network', 'jsb_cocos2dx_network_auto'),
-                    'gfx.ini': ('gfx', 'jsb_gfx_auto'),
-                    'renderer.ini': ('renderer', 'jsb_renderer_auto'),
+                    # 'cocos2dx.ini' : ('cocos2d-x', 'jsb_cocos2dx_auto'),
+                    # 'cocos2dx_webview.ini': ('webview', 'jsb_webview_auto'),
+                    # 'cocos2dx_video.ini': ('video', 'jsb_video_auto'),
+                    # 'cocos2dx_audioengine.ini' : ('cocos2dx_audioengine', 'jsb_cocos2dx_audioengine_auto'),
+                    # 'cocos2dx_extension.ini' : ('cocos2dx_extension', 'jsb_cocos2dx_extension_auto'),
+                    # 'cocos2dx_network.ini' : ('cocos2dx_network', 'jsb_cocos2dx_network_auto'),
+                    # 'gfx.ini': ('gfx', 'jsb_gfx_auto'),
+                    # 'renderer.ini': ('renderer', 'jsb_renderer_auto'),
+                    'facebook-games-sdk.ini': ('FacebookGamesSDK', 'jsb_facebook_games_sdk_auto'),
                     }
         target = 'spidermonkey'
         generator_py = '%s/generator.py' % cxx_generator_root

@@ -44,7 +44,7 @@ public:
 	@brief  init FacebookGameSDK
 	@param  Facebook Developer Account ID
 	*/
-	void init(unsigned long long appId);
+	void init(std::string appId);
 
 	/**
 	@brief  login
