@@ -40,8 +40,6 @@
 using namespace anysdk::framework;
 #endif
 
-#include "sdk_test.h"
-
 USING_NS_CC;
 
 AppDelegate::AppDelegate(int width, int height) : Application("Cocos Game", width, height)
@@ -92,25 +90,6 @@ bool AppDelegate::applicationDidFinishLaunching()
     se->addAfterCleanupHook([](){
         JSBClassType::destroy();
     });
-
-
-	const auto browser = std::make_shared<BROWSER>(kAppID);
-	auto& sdk_manager = FacebookGameSDK::initialize(kAppID, browser);
-
-	// To perform user login and get permissions
-	auto user = loginDemo(sdk_manager);
-
-	// App Event Initialization
-	auto& access_token = user ? user->accessToken() : U("");
-
-	// To send events to Facebook
-	// You would be able to see the events in Analytics
-	Event::initialize(kAppID, access_token);
-
-	// Add additional information about the user
-	Event::setExternalInfo(kExternId, kExternNamespace);
-
-	appEventDemo();
 
     return true;
 }
