@@ -37,13 +37,24 @@ ModelBatcher::ModelBatcher(RenderFlow* flow)
 , _currEffect(nullptr)
 , _buffer(nullptr)
 {
-    _iaPool.resize(16);
-    _modelPool.resize(16);
+    _iaPool.reserve(16);
+    _modelPool.reserve(16);
 }
 
 ModelBatcher::~ModelBatcher()
 {
+    for (int i = 0; i < _iaPool.size(); i++)
+    {
+        auto ia = _iaPool[i];
+        delete ia;
+    }
     _iaPool.clear();
+    
+    for (int i = 0; i < _modelPool.size(); i++)
+    {
+        auto model = _modelPool[i];
+        delete model;
+    }
     _modelPool.clear();
     
     for (auto iter = _buffers.begin(); iter != _buffers.end(); ++iter)
@@ -149,11 +160,15 @@ void ModelBatcher::flush()
     }
     
     // Generate IA
-    InputAssembler* ia = _iaPool[_iaOffset];
-    if (ia == nullptr)
+    InputAssembler* ia = nullptr;
+    if (_iaOffset >= _iaPool.size())
     {
         ia = new InputAssembler();
-        _iaPool[_iaOffset] = ia;
+        _iaPool.push_back(ia);
+    }
+    else
+    {
+        ia = _iaPool[_iaOffset];
     }
     _iaOffset++;
     ia->setVertexBuffer(_buffer->getVertexBuffer());
@@ -164,11 +179,16 @@ void ModelBatcher::flush()
     // Stencil manager process
     
     // Generate model
-    Model* model = _modelPool[_modelOffset];
-    if (model == nullptr)
+    Model* model = nullptr;
+    _modelPool[_modelOffset];
+    if (_modelOffset >= _modelPool.size())
     {
         model = new Model();
-        _modelPool[_modelOffset] = model;
+        _modelPool.push_back(model);
+    }
+    else
+    {
+        model = _modelPool[_modelOffset];
     }
     _modelOffset++;
     model->setWorldMatix(_modelMat);
