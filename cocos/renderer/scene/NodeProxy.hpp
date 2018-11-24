@@ -69,9 +69,10 @@ public:
     /// @} end of Children and Parent
     
     void generateTypedArray();
-    inline void setMatrixDirty() { _matDirty = true; };
-    void updateLocalMatrixFromJS();
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
+    
+    inline uint8_t getOpacity() const { return _opacity; };
+    inline float getInheritOpacity() const { return _inheritOpacity; };
     
     inline int getGroupID() const { return _groupID; };
     inline void setGroupID(int groupID) { _groupID = groupID; };
@@ -84,21 +85,26 @@ public:
     
     void visitAsRoot(RenderFlow* flow);
     
-private:
+protected:
     void visit(RenderFlow* flow);
     void childrenAlloc();
     void detachChild(NodeProxy* child, ssize_t childIndex);
     void reorderChildren();
     
+    void updateFromJS();
     void updateMatrix();
 
 private:
     static int _worldMatDirty;
+    static int _parentOpacityDirty;
     
-    bool _childrenOrderDirty;
-    bool _matDirty;
-    int _localZOrder;
-    int _groupID;
+    bool _childrenOrderDirty = true;
+    bool _matrixUpdated = false;
+    bool _opacityUpdated = false;
+    uint8_t _opacity = 0;
+    int _localZOrder = 0;
+    int _groupID = 0;
+    float _inheritOpacity = 1.0;
 
     cocos2d::Mat4 _localMat;
     cocos2d::Mat4 _worldMat;

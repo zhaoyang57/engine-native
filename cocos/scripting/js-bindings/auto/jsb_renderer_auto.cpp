@@ -2601,21 +2601,6 @@ static bool js_renderer_NodeProxy_addChild(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_addChild)
 
-static bool js_renderer_NodeProxy_setMatrixDirty(se::State& s)
-{
-    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setMatrixDirty : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->setMatrixDirty();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_NodeProxy_setMatrixDirty)
-
 static bool js_renderer_NodeProxy_generateTypedArray(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
@@ -2704,6 +2689,24 @@ static bool js_renderer_NodeProxy_removeHandle(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_removeHandle)
 
+static bool js_renderer_NodeProxy_getInheritOpacity(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getInheritOpacity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        float result = cobj->getInheritOpacity();
+        ok &= float_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getInheritOpacity : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_getInheritOpacity)
+
 static bool js_renderer_NodeProxy_setChildrenOrderDirty(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
@@ -2718,21 +2721,6 @@ static bool js_renderer_NodeProxy_setChildrenOrderDirty(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_setChildrenOrderDirty)
-
-static bool js_renderer_NodeProxy_updateLocalMatrixFromJS(se::State& s)
-{
-    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_updateLocalMatrixFromJS : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->updateLocalMatrixFromJS();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_NodeProxy_updateLocalMatrixFromJS)
 
 static bool js_renderer_NodeProxy_setParent(se::State& s)
 {
@@ -2770,6 +2758,24 @@ static bool js_renderer_NodeProxy_getName(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_getName)
+
+static bool js_renderer_NodeProxy_getOpacity(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getOpacity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        uint8_t result = cobj->getOpacity();
+        ok &= uint8_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getOpacity : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_getOpacity)
 
 static bool js_renderer_NodeProxy_setName(se::State& s)
 {
@@ -2974,16 +2980,16 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     auto cls = se::Class::create("NodeProxy", obj, nullptr, _SE(js_renderer_NodeProxy_constructor));
 
     cls->defineFunction("addChild", _SE(js_renderer_NodeProxy_addChild));
-    cls->defineFunction("setMatrixDirty", _SE(js_renderer_NodeProxy_setMatrixDirty));
     cls->defineFunction("generateTypedArray", _SE(js_renderer_NodeProxy_generateTypedArray));
     cls->defineFunction("removeAllChildren", _SE(js_renderer_NodeProxy_removeAllChildren));
     cls->defineFunction("addHandle", _SE(js_renderer_NodeProxy_addHandle));
     cls->defineFunction("getChildren", _SE(js_renderer_NodeProxy_getChildren));
     cls->defineFunction("removeHandle", _SE(js_renderer_NodeProxy_removeHandle));
+    cls->defineFunction("getInheritOpacity", _SE(js_renderer_NodeProxy_getInheritOpacity));
     cls->defineFunction("setChildrenOrderDirty", _SE(js_renderer_NodeProxy_setChildrenOrderDirty));
-    cls->defineFunction("updateLocalMatrixFromJS", _SE(js_renderer_NodeProxy_updateLocalMatrixFromJS));
     cls->defineFunction("setParent", _SE(js_renderer_NodeProxy_setParent));
     cls->defineFunction("getName", _SE(js_renderer_NodeProxy_getName));
+    cls->defineFunction("getOpacity", _SE(js_renderer_NodeProxy_getOpacity));
     cls->defineFunction("setName", _SE(js_renderer_NodeProxy_setName));
     cls->defineFunction("setGroupID", _SE(js_renderer_NodeProxy_setGroupID));
     cls->defineFunction("visitAsRoot", _SE(js_renderer_NodeProxy_visitAsRoot));

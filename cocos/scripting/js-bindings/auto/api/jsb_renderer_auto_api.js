@@ -1139,14 +1139,6 @@ nodeproxy
 },
 
 /**
- * @method setMatrixDirty
- */
-setMatrixDirty : function (
-)
-{
-},
-
-/**
  * @method generateTypedArray
  */
 generateTypedArray : function (
@@ -1195,17 +1187,19 @@ str
 },
 
 /**
- * @method setChildrenOrderDirty
+ * @method getInheritOpacity
+ * @return {float}
  */
-setChildrenOrderDirty : function (
+getInheritOpacity : function (
 )
 {
+    return 0;
 },
 
 /**
- * @method updateLocalMatrixFromJS
+ * @method setChildrenOrderDirty
  */
-updateLocalMatrixFromJS : function (
+setChildrenOrderDirty : function (
 )
 {
 },
@@ -1228,6 +1222,16 @@ getName : function (
 )
 {
     return ;
+},
+
+/**
+ * @method getOpacity
+ * @return {unsigned char}
+ */
+getOpacity : function (
+)
+{
+    return 0;
 },
 
 /**

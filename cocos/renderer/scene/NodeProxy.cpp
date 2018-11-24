@@ -41,13 +41,10 @@ THE SOFTWARE.
 RENDERER_BEGIN
 
 int NodeProxy::_worldMatDirty = 0;
+int NodeProxy::_parentOpacityDirty = 0;
 
 NodeProxy::NodeProxy()
-: _localZOrder(0)
-, _childrenOrderDirty(false)
-, _matDirty(true)
-, _groupID(0)
-, _jsTRS(nullptr)
+: _jsTRS(nullptr)
 , _jsTRSData(nullptr)
 , _parent(nullptr)
 {
@@ -85,7 +82,6 @@ void NodeProxy::reset()
     _groupID = 0;
     _localMat.setIdentity();
     _worldMat.setIdentity();
-    _matDirty = true;
 }
 
 // lazy allocs
@@ -215,46 +211,68 @@ void NodeProxy::generateTypedArray()
 
 void NodeProxy::updateMatrix()
 {
-    updateLocalMatrixFromJS();
-    if (_matDirty || _worldMatDirty > 0)
+    if (_matrixUpdated || _worldMatDirty > 0)
     {
         // Update world matrix
         const cocos2d::Mat4& parentMat = _parent == nullptr ? cocos2d::Mat4::IDENTITY : _parent->getWorldMatrix();
         _worldMat.multiply(parentMat, _localMat, &_worldMat);
-        _matDirty = false;
+        _matrixUpdated = false;
     }
 }
 
-void NodeProxy::updateLocalMatrixFromJS()
+void NodeProxy::updateFromJS()
 {
-    if (_jsTRSData[0] > 0) {
+    uint8_t* uintData = (uint8_t*)_jsTRSData;
+    if (uintData[0] > 0)
+    {
         _localMat.setIdentity();
         cocos2d::Quaternion q(_jsTRSData[4], _jsTRSData[5], _jsTRSData[6], 1.0);
         _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
         _localMat.scale(_jsTRSData[7], _jsTRSData[8], _jsTRSData[9]);
         _localMat.rotate(q);
-        _matDirty = true;
+        _matrixUpdated = true;
+    }
+    if (uintData[1] > 0)
+    {
+        _opacity = uintData[2];
+        _opacityUpdated = true;
     }
 }
 
 void NodeProxy::visitAsRoot(RenderFlow* flow)
 {
     _worldMatDirty = 0;
+    _parentOpacityDirty = 0;
     visit(flow);
 }
 
 void NodeProxy::visit(RenderFlow* flow)
 {
     bool worldMatUpdated = false;
+    bool parentOpacityUpdated = false;
+    if (_parent != nullptr)
+    {
+        _opacity = (uint8_t)(_opacity * _parent->getInheritOpacity());
+        _inheritOpacity = (float)_opacity / 255;
+    }
     
     reorderChildren();
     
-    if (_matDirty)
+    updateFromJS();
+    
+    if (_matrixUpdated)
     {
         _worldMatDirty++;
         worldMatUpdated = true;
     }
     updateMatrix();
+    
+    if (_opacityUpdated)
+    {
+        _parentOpacityDirty++;
+        _opacityUpdated = false;
+        parentOpacityUpdated = true;
+    }
     
     for (const auto& handler : _handles)
     {
@@ -274,6 +292,10 @@ void NodeProxy::visit(RenderFlow* flow)
     if (worldMatUpdated)
     {
         _worldMatDirty--;
+    }
+    if (parentOpacityUpdated)
+    {
+        _parentOpacityDirty--;
     }
 }
 
