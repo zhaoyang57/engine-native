@@ -40,7 +40,7 @@ public:
     DeviceGraphics* getDevice() const { return _device; };
     Scene* getRenderScene() const { return _scene; };
     
-    void visit(NodeProxy* scene);
+    void render(NodeProxy* scene);
     
     RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
     ~RenderFlow();

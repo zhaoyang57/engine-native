@@ -39,11 +39,13 @@ RenderFlow::~RenderFlow()
     CC_SAFE_DELETE(_batcher);
 }
 
-void RenderFlow::visit(NodeProxy* scene)
+void RenderFlow::render(NodeProxy* scene)
 {
     _batcher->startBatch();
     scene->visitAsRoot(this);
     _batcher->terminateBatch();
+    
+    _forward->render(_scene);
 }
 
 RENDERER_END

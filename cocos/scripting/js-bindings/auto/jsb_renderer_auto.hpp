@@ -251,8 +251,8 @@ bool js_register_cocos2d_renderer_RenderFlow(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_getRenderScene);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_getModelBatcher);
-SE_DECLARE_FUNC(js_renderer_RenderFlow_visit);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_getDevice);
+SE_DECLARE_FUNC(js_renderer_RenderFlow_render);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_RenderFlow);
 
 #endif //#if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

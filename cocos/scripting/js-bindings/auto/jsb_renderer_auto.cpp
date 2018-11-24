@@ -3874,25 +3874,6 @@ static bool js_renderer_RenderFlow_getModelBatcher(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderFlow_getModelBatcher)
 
-static bool js_renderer_RenderFlow_visit(se::State& s)
-{
-    cocos2d::renderer::RenderFlow* cobj = (cocos2d::renderer::RenderFlow*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_RenderFlow_visit : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        cocos2d::renderer::NodeProxy* arg0 = nullptr;
-        ok &= seval_to_native_ptr(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_renderer_RenderFlow_visit : Error processing arguments");
-        cobj->visit(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_RenderFlow_visit)
-
 static bool js_renderer_RenderFlow_getDevice(se::State& s)
 {
     cocos2d::renderer::RenderFlow* cobj = (cocos2d::renderer::RenderFlow*)s.nativeThisObject();
@@ -3910,6 +3891,25 @@ static bool js_renderer_RenderFlow_getDevice(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_RenderFlow_getDevice)
+
+static bool js_renderer_RenderFlow_render(se::State& s)
+{
+    cocos2d::renderer::RenderFlow* cobj = (cocos2d::renderer::RenderFlow*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderFlow_render : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderFlow_render : Error processing arguments");
+        cobj->render(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderFlow_render)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_RenderFlow_finalize)
 
@@ -3954,8 +3954,8 @@ bool js_register_renderer_RenderFlow(se::Object* obj)
 
     cls->defineFunction("getRenderScene", _SE(js_renderer_RenderFlow_getRenderScene));
     cls->defineFunction("getModelBatcher", _SE(js_renderer_RenderFlow_getModelBatcher));
-    cls->defineFunction("visit", _SE(js_renderer_RenderFlow_visit));
     cls->defineFunction("getDevice", _SE(js_renderer_RenderFlow_getDevice));
+    cls->defineFunction("render", _SE(js_renderer_RenderFlow_render));
     cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_RenderFlow_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::renderer::RenderFlow>(cls);

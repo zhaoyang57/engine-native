@@ -1765,16 +1765,6 @@ getModelBatcher : function (
 },
 
 /**
- * @method visit
- * @param {cc.renderer::NodeProxy} arg0
- */
-visit : function (
-nodeproxy 
-)
-{
-},
-
-/**
  * @method getDevice
  * @return {cc.renderer::DeviceGraphics}
  */
@@ -1782,6 +1772,16 @@ getDevice : function (
 )
 {
     return cc.renderer::DeviceGraphics;
+},
+
+/**
+ * @method render
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+render : function (
+nodeproxy 
+)
+{
 },
 
 /**
