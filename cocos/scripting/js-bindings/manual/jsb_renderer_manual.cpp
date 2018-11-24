@@ -331,13 +331,10 @@ public:
         
         Mat4 worldMatrix;
         se::Value func;
-        if (_jsNode.toObject()->getProperty("getWorldMatrix", &func))
+        if (_jsNode.toObject()->getProperty("getWorldMatrixInAB", &func))
         {
             se::Value ret;
-            se::ValueArray args;
-            se::HandleObject obj(se::Object::createPlainObject());
-            args.push_back(se::Value(obj));
-            func.toObject()->call(args, _jsNode.toObject(), &ret);
+            func.toObject()->call(se::EmptyValueArray, _jsNode.toObject(), &ret);
             seval_to_Mat4(ret, &worldMatrix);
         }
         return worldMatrix;
@@ -350,13 +347,10 @@ public:
         
         Mat4 worldRT;
         se::Value func;
-        if (_jsNode.toObject()->getProperty("getWorldRT", &func))
+        if (_jsNode.toObject()->getProperty("getWorldRTInAB", &func))
         {
             se::Value ret;
-            se::ValueArray args;
-            se::HandleObject obj(se::Object::createPlainObject());
-            args.push_back(se::Value(obj));
-            func.toObject()->call(args, _jsNode.toObject(), &ret);
+            func.toObject()->call(se::EmptyValueArray, _jsNode.toObject(), &ret);
             seval_to_Mat4(ret, &worldRT);
         }
         return worldRT;
