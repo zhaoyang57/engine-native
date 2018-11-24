@@ -67,6 +67,8 @@ SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setViewport);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_draw);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setDepthFunc);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_enableDepthTest);
+SE_DECLARE_FUNC(js_gfx_DeviceGraphics_resetDrawCalls);
+SE_DECLARE_FUNC(js_gfx_DeviceGraphics_getDrawCalls);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setBlendEquation);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilFuncFront);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilOpFront);

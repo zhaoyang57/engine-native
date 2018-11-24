@@ -896,6 +896,39 @@ static bool js_gfx_DeviceGraphics_enableDepthTest(se::State& s)
 }
 SE_BIND_FUNC(js_gfx_DeviceGraphics_enableDepthTest)
 
+static bool js_gfx_DeviceGraphics_resetDrawCalls(se::State& s)
+{
+    cocos2d::renderer::DeviceGraphics* cobj = (cocos2d::renderer::DeviceGraphics*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_gfx_DeviceGraphics_resetDrawCalls : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->resetDrawCalls();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_gfx_DeviceGraphics_resetDrawCalls)
+
+static bool js_gfx_DeviceGraphics_getDrawCalls(se::State& s)
+{
+    cocos2d::renderer::DeviceGraphics* cobj = (cocos2d::renderer::DeviceGraphics*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_gfx_DeviceGraphics_getDrawCalls : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        unsigned int result = cobj->getDrawCalls();
+        ok &= uint32_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_gfx_DeviceGraphics_getDrawCalls : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_gfx_DeviceGraphics_getDrawCalls)
+
 static bool js_gfx_DeviceGraphics_setBlendEquation(se::State& s)
 {
     cocos2d::renderer::DeviceGraphics* cobj = (cocos2d::renderer::DeviceGraphics*)s.nativeThisObject();
@@ -1132,6 +1165,8 @@ bool js_register_gfx_DeviceGraphics(se::Object* obj)
     cls->defineFunction("draw", _SE(js_gfx_DeviceGraphics_draw));
     cls->defineFunction("setDepthFunc", _SE(js_gfx_DeviceGraphics_setDepthFunc));
     cls->defineFunction("enableDepthTest", _SE(js_gfx_DeviceGraphics_enableDepthTest));
+    cls->defineFunction("resetDrawCalls", _SE(js_gfx_DeviceGraphics_resetDrawCalls));
+    cls->defineFunction("getDrawCalls", _SE(js_gfx_DeviceGraphics_getDrawCalls));
     cls->defineFunction("setBlendEquation", _SE(js_gfx_DeviceGraphics_setBlendEquation));
     cls->defineFunction("setStencilFuncFront", _SE(js_gfx_DeviceGraphics_setStencilFuncFront));
     cls->defineFunction("setStencilOpFront", _SE(js_gfx_DeviceGraphics_setStencilOpFront));

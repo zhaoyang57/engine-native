@@ -124,6 +124,9 @@ public:
     
     void draw(size_t base, GLsizei count);
     
+    void resetDrawCalls() { _drawCalls = 0; };
+    uint32_t getDrawCalls() const { return _drawCalls; };
+    
 private:
     
     struct Uniform
@@ -170,6 +173,8 @@ private:
     int _sy;
     int _sw;
     int _sh;
+    
+    uint32_t _drawCalls = 0;
 
     int _defaultFbo;
     

@@ -431,6 +431,7 @@ void DeviceGraphics::draw(size_t base, GLsizei count)
         GL_CHECK(glDrawArrays(ENUM_CLASS_TO_GLENUM(_nextState.primitiveType), (GLint)base, count));
     }
     
+    _drawCalls++;
     _currentState = std::move(_nextState);
 }
 

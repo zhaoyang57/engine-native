@@ -467,6 +467,24 @@ enableDepthTest : function (
 },
 
 /**
+ * @method resetDrawCalls
+ */
+resetDrawCalls : function (
+)
+{
+},
+
+/**
+ * @method getDrawCalls
+ * @return {unsigned int}
+ */
+getDrawCalls : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method setBlendEquation
  * @param {cc.renderer::BlendOp} arg0
  */
