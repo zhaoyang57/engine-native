@@ -29,14 +29,15 @@
 RENDERER_BEGIN
 
 class NodeProxy;
-class RenderFlow;
+class ModelBatcher;
+class Scene;
 
 class SystemHandle
 {
 public:
     virtual ~SystemHandle() = default;
-    virtual void handle(NodeProxy *node, RenderFlow* flow) = 0;
-    virtual void postHandle(NodeProxy *node, RenderFlow* flow) = 0;
+    virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
+    virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
 };
 
 RENDERER_END

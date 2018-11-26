@@ -32,7 +32,8 @@ THE SOFTWARE.
 #include <string>
 #include <regex>
 
-#include "RenderFlow.hpp"
+#include "ModelBatcher.hpp"
+#include "../renderer/Scene.h"
 #include "base/ccMacros.h"
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
@@ -42,6 +43,7 @@ RENDERER_BEGIN
 
 int NodeProxy::_worldMatDirty = 0;
 int NodeProxy::_parentOpacityDirty = 0;
+float NodeProxy::_inheritOpacity = 1.0;
 
 NodeProxy::NodeProxy()
 : _jsTRS(nullptr)
@@ -239,21 +241,23 @@ void NodeProxy::updateFromJS()
     }
 }
 
-void NodeProxy::visitAsRoot(RenderFlow* flow)
+void NodeProxy::visitAsRoot(ModelBatcher* batcher, Scene* scene)
 {
     _worldMatDirty = 0;
     _parentOpacityDirty = 0;
-    visit(flow);
+    _inheritOpacity = 1.0;
+    visit(batcher, scene);
 }
 
-void NodeProxy::visit(RenderFlow* flow)
+void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
 {
     bool worldMatUpdated = false;
     bool parentOpacityUpdated = false;
-    if (_parent != nullptr)
+    uint8_t opacity = _opacity;
+    if (_parent != nullptr && _parentOpacityDirty > 0)
     {
-        _opacity = (uint8_t)(_opacity * _parent->getInheritOpacity());
-        _inheritOpacity = (float)_opacity / 255;
+        opacity = (uint8_t)(_opacity * _inheritOpacity);
+        _inheritOpacity = (float)opacity / 255;
     }
     
     reorderChildren();
@@ -276,17 +280,17 @@ void NodeProxy::visit(RenderFlow* flow)
     
     for (const auto& handler : _handles)
     {
-        handler.second->handle(this, flow);
+        handler.second->handle(this, batcher, scene);
     }
     
     for (const auto& child : _children)
     {
-        child->visit(flow);
+        child->visit(batcher, scene);
     }
     
     for (const auto& handler : _handles)
     {
-        handler.second->postHandle(this, flow);
+        handler.second->postHandle(this, batcher, scene);
     }
     
     if (worldMatUpdated)

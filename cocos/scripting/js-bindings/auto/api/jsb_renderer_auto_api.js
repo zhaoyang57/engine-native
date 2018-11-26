@@ -1129,6 +1129,14 @@ Scene : function (
 renderer.NodeProxy = {
 
 /**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
  * @method addChild
  * @param {cc.renderer::NodeProxy} arg0
  */
@@ -1147,59 +1155,21 @@ generateTypedArray : function (
 },
 
 /**
- * @method removeAllChildren
- */
-removeAllChildren : function (
+ * @method getParent
+* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
+*/
+getParent : function(
 )
 {
+    return cc.renderer::NodeProxy;
 },
 
 /**
- * @method addHandle
- * @param {String} arg0
- * @param {cc.renderer::SystemHandle} arg1
- */
-addHandle : function (
-str, 
-systemhandle 
-)
-{
-},
-
-/**
- * @method getChildren
- * @return {Array}
- */
-getChildren : function (
-)
-{
-    return new Array();
-},
-
-/**
- * @method removeHandle
+ * @method setName
  * @param {String} arg0
  */
-removeHandle : function (
+setName : function (
 str 
-)
-{
-},
-
-/**
- * @method getInheritOpacity
- * @return {float}
- */
-getInheritOpacity : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method setChildrenOrderDirty
- */
-setChildrenOrderDirty : function (
 )
 {
 },
@@ -1225,21 +1195,31 @@ getName : function (
 },
 
 /**
- * @method getOpacity
- * @return {unsigned char}
+ * @method getGroupID
+ * @return {int}
  */
-getOpacity : function (
+getGroupID : function (
 )
 {
     return 0;
 },
 
 /**
- * @method setName
- * @param {String} arg0
+ * @method removeAllChildren
  */
-setName : function (
-str 
+removeAllChildren : function (
+)
+{
+},
+
+/**
+ * @method addHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addHandle : function (
+str, 
+systemhandle 
 )
 {
 },
@@ -1255,49 +1235,33 @@ int
 },
 
 /**
- * @method visitAsRoot
- * @param {cc.renderer::RenderFlow} arg0
- */
-visitAsRoot : function (
-renderflow 
-)
-{
-},
-
-/**
- * @method reset
- */
-reset : function (
-)
-{
-},
-
-/**
- * @method getParent
-* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
-*/
-getParent : function(
-)
-{
-    return cc.renderer::NodeProxy;
-},
-
-/**
- * @method getGroupID
- * @return {int}
- */
-getGroupID : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method removeChild
  * @param {cc.renderer::NodeProxy} arg0
  */
 removeChild : function (
 nodeproxy 
+)
+{
+},
+
+/**
+ * @method getChildren
+ * @return {Array}
+ */
+getChildren : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method visitAsRoot
+ * @param {cc.renderer::ModelBatcher} arg0
+ * @param {cc.renderer::Scene} arg1
+ */
+visitAsRoot : function (
+modelbatcher, 
+scene 
 )
 {
 },
@@ -1313,6 +1277,26 @@ int
 },
 
 /**
+ * @method removeHandle
+ * @param {String} arg0
+ */
+removeHandle : function (
+str 
+)
+{
+},
+
+/**
+ * @method getOpacity
+ * @return {unsigned char}
+ */
+getOpacity : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method getChildrenCount
  * @return {int}
  */
@@ -1320,6 +1304,14 @@ getChildrenCount : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method setChildrenOrderDirty
+ */
+setChildrenOrderDirty : function (
+)
+{
 },
 
 /**
@@ -1398,24 +1390,30 @@ getIndexOffset : function (
  * @method request
  * @param {unsigned int} arg0
  * @param {unsigned int} arg1
+ * @param {cc.renderer::MeshBuffer::OffsetInfo} arg2
+ * @return {bool}
  */
 request : function (
 int, 
-int 
+int, 
+offsetinfo 
 )
 {
+    return false;
 },
 
 /**
  * @method requestStatic
  * @param {unsigned int} arg0
  * @param {unsigned int} arg1
+ * @return {bool}
  */
 requestStatic : function (
 int, 
 int 
 )
 {
+    return false;
 },
 
 /**
@@ -1515,11 +1513,13 @@ enable : function (
 /**
  * @method handle
  * @param {cc.renderer::NodeProxy} arg0
- * @param {cc.renderer::RenderFlow} arg1
+ * @param {cc.renderer::ModelBatcher} arg1
+ * @param {cc.renderer::Scene} arg2
  */
 handle : function (
 nodeproxy, 
-renderflow 
+modelbatcher, 
+scene 
 )
 {
 },
@@ -1527,11 +1527,13 @@ renderflow
 /**
  * @method postHandle
  * @param {cc.renderer::NodeProxy} arg0
- * @param {cc.renderer::RenderFlow} arg1
+ * @param {cc.renderer::ModelBatcher} arg1
+ * @param {cc.renderer::Scene} arg2
  */
 postHandle : function (
 nodeproxy, 
-renderflow 
+modelbatcher, 
+scene 
 )
 {
 },

@@ -38,15 +38,15 @@ namespace se {
 RENDERER_BEGIN
 
 class NodeProxy;
-class RenderFlow;
+class ModelBatcher;
 
 class RenderHandle : SystemHandle
 {
 public:
     RenderHandle();
     virtual ~RenderHandle();
-    virtual void handle(NodeProxy *node, RenderFlow* flow) override;
-    virtual void postHandle(NodeProxy *node, RenderFlow* flow) override;
+    virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
+    virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
 //
@@ -67,7 +67,7 @@ public:
     void setUseModel(bool useModel) { _useModel = useModel; };
     
     VertexFormat* getVertexFormat() const { return _vfmt; };
-    void setVertexFormat(VertexFormat* vfmt) { _vfmt = vfmt; _vfele = _vfmt->getElement(ATTRIB_NAME_POSITION);};
+    void setVertexFormat(VertexFormat* vfmt);
     
     void setVertsDirty() { _vertsDirty = true; };
     
@@ -92,16 +92,16 @@ protected:
         se::Object* jsIndices;
         std::vector<uint8_t> worldVerts;
     };
-//    void postUpdateRenderData();
-//    void postRender();
     
 protected:
     bool _enabled;
     bool _vertsDirty;
     bool _useModel;
+    uint32_t _bytesPerVertex;
+    size_t _posOffset;
 
     VertexFormat* _vfmt;
-    const VertexFormat::Element* _vfele;
+    const VertexFormat::Element* _vfpos;
     std::vector<RenderData> _datas;
 };
 

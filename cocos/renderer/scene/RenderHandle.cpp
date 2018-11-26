@@ -25,13 +25,18 @@
 #include "RenderHandle.hpp"
 
 #include "NodeProxy.hpp"
-#include "RenderFlow.hpp"
+#include "ModelBatcher.hpp"
+#include "MeshBuffer.hpp"
+#include "../renderer/Scene.h"
 #include "math/CCMath.h"
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
 
 RENDERER_BEGIN
+
+static MeshBuffer::OffsetInfo s_offsets;
+static cocos2d::Vec3 s_worldPos(0, 0, 0);
 
 RenderHandle::RenderData::~RenderData()
 {
@@ -129,34 +134,41 @@ Effect* RenderHandle::getEffect(uint32_t index)
     }
 }
 
-void RenderHandle::handle(NodeProxy *node, RenderFlow* flow)
+void RenderHandle::setVertexFormat(VertexFormat* vfmt)
 {
-    flow->getModelBatcher()->commit(node, this);
+    _vfmt = vfmt;
+    _vfpos = _vfmt->getElement(ATTRIB_NAME_POSITION);
+    _bytesPerVertex = _vfmt->getBytes();
+    _posOffset = _vfpos->offset / 4;
 }
 
-void RenderHandle::postHandle(NodeProxy *node, RenderFlow* flow)
+void RenderHandle::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
+{
+    batcher->commit(node, this);
+}
+
+void RenderHandle::postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
 {
 }
 
 void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat)
 {
-    if (index >= _datas.size())
+    if (index >= _datas.size() || _vfmt == nullptr)
     {
         return;
     }
     RenderData& data = _datas[index];
     
-    uint32_t bytesPerVertex = _vfmt->getBytes();
-    CCASSERT(data.vBytes % bytesPerVertex == 0, "RenderHandle::fillBuffers vertices data doesn't follow vertex format");
+    CCASSERT(data.vBytes % _bytesPerVertex == 0, "RenderHandle::fillBuffers vertices data doesn't follow vertex format");
     CCASSERT(data.iBytes % 2 == 0, "RenderHandle::fillBuffers indices data is not saved in 16bit");
-    uint32_t vertexCount = (uint32_t)data.vBytes / bytesPerVertex;
+    uint32_t vertexCount = (uint32_t)data.vBytes / _bytesPerVertex;
     uint32_t indexCount = (uint32_t)data.iBytes / 2;
 
     // must retrieve offset before request
-    uint32_t vBufferOffset = buffer->getByteOffset();
-    uint32_t iDataId = buffer->getIndexOffset();
-    uint32_t vertexId = buffer->getVertexOffset();
-    buffer->request(vertexCount, indexCount);
+    buffer->request(vertexCount, indexCount, &s_offsets);
+    uint32_t vBufferOffset = s_offsets.vByte / 4;
+    uint32_t indexId = s_offsets.index;
+    uint32_t vertexId = s_offsets.vertex;
     
     // Calculate vertices world positions
     if (!_useModel)
@@ -170,38 +182,35 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
         // Assume position is stored in floats
         float* vertices = (float*)data.vertices;
         float* worldVerts = (float*)data.worldVerts.data();
-        //const VertexFormat::Element& posDesc = _vfmt->getElement(ATTRIB_NAME_POSITION);
-        uint32_t num = _vfele->num;
-        size_t dataPerVertex = bytesPerVertex / 4;
-        size_t elOffset = _vfele->offset / 4;
-        size_t offset;
-        cocos2d::Vec3 pos(0, 0, 0);
+        uint32_t num = _vfpos->num;
+        size_t dataPerVertex = _bytesPerVertex / 4;
+        size_t offset = _posOffset;
         for (uint32_t i = 0; i < vertexCount; ++i)
         {
-            offset = i * dataPerVertex + elOffset;
-            pos.x = vertices[offset];
-            pos.y = vertices[offset + 1];
+            s_worldPos.x = vertices[offset];
+            s_worldPos.y = vertices[offset + 1];
             if (num == 3)
-                pos.z = vertices[offset + 2];
-            worldMat.transformPoint(&pos);
-            worldVerts[offset] = pos.x;
-            worldVerts[offset + 1] = pos.y;
+                s_worldPos.z = vertices[offset + 2];
+            worldMat.transformPoint(&s_worldPos);
+            worldVerts[offset] = s_worldPos.x;
+            worldVerts[offset + 1] = s_worldPos.y;
             if (num == 3)
-                worldVerts[offset + 2] = pos.z;
+                worldVerts[offset + 2] = s_worldPos.z;
+            offset += dataPerVertex;
         }
-        memcpy(&buffer->vData[vBufferOffset / 4], (float*)data.worldVerts.data(), data.vBytes);
+        memcpy(&buffer->vData[vBufferOffset], (float*)data.worldVerts.data(), data.vBytes);
     }
     else
     {
         // Copy vertex buffer memory
-        memcpy(&buffer->vData[vBufferOffset / 4], (float*)data.vertices, data.vBytes);
+        memcpy(&buffer->vData[vBufferOffset], (float*)data.vertices, data.vBytes);
     }
     
     // Copy index buffer with vertex offset
     uint16_t* indices = (uint16_t*)data.indices;
     for (int i = 0; i < indexCount; ++i)
     {
-        buffer->iData[iDataId++] = vertexId + indices[i];
+        buffer->iData[indexId++] = vertexId + indices[i];
     }
 }
 

@@ -38,11 +38,18 @@ class ModelBatcher;
 class MeshBuffer
 {
 public:
+    struct OffsetInfo
+    {
+        uint32_t vByte;
+        uint32_t index;
+        uint32_t vertex;
+    };
+    
     MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt);
     ~MeshBuffer();
     
-    void request(uint32_t vertexCount, uint32_t indexCount);
-    void requestStatic(uint32_t vertexCount, uint32_t indexCount);
+    bool request(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset);
+    bool requestStatic(uint32_t vertexCount, uint32_t indexCount);
     void uploadData();
     void reset();
     void destroy();
@@ -65,7 +72,7 @@ public:
     
     std::vector<float> vData;
     std::vector<uint16_t> iData;
-    
+    VertexFormat* _vertexFmt;
     static const int INIT_VERTEX_COUNT = 256;
     static const uint8_t VDATA_BYTE = sizeof(float);
     static const uint8_t IDATA_BYTE = sizeof(uint16_t);
@@ -86,7 +93,6 @@ private:
     bool _dirty;
     
     ModelBatcher* _batcher;
-    VertexFormat* _vertexFmt;
     VertexBuffer* _vb;
     IndexBuffer* _ib;
 };
