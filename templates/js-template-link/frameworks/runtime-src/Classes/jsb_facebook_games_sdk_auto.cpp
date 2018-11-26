@@ -71,8 +71,6 @@ SE_BIND_CTOR(js_facebook_pc_games_sdk_FacebookPCGamesSDK_constructor, __jsb_coco
 
 
 
-extern se::Object* __jsb_cocos2d_Ref_proto;
-
 static bool js_cocos2d_FacebookPCGamesSDK_finalize(se::State& s)
 {
     CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::FacebookPCGamesSDK)", s.nativeThisObject());
@@ -84,7 +82,7 @@ SE_BIND_FINALIZE_FUNC(js_cocos2d_FacebookPCGamesSDK_finalize)
 
 bool js_register_facebook_pc_games_sdk_FacebookPCGamesSDK(se::Object* obj)
 {
-    auto cls = se::Class::create("FacebookPCGamesSDK", obj, __jsb_cocos2d_Ref_proto, _SE(js_facebook_pc_games_sdk_FacebookPCGamesSDK_constructor));
+    auto cls = se::Class::create("FacebookPCGamesSDK", obj, nullptr, _SE(js_facebook_pc_games_sdk_FacebookPCGamesSDK_constructor));
 
     cls->defineFunction("init", _SE(js_facebook_pc_games_sdk_FacebookPCGamesSDK_init));
     cls->defineFunction("pushEvent", _SE(js_facebook_pc_games_sdk_FacebookPCGamesSDK_pushEvent));

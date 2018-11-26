@@ -27,7 +27,12 @@ THE SOFTWARE.
 #include "base/ccMacros.h"
 #include "base/CCRef.h"
 
-#include "FacebookGameSDK.h"
+#include <string>
+#include <memory>
+
+namespace facebook_games_sdk {
+	class User;
+};
 
 NS_CC_BEGIN
 /**

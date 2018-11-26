@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Event.h"
 #include "SystemDefaultBrowser.h"
 #include "User.h"
+#include "FacebookGameSDK.h"
 
 NS_CC_BEGIN
 
