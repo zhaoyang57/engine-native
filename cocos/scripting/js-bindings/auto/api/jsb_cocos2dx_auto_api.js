@@ -672,6 +672,22 @@ CanvasGradient : function (
 jsb.CanvasRenderingContext2D = {
 
 /**
+ * @method quadraticCurveTo
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ */
+quadraticCurveTo : function (
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method restore
  */
 restore : function (

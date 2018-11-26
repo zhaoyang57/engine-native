@@ -745,6 +745,11 @@ void CanvasRenderingContext2D::lineTo(float x, float y)
     _impl->lineTo(x, y);
 }
 
+void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, float y2)
+{
+    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
 void CanvasRenderingContext2D::stroke()
 {
     //SE_LOGD("CanvasRenderingContext2D::stroke\n");

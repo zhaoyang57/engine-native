@@ -70,6 +70,11 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "lineTo", x, y);
     }
 
+    void quadraticCurveTo(float x1, float y1, float x2, float y2)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "quadraticCurveTo", x1, y1, x2, y2);
+    }
+
     void stroke()
     {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
@@ -404,6 +409,11 @@ void CanvasRenderingContext2D::moveTo(float x, float y)
 void CanvasRenderingContext2D::lineTo(float x, float y)
 {
     _impl->lineTo(x, y);
+}
+
+void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, float y2)
+{
+    _impl->quadraticCurveTo(x1, y1, x2, y2);
 }
 
 void CanvasRenderingContext2D::stroke()

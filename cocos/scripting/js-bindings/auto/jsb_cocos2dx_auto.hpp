@@ -88,6 +88,7 @@ extern se::Class* __jsb_cocos2d_CanvasRenderingContext2D_class;
 
 bool js_register_cocos2d_CanvasRenderingContext2D(se::Object* obj);
 bool register_all_engine(se::Object* obj);
+SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_quadraticCurveTo);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_restore);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_moveTo);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_lineTo);

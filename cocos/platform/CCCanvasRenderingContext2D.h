@@ -72,6 +72,7 @@ public:
     void closePath();
     void moveTo(float x, float y);
     void lineTo(float x, float y);
+    void quadraticCurveTo(float x1, float y1, float x2, float y2);
     void fill();
     void stroke();
     void restore();

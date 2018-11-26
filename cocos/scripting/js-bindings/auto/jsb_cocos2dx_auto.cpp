@@ -1297,6 +1297,31 @@ bool js_register_engine_CanvasGradient(se::Object* obj)
 se::Object* __jsb_cocos2d_CanvasRenderingContext2D_proto = nullptr;
 se::Class* __jsb_cocos2d_CanvasRenderingContext2D_class = nullptr;
 
+static bool js_engine_CanvasRenderingContext2D_quadraticCurveTo(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_quadraticCurveTo : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 4) {
+        float arg0 = 0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        ok &= seval_to_float(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_quadraticCurveTo : Error processing arguments");
+        cobj->quadraticCurveTo(arg0, arg1, arg2, arg3);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 4);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_quadraticCurveTo)
+
 static bool js_engine_CanvasRenderingContext2D_restore(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -1809,6 +1834,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
 {
     auto cls = se::Class::create("CanvasRenderingContext2D", obj, nullptr, _SE(js_engine_CanvasRenderingContext2D_constructor));
 
+    cls->defineFunction("quadraticCurveTo", _SE(js_engine_CanvasRenderingContext2D_quadraticCurveTo));
     cls->defineFunction("restore", _SE(js_engine_CanvasRenderingContext2D_restore));
     cls->defineFunction("moveTo", _SE(js_engine_CanvasRenderingContext2D_moveTo));
     cls->defineFunction("lineTo", _SE(js_engine_CanvasRenderingContext2D_lineTo));
