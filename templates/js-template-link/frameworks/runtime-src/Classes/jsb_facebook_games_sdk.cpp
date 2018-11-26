@@ -1,8 +1,117 @@
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "scripting/js-bindings/manual/jsb_global.h"
 
-#include "FacebookPCGamesSDK.h"
+#include "Event.h"
+#include "FacebookGameSDK.h"
+#include "SystemDefaultBrowser.h"
+
 #include "jsb_facebook_games_sdk.hpp"
+
+#include <locale>
+#include <codecvt>
+
+NS_CC_BEGIN
+
+static const utility::string_t kExternId(U("<extern_id_here>"));
+static const utility::string_t kExternNamespace(U("<extern_namespace_here>"));
+
+// The Facebook Games SDK wrapper
+class FacebookPCGamesSDK : public Ref
+{
+public:
+	FacebookPCGamesSDK() 
+		: appId(0)
+		, accessToken(U(""))
+		, _isEventPrepared(false)
+		, loginUser(nullptr)
+	{
+	}
+
+	~FacebookPCGamesSDK() {
+		loginUser.reset();
+	}
+
+
+	// param  Facebook Developer Account ID
+	void init(std::string strAppId) 
+	{
+		appId = std::stoull(strAppId);
+		const auto browser = std::make_shared<facebook_games_sdk::SystemDefaultBrowser>(appId);
+		facebook_games_sdk::FacebookGameSDK::initialize(appId, browser);
+	}
+
+	std::shared_ptr<facebook_games_sdk::User> login() 
+	{
+		auto user = facebook_games_sdk::FacebookGameSDK::getInstance().doLogin().then([=](std::shared_ptr<facebook_games_sdk::User> usr) {
+			if (usr) {
+				usr->getPermissions().get();
+			}
+			return usr;
+		});
+		// Calling future::get on a valid future blocks the thread until the provider makes the shared state ready
+		loginUser = user.get();
+
+		return loginUser;
+	}
+
+	// push event to Analysis Statistics
+	void pushEvent(int eventId) 
+	{
+		_isEventPrepared ? nullptr : _prepareEvent();
+
+		// Event representing Activate App
+		facebook_games_sdk::Event::logEvent(facebook_games_sdk::Strings::kEventActivateApp);
+
+		// Event representing View Content with custom parameters
+		std::map<utility::string_t, utility::string_t> details;
+		details[U("success")] = U("true");
+		details[U("source")] = U("PC_SDK");
+		facebook_games_sdk::Event::logEvent(facebook_games_sdk::Strings::kEventViewedContent, details);
+	}
+
+private:
+
+	void _prepareEvent()
+	{
+		accessToken = loginUser ? loginUser->accessToken() : U("");
+		// To send events to Facebook
+		// You would be able to see the events in Analytics
+		facebook_games_sdk::Event::initialize(appId, accessToken);
+
+		// Add additional information about the user
+		facebook_games_sdk::Event::setExternalInfo(kExternId, kExternNamespace);
+
+		_isEventPrepared = true;
+	}
+
+private:
+
+	unsigned long long appId;
+
+	std::wstring accessToken;
+
+	std::shared_ptr<facebook_games_sdk::User> loginUser;
+
+	bool _isEventPrepared;
+};
+
+NS_CC_END
+
+// conversions
+bool FB_User_to_seval(std::shared_ptr<facebook_games_sdk::User> user, se::Value* ret)
+{
+	assert(ret != nullptr);
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+
+	se::HandleObject obj(se::Object::createPlainObject());
+	obj->setProperty("email", se::Value(convert.to_bytes(user->email())));
+	obj->setProperty("name", se::Value(convert.to_bytes(user->name())));
+	obj->setProperty("accessToken", se::Value(convert.to_bytes(user->accessToken())));
+	obj->setProperty("hasPicture", se::Value(convert.to_bytes(user->hasPicture())));
+	ret->setObject(obj);
+
+	return true;
+};
 
 se::Object* __jsb_cocos2d_FacebookPCGamesSDK_proto = nullptr;
 se::Class* __jsb_cocos2d_FacebookPCGamesSDK_class = nullptr;
@@ -52,7 +161,9 @@ static bool js_facebook_pc_games_sdk_FacebookPCGamesSDK_login(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     if (argc == 0) {
-        cobj->login();
+		std::shared_ptr<facebook_games_sdk::User> user = cobj->login();
+		bool ok = FB_User_to_seval(user, &s.rval());
+		SE_PRECONDITION2(ok, false, "js_facebook_pc_games_sdk_FacebookPCGamesSDK_login : FB_User_to_seval failed");
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);

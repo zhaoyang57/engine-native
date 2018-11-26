@@ -22,9 +22,6 @@
     <ClCompile Include="..\Classes\jsb_module_register.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\FacebookPCGamesSDK.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\jsb_facebook_games_sdk.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
@@ -37,9 +34,6 @@
       <Filter>win32</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="..\Classes\FacebookPCGamesSDK.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\jsb_facebook_games_sdk.hpp">
       <Filter>Classes</Filter>
     </ClInclude>
