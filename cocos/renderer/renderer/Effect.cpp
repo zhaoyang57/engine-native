@@ -118,4 +118,20 @@ void Effect::setProperty(const std::string& name, const Property& property)
     _properties[name] = property;
 }
 
+void Effect::copy(Effect& effect)
+{
+    _hash = effect._hash;
+    auto& otherTech = effect._techniques;
+    for (auto it = otherTech.begin(); it != otherTech.end(); it ++)
+    {
+        auto tech = new Technique();
+        tech->autorelease();
+        tech->copy(**it);
+        _techniques.pushBack(tech);
+    }
+    _defineTemplates = effect._defineTemplates;
+    _cachedNameValues = effect._cachedNameValues;
+    _properties = effect._properties;
+}
+
 RENDERER_END

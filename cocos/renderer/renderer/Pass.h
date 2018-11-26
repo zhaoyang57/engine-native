@@ -68,6 +68,8 @@ public:
     inline void setProgramName(const std::string& programName) { _programName = programName; }
     inline void disableStencilTest() { _stencilTest = false; }
     
+    void copy(const Pass& pass);
+    
 private:
     friend class BaseRenderer;
     

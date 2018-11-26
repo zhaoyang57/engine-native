@@ -174,6 +174,9 @@ LOCAL_STATIC_LIBRARIES += cocos_network_static
 LOCAL_STATIC_LIBRARIES += cocos_extension_static
 endif # USE_NET_WORK
 
+ifneq ($(USE_NATIVE_MIDDLEWARE),0_0)
+LOCAL_STATIC_LIBRARIES += editor_support_static
+endif # USE_SPINE or USE_DRAGONBONES
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \
@@ -223,6 +226,7 @@ include $(BUILD_STATIC_LIBRARY)
 #==============================================================
 #$(call import-module,.)
 $(call import-module,android)
+$(call import-module,editor-support)
 $(call import-module,platform/android)
 $(call import-module,audio/android)
 $(call import-module,network)

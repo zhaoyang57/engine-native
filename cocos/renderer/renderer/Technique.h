@@ -111,7 +111,8 @@ public:
               const std::vector<Parameter>& parameters,
               const Vector<Pass*>& passes,
               int layer = 0);
-
+    
+    Technique();
     ~Technique();
     
     void setStages(const std::vector<std::string>& stages);
@@ -120,6 +121,8 @@ public:
     const std::vector<Parameter>& getParameters() const { return _parameters; }
     const Vector<Pass*>& getPasses() const { return _passes; }
     uint32_t getStageIDs() const { return _stageIDs; }
+    
+    void copy(const Technique& tech);
     
 private:
     static uint32_t _genID;

@@ -1129,14 +1129,6 @@ Scene : function (
 renderer.NodeProxy = {
 
 /**
- * @method reset
- */
-reset : function (
-)
-{
-},
-
-/**
  * @method addChild
  * @param {cc.renderer::NodeProxy} arg0
  */
@@ -1155,21 +1147,49 @@ generateTypedArray : function (
 },
 
 /**
- * @method getParent
-* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
-*/
-getParent : function(
+ * @method removeAllChildren
+ */
+removeAllChildren : function (
 )
 {
-    return cc.renderer::NodeProxy;
 },
 
 /**
- * @method setName
+ * @method addHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addHandle : function (
+str, 
+systemhandle 
+)
+{
+},
+
+/**
+ * @method getChildren
+ * @return {Array}
+ */
+getChildren : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method removeHandle
  * @param {String} arg0
  */
-setName : function (
+removeHandle : function (
 str 
+)
+{
+},
+
+/**
+ * @method setChildrenOrderDirty
+ */
+setChildrenOrderDirty : function (
 )
 {
 },
@@ -1195,31 +1215,21 @@ getName : function (
 },
 
 /**
- * @method getGroupID
- * @return {int}
+ * @method getOpacity
+ * @return {unsigned char}
  */
-getGroupID : function (
+getOpacity : function (
 )
 {
     return 0;
 },
 
 /**
- * @method removeAllChildren
- */
-removeAllChildren : function (
-)
-{
-},
-
-/**
- * @method addHandle
+ * @method setName
  * @param {String} arg0
- * @param {cc.renderer::SystemHandle} arg1
  */
-addHandle : function (
-str, 
-systemhandle 
+setName : function (
+str 
 )
 {
 },
@@ -1235,26 +1245,6 @@ int
 },
 
 /**
- * @method removeChild
- * @param {cc.renderer::NodeProxy} arg0
- */
-removeChild : function (
-nodeproxy 
-)
-{
-},
-
-/**
- * @method getChildren
- * @return {Array}
- */
-getChildren : function (
-)
-{
-    return new Array();
-},
-
-/**
  * @method visitAsRoot
  * @param {cc.renderer::ModelBatcher} arg0
  * @param {cc.renderer::Scene} arg1
@@ -1262,6 +1252,44 @@ getChildren : function (
 visitAsRoot : function (
 modelbatcher, 
 scene 
+)
+{
+},
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method getParent
+* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
+*/
+getParent : function(
+)
+{
+    return cc.renderer::NodeProxy;
+},
+
+/**
+ * @method getGroupID
+ * @return {int}
+ */
+getGroupID : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method removeChild
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+removeChild : function (
+nodeproxy 
 )
 {
 },
@@ -1277,26 +1305,6 @@ int
 },
 
 /**
- * @method removeHandle
- * @param {String} arg0
- */
-removeHandle : function (
-str 
-)
-{
-},
-
-/**
- * @method getOpacity
- * @return {unsigned char}
- */
-getOpacity : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method getChildrenCount
  * @return {int}
  */
@@ -1307,11 +1315,15 @@ getChildrenCount : function (
 },
 
 /**
- * @method setChildrenOrderDirty
+ * @method getHandle
+ * @param {String} arg0
+ * @return {cc.renderer::SystemHandle}
  */
-setChildrenOrderDirty : function (
+getHandle : function (
+str 
 )
 {
+    return cc.renderer::SystemHandle;
 },
 
 /**
@@ -1642,6 +1654,142 @@ RenderHandle : function (
 };
 
 /**
+ * @class CustomRenderHandle
+ */
+renderer.CustomRenderHandle = {
+
+/**
+ * @method getIACount
+ * @return {unsigned int}
+ */
+getIACount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getEffectCount
+ * @return {unsigned int}
+ */
+getEffectCount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method enable
+ */
+enable : function (
+)
+{
+},
+
+/**
+ * @method handle
+ * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::ModelBatcher} arg1
+ * @param {cc.renderer::Scene} arg2
+ */
+handle : function (
+nodeproxy, 
+modelbatcher, 
+scene 
+)
+{
+},
+
+/**
+ * @method postHandle
+ * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::ModelBatcher} arg1
+ * @param {cc.renderer::Scene} arg2
+ */
+postHandle : function (
+nodeproxy, 
+modelbatcher, 
+scene 
+)
+{
+},
+
+/**
+ * @method getUseModel
+ * @return {bool}
+ */
+getUseModel : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method setUseModel
+ * @param {bool} arg0
+ */
+setUseModel : function (
+bool 
+)
+{
+},
+
+/**
+ * @method renderIA
+ * @param {unsigned int} arg0
+ * @param {cc.renderer::ModelBatcher} arg1
+ */
+renderIA : function (
+int, 
+modelbatcher 
+)
+{
+},
+
+/**
+ * @method disable
+ */
+disable : function (
+)
+{
+},
+
+/**
+ * @method updateNativeEffect
+ * @param {unsigned int} arg0
+ * @param {cc.renderer::Effect} arg1
+ */
+updateNativeEffect : function (
+int, 
+effect 
+)
+{
+},
+
+/**
+ * @method getEffect
+ * @param {unsigned int} arg0
+ * @return {cc.renderer::Effect}
+ */
+getEffect : function (
+int 
+)
+{
+    return cc.renderer::Effect;
+},
+
+/**
+ * @method CustomRenderHandle
+ * @constructor
+ */
+CustomRenderHandle : function (
+)
+{
+},
+
+};
+
+/**
  * @class ModelBatcher
  */
 renderer.ModelBatcher = {
@@ -1655,13 +1803,15 @@ reset : function (
 },
 
 /**
- * @method getFlow
- * @return {cc.renderer::RenderFlow}
+ * @method getBuffer
+ * @param {cc.renderer::VertexFormat} arg0
+ * @return {cc.renderer::MeshBuffer}
  */
-getFlow : function (
+getBuffer : function (
+vertexformat 
 )
 {
-    return cc.renderer::RenderFlow;
+    return cc.renderer::MeshBuffer;
 },
 
 /**
@@ -1683,11 +1833,35 @@ meshbuffer
 },
 
 /**
- * @method terminateBatch
+ * @method getFlow
+ * @return {cc.renderer::RenderFlow}
  */
-terminateBatch : function (
+getFlow : function (
 )
 {
+    return cc.renderer::RenderFlow;
+},
+
+/**
+ * @method commitIA
+ * @param {cc.renderer::NodeProxy} arg0
+ * @param {cc.renderer::CustomRenderHandle} arg1
+ */
+commitIA : function (
+nodeproxy, 
+customrenderhandle 
+)
+{
+},
+
+/**
+ * @method getCurrentBuffer
+ * @return {cc.renderer::MeshBuffer}
+ */
+getCurrentBuffer : function (
+)
+{
+    return cc.renderer::MeshBuffer;
 },
 
 /**
@@ -1711,25 +1885,21 @@ renderhandle
 },
 
 /**
- * @method getBuffer
- * @param {cc.renderer::VertexFormat} arg0
- * @return {cc.renderer::MeshBuffer}
+ * @method flushIA
+ * @param {cc.renderer::InputAssembler} arg0
  */
-getBuffer : function (
-vertexformat 
+flushIA : function (
+inputassembler 
 )
 {
-    return cc.renderer::MeshBuffer;
 },
 
 /**
- * @method getCurrentBuffer
- * @return {cc.renderer::MeshBuffer}
+ * @method terminateBatch
  */
-getCurrentBuffer : function (
+terminateBatch : function (
 )
 {
-    return cc.renderer::MeshBuffer;
 },
 
 /**

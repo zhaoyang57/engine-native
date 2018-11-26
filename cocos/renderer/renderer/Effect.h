@@ -62,6 +62,8 @@ public:
     void updateHash(double hash) { _hash = hash; };
     double getHash() const { return _hash; };
 
+    void copy(Effect& effect);
+    
 private:
     double _hash;
     Vector<Technique*> _techniques;

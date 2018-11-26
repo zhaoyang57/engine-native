@@ -28,6 +28,9 @@
 
 RENDERER_BEGIN
 
+#define INIT_IA_LENGTH 16
+#define INIT_MODEL_LENGTH 16
+
 ModelBatcher::ModelBatcher(RenderFlow* flow)
 : _flow(flow)
 , _iaOffset(0)
@@ -37,8 +40,15 @@ ModelBatcher::ModelBatcher(RenderFlow* flow)
 , _currEffect(nullptr)
 , _buffer(nullptr)
 {
-    _iaPool.reserve(16);
-    _modelPool.reserve(16);
+    for (int i = 0; i < INIT_IA_LENGTH; i++)
+    {
+        _iaPool.push_back(new InputAssembler());
+    }
+    
+    for (int i = 0; i < INIT_MODEL_LENGTH; i++)
+    {
+        _modelPool.push_back(new Model());
+    }
 }
 
 ModelBatcher::~ModelBatcher()
@@ -147,6 +157,63 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
             handle->fillBuffers(_buffer, i, worldMat);
         }
     }
+}
+
+void ModelBatcher::commitIA(NodeProxy* node, CustomRenderHandle* handle)
+{
+    flush();
+    
+    for (std::size_t i = 0, n = handle->getIACount(); i < n; i++ )
+    {
+        const Mat4& worldMat = handle->getUseModel() ? node->getWorldMatrix() : Mat4::IDENTITY;
+        _currEffect = handle->getEffect((uint32_t)i);
+        _cullingMask = (1 << node->getGroupID());
+        _modelMat.set(worldMat);
+        handle->renderIA(i, this);
+    }
+}
+
+void ModelBatcher::flushIA(InputAssembler* customIA)
+{
+    // Generate IA
+    InputAssembler* ia = nullptr;
+    if (_iaOffset >= _iaPool.size())
+    {
+        ia = new InputAssembler();
+        _iaPool.push_back(ia);
+    }
+    else
+    {
+        ia = _iaPool[_iaOffset];
+    }
+    _iaOffset++;
+    ia->setVertexBuffer(customIA->getVertexBuffer());
+    ia->setIndexBuffer(customIA->getIndexBuffer());
+    ia->setStart(customIA->getStart());
+    ia->setCount(customIA->getCount());
+    
+    // Stencil manager process
+    
+    // Generate model
+    Model* model = nullptr;
+    _modelPool[_modelOffset];
+    if (_modelOffset >= _modelPool.size())
+    {
+        model = new Model();
+        _modelPool.push_back(model);
+    }
+    else
+    {
+        model = _modelPool[_modelOffset];
+    }
+    _modelOffset++;
+    model->setWorldMatix(_modelMat);
+    model->setCullingMask(_cullingMask);
+    model->addEffect(_currEffect);
+    model->addInputAssembler(*ia);
+    _batchedModel.push_back(model);
+    
+    _flow->getRenderScene()->addModel(model);
 }
 
 void ModelBatcher::startBatch()

@@ -189,6 +189,16 @@ void NodeProxy::removeHandle(const std::string& sysid)
     _handles.erase(sysid);
 }
 
+SystemHandle* NodeProxy::getHandle(const std::string& sysid)
+{
+    auto it = _handles.find(sysid);
+    if (it != _handles.end())
+    {
+        return it->second;
+    }
+    return nullptr;
+}
+
 void NodeProxy::generateTypedArray()
 {
     if (_jsTRS == nullptr)

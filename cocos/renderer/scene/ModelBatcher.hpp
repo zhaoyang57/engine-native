@@ -28,6 +28,7 @@
 
 #include "../Macro.h"
 #include "RenderHandle.hpp"
+#include "CustomRenderHandle.hpp"
 #include "MeshBuffer.hpp"
 #include "math/CCMath.h"
 #include "../renderer/Renderer.h"
@@ -47,9 +48,11 @@ public:
 //    void addRenderHandle(RenderHandle* handle);
 //    void removeRenderHandle(RenderHandle* handle);
     void commit(NodeProxy* node, RenderHandle* handle);
+    void commitIA(NodeProxy* node, CustomRenderHandle* handle);
     
     void startBatch();
     void flush();
+    void flushIA(InputAssembler* customIA);
     void terminateBatch();
     
     MeshBuffer* getBuffer(VertexFormat* fmt);

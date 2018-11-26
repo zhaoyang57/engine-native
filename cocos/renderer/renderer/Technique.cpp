@@ -376,6 +376,11 @@ Technique::Technique(const std::vector<std::string>& stages,
 //    RENDERER_LOGD("Technique construction: %p", this);
 }
 
+Technique::Technique()
+{
+    
+}
+
 Technique::~Technique()
 {
 //    RENDERER_LOGD("Technique destruction: %p", this);
@@ -389,6 +394,23 @@ void Technique::setStages(const std::vector<std::string>& stages)
 void Technique::setPass(int index, Pass* pass)
 {
     _passes.insert(index, pass);
+}
+
+void Technique::copy(const Technique& tech)
+{
+    _id = tech._id;
+    _stageIDs = tech._stageIDs;
+    _layer = tech._layer;
+    _parameters = tech._parameters;
+    _passes.clear();
+    auto& otherPasses = tech._passes;
+    for (auto it = otherPasses.begin(); it != otherPasses.end(); it++)
+    {
+        auto newPass = new Pass();
+        newPass->autorelease();
+        newPass->copy(**it);
+        _passes.pushBack(newPass);
+    }
 }
 
 RENDERER_END

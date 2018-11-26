@@ -23,7 +23,39 @@
  ****************************************************************************/
 
 #include "CustomRenderHandle.hpp"
+#include "RenderFlow.hpp"
 
 RENDERER_BEGIN
+
+CustomRenderHandle::CustomRenderHandle()
+{
+    
+}
+
+CustomRenderHandle::~CustomRenderHandle()
+{
+    
+}
+
+void CustomRenderHandle::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
+{
+    batcher->commitIA(node, this);
+}
+
+void CustomRenderHandle::updateNativeEffect(std::size_t index, Effect* effect)
+{
+    auto size = _effects.size();
+    if (index == size)
+    {
+        _effects.pushBack(effect);
+        return;
+    }
+    else if (index < size)
+    {
+        _effects.replace(index, effect);
+        return;
+    }
+    cocos2d::log("CustomRenderHandle:updateNativeEffect index:%lu out of range", index);
+}
 
 RENDERER_END

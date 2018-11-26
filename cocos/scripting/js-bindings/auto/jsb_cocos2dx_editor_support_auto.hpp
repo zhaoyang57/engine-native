@@ -1,0 +1,48 @@
+#pragma once
+#include "base/ccConfig.h"
+#if USE_NATIVE_MIDDLEWARE > 0
+
+#include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
+
+extern se::Object* __jsb_editor_Texture2D_proto;
+extern se::Class* __jsb_editor_Texture2D_class;
+
+bool js_register_editor_Texture2D(se::Object* obj);
+bool register_all_cocos2dx_editor_support(se::Object* obj);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getRealTextureIndex);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setTexParamCallback);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setNativeEffect);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setPixelsHigh);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getNativeTexture);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setPixelsWide);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getNativeEffect);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getPixelsHigh);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getPixelsWide);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setRealTextureIndex);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setNativeTexture);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setTexParameters);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_Texture2D);
+
+extern se::Object* __jsb_editor_EditorManager_proto;
+extern se::Class* __jsb_editor_EditorManager_class;
+
+bool js_register_editor_EditorManager(se::Object* obj);
+bool register_all_cocos2dx_editor_support(se::Object* obj);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_addTimer);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_removeTimer);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getIB);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getVB);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_destroyInstance);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getInstance);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_EditorManager);
+
+extern se::Object* __jsb_editor_EditorRenderHandle_proto;
+extern se::Class* __jsb_editor_EditorRenderHandle_class;
+
+bool js_register_editor_EditorRenderHandle(se::Object* obj);
+bool register_all_cocos2dx_editor_support(se::Object* obj);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_reset);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_updateIA);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_EditorRenderHandle);
+
+#endif //#if USE_NATIVE_MIDDLEWARE > 0

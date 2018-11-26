@@ -82,6 +82,7 @@ public:
     
     void addHandle(const std::string& sysid, SystemHandle* handle);
     void removeHandle(const std::string& sysid);
+    SystemHandle* getHandle(const std::string& sysid);
     
     void visitAsRoot(ModelBatcher* batcher, Scene* scene);
     
