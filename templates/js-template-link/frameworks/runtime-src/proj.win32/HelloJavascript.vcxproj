@@ -106,7 +106,8 @@
     </ResourceCompile>
     <PreLinkEvent>
       <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q "$(ProjectDir)facebooksdk\cpprestsdk\debug\bin\*.dll" "$(OutDir)"</Command>
+xcopy /Y /Q "$(ProjectDir)facebooksdk\cpprestsdk\debug\bin\*.dll" "$(OutDir)"
+xcopy /Y /Q "$(ProjectDir)dlls\*.dll" "$(OutDir)"</Command>
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies>v8.dll.lib;v8_libbase.dll.lib;v8_libplatform.dll.lib;libuv.lib;cpprest_2_10d.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -169,7 +170,8 @@ copy "$(ProjectDir)..\..\..\project.json" "$(OutDir)\" /Y</Command>
     </ResourceCompile>
     <PreLinkEvent>
       <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q "$(ProjectDir)facebooksdk\cpprestsdk\bin\*.dll" "$(OutDir)"</Command>
+xcopy /Y /Q "$(ProjectDir)facebooksdk\cpprestsdk\bin\*.dll" "$(OutDir)"
+xcopy /Y /Q "$(ProjectDir)dlls\*.dll" "$(OutDir)"</Command>
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies>v8.dll.lib;v8_libbase.dll.lib;v8_libplatform.dll.lib;libuv.lib;cpprest_2_10.lib;%(AdditionalDependencies)</AdditionalDependencies>

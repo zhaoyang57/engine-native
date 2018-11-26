@@ -107,7 +107,7 @@ bool FB_User_to_seval(std::shared_ptr<facebook_games_sdk::User> user, se::Value*
 	obj->setProperty("email", se::Value(convert.to_bytes(user->email())));
 	obj->setProperty("name", se::Value(convert.to_bytes(user->name())));
 	obj->setProperty("accessToken", se::Value(convert.to_bytes(user->accessToken())));
-	obj->setProperty("hasPicture", se::Value(convert.to_bytes(user->hasPicture())));
+	obj->setProperty("hasPicture", se::Value(user->hasPicture()));
 	ret->setObject(obj);
 
 	return true;
