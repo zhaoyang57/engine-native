@@ -1,7 +1,8 @@
-#include "scripting/js-bindings/auto/jsb_facebook_games_sdk_auto.hpp"
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "scripting/js-bindings/manual/jsb_global.h"
+
 #include "FacebookPCGamesSDK.h"
+#include "jsb_facebook_games_sdk.hpp"
 
 se::Object* __jsb_cocos2d_FacebookPCGamesSDK_proto = nullptr;
 se::Class* __jsb_cocos2d_FacebookPCGamesSDK_class = nullptr;

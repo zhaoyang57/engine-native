@@ -185,14 +185,14 @@ xcopy /Y /Q "$(ProjectDir)facebooksdk\cpprestsdk\bin\*.dll" "$(OutDir)"</Command
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\FacebookPCGamesSDK.cpp" />
-    <ClCompile Include="..\Classes\jsb_facebook_games_sdk_auto.cpp" />
+    <ClCompile Include="..\Classes\jsb_facebook_games_sdk.cpp" />
     <ClCompile Include="..\Classes\jsb_module_register.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\FacebookPCGamesSDK.h" />
-    <ClInclude Include="..\Classes\jsb_facebook_games_sdk_auto.hpp" />
+    <ClInclude Include="..\Classes\jsb_facebook_games_sdk.hpp" />
     <ClInclude Include="..\Classes\sdk_test.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="..\Classes\AppDelegate.h" />

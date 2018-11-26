@@ -74,7 +74,7 @@
 #endif
 
 #if USE_FB_GAMES_SDK
-#include "jsb_facebook_games_sdk_auto.hpp"
+#include "jsb_facebook_games_sdk.hpp"
 #endif
 
 #include "cocos2d.h"
