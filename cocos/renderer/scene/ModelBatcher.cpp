@@ -134,8 +134,15 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
             _cullingMask = cullingMask;
         }
         
-        MeshBuffer* buffer = getBuffer(vfmt);
-        handle->fillBuffers(buffer, i, worldMat);
+        if(!_buffer || vfmt != _buffer->_vertexFmt)
+        {
+            MeshBuffer* buffer = getBuffer(vfmt);
+            handle->fillBuffers(buffer, i, worldMat);
+        }
+        else
+        {
+            handle->fillBuffers(_buffer, i, worldMat);
+        }
     }
 }
 
