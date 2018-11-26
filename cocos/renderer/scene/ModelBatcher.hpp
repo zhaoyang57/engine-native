@@ -73,7 +73,7 @@ private:
     std::vector<InputAssembler*> _iaPool;
     std::vector<Model*> _modelPool;
     std::vector<Model*> _batchedModel;
-    std::map<VertexFormat*, MeshBuffer*> _buffers;
+    std::unordered_map<VertexFormat*, MeshBuffer*> _buffers;
 //    std::vector<RenderHandle*> _handles;
 };
 

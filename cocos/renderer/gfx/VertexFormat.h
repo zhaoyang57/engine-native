@@ -89,7 +89,7 @@ public:
     VertexFormat& operator=(VertexFormat&& o);
 
     const std::vector<std::string>& getAttributeNames() const { return _names; };
-    const Element& getElement(const std::string& attrName) const;
+    const Element* getElement(const std::string& attrName) const;
     
     uint32_t getBytes() const { return _bytes; };
     

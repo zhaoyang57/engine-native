@@ -67,7 +67,7 @@ public:
     void setUseModel(bool useModel) { _useModel = useModel; };
     
     VertexFormat* getVertexFormat() const { return _vfmt; };
-    void setVertexFormat(VertexFormat* vfmt) { _vfmt = vfmt; };
+    void setVertexFormat(VertexFormat* vfmt) { _vfmt = vfmt; _vfele = _vfmt->getElement(ATTRIB_NAME_POSITION);};
     
     void setVertsDirty() { _vertsDirty = true; };
     
@@ -101,6 +101,7 @@ protected:
     bool _useModel;
 
     VertexFormat* _vfmt;
+    const VertexFormat::Element* _vfele;
     std::vector<RenderData> _datas;
 };
 

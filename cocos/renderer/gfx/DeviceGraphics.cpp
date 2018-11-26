@@ -1032,8 +1032,8 @@ void DeviceGraphics::commitVertexBuffer()
             for (int j = 0; j < usedAttriLen; ++j)
             {
                 const auto& attr = attributes[j];
-                const auto& el = vb->getFormat().getElement(attr.name);
-                if (!el.isValid())
+                const auto* el = vb->getFormat().getElement(attr.name);
+                if (!el->isValid())
                 {
                     RENDERER_LOGW("Can not find vertex attribute: %s", attr.name.c_str());
                     continue;
@@ -1048,11 +1048,11 @@ void DeviceGraphics::commitVertexBuffer()
                 
                 // glVertexAttribPointer (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer);
                 GL_CHECK(ccVertexAttribPointer(attr.location,
-                                      el.num,
-                                      ENUM_CLASS_TO_GLENUM(el.type),
-                                      el.normalize,
-                                      el.stride,
-                                      (GLvoid*)(el.offset + vboffset * el.stride)));
+                                      el->num,
+                                      ENUM_CLASS_TO_GLENUM(el->type),
+                                      el->normalize,
+                                      el->stride,
+                                      (GLvoid*)(el->offset + vboffset * el->stride)));
             }
         }
         

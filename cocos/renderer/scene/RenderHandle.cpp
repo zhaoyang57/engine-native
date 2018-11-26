@@ -170,10 +170,10 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
         // Assume position is stored in floats
         float* vertices = (float*)data.vertices;
         float* worldVerts = (float*)data.worldVerts.data();
-        const VertexFormat::Element& posDesc = _vfmt->getElement(ATTRIB_NAME_POSITION);
-        uint32_t num = posDesc.num;
+        //const VertexFormat::Element& posDesc = _vfmt->getElement(ATTRIB_NAME_POSITION);
+        uint32_t num = _vfele->num;
         size_t dataPerVertex = bytesPerVertex / 4;
-        size_t elOffset = posDesc.offset / 4;
+        size_t elOffset = _vfele->offset / 4;
         size_t offset;
         cocos2d::Vec3 pos(0, 0, 0);
         for (uint32_t i = 0; i < vertexCount; ++i)

@@ -270,8 +270,12 @@ void BaseRenderer::draw(const StageItem& item)
             _device->setPrimitiveType(ia->_primitiveType);
             
             // set program
-            auto program = _programLib->getProgram(pass->_programName, *(item.defines));
-            _device->setProgram(program);
+            if(_programName != pass->_programName)
+            {
+                _programName = pass->_programName;
+                _program = _programLib->getProgram(pass->_programName, *(item.defines)); 
+            }
+            _device->setProgram(_program);
             
             // cull mode
             _device->setCullMode(pass->_cullMode);

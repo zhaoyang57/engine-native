@@ -66,7 +66,7 @@ public:
     virtual ~BaseRenderer();
     
     void registerStage(const std::string& name, const StageCallback& callback);
-    ProgramLib* getProgramLib() const { return _programLib; }
+    ProgramLib* getProgramLib() const { return _programLib; };
     
 protected:
     void render(const View&, const Scene* scene);
@@ -84,8 +84,10 @@ protected:
     View* requestView();
     
     int _usedTextureUnits = 0;
+    std::string _programName;
     DeviceGraphics* _device = nullptr;
     ProgramLib* _programLib = nullptr;
+    Program* _program = nullptr;
     Texture2D* _defaultTexture = nullptr;
     std::unordered_map<std::string, StageCallback> _stage2fn;
     std::vector<DrawItem> _drawItems;
