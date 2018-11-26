@@ -1093,6 +1093,14 @@ static bool JSB_glProgramFinalize(se::State& s)
 }
 SE_BIND_FINALIZE_FUNC(JSB_glProgramFinalize)
 
+static bool JSB_glProgram_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glProgram_constructor, __jsb_WebGLProgram_class, JSB_glProgramFinalize)
+
 // Arguments: GLenum
 // Ret value: GLuint
 static bool JSB_glCreateShader(se::State& s) {
@@ -1134,6 +1142,14 @@ static bool JSB_glShaderFinalize(se::State& s)
     return true;
 }
 SE_BIND_FINALIZE_FUNC(JSB_glShaderFinalize)
+
+static bool JSB_glShader_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glShader_constructor, __jsb_WebGLShader_class, JSB_glShaderFinalize)
 
 // Arguments: GLenum
 // Ret value: void
@@ -2146,6 +2162,8 @@ static bool JSB_glTexImage2D(se::State& s) {
     ok &= seval_to_uint32(args[9], &alignment);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
 #if OPENGL_PARAMETER_CHECK
+    SE_PRECONDITION4(internalformat == GL_ALPHA || internalformat == GL_RGB || internalformat == GL_RGBA || internalformat == GL_LUMINANCE ||
+                     internalformat == GL_LUMINANCE_ALPHA, false, GL_INVALID_VALUE);
     SE_PRECONDITION4(format == GL_ALPHA || format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE || format == GL_LUMINANCE_ALPHA,
                      false, GL_INVALID_ENUM);
     SE_PRECONDITION4(type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5 || type == GL_UNSIGNED_SHORT_4_4_4_4 || type == GL_UNSIGNED_SHORT_5_5_5_1,
@@ -3112,6 +3130,14 @@ static bool JSB_glTextureFinalize(se::State& s)
 }
 SE_BIND_FINALIZE_FUNC(JSB_glTextureFinalize)
 
+static bool JSB_glTexture_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glTexture_constructor, __jsb_WebGLTexture_class, JSB_glTextureFinalize)
+
 static bool JSB_glCreateBuffer(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
@@ -3141,6 +3167,14 @@ static bool JSB_glBufferFinalize(se::State& s)
 }
 SE_BIND_FINALIZE_FUNC(JSB_glBufferFinalize)
 
+static bool JSB_glBuffer_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glBuffer_constructor, __jsb_WebGLBuffer_class, JSB_glBufferFinalize)
+
 static bool JSB_glCreateRenderbuffer(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
@@ -3169,6 +3203,14 @@ static bool JSB_glRenderbufferFinalize(se::State& s)
 }
 SE_BIND_FINALIZE_FUNC(JSB_glRenderbufferFinalize)
 
+static bool JSB_glRenderbuffer_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glRenderbuffer_constructor, __jsb_WebGLRenderbuffer_class, JSB_glRenderbufferFinalize)
+
 static bool JSB_glCreateFramebuffer(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
@@ -3196,6 +3238,14 @@ static bool JSB_glFramebufferFinalize(se::State& s)
     return true;
 }
 SE_BIND_FINALIZE_FUNC(JSB_glFramebufferFinalize)
+
+static bool JSB_glFramebuffer_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glFramebuffer_constructor, __jsb_WebGLFramebuffer_class, JSB_glFramebufferFinalize)
 
 static bool JSB_glDeleteTextures(se::State& s) {
     const auto& args = s.args();
@@ -3460,6 +3510,20 @@ static bool JSB_glGetShaderSource(se::State& s) {
     return true;
 }
 SE_BIND_FUNC(JSB_glGetShaderSource)
+
+static bool JSB_glActiveInfoFinalize(se::State& s)
+{
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(JSB_glActiveInfoFinalize)
+
+static bool JSB_glActiveInfo_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glActiveInfo_constructor, __jsb_WebGLActiveInfo_class, JSB_glActiveInfoFinalize)
 
 //  interface WebGLActiveInfo {
 //      readonly attribute GLint size;
@@ -5031,31 +5095,31 @@ bool JSB_register_opengl(se::Object* obj)
 
     se::Object* glObjectProto = __jsb_WebGLObject_class->getProto();
 
-    __jsb_WebGLTexture_class = se::Class::create("WebGLTexture", obj, glObjectProto, nullptr);
+    __jsb_WebGLTexture_class = se::Class::create("WebGLTexture", obj, glObjectProto, _SE(JSB_glTexture_constructor));
     __jsb_WebGLTexture_class->defineFinalizeFunction(_SE(JSB_glTextureFinalize));
     __jsb_WebGLTexture_class->install();
 
-    __jsb_WebGLProgram_class = se::Class::create("WebGLProgram", obj, glObjectProto, nullptr);
+    __jsb_WebGLProgram_class = se::Class::create("WebGLProgram", obj, glObjectProto, _SE(JSB_glProgram_constructor));
     __jsb_WebGLProgram_class->defineFinalizeFunction(_SE(JSB_glProgramFinalize));
     __jsb_WebGLProgram_class->install();
 
-    __jsb_WebGLBuffer_class = se::Class::create("WebGLBuffer", obj, glObjectProto, nullptr);
+    __jsb_WebGLBuffer_class = se::Class::create("WebGLBuffer", obj, glObjectProto, _SE(JSB_glBuffer_constructor));
     __jsb_WebGLBuffer_class->defineFinalizeFunction(_SE(JSB_glBufferFinalize));
     __jsb_WebGLBuffer_class->install();
 
-    __jsb_WebGLRenderbuffer_class = se::Class::create("WebGLRenderbuffer", obj, glObjectProto, nullptr);
+    __jsb_WebGLRenderbuffer_class = se::Class::create("WebGLRenderbuffer", obj, glObjectProto, _SE(JSB_glRenderbuffer_constructor));
     __jsb_WebGLRenderbuffer_class->defineFinalizeFunction(_SE(JSB_glRenderbufferFinalize));
     __jsb_WebGLRenderbuffer_class->install();
 
-    __jsb_WebGLFramebuffer_class = se::Class::create("WebGLFramebuffer", obj, glObjectProto, nullptr);
+    __jsb_WebGLFramebuffer_class = se::Class::create("WebGLFramebuffer", obj, glObjectProto, _SE(JSB_glFramebuffer_constructor));
     __jsb_WebGLFramebuffer_class->defineFinalizeFunction(_SE(JSB_glFramebufferFinalize));
     __jsb_WebGLFramebuffer_class->install();
 
-    __jsb_WebGLShader_class = se::Class::create("WebGLShader", obj, glObjectProto, nullptr);
+    __jsb_WebGLShader_class = se::Class::create("WebGLShader", obj, glObjectProto, _SE(JSB_glShader_constructor));
     __jsb_WebGLShader_class->defineFinalizeFunction(_SE(JSB_glShaderFinalize));
     __jsb_WebGLShader_class->install();
 
-    __jsb_WebGLActiveInfo_class = se::Class::create("WebGLActiveInfo", obj, nullptr, nullptr);
+    __jsb_WebGLActiveInfo_class = se::Class::create("WebGLActiveInfo", obj, nullptr, _SE(JSB_glActiveInfo_constructor));
     __jsb_WebGLActiveInfo_class->install();
 
     // New WebGL functions, not present on OpenGL ES 2.0
