@@ -257,6 +257,7 @@ void BaseRenderer::draw(const StageItem& item)
         }
     }
     
+    const int32_t& definesKey = item.effect->getDefinesKey();
     // for each pass
     for (const auto& pass : item.technique->getPasses())
     {
@@ -271,10 +272,11 @@ void BaseRenderer::draw(const StageItem& item)
         _device->setPrimitiveType(ia->_primitiveType);
         
         // set program
-        if(_programName != pass->_programName)
+        if(!_program || _programName != pass->_programName || _definesKey != definesKey)
         {
             _programName = pass->_programName;
-            _program = _programLib->getProgram(pass->_programName, *(item.defines));
+            _definesKey = definesKey;
+            _program = _programLib->getProgram(pass->_programName, *(item.defines), _definesKey);
         }
         _device->setProgram(_program);
         

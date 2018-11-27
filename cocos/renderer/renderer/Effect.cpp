@@ -42,6 +42,7 @@ void Effect::init(const Vector<Technique*>& techniques,
     for (const auto defineTemplate: _defineTemplates)
         _cachedNameValues.emplace(defineTemplate.at("name").asString(),
                                   defineTemplate.at("value"));
+    generateKey();
 }
 
 Effect::~Effect()
@@ -91,9 +92,10 @@ void Effect::setDefineValue(const std::string& name, const Value& value)
         {
             def["value"] = value;
             _cachedNameValues[name] = value;
+            generateKey();
             return;
         }
-    }
+    };
 }
 
 ValueMap* Effect::extractDefines()
@@ -116,6 +118,17 @@ const Effect::Property& Effect::getProperty(const std::string& name) const
 void Effect::setProperty(const std::string& name, const Property& property)
 {
     _properties[name] = property;
+}
+
+void Effect::generateKey()
+{
+    int32_t key = 0;
+    for (auto& tmplDefs : _cachedNameValues) {
+        uint32_t offset = tmplDefs.second.asUnsignedInt();
+        key = (key | offset) << 1;
+   }
+    
+    _definesKey = key << 8;
 }
 
 void Effect::copy(Effect& effect)

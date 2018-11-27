@@ -15,18 +15,20 @@ static bool js_renderer_ProgramLib_getProgram(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
-    if (argc == 2) {
+    if (argc == 3) {
         std::string arg0;
         cocos2d::ValueMap arg1;
+        int32_t arg2 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
         ok &= seval_to_ccvaluemap(args[1], &arg1);
+        ok &= seval_to_int32(args[2], (int32_t*)&arg2);
         SE_PRECONDITION2(ok, false, "js_renderer_ProgramLib_getProgram : Error processing arguments");
-        cocos2d::renderer::Program* result = cobj->getProgram(arg0, arg1);
+        cocos2d::renderer::Program* result = cobj->getProgram(arg0, arg1, arg2);
         ok &= native_ptr_to_seval<cocos2d::renderer::Program>((cocos2d::renderer::Program*)result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_renderer_ProgramLib_getProgram : Error processing arguments");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
     return false;
 }
 SE_BIND_FUNC(js_renderer_ProgramLib_getProgram)
@@ -65,9 +67,9 @@ static bool js_renderer_ProgramLib_getKey(se::State& s)
     CC_UNUSED bool ok = true;
     if (argc == 2) {
         std::string arg0;
-        cocos2d::ValueMap arg1;
+        int32_t arg1 = 0;
         ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_ccvaluemap(args[1], &arg1);
+        ok &= seval_to_int32(args[1], (int32_t*)&arg1);
         SE_PRECONDITION2(ok, false, "js_renderer_ProgramLib_getKey : Error processing arguments");
         unsigned int result = cobj->getKey(arg0, arg1);
         ok &= uint32_to_seval(result, &s.rval());

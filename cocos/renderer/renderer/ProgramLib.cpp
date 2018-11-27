@@ -190,32 +190,18 @@ void ProgramLib::define(const std::string& name, const std::string& vert, const 
     templ.defines = defines;
 }
 
-uint32_t ProgramLib::getKey(const std::string& name, const ValueMap& defines)
+uint32_t ProgramLib::getKey(const std::string& name, int32_t ekey)
 {
     auto iter = _templates.find(name);
     assert(iter != _templates.end());
 
     auto& tmpl = iter->second;
-    int32_t key = 0;
-    for (auto& tmplDefs : tmpl.defines) {
-        auto& tmplDefMap = tmplDefs.asValueMap();
-        std::string tempName = tmplDefMap["name"].asString();
-        auto iter2 = defines.find(tempName);
-        if (iter2 == defines.end()) {
-            continue;
-        }
-//        const auto& value = iter2->second;
-//        key |= tmplDefs._map(100); //IDEA:
-        uint32_t offset = tmplDefMap["_offset"].asUnsignedInt();
-        key |= 1 << offset;
-    }
-
-    return key << 8 | tmpl.id;
+    return ekey | tmpl.id;
 }
 
-Program* ProgramLib::getProgram(const std::string& name, const ValueMap& defines)
+Program* ProgramLib::getProgram(const std::string& name, const ValueMap& defines, int32_t definesKey)
 {
-    uint32_t key = getKey(name, defines);
+    uint32_t key = getKey(name, definesKey);
     auto iter = _cache.find(key);
     if (iter != _cache.end()) {
         iter->second->retain();

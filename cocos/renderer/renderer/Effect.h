@@ -61,15 +61,19 @@ public:
     
     void updateHash(double hash) { _hash = hash; };
     double getHash() const { return _hash; };
-
+    
+    const int32_t& getDefinesKey() { return _definesKey; };
     void copy(Effect& effect);
     
 private:
     double _hash;
+    int32_t _definesKey;
     Vector<Technique*> _techniques;
     std::vector<ValueMap> _defineTemplates;
     ValueMap _cachedNameValues;
     std::unordered_map<std::string, Property> _properties;
+    
+    void generateKey();
 };
 
 RENDERER_END

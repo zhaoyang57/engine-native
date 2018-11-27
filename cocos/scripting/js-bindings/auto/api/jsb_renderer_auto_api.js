@@ -12,11 +12,13 @@ renderer.ProgramLib = {
  * @method getProgram
  * @param {String} arg0
  * @param {map_object} arg1
+ * @param {int} arg2
  * @return {cc.renderer::Program}
  */
 getProgram : function (
 str, 
-map 
+map, 
+int 
 )
 {
     return cc.renderer::Program;
@@ -41,12 +43,12 @@ array
 /**
  * @method getKey
  * @param {String} arg0
- * @param {map_object} arg1
+ * @param {int} arg1
  * @return {unsigned int}
  */
 getKey : function (
 str, 
-map 
+int 
 )
 {
     return 0;
