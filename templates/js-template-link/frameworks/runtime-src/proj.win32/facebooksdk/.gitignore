@@ -1,0 +1,11 @@
+.vs/*
+Debug/*
+Release/*
+x64/*
+Demo/Demo/*
+Demo/x64/*
+Demo/x86/*
+x86/*
+*.user
+*.db
+cpprestsdk/*

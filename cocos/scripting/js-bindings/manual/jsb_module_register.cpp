@@ -73,6 +73,10 @@
 #include "cocos/scripting/js-bindings/manual/JavaScriptJavaBridge.h"
 #endif
 
+#if USE_FB_GAMES_SDK
+#include "jsb_facebook_games_sdk.hpp"
+#endif
+
 #include "cocos2d.h"
 
 using namespace cocos2d;
@@ -117,6 +121,9 @@ bool jsb_register_all_modules()
     se->addRegisterCallback(register_all_audioengine);
 #endif
 
+#if USE_FB_GAMES_SDK
+	se->addRegisterCallback(register_all_facebook_pc_games_sdk);
+#endif
 
 #if USE_NET_WORK
     se->addRegisterCallback(register_all_network);
