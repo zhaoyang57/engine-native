@@ -27,9 +27,10 @@ package org.cocos2dx.lib;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.TextPaint;
@@ -324,22 +325,18 @@ public class CanvasRenderingContext2DImpl {
 
     private void rect(float x, float y, float w, float h) {
         //        Log.d(TAG, "this: " + this + ", rect: " + x + ", " + y + ", " + w + ", " + h);
-        beginPath();
-        moveTo(x, y);
-        lineTo(x, y + h);
-        lineTo(x + w, y + h);
-        lineTo(x + w, y);
-        closePath();
+        Paint paint = new Paint();
+        paint.setARGB(mStrokeStyleA, mStrokeStyleR, mStrokeStyleG, mStrokeStyleB);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(mLineWidth);
+        mCanvas.drawRect(x, y, x + w, y + h, paint);
     }
 
     private void clearRect(float x, float y, float w, float h) {
         //        Log.d(TAG, "this: " + this + ", clearRect: " + x + ", " + y + ", " + w + ", " + h);
-        int clearSize = (int)(w * h);
-        int[] clearColor = new int[clearSize];
-        for (int i = 0; i < clearSize; ++i) {
-            clearColor[i] = Color.TRANSPARENT;
-        }
-        mBitmap.setPixels(clearColor, 0, (int) w, (int) x, (int) y, (int) w, (int) h);
+        Paint clearPaint = new Paint();
+        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        mCanvas.drawRect(x, y, x + w, y + h, clearPaint);
     }
 
     private void createTextPaintIfNeeded() {
@@ -350,13 +347,10 @@ public class CanvasRenderingContext2DImpl {
 
     private void fillRect(float x, float y, float w, float h) {
         // Log.d(TAG, "fillRect: " + x + ", " + y + ", " + ", " + w + ", " + h);
-        int pixelValue = (mFillStyleA & 0xff) << 24 | (mFillStyleR & 0xff) << 16 | (mFillStyleG & 0xff) << 8 | (mFillStyleB & 0xff);
-        int fillSize = (int)(w * h);
-        int[] fillColors = new int[fillSize];
-        for (int i = 0; i < fillSize; ++i) {
-            fillColors[i] = pixelValue;
-        }
-        mBitmap.setPixels(fillColors, 0, (int) w, (int)x, (int)y, (int)w, (int)h);
+        Paint paint = new Paint();
+        paint.setARGB(mFillStyleA, mFillStyleR, mFillStyleG, mFillStyleB);
+        paint.setStyle(Paint.Style.FILL);
+        mCanvas.drawRect(x, y, x + w, y + h, paint);
     }
 
     private void scaleX(TextPaint textPaint, String text, float maxWidth) {
@@ -504,5 +498,9 @@ public class CanvasRenderingContext2DImpl {
 
         Log.e(TAG, "getDataRef return null");
         return null;
+    }
+
+    private void scale(float x, float y) {
+        mCanvas.scale(x, y);
     }
 }

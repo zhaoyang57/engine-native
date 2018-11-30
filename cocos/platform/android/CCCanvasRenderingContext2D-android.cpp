@@ -229,6 +229,11 @@ public:
         JniHelper::getEnv()->DeleteLocalRef(arr);
     }
 
+    void scale(float x, float y)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "scale", x, y);
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -593,7 +598,7 @@ void CanvasRenderingContext2D::translate(float x, float y)
 
 void CanvasRenderingContext2D::scale(float x, float y)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _impl->scale(x, y);
 }
 
 void CanvasRenderingContext2D::rotate(float angle)
