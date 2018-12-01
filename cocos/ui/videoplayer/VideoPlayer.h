@@ -172,6 +172,31 @@ class VideoPlayer : public Ref
     virtual void setFrame(float x, float y, float width, float height);
 
     virtual void setObjectFitStyle(std::string objectFit);
+
+    /**
+     * @param path: url address or local file path
+     */
+    virtual void setPoster(std::string path);
+
+    /**
+     * @param enable: true to show ui controls
+     */
+    virtual void enableControls(bool enable);
+
+    /**
+     * @param enable: true will show play button at video center
+     */
+    virtual void showCenterPlayBtn(bool enable);
+
+    /**
+     * @param enable : ture allow gesture to control play progress or play volume
+     */
+    virtual void enableProgressGesture(bool enable);
+
+    /**
+     * isLive: true indicates Live broadcast
+     */
+    virtual void setLive(bool isLive);
     
   protected:
 

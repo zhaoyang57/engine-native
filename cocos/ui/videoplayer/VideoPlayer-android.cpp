@@ -262,4 +262,24 @@ void VideoPlayer::setMute()
 void VideoPlayer::setObjectFitStyle(std::string objectFit) {
     return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "setObjectFitStyle", _videoPlayerIndex, objectFit);
 }
+
+void VideoPlayer::setPoster(std::string path) {
+    return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "setPoster", _videoPlayerIndex, path);
+}
+
+void VideoPlayer::enableControls(bool enable) {
+    return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "enableControls", _videoPlayerIndex, enable);
+}
+
+void VideoPlayer::showCenterPlayBtn(bool enable) {
+    return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "showCenterPlayBtn", _videoPlayerIndex, enable);
+}
+
+void VideoPlayer::enableProgressGesture(bool enable) {
+    return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "enableProgressGesture", _videoPlayerIndex, enable);
+}
+
+void VideoPlayer::setLive(bool isLive) {
+    return JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "setLive", _videoPlayerIndex, isLive);
+}
 #endif
