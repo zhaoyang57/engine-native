@@ -579,7 +579,7 @@ void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
@@ -593,7 +593,7 @@ void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float image
 
 void CanvasRenderingContext2D::translate(float x, float y)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::scale(float x, float y)
@@ -603,17 +603,17 @@ void CanvasRenderingContext2D::scale(float x, float y)
 
 void CanvasRenderingContext2D::rotate(float angle)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::transform(float a, float b, float c, float d, float e, float f)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, float e, float f)
 {
-    // SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 NS_CC_END
