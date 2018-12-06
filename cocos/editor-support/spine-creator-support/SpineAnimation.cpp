@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
@@ -133,8 +133,11 @@ SpineAnimation::SpineAnimation (const std::string& skeletonDataFile, const std::
 }
 
 SpineAnimation::~SpineAnimation () {
-	if (_ownsAnimationStateData) spAnimationStateData_dispose(_state->data);
-	spAnimationState_dispose(_state);
+    if (_state)
+    {
+        if (_ownsAnimationStateData) spAnimationStateData_dispose(_state->data);
+        spAnimationState_dispose(_state);
+    }
 }
 
 void SpineAnimation::update (float deltaTime) {

@@ -23,9 +23,9 @@
 #ifndef DRAGONBONES_CC_FACTORY_H
 #define DRAGONBONES_CC_FACTORY_H
 
-#include "dragonBones/DragonBonesHeaders.h"
+#include "dragonbones/DragonBonesHeaders.h"
 #include "dragonbones-creator-support/CCArmatureDisplay.h"
-#include "EditorManager.h"
+#include "MiddlewareManager.h"
 
 DRAGONBONES_NAMESPACE_BEGIN
 
@@ -41,7 +41,7 @@ class CCTextureAtlasData;
  * @version DragonBones 3.0
  * @language zh_CN
  */
-class CCFactory : public BaseFactory, public editor::IEditor
+class CCFactory : public BaseFactory, public cocos2d::middleware::IMiddleware
 {
     DRAGONBONES_DISALLOW_COPY_AND_ASSIGN(CCFactory)
 
@@ -108,7 +108,7 @@ public:
             _dragonBonesInstance = new DragonBones(eventManager);
             // _dragonBonesInstance->yDown = false;
 
-            editor::EditorManager::getInstance()->addTimer(this);
+            cocos2d::middleware::MiddlewareManager::getInstance()->addTimer(this);
         }
 
         _dragonBones = _dragonBonesInstance;
@@ -124,7 +124,7 @@ public:
      */
     void stopSchedule()
     {
-        editor::EditorManager::getInstance()->removeTimer(this);
+        cocos2d::middleware::MiddlewareManager::getInstance()->removeTimer(this);
     }
     
     /**

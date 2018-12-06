@@ -26,25 +26,6 @@ static bool js_cocos2dx_spine_SpineRenderer_setTimeScale(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_spine_SpineRenderer_setTimeScale)
 
-static bool js_cocos2dx_spine_SpineRenderer_initEffects(se::State& s)
-{
-    spine::SpineRenderer* cobj = (spine::SpineRenderer*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_spine_SpineRenderer_initEffects : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        cocos2d::Map<std::string, editor::Texture2D *> arg0;
-        ok &= seval_to_Map_string_key(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SpineRenderer_initEffects : Error processing arguments");
-        cobj->initEffects(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_spine_SpineRenderer_initEffects)
-
 static bool js_cocos2dx_spine_SpineRenderer_paused(se::State& s)
 {
     spine::SpineRenderer* cobj = (spine::SpineRenderer*)s.nativeThisObject();
@@ -875,7 +856,6 @@ bool js_register_cocos2dx_spine_SpineRenderer(se::Object* obj)
     auto cls = se::Class::create("Skeleton", obj, nullptr, _SE(js_cocos2dx_spine_SpineRenderer_constructor));
 
     cls->defineFunction("setTimeScale", _SE(js_cocos2dx_spine_SpineRenderer_setTimeScale));
-    cls->defineFunction("initEffects", _SE(js_cocos2dx_spine_SpineRenderer_initEffects));
     cls->defineFunction("paused", _SE(js_cocos2dx_spine_SpineRenderer_paused));
     cls->defineFunction("setAttachment", _SE(js_cocos2dx_spine_SpineRenderer_setAttachment));
     cls->defineFunction("setBonesToSetupPose", _SE(js_cocos2dx_spine_SpineRenderer_setBonesToSetupPose));
@@ -1837,7 +1817,7 @@ bool js_register_cocos2dx_spine_SpineAnimation(se::Object* obj)
     __jsb_spine_SpineAnimation_proto = cls->getProto();
     __jsb_spine_SpineAnimation_class = cls;
 
-    jsb_set_extend_property("jsbSpine", "SpineAnimation");
+    jsb_set_extend_property("spine", "SpineAnimation");
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -1846,11 +1826,11 @@ bool register_all_cocos2dx_spine(se::Object* obj)
 {
     // Get the ns
     se::Value nsVal;
-    if (!obj->getProperty("jsbSpine", &nsVal))
+    if (!obj->getProperty("spine", &nsVal))
     {
         se::HandleObject jsobj(se::Object::createPlainObject());
         nsVal.setObject(jsobj);
-        obj->setProperty("jsbSpine", nsVal);
+        obj->setProperty("spine", nsVal);
     }
     se::Object* ns = nsVal.toObject();
 

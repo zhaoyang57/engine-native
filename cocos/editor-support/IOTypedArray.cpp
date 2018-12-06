@@ -21,25 +21,56 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-#include "IOBuffer.h"
+#include "IOTypedArray.h"
 
 MIDDLEWARE_BEGIN
-
-void IOBuffer::resize (std::size_t newLen, bool needCopy)
+    
+IOTypedArray::IOTypedArray (se::Object::TypedArrayType arrayType, std::size_t defaultSize)
 {
-    if (_bufferSize < newLen)
-    {
-        uint8_t* newBuffer = new uint8_t[newLen];
-        if (needCopy)
-        {
-            memcpy(newBuffer, _buffer, _bufferSize);
-        }
+    _arrayType = arrayType;
+    _bufferSize = defaultSize;
         
-        delete[] _buffer;
-        _buffer = newBuffer;
-        _bufferSize = newLen;
-        _outRange = false;
+    se::AutoHandleScope hs;
+    _typeArray = se::Object::createTypedArray(_arrayType, nullptr, _bufferSize);
+    _typeArray->root();
+        
+    _typeArray->getTypedArrayData(&_buffer, &_bufferSize);
+}
+    
+IOTypedArray::~IOTypedArray ()
+{
+    _typeArray->unroot();
+    _typeArray->decRef();
+    _typeArray = nullptr;
+    _buffer = nullptr;
+}
+    
+void IOTypedArray::resize (std::size_t newLen, bool needCopy)
+{
+    if (_bufferSize >= newLen) return;
+        
+    se::Object* newTypeBuffer = nullptr;
+        
+    se::AutoHandleScope hs;
+    newTypeBuffer = se::Object::createTypedArray(_arrayType, nullptr, newLen);
+    newTypeBuffer->root();
+        
+    uint8_t* newBuffer = nullptr;
+    newTypeBuffer->getTypedArrayData(&newBuffer, (size_t*)&newLen);
+        
+    if (needCopy)
+    {
+        memcpy(newBuffer, _buffer, _bufferSize);
     }
+        
+    _typeArray->unroot();
+    _typeArray->decRef();
+        
+    _typeArray = newTypeBuffer;
+    _buffer = newBuffer;
+    _bufferSize = newLen;
+    _outRange = false;
+        
 }
 
 MIDDLEWARE_END

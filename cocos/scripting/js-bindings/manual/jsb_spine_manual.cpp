@@ -42,7 +42,7 @@
 #include "cocos/scripting/js-bindings/manual/jsb_helper.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_spine_auto.hpp"
 
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 #include "spine-creator-support/SpineRenderer.h"
 #include "spine-creator-support/spine-cocos2dx.h"
 
@@ -361,8 +361,8 @@ static bool js_register_spine_TrackEntry(se::Object* obj)
     return true;
 }
 
-static cocos2d::Map<std::string, editor::Texture2D*>* _preloadedAtlasTextures = nullptr;
-static editor::Texture2D* _getPreloadedAtlasTexture(const char* path)
+static cocos2d::Map<std::string, middleware::Texture2D*>* _preloadedAtlasTextures = nullptr;
+static middleware::Texture2D* _getPreloadedAtlasTexture(const char* path)
 {
     assert(_preloadedAtlasTextures);
     auto it = _preloadedAtlasTextures->find(path);
@@ -392,7 +392,7 @@ static bool js_register_spine_initSkeletonRenderer(se::State& s)
     ok = seval_to_std_string(args[2], &atlasText);
     SE_PRECONDITION2(ok, false, "js_creator_sp_initSkeletonRenderer: Invalid atlas content!");
     
-    cocos2d::Map<std::string, editor::Texture2D*> textures;
+    cocos2d::Map<std::string, middleware::Texture2D*> textures;
     ok = seval_to_Map_string_key(args[3], &textures);
     SE_PRECONDITION2(ok, false, "js_creator_sp_initSkeletonRenderer: Invalid textures!");
     
@@ -413,7 +413,6 @@ static bool js_register_spine_initSkeletonRenderer(se::State& s)
     
     // init node
     node->initWithJsonFile(jsonPath, atlas, scale);
-    node->initEffects(textures);
     
     return true;
 }
@@ -423,11 +422,11 @@ bool register_all_spine_manual(se::Object* obj)
 {
     // Get the ns
     se::Value nsVal;
-    if (!obj->getProperty("jsbSpine", &nsVal))
+    if (!obj->getProperty("spine", &nsVal))
     {
         se::HandleObject jsobj(se::Object::createPlainObject());
         nsVal.setObject(jsobj);
-        obj->setProperty("jsbSpine", nsVal);
+        obj->setProperty("spine", nsVal);
     }
     se::Object* ns = nsVal.toObject();
     

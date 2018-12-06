@@ -9,13 +9,11 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
 ../scripting/js-bindings/manual/jsb_helper.cpp \
-EffectPool.cpp \
-EditorRenderHandle.cpp \
+MiddlewareRenderHandle.cpp \
 IOBuffer.cpp \
-editor-adapter.cpp \
-TypeArrayPool.cpp \
-IOTypeArray.cpp \
-EditorManager.cpp \
+middleware-adapter.cpp \
+IOTypedArray.cpp \
+MiddlewareManager.cpp \
 ../scripting/js-bindings/auto/jsb_cocos2dx_editor_support_auto.cpp
 
 ifeq ($(USE_SPINE),1)
@@ -63,37 +61,37 @@ endif # USE_SPINE
 
 ifeq ($(USE_DRAGONBONES),1)
 LOCAL_SRC_FILES += \
-dragonBones/animation/Animation.cpp \
-dragonBones/animation/AnimationState.cpp \
-dragonBones/animation/BaseTimelineState.cpp \
-dragonBones/animation/TimelineState.cpp \
-dragonBones/animation/WorldClock.cpp \
-dragonBones/armature/Armature.cpp \
-dragonBones/armature/Bone.cpp \
-dragonBones/armature/Constraint.cpp \
-dragonBones/armature/DeformVertices.cpp \
-dragonBones/armature/Slot.cpp \
-dragonBones/armature/TransformObject.cpp \
-dragonBones/core/BaseObject.cpp \
-dragonBones/core/DragonBones.cpp \
-dragonBones/event/EventObject.cpp \
-dragonBones/factory/BaseFactory.cpp \
-dragonBones/geom/Point.cpp \
-dragonBones/geom/Transform.cpp \
-dragonBones/model/AnimationConfig.cpp \
-dragonBones/model/AnimationData.cpp \
-dragonBones/model/ArmatureData.cpp \
-dragonBones/model/BoundingBoxData.cpp \
-dragonBones/model/CanvasData.cpp \
-dragonBones/model/ConstraintData.cpp \
-dragonBones/model/DisplayData.cpp \
-dragonBones/model/DragonBonesData.cpp \
-dragonBones/model/SkinData.cpp \
-dragonBones/model/TextureAtlasData.cpp \
-dragonBones/model/UserData.cpp \
-dragonBones/parser/DataParser.cpp \
-dragonBones/parser/BinaryDataParser.cpp \
-dragonBones/parser/JSONDataParser.cpp \
+dragonbones/animation/Animation.cpp \
+dragonbones/animation/AnimationState.cpp \
+dragonbones/animation/BaseTimelineState.cpp \
+dragonbones/animation/TimelineState.cpp \
+dragonbones/animation/WorldClock.cpp \
+dragonbones/armature/Armature.cpp \
+dragonbones/armature/Bone.cpp \
+dragonbones/armature/Constraint.cpp \
+dragonbones/armature/DeformVertices.cpp \
+dragonbones/armature/Slot.cpp \
+dragonbones/armature/TransformObject.cpp \
+dragonbones/core/BaseObject.cpp \
+dragonbones/core/DragonBones.cpp \
+dragonbones/event/EventObject.cpp \
+dragonbones/factory/BaseFactory.cpp \
+dragonbones/geom/Point.cpp \
+dragonbones/geom/Transform.cpp \
+dragonbones/model/AnimationConfig.cpp \
+dragonbones/model/AnimationData.cpp \
+dragonbones/model/ArmatureData.cpp \
+dragonbones/model/BoundingBoxData.cpp \
+dragonbones/model/CanvasData.cpp \
+dragonbones/model/ConstraintData.cpp \
+dragonbones/model/DisplayData.cpp \
+dragonbones/model/DragonBonesData.cpp \
+dragonbones/model/SkinData.cpp \
+dragonbones/model/TextureAtlasData.cpp \
+dragonbones/model/UserData.cpp \
+dragonbones/parser/DataParser.cpp \
+dragonbones/parser/BinaryDataParser.cpp \
+dragonbones/parser/JSONDataParser.cpp \
 dragonbones-creator-support/CCArmatureDisplay.cpp \
 dragonbones-creator-support/CCFactory.cpp \
 dragonbones-creator-support/CCSlot.cpp \

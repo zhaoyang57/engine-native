@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -22,15 +22,37 @@
  THE SOFTWARE.
  ****************************************************************************/
 #pragma once
-// if buffer out range,will increase with INCREASE_BUFFER_SIZE size
-#define INCREASE_BUFFER_SIZE 1024000
-// vertex buffer max capacity 8192000
-#define MAX_VB_BUFFER_SIZE 8192000
-// index buffer max capacity
-#define MAX_IB_BUFFER_SIZE 8192000
-// can fill material data max capacity
-#define MAX_MATERIAL_BUFFER_SIZE 512
-// fill debug data max capacity
-#define MAX_DEBUG_BUFFER_SIZE 40960
-// type array pool min size
-#define MIN_TYPE_ARRAY_SIZE 128
+
+#include "IOBuffer.h"
+#include "base/ccMacros.h"
+#include "scripting/js-bindings/jswrapper/SeApi.h"
+#include "MiddlewareMacro.h"
+
+MIDDLEWARE_BEGIN
+/**
+ * Inherit from IOBuffer.
+ */
+class IOTypedArray: public IOBuffer
+{
+public:
+    /**
+     * @brief constructor
+     * @param[in] arrayType TypeArray type
+     * @param[in] defaultSize TypeArray capacity
+     * @param[in] usePool If true,will get TypeArray from pool,or create TypeArray,default false.
+     */
+    IOTypedArray (se::Object::TypedArrayType arrayType, std::size_t defaultSize);
+    virtual ~IOTypedArray ();
+        
+    inline se::Object* getTypeArray () const
+    {
+        return _typeArray;
+    }
+    
+    virtual void resize(std::size_t newLen, bool needCopy = false) override;
+        
+private:
+    se::Object::TypedArrayType  _arrayType = se::Object::TypedArrayType::NONE;
+    se::Object*                 _typeArray = nullptr;
+};
+MIDDLEWARE_END

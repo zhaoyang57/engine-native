@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -21,27 +21,36 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-#include "renderer/renderer/Effect.h"
-#include <map>
-#include "base/CCVector.h"
-#include "base/CCMap.h"
+#pragma once
 
-namespace editor {
+#include "renderer/scene/CustomRenderHandle.hpp"
+#include "renderer/renderer/InputAssembler.h"
+#include <vector>
+#include "MiddlewareMacro.h"
+
+MIDDLEWARE_BEGIN
+
+class MiddlewareManager;
+class MiddlewareRenderHandle : public cocos2d::renderer::CustomRenderHandle
+{
+public:
+    MiddlewareRenderHandle();
+    virtual ~MiddlewareRenderHandle();
+    virtual void renderIA(std::size_t index, cocos2d::renderer::ModelBatcher* batcher) override;
+    void updateIA(std::size_t index, int start, int count);
+    void reset()
+    {
+        _iaCount = 0;
+    }
     
-    class EffectPool {
-    public:
-        EffectPool();
-        ~EffectPool();
-        cocos2d::renderer::Effect* get(int effectType);
-        void putTpl(int effectType, cocos2d::renderer::Effect* effect)
-        {
-            _template.insert(effectType, effect);
-            _sign[effectType] = 1;
-        }
-    private:
-        cocos2d::Vector<cocos2d::renderer::Effect*> _using;
-        std::map<int,int> _sign;
-        cocos2d::Map<int,cocos2d::renderer::Effect*> _template;
-    };
-    
-}
+    virtual inline std::size_t getIACount() const override
+    {
+        return _iaCount;
+    }
+private:
+    std::vector<cocos2d::renderer::InputAssembler*> _iaPool;
+    std::size_t _iaCount = 0;
+    MiddlewareManager* _editorMgr = nullptr;
+};
+
+MIDDLEWARE_END

@@ -24,6 +24,8 @@
 #include "dragonbones-creator-support/CCTextureAtlasData.h"
 #include "dragonbones-creator-support/CCArmatureDisplay.h"
 
+USING_NS_CC;
+
 DRAGONBONES_NAMESPACE_BEGIN
 
 void CCSlot::_onClear()
@@ -64,13 +66,13 @@ void CCSlot::adjustTriangles(const unsigned vertexCount, const unsigned indicesC
         {
             delete[] triangles.verts;
         }
-        triangles.verts = new editor::V2F_T2F_C4B[vertexCount];
+        triangles.verts = new middleware::V2F_T2F_C4B[vertexCount];
         
         if (worldVerts)
         {
             delete[] worldVerts;
         }
-        worldVerts = new editor::V2F_T2F_C4B[vertexCount];
+        worldVerts = new middleware::V2F_T2F_C4B[vertexCount];
     }
     triangles.vertCount = vertexCount;
     
@@ -120,7 +122,7 @@ void CCSlot::_updateZOrder()
     
 }
 
-editor::Texture2D* CCSlot::getTexture() const
+middleware::Texture2D* CCSlot::getTexture() const
 {
     const auto currentTextureData = static_cast<CCTextureData*>(_textureData);
     if (!currentTextureData || !currentTextureData->spriteFrame)
@@ -176,7 +178,7 @@ void CCSlot::_updateFrame()
                     const auto y = floatArray[vertexOffset + i + 1];
                     auto u = floatArray[uvOffset + i];
                     auto v = floatArray[uvOffset + i + 1];
-                    editor::V2F_T2F_C4B& vertexData = vertices[iH];
+                    middleware::V2F_T2F_C4B& vertexData = vertices[iH];
                     vertexData.vertices.x = x;
                     vertexData.vertices.y = -y;
 
@@ -258,7 +260,7 @@ void CCSlot::_updateFrame()
                 vertexIndices[5] = 2;
             }
 
-            memcpy(worldVerts, triangles.verts, triangles.vertCount * sizeof(editor::V2F_T2F_C4B));
+            memcpy(worldVerts, triangles.verts, triangles.vertCount * sizeof(middleware::V2F_T2F_C4B));
             
             _visibleDirty = true;
             _blendModeDirty = true; // Relpace texture will override blendMode and color.

@@ -76,7 +76,7 @@
     <ClCompile Include="..\cocos\editor-support\dragonBones\parser\BinaryDataParser.cpp" />
     <ClCompile Include="..\cocos\editor-support\dragonBones\parser\DataParser.cpp" />
     <ClCompile Include="..\cocos\editor-support\dragonBones\parser\JSONDataParser.cpp" />
-    <ClCompile Include="..\cocos\editor-support\editor-adapter.cpp" />
+    <ClCompile Include="..\cocos\editor-support\middleware-adapter.cpp" />
     <ClCompile Include="..\cocos\editor-support\IOBuffer.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine-creator-support\AttachmentVertices.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine-creator-support\CreatorAttachmentLoader.cpp" />
@@ -313,7 +313,7 @@
     <ClInclude Include="..\cocos\editor-support\dragonBones\parser\BinaryDataParser.h" />
     <ClInclude Include="..\cocos\editor-support\dragonBones\parser\DataParser.h" />
     <ClInclude Include="..\cocos\editor-support\dragonBones\parser\JSONDataParser.h" />
-    <ClInclude Include="..\cocos\editor-support\editor-adapter.h" />
+    <ClInclude Include="..\cocos\editor-support\middleware-adapter.h" />
     <ClInclude Include="..\cocos\editor-support\IOBuffer.hpp" />
     <ClInclude Include="..\cocos\editor-support\spine-creator-support\AttachmentVertices.h" />
     <ClInclude Include="..\cocos\editor-support\spine-creator-support\CreatorAttachmentLoader.h" />

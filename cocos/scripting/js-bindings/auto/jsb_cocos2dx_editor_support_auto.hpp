@@ -1,13 +1,13 @@
 #pragma once
 #include "base/ccConfig.h"
-#if USE_NATIVE_MIDDLEWARE > 0
+#if USE_MIDDLEWARE > 0
 
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 
-extern se::Object* __jsb_editor_Texture2D_proto;
-extern se::Class* __jsb_editor_Texture2D_class;
+extern se::Object* __jsb_cocos2d_middleware_Texture2D_proto;
+extern se::Class* __jsb_cocos2d_middleware_Texture2D_class;
 
-bool js_register_editor_Texture2D(se::Object* obj);
+bool js_register_cocos2d_middleware_Texture2D(se::Object* obj);
 bool register_all_cocos2dx_editor_support(se::Object* obj);
 SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_getRealTextureIndex);
 SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setTexParamCallback);
@@ -23,26 +23,27 @@ SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setNativeTexture);
 SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_setTexParameters);
 SE_DECLARE_FUNC(js_cocos2dx_editor_support_Texture2D_Texture2D);
 
-extern se::Object* __jsb_editor_EditorManager_proto;
-extern se::Class* __jsb_editor_EditorManager_class;
+extern se::Object* __jsb_cocos2d_middleware_MiddlewareManager_proto;
+extern se::Class* __jsb_cocos2d_middleware_MiddlewareManager_class;
 
-bool js_register_editor_EditorManager(se::Object* obj);
+bool js_register_cocos2d_middleware_MiddlewareManager(se::Object* obj);
 bool register_all_cocos2dx_editor_support(se::Object* obj);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_addTimer);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_removeTimer);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getIB);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getVB);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_destroyInstance);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_getInstance);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorManager_EditorManager);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_removeTimer);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_getVB);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_update);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_addTimer);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_getIB);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_destroyInstance);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_getInstance);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareManager_MiddlewareManager);
 
-extern se::Object* __jsb_editor_EditorRenderHandle_proto;
-extern se::Class* __jsb_editor_EditorRenderHandle_class;
+extern se::Object* __jsb_cocos2d_middleware_MiddlewareRenderHandle_proto;
+extern se::Class* __jsb_cocos2d_middleware_MiddlewareRenderHandle_class;
 
-bool js_register_editor_EditorRenderHandle(se::Object* obj);
+bool js_register_cocos2d_middleware_MiddlewareRenderHandle(se::Object* obj);
 bool register_all_cocos2dx_editor_support(se::Object* obj);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_reset);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_updateIA);
-SE_DECLARE_FUNC(js_cocos2dx_editor_support_EditorRenderHandle_EditorRenderHandle);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareRenderHandle_reset);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareRenderHandle_updateIA);
+SE_DECLARE_FUNC(js_cocos2dx_editor_support_MiddlewareRenderHandle_MiddlewareRenderHandle);
 
-#endif //#if USE_NATIVE_MIDDLEWARE > 0
+#endif //#if USE_MIDDLEWARE > 0

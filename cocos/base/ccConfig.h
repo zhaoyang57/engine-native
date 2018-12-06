@@ -58,16 +58,18 @@ THE SOFTWARE.
 #define USE_NET_WORK 1
 #endif
 
-#ifndef USE_NATIVE_MIDDLEWARE
-#define USE_NATIVE_MIDDLEWARE 1
+#ifndef USE_MIDDLEWARE
+#define USE_MIDDLEWARE 1
 #endif
 
-#ifndef USE_SPINE
-#define USE_SPINE 1
-#endif
+#if USE_MIDDLEWARE > 0
+    #ifndef USE_SPINE
+    #define USE_SPINE 1
+    #endif
 
-#ifndef USE_DRAGONBONES
-#define USE_DRAGONBONES 0
+    #ifndef USE_DRAGONBONES
+    #define USE_DRAGONBONES 1
+    #endif
 #endif
 
 /** @def CC_ENABLE_STACKABLE_ACTIONS

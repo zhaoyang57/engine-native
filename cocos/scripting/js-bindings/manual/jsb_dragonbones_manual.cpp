@@ -167,7 +167,7 @@ static bool js_cocos2dx_dragonbones_Armature_setReplacedTexture(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 1) {
-        editor::Texture2D* texture = nullptr;
+        middleware::Texture2D* texture = nullptr;
         ok = seval_to_native_ptr(args[0], &texture);
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Armature_setReplacedTexture : Error processing arguments");
         cobj->setReplacedTexture(texture);
@@ -186,8 +186,8 @@ static bool js_cocos2dx_dragonbones_Armature_getReplacedTexture(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 0) {
-        editor::Texture2D* result = (editor::Texture2D*)cobj->getReplacedTexture();
-        ok = native_ptr_to_seval<editor::Texture2D>(result, __jsb_editor_Texture2D_class, &s.rval());
+        middleware::Texture2D* result = (middleware::Texture2D*)cobj->getReplacedTexture();
+        ok = native_ptr_to_seval<middleware::Texture2D>(result, __jsb_cocos2d_middleware_Texture2D_class, &s.rval());
         SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Armature_getReplacedTexture : Error processing arguments");
         return true;
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -22,37 +22,26 @@
  THE SOFTWARE.
  ****************************************************************************/
 #pragma once
+// if buffer out range,will increase with INCREASE_BUFFER_SIZE size
+#define INCREASE_BUFFER_SIZE 102400
+// vertex buffer max capacity
+#define MAX_VB_BUFFER_SIZE 1024000
+// index buffer max capacity
+#define MAX_IB_BUFFER_SIZE 1024000
 
-#include "IOBuffer.h"
-#include "base/ccMacros.h"
-#include "scripting/js-bindings/jswrapper/SeApi.h"
+// fill debug data max capacity
+#define MAX_DEBUG_BUFFER_SIZE 40960
+// type array pool min size
+#define MIN_TYPE_ARRAY_SIZE 1024
 
-namespace editor {
-    /**
-     * Inherit from IOBuffer.
-     */
-    class IOTypeArray: public IOBuffer
-    {
-    public:
-        /**
-         * @brief constructor
-         * @param[in] arrayType TypeArray type
-         * @param[in] defaultSize TypeArray capacity
-         * @param[in] usePool If true,will get TypeArray from pool,or create TypeArray,default false.
-         */
-        IOTypeArray (se::Object::TypedArrayType arrayType, std::size_t defaultSize, bool usePool = false);
-        virtual ~IOTypeArray ();
-        
-        inline se::Object* getTypeArray () const
-        {
-            return _typeArray;
-        }
-    
-        virtual void resize(std::size_t newLen, bool needCopy = false) override;
-        
-    private:
-        se::Object::TypedArrayType  _arrayType = se::Object::TypedArrayType::NONE;
-        se::Object*                 _typeArray = nullptr;
-        bool                        _usePool = false;
-    };
-}
+#ifndef MIDDLEWARE_BEGIN
+#define MIDDLEWARE_BEGIN namespace cocos2d { namespace middleware {
+#endif // MIDDLEWARE_BEGIN
+
+#ifndef MIDDLEWARE_END
+#define MIDDLEWARE_END }}
+#endif // MIDDLEWARE_END
+
+#ifndef USING_NS_MW
+#define USING_NS_MW using namespace cocos2d::middleware
+#endif

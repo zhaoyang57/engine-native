@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 #include "base/ccMacros.h"
 
 namespace spine{
@@ -33,10 +33,10 @@ namespace spine{
      */
     class AttachmentVertices {
     public:
-        AttachmentVertices (editor::Texture2D* texture, int verticesCount, unsigned short* triangles, int trianglesCount);
+        AttachmentVertices (cocos2d::middleware::Texture2D* texture, int verticesCount, unsigned short* triangles, int trianglesCount);
         virtual ~AttachmentVertices ();
         
-        editor::Texture2D* _texture = nullptr;
-        editor::Triangles* _triangles = nullptr;
+        cocos2d::middleware::Texture2D* _texture = nullptr;
+        cocos2d::middleware::Triangles* _triangles = nullptr;
     };
 }

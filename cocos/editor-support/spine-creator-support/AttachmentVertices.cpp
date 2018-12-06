@@ -24,13 +24,15 @@
 
 #include "spine-creator-support/AttachmentVertices.h"
 
+USING_NS_CC;
+
 namespace spine {
     
-    AttachmentVertices::AttachmentVertices (editor::Texture2D* texture, int verticesCount, unsigned short* triangles, int trianglesCount) {
+    AttachmentVertices::AttachmentVertices (middleware::Texture2D* texture, int verticesCount, unsigned short* triangles, int trianglesCount) {
         _texture = texture;
         
-        _triangles = new editor::Triangles();
-        _triangles->verts = new editor::V2F_T2F_C4B[verticesCount];
+        _triangles = new middleware::Triangles();
+        _triangles->verts = new middleware::V2F_T2F_C4B[verticesCount];
         _triangles->vertCount = verticesCount;
         _triangles->indices = triangles;
         _triangles->indexCount = trianglesCount;

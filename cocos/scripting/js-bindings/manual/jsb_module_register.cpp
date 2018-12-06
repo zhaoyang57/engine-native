@@ -35,7 +35,7 @@
 #include "cocos/scripting/js-bindings/manual/jsb_platform.h"
 #include "cocos/scripting/js-bindings/manual/jsb_cocos2dx_manual.hpp"
 
-#if USE_NATIVE_MIDDLEWARE
+#if USE_MIDDLEWARE
 #include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_editor_support_auto.hpp"
 #endif
 
@@ -129,7 +129,7 @@ bool jsb_register_all_modules()
     se->addRegisterCallback(register_all_audioengine);
 #endif
 
-#if USE_NATIVE_MIDDLEWARE
+#if USE_MIDDLEWARE
     se->addRegisterCallback(register_all_cocos2dx_editor_support);
 #endif
     

@@ -23,15 +23,20 @@
 #ifndef DRAGONBONES_CC_ARMATURE_DISPLAY_CONTAINER_H
 #define DRAGONBONES_CC_ARMATURE_DISPLAY_CONTAINER_H
 
-#include "dragonBones/DragonBonesHeaders.h"
+#include "dragonbones/DragonBonesHeaders.h"
 #include "base/CCRef.h"
 #include "scripting/js-bindings/event/EventDispatcher.h"
 #include <map>
 #include <vector>
 
 #include "dragonbones-creator-support/CCSlot.h"
-#include "IOTypeArray.h"
-#include "EditorManager.h"
+#include "IOTypedArray.h"
+#include "MiddlewareManager.h"
+#include "renderer/scene/NodeProxy.hpp"
+#include "base/CCMap.h"
+#include "middleware-adapter.h"
+#include "MiddlewareRenderHandle.h"
+#include "renderer/Types.h"
 
 DRAGONBONES_NAMESPACE_BEGIN
 /**
@@ -120,17 +125,11 @@ public:
         return nullptr;
     }
     
-    /**
-     * @return material data,it's a Uint32Array,
-     * format |material length|index offset|[texture index|blend src|blend dst|indice length|...loop...]
-     */
-    se_object_ptr getMaterialData() const
+    void bindNodeProxy(cocos2d::renderer::NodeProxy* node)
     {
-        if (_materialBuffer)
-        {
-            return _materialBuffer->getTypeArray();
-        }
-        return nullptr;
+        CC_SAFE_RELEASE(_nodeProxy);
+        _nodeProxy = node;
+        CC_SAFE_RETAIN(_nodeProxy);
     }
     
     void setColor(cocos2d::Color4B& color)
@@ -168,15 +167,15 @@ public:
     
 private:
     std::map<std::string,bool> _listenerIDMap;
-    editor::IOTypeArray* _materialBuffer = nullptr;
-    editor::IOTypeArray* _debugBuffer = nullptr;
+    cocos2d::middleware::IOTypedArray* _debugBuffer = nullptr;
     cocos2d::Color4B _nodeColor = cocos2d::Color4B::WHITE;
     
-    int _preBlendSrc = -1;
-    int _preBlendDst = -1;
+    cocos2d::renderer::BlendFactor _preBlendSrc = cocos2d::renderer::BlendFactor::ZERO;
+    cocos2d::renderer::BlendFactor _preBlendDst = cocos2d::renderer::BlendFactor::ONE;
+    cocos2d::renderer::BlendFactor _curBlendSrc = cocos2d::renderer::BlendFactor::ONE;
+    cocos2d::renderer::BlendFactor _curBlendDst = cocos2d::renderer::BlendFactor::ZERO;
+    
     int _preTextureIndex = -1;
-    int _curBlendSrc = -1;
-    int _curBlendDst = -1;
     int _curTextureIndex = -1;
     
     int _preISegWritePos = -1;
@@ -184,10 +183,13 @@ private:
     
     int _debugSlotsLen = 0;
     int _materialLen = 0;
+    int _indexStart = 0;
     
     bool _premultipliedAlpha = false;
     cocos2d::Color4B _finalColor = cocos2d::Color4B::WHITE;
     dbEventCallback _dbEventCallback = nullptr;
+    cocos2d::renderer::NodeProxy* _nodeProxy = nullptr;
+    cocos2d::middleware::MiddlewareRenderHandle* _renderHandle = nullptr;
 };
 
 DRAGONBONES_NAMESPACE_END

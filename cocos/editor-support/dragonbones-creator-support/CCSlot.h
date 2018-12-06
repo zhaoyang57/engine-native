@@ -23,9 +23,9 @@
 #ifndef DRAGONBONES_CC_SLOT_H
 #define DRAGONBONES_CC_SLOT_H
 
-#include "dragonBones/DragonBonesHeaders.h"
+#include "dragonbones/DragonBonesHeaders.h"
 #include "cocos2d.h"
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 #include "math/CCGeometry.h"
 #include "math/Mat4.h"
 
@@ -50,9 +50,9 @@ public:
     // Global matrix dirty flag
     bool _worldMatDirty = true;
     // Slot triangles
-    editor::Triangles triangles;
+    cocos2d::middleware::Triangles triangles;
     // Slot vertex transform to World vertex
-    editor::V2F_T2F_C4B* worldVerts = nullptr;
+    cocos2d::middleware::V2F_T2F_C4B* worldVerts = nullptr;
     cocos2d::Color4B color;
     cocos2d::Rect boundsRect;
 private:
@@ -77,7 +77,7 @@ public:
     virtual void _updateBlendMode() override;
     virtual void _updateColor() override;
     void updateWorldMatrix();
-    editor::Texture2D* getTexture() const;
+    cocos2d::middleware::Texture2D* getTexture() const;
 protected:
     virtual void _updateFrame() override;
     virtual void _updateMesh() override;

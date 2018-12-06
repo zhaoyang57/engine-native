@@ -1,12 +1,12 @@
 /**
  * @module cocos2dx_dragonbones
  */
-var jsbDragonBones = jsbDragonBones || {};
+var dragonBones = dragonBones || {};
 
 /**
  * @class BaseObject
  */
-jsbDragonBones.BaseObject = {
+dragonBones.BaseObject = {
 
 /**
  * @method returnToPool
@@ -41,14 +41,14 @@ int
 /**
  * @class Matrix
  */
-jsbDragonBones.Matrix = {
+dragonBones.Matrix = {
 
 };
 
 /**
  * @class Transform
  */
-jsbDragonBones.Transform = {
+dragonBones.Transform = {
 
 /**
  * @method normalizeRadian
@@ -67,7 +67,7 @@ float
 /**
  * @class TextureAtlasData
  */
-jsbDragonBones.TextureAtlasData = {
+dragonBones.TextureAtlasData = {
 
 /**
  * @method createTexture
@@ -106,7 +106,7 @@ texturedata
 /**
  * @class TextureData
  */
-jsbDragonBones.TextureData = {
+dragonBones.TextureData = {
 
 /**
  * @method getParent
@@ -173,7 +173,7 @@ createRectangle : function (
 /**
  * @class ArmatureData
  */
-jsbDragonBones.ArmatureData = {
+dragonBones.ArmatureData = {
 
 /**
  * @method getBone
@@ -406,7 +406,7 @@ sortBones : function (
 /**
  * @class BoneData
  */
-jsbDragonBones.BoneData = {
+dragonBones.BoneData = {
 
 /**
  * @method setParent
@@ -463,7 +463,7 @@ getParent : function (
 /**
  * @class SlotData
  */
-jsbDragonBones.SlotData = {
+dragonBones.SlotData = {
 
 /**
  * @method setUserData
@@ -570,7 +570,7 @@ getDefaultColor : function (
 /**
  * @class DragonBonesData
  */
-jsbDragonBones.DragonBonesData = {
+dragonBones.DragonBonesData = {
 
 /**
  * @method setUserData
@@ -639,7 +639,7 @@ armaturedata
 /**
  * @class SkinData
  */
-jsbDragonBones.SkinData = {
+dragonBones.SkinData = {
 
 /**
  * @method addDisplay
@@ -672,7 +672,7 @@ str
 /**
  * @class AnimationData
  */
-jsbDragonBones.AnimationData = {
+dragonBones.AnimationData = {
 
 /**
  * @method getActionTimeline
@@ -775,7 +775,7 @@ getParent : function (
 /**
  * @class Armature
  */
-jsbDragonBones.Armature = {
+dragonBones.Armature = {
 
 /**
  * @method getBone
@@ -1062,7 +1062,7 @@ getProxy : function (
 /**
  * @class TransformObject
  */
-jsbDragonBones.TransformObject = {
+dragonBones.TransformObject = {
 
 /**
  * @method getOffset
@@ -1127,7 +1127,7 @@ updateGlobalTransform : function (
 /**
  * @class AnimationState
  */
-jsbDragonBones.AnimationState = {
+dragonBones.AnimationState = {
 
 /**
  * @method isCompleted
@@ -1342,7 +1342,7 @@ isFadeOut : function (
 /**
  * @class Bone
  */
-jsbDragonBones.Bone = {
+dragonBones.Bone = {
 
 /**
  * @method getOffsetMode
@@ -1469,7 +1469,7 @@ getBoneData : function (
 /**
  * @class Slot
  */
-jsbDragonBones.Slot = {
+dragonBones.Slot = {
 
 /**
  * @method _updateColor
@@ -1662,7 +1662,7 @@ bool
 /**
  * @class WorldClock
  */
-jsbDragonBones.WorldClock = {
+dragonBones.WorldClock = {
 
 /**
  * @method clear
@@ -1729,7 +1729,7 @@ getStaticClock : function (
 /**
  * @class Animation
  */
-jsbDragonBones.Animation = {
+dragonBones.Animation = {
 
 /**
  * @method init
@@ -1992,7 +1992,7 @@ int
 /**
  * @class EventObject
  */
-jsbDragonBones.EventObject = {
+dragonBones.EventObject = {
 
 /**
  * @method getBone
@@ -2063,7 +2063,7 @@ armature
 /**
  * @class BaseFactory
  */
-jsbDragonBones.BaseFactory = {
+dragonBones.BaseFactory = {
 
 /**
  * @method replaceSkin
@@ -2282,11 +2282,11 @@ str
 /**
  * @class CCTextureAtlasData
  */
-jsbDragonBones.CCTextureAtlasData = {
+dragonBones.CCTextureAtlasData = {
 
 /**
  * @method setRenderTexture
- * @param {editor::Texture2D} arg0
+ * @param {cc.middleware::Texture2D} arg0
  */
 setRenderTexture : function (
 texture2d 
@@ -2296,12 +2296,12 @@ texture2d
 
 /**
  * @method getRenderTexture
- * @return {editor::Texture2D}
+ * @return {cc.middleware::Texture2D}
  */
 getRenderTexture : function (
 )
 {
-    return editor::Texture2D;
+    return cc.middleware::Texture2D;
 },
 
 };
@@ -2309,23 +2309,23 @@ getRenderTexture : function (
 /**
  * @class CCTextureData
  */
-jsbDragonBones.CCTextureData = {
+dragonBones.CCTextureData = {
 
 };
 
 /**
  * @class CCSlot
  */
-jsbDragonBones.CCSlot = {
+dragonBones.CCSlot = {
 
 /**
  * @method getTexture
- * @return {editor::Texture2D}
+ * @return {cc.middleware::Texture2D}
  */
 getTexture : function (
 )
 {
-    return editor::Texture2D;
+    return cc.middleware::Texture2D;
 },
 
 /**
@@ -2341,7 +2341,7 @@ updateWorldMatrix : function (
 /**
  * @class CCArmatureDisplay
  */
-jsbDragonBones.CCArmatureDisplay = {
+dragonBones.CCArmatureDisplay = {
 
 /**
  * @method getAnimation
@@ -2366,11 +2366,11 @@ str
 },
 
 /**
- * @method setColor
- * @param {color4b_object} arg0
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
  */
-setColor : function (
-color4b 
+bindNodeProxy : function (
+nodeproxy 
 )
 {
 },
@@ -2398,13 +2398,13 @@ func
 },
 
 /**
- * @method getMaterialData
- * @return {se::Object}
+ * @method getRootDisplay
+ * @return {dragonBones::CCArmatureDisplay}
  */
-getMaterialData : function (
+getRootDisplay : function (
 )
 {
-    return se::Object;
+    return dragonBones::CCArmatureDisplay;
 },
 
 /**
@@ -2443,16 +2443,6 @@ setOpacityModifyRGB : function (
 bool 
 )
 {
-},
-
-/**
- * @method getRootDisplay
- * @return {dragonBones::CCArmatureDisplay}
- */
-getRootDisplay : function (
-)
-{
-    return dragonBones::CCArmatureDisplay;
 },
 
 /**
@@ -2528,6 +2518,16 @@ getDebugData : function (
 },
 
 /**
+ * @method setColor
+ * @param {color4b_object} arg0
+ */
+setColor : function (
+color4b 
+)
+{
+},
+
+/**
  * @method create
  * @return {dragonBones::CCArmatureDisplay}
  */
@@ -2551,7 +2551,7 @@ CCArmatureDisplay : function (
 /**
  * @class CCFactory
  */
-jsbDragonBones.CCFactory = {
+dragonBones.CCFactory = {
 
 /**
  * @method parseDragonBonesDataOnly

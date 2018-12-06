@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
+#include <math.h>
 
 RENDERER_BEGIN
 
@@ -210,7 +211,7 @@ void NodeProxy::generateTypedArray()
         bool ok = native_ptr_to_seval<NodeProxy>((NodeProxy*)this, &jsVal);
         CCASSERT(ok, "NodeProxy_generateTypedArray : JS object missing");
         
-        _jsTRS = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 4 * 10);
+        _jsTRS = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 4 * 11);
         // root it
         _jsTRS->root();
         // Pass to js
@@ -238,10 +239,13 @@ void NodeProxy::updateFromJS()
     if (uintData[0] > 0)
     {
         _localMat.setIdentity();
-        cocos2d::Quaternion q(_jsTRSData[4], _jsTRSData[5], _jsTRSData[6], 1.0);
+
+        // Transform = Translate * Rotation * Scale;
+        cocos2d::Quaternion q(_jsTRSData[4], _jsTRSData[5], _jsTRSData[6], _jsTRSData[7]);
         _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
-        _localMat.scale(_jsTRSData[7], _jsTRSData[8], _jsTRSData[9]);
         _localMat.rotate(q);
+        _localMat.scale(_jsTRSData[8], _jsTRSData[9], _jsTRSData[10]);
+
         _matrixUpdated = true;
     }
     if (uintData[1] > 0)

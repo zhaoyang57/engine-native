@@ -25,7 +25,7 @@
 
 #include "dragonbones/DragonBonesHeaders.h"
 #include "cocos2d.h"
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 
 DRAGONBONES_NAMESPACE_BEGIN
 /**
@@ -43,7 +43,7 @@ class CCTextureAtlasData : public TextureAtlasData
     BIND_CLASS_TYPE_B(CCTextureAtlasData);
 
 private:
-    editor::Texture2D* _renderTexture;
+    cocos2d::middleware::Texture2D* _renderTexture;
 
 public:
     CCTextureAtlasData() :
@@ -74,11 +74,11 @@ public:
      * @version DragonBones 3.0
      * @language zh_CN
      */
-    inline editor::Texture2D* getRenderTexture() const
+    inline cocos2d::middleware::Texture2D* getRenderTexture() const
     {
         return _renderTexture;
     }
-    void setRenderTexture(editor::Texture2D* value);
+    void setRenderTexture(cocos2d::middleware::Texture2D* value);
 };
 /**
  * @internal
@@ -88,7 +88,7 @@ class CCTextureData : public TextureData
     BIND_CLASS_TYPE_B(CCTextureData);
 
 public:
-    editor::SpriteFrame* spriteFrame;
+    cocos2d::middleware::SpriteFrame* spriteFrame;
 
     CCTextureData() :
         spriteFrame(nullptr)

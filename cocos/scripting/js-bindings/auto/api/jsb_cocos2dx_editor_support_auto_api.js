@@ -1,12 +1,12 @@
 /**
  * @module cocos2dx_editor_support
  */
-var jsbEditor = jsbEditor || {};
+var middleware = middleware || {};
 
 /**
  * @class Texture2D
  */
-jsbEditor.Texture2D = {
+middleware.Texture2D = {
 
 /**
  * @method getRealTextureIndex
@@ -120,7 +120,7 @@ texture
 
 /**
  * @method setTexParameters
- * @param {editor::Texture2D::_TexParams} arg0
+ * @param {cc.middleware::Texture2D::_TexParams} arg0
  */
 setTexParameters : function (
 _texparams 
@@ -140,26 +140,46 @@ Texture2D : function (
 };
 
 /**
- * @class EditorManager
+ * @class MiddlewareManager
  */
-jsbEditor.EditorManager = {
+middleware.MiddlewareManager = {
 
 /**
- * @method addTimer
- * @param {editor::IEditor} arg0
+ * @method removeTimer
+ * @param {cc.middleware::IMiddleware} arg0
  */
-addTimer : function (
-ieditor 
+removeTimer : function (
+imiddleware 
 )
 {
 },
 
 /**
- * @method removeTimer
- * @param {editor::IEditor} arg0
+ * @method getVB
+ * @return {cc.renderer::VertexBuffer}
  */
-removeTimer : function (
-ieditor 
+getVB : function (
+)
+{
+    return cc.renderer::VertexBuffer;
+},
+
+/**
+ * @method update
+ * @param {float} arg0
+ */
+update : function (
+float 
+)
+{
+},
+
+/**
+ * @method addTimer
+ * @param {cc.middleware::IMiddleware} arg0
+ */
+addTimer : function (
+imiddleware 
 )
 {
 },
@@ -175,16 +195,6 @@ getIB : function (
 },
 
 /**
- * @method getVB
- * @return {cc.renderer::VertexBuffer}
- */
-getVB : function (
-)
-{
-    return cc.renderer::VertexBuffer;
-},
-
-/**
  * @method destroyInstance
  */
 destroyInstance : function (
@@ -194,19 +204,19 @@ destroyInstance : function (
 
 /**
  * @method getInstance
- * @return {editor::EditorManager}
+ * @return {cc.middleware::MiddlewareManager}
  */
 getInstance : function (
 )
 {
-    return editor::EditorManager;
+    return cc.middleware::MiddlewareManager;
 },
 
 /**
- * @method EditorManager
+ * @method MiddlewareManager
  * @constructor
  */
-EditorManager : function (
+MiddlewareManager : function (
 )
 {
 },
@@ -214,9 +224,9 @@ EditorManager : function (
 };
 
 /**
- * @class EditorRenderHandle
+ * @class MiddlewareRenderHandle
  */
-jsbEditor.EditorRenderHandle = {
+middleware.MiddlewareRenderHandle = {
 
 /**
  * @method reset
@@ -241,10 +251,10 @@ int
 },
 
 /**
- * @method EditorRenderHandle
+ * @method MiddlewareRenderHandle
  * @constructor
  */
-EditorRenderHandle : function (
+MiddlewareRenderHandle : function (
 )
 {
 },

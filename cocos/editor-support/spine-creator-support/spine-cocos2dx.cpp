@@ -24,7 +24,7 @@
 
 #include "spine-creator-support/spine-cocos2dx.h"
 #include "spine/extension.h"
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 #include "base/CCData.h"
 #include "platform/CCFileUtils.h"
 
@@ -35,9 +35,9 @@ namespace spine {
 	}
 }
 
-using namespace spine;
-using namespace editor;
 USING_NS_CC;
+USING_NS_MW;
+using namespace spine;
 
 GLuint wrap (spAtlasWrap wrap) {
 	return wrap == SP_ATLAS_CLAMPTOEDGE ? GL_CLAMP_TO_EDGE : GL_REPEAT;

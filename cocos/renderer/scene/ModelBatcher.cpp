@@ -76,23 +76,6 @@ ModelBatcher::~ModelBatcher()
     _buffers.clear();
 }
 
-//void RenderSystem::addRenderHandle(RenderHandle* handle)
-//{
-//    if (std::find(_handles.begin(), _handles.end(), handle) == _handles.end())
-//    {
-//        _handles.push_back(handle);
-//    }
-//}
-//
-//void RenderSystem::removeRenderHandle(RenderHandle* handle)
-//{
-//    auto it = std::find(_handles.begin(), _handles.end(), handle);
-//    if (it != _handles.end())
-//    {
-//        _handles.erase(it);
-//    }
-//}
-
 void ModelBatcher::reset()
 {
     _iaOffset = 0;

@@ -27,8 +27,8 @@
 #include "spine-creator-support/AttachmentVertices.h"
 
 USING_NS_CC;
+USING_NS_MW;
 using namespace spine;
-using namespace editor;
 
 static unsigned short quadTriangles[6] = {0, 1, 2, 2, 3, 0};
 

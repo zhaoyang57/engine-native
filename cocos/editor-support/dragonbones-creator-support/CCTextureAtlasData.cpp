@@ -21,6 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "dragonbones-creator-support/CCTextureAtlasData.h"
+USING_NS_CC;
 
 DRAGONBONES_NAMESPACE_BEGIN
 void CCTextureAtlasData::_onClear()
@@ -39,7 +40,7 @@ TextureData* CCTextureAtlasData::createTexture() const
     return (TextureData*)BaseObject::borrowObject<CCTextureData>();
 }
 
-void CCTextureAtlasData::setRenderTexture(editor::Texture2D* value)
+void CCTextureAtlasData::setRenderTexture(middleware::Texture2D* value)
 {
     if (_renderTexture == value) 
     {
@@ -65,7 +66,7 @@ void CCTextureAtlasData::setRenderTexture(editor::Texture2D* value)
                 );
                 cocos2d::Vec2 offset(0.0f, 0.0f);
                 cocos2d::Size originSize(rect.size.width, rect.size.height);
-                textureData->spriteFrame = editor::SpriteFrame::createWithTexture(_renderTexture, rect, textureData->rotated, offset, originSize); // TODO multiply textureAtlas
+                textureData->spriteFrame = middleware::SpriteFrame::createWithTexture(_renderTexture, rect, textureData->rotated, offset, originSize); // TODO multiply textureAtlas
                 textureData->spriteFrame->retain();
             }
         }

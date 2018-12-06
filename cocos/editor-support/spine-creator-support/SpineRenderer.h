@@ -29,13 +29,12 @@
 #include "base/ccTypes.h"
 #include <vector>
 #include "scripting/js-bindings/jswrapper/Object.hpp"
-#include "IOTypeArray.h"
-#include "EditorManager.h"
+#include "IOTypedArray.h"
+#include "MiddlewareManager.h"
 #include "renderer/scene/NodeProxy.hpp"
-#include "EditorRenderHandle.h"
-#include "EffectPool.h"
 #include "base/CCMap.h"
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
+#include "base/ccMacros.h"
 
 namespace spine {
 
@@ -44,7 +43,7 @@ namespace spine {
 
     /** Draws a skeleton.
      */
-    class SpineRenderer: public editor::IEditor, public cocos2d::Ref {
+    class SpineRenderer: public cocos2d::middleware::IMiddleware, public cocos2d::Ref {
     public:
         static SpineRenderer* create ();
         static SpineRenderer* createWithData (spSkeletonData* skeletonData, bool ownsSkeletonData = false);
@@ -54,8 +53,6 @@ namespace spine {
         virtual void update (float deltaTime);
 
         spSkeleton* getSkeleton() const;
-        
-        void initEffects(const cocos2d::Map<std::string, editor::Texture2D*>& textures);
         
         void setTimeScale (float scale);
         float getTimeScale () const;
@@ -102,7 +99,9 @@ namespace spine {
         
         void bindNodeProxy(cocos2d::renderer::NodeProxy* node)
         {
+            CC_SAFE_RELEASE(_nodeProxy);
             _nodeProxy = node;
+            CC_SAFE_RETAIN(_nodeProxy);
         }
         
         void setColor (cocos2d::Color4B& color);
@@ -151,9 +150,8 @@ namespace spine {
         cocos2d::Color4B    _nodeColor = cocos2d::Color4B::WHITE;
         bool                _premultipliedAlpha = false;
         
-        editor::IOTypeArray* _debugBuffer = nullptr;
+        cocos2d::middleware::IOTypedArray* _debugBuffer = nullptr;
         cocos2d::renderer::NodeProxy* _nodeProxy = nullptr;
-        editor::EffectPool _pool;
     };
 
 }

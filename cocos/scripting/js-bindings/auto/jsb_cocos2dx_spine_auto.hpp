@@ -10,7 +10,6 @@ extern se::Class* __jsb_spine_SpineRenderer_class;
 bool js_register_spine_SpineRenderer(se::Object* obj);
 bool register_all_cocos2dx_spine(se::Object* obj);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SpineRenderer_setTimeScale);
-SE_DECLARE_FUNC(js_cocos2dx_spine_SpineRenderer_initEffects);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SpineRenderer_paused);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SpineRenderer_setAttachment);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SpineRenderer_setBonesToSetupPose);

@@ -28,10 +28,10 @@
 #include "spine-creator-support/CreatorAttachmentLoader.h"
 #include "spine-creator-support/SpineRenderer.h"
 #include "spine-creator-support/SpineAnimation.h"
-#include "editor-adapter.h"
+#include "middleware-adapter.h"
 
 namespace spine {
-    typedef editor::Texture2D* (*CustomTextureLoader)(const char* path);
+    typedef cocos2d::middleware::Texture2D* (*CustomTextureLoader)(const char* path);
 	// set custom texture loader for _spAtlasPage_createTexture
 	void spAtlasPage_setCustomTextureLoader(CustomTextureLoader texLoader);
 }

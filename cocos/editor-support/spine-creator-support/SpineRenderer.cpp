@@ -27,22 +27,22 @@
 #include "spine-creator-support/AttachmentVertices.h"
 #include "spine-creator-support/CreatorAttachmentLoader.h"
 #include <algorithm>
-#include "platform/CCApplication.h"
 #include "base/CCScheduler.h"
-#include "EditorDef.h"
+#include "MiddlewareMacro.h"
 #include "renderer/renderer/Pass.h"
 #include "renderer/renderer/Technique.h"
+#include "MiddlewareRenderHandle.h"
 
 USING_NS_CC;
+USING_NS_MW;
+
 using std::min;
 using std::max;
 
-using namespace editor;
 using namespace spine;
 using namespace cocos2d;
 using namespace cocos2d::renderer;
 
-static const std::string scheduleKey = "spineScheduleKey";
 static const std::string techStage = "transparent";
 static const std::string textureKey = "texture";
 
@@ -85,7 +85,7 @@ void SpineRenderer::initialize ()
 
 void SpineRenderer::beginSchedule()
 {
-    EditorManager::getInstance()->addTimer(this);
+    MiddlewareManager::getInstance()->addTimer(this);
 }
 
 void SpineRenderer::onEnable()
@@ -100,7 +100,7 @@ void SpineRenderer::onDisable()
 
 void SpineRenderer::stopSchedule()
 {
-    EditorManager::getInstance()->removeTimer(this);
+    MiddlewareManager::getInstance()->removeTimer(this);
 }
 
 void SpineRenderer::setSkeletonData (spSkeletonData *skeletonData, bool ownsSkeletonData)
@@ -142,6 +142,7 @@ SpineRenderer::~SpineRenderer ()
         _debugBuffer = nullptr;
     }
     
+    CC_SAFE_RELEASE(_nodeProxy);
     stopSchedule();
 }
 
@@ -215,38 +216,26 @@ void SpineRenderer::initWithBinaryFile (const std::string& skeletonDataFile, con
     initialize();
 }
 
-void SpineRenderer::initEffects(const cocos2d::Map<std::string, editor::Texture2D*>& textures)
-{
-    for(auto it = textures.begin(); it != textures.end(); it++)
-    {
-        auto texture = it->second;
-        auto index = texture->getRealTextureIndex();
-        auto effect = texture->getNativeEffect();
-        _pool.putTpl(index,effect);
-    }
-}
-
 void SpineRenderer::update (float deltaTime)
 {
     if (_paused) return;
     
     // avoid other place call update.
-    auto mgr = EditorManager::getInstance();
+    auto mgr = MiddlewareManager::getInstance();
     if (!mgr->isUpdating) return;
     
 	spSkeleton_update(_skeleton, deltaTime * _timeScale);
     
-    EditorRenderHandle* renderHandle = nullptr;
-    if (_nodeProxy)
-    {
-        renderHandle = (EditorRenderHandle*)_nodeProxy->getHandle("render");
-    }
-    
-    if (renderHandle == nullptr)
+    if (_nodeProxy == nullptr)
     {
         return;
     }
     
+    MiddlewareRenderHandle* renderHandle = (MiddlewareRenderHandle*)_nodeProxy->getHandle("render");
+    if (renderHandle == nullptr)
+    {
+        return;
+    }
     renderHandle->reset();
     
     _skeleton->r = _nodeColor.r / (float)255;
@@ -256,8 +245,8 @@ void SpineRenderer::update (float deltaTime)
     
     Color4F color;
     AttachmentVertices* attachmentVertices = nullptr;
-    editor::IOBuffer& vb = mgr->vb;
-    editor::IOBuffer& ib = mgr->ib;
+    middleware::IOBuffer& vb = mgr->vb;
+    middleware::IOBuffer& ib = mgr->ib;
     
     BlendFactor preBlendSrc = BlendFactor::ZERO;
     BlendFactor preBlendDst = BlendFactor::ONE;
@@ -273,14 +262,14 @@ void SpineRenderer::update (float deltaTime)
     int materialLen = 0;
     int indexStart = 0;
     
-    editor::Texture2D* texture = nullptr;
+    middleware::Texture2D* texture = nullptr;
     
     if (_debugSlots || _debugBones)
     {
         // If enable debug draw,then init debug buffer.
         if (_debugBuffer == nullptr)
         {
-            _debugBuffer = new IOTypeArray(se::Object::TypedArrayType::FLOAT32, MAX_DEBUG_BUFFER_SIZE);
+            _debugBuffer = new IOTypedArray(se::Object::TypedArrayType::FLOAT32, MAX_DEBUG_BUFFER_SIZE);
         }
         _debugBuffer->reset();
         
@@ -291,7 +280,6 @@ void SpineRenderer::update (float deltaTime)
         }
     }
     
-    //reserved space to save index offset
     indexStart = (uint32_t)ib.getCurPos()/sizeof(unsigned short);
     
     for (int i = 0, n = _skeleton->slotsCount; i < n; ++i)
@@ -386,13 +374,16 @@ void SpineRenderer::update (float deltaTime)
             }
             else
             {
-                Effect* effect = _pool.get(curTextureIndex);
-                if (effect == nullptr)
+                auto tplEffect = texture->getNativeEffect();
+                if (tplEffect == nullptr)
                 {
                     cocos2d::log("SpineRender:update get effect failed");
                     renderHandle->reset();
                     return;
                 }
+                auto effect = new cocos2d::renderer::Effect();
+                effect->autorelease();
+                effect->copy(*tplEffect);
                 
                 Technique* tech = effect->getTechnique(techStage);
                 Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
@@ -442,11 +433,14 @@ void SpineRenderer::update (float deltaTime)
             vertex->colors.a = (GLubyte)color.a;
         }
         
-        // Fill EditorManager vertex buffer
-        auto vertexOffset = vb.getCurPos()/sizeof(editor::V2F_T2F_C4B);
-        vb.writeBytes((char*)attachmentVertices->_triangles->verts,
-                                  attachmentVertices->_triangles->vertCount*sizeof(editor::V2F_T2F_C4B));
+        // Fill MiddlewareManager vertex buffer
+        auto vertexOffset = vb.getCurPos()/sizeof(middleware::V2F_T2F_C4B);
+		auto vbSize = attachmentVertices->_triangles->vertCount * sizeof(middleware::V2F_T2F_C4B);
+		vb.checkSpace(vbSize, true);
+        vb.writeBytes((char*)attachmentVertices->_triangles->verts, vbSize);
         
+		auto ibSize = attachmentVertices->_triangles->indexCount * sizeof(unsigned short);
+		ib.checkSpace(ibSize, true);
         if (vertexOffset > 0)
         {
             for (int ii = 0, nn = attachmentVertices->_triangles->indexCount; ii < nn; ii++)
@@ -456,8 +450,7 @@ void SpineRenderer::update (float deltaTime)
         }
         else
         {
-            ib.writeBytes((char*)attachmentVertices->_triangles->indices,
-                                      attachmentVertices->_triangles->indexCount*sizeof(unsigned short));
+            ib.writeBytes((char*)attachmentVertices->_triangles->indices, ibSize);
         }
         
         curISegLen += attachmentVertices->_triangles->indexCount;
@@ -469,15 +462,6 @@ void SpineRenderer::update (float deltaTime)
         _debugBuffer->writeFloat32(0, debugSlotsLen);
     }
     
-    bool isVBOutRange = vb.isOutRange();
-    bool isIBOutRange = ib.isOutRange();
-    
-    // If vertex buffer or index buffer or material buffer out of range,then discard this time render
-    // next time will enlarge vertex buffer or index buffer to fill the animation data.
-    if (isVBOutRange || isIBOutRange)
-    {
-        renderHandle->reset();
-    }
     
     if (_debugBones)
     {
@@ -499,7 +483,7 @@ void SpineRenderer::update (float deltaTime)
         _debugBuffer->writeFloat32(0, 0);
         _debugBuffer->writeFloat32(sizeof(float), 0);
         cocos2d::log("Spine debug data is too large,debug buffer has no space to put in it!!!!!!!!!!");
-        cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in EditorDef");
+        cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in MiddlewareMacro");
     }
 }
 

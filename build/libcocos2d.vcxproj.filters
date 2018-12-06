@@ -638,7 +638,7 @@
     <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\CCTextureAtlasData.cpp">
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClCompile>
-    <ClCompile Include="..\cocos\editor-support\editor-adapter.cpp">
+    <ClCompile Include="..\cocos\editor-support\middleware-adapter.cpp">
       <Filter>editor-support</Filter>
     </ClCompile>
     <ClCompile Include="..\cocos\editor-support\TypeArrayPool.cpp">
@@ -1433,7 +1433,7 @@
     <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\CCTextureAtlasData.h">
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClInclude>
-    <ClInclude Include="..\cocos\editor-support\editor-adapter.h">
+    <ClInclude Include="..\cocos\editor-support\middleware-adapter.h">
       <Filter>editor-support</Filter>
     </ClInclude>
     <ClInclude Include="..\cocos\editor-support\TypeArrayPool.h">

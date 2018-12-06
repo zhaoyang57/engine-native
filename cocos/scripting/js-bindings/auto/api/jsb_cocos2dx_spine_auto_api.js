@@ -1,12 +1,12 @@
 /**
  * @module cocos2dx_spine
  */
-var jsbSpine = jsbSpine || {};
+var spine = spine || {};
 
 /**
  * @class SpineRenderer
  */
-jsbSpine.Skeleton = {
+spine.Skeleton = {
 
 /**
  * @method setTimeScale
@@ -14,16 +14,6 @@ jsbSpine.Skeleton = {
  */
 setTimeScale : function (
 float 
-)
-{
-},
-
-/**
- * @method initEffects
- * @param {map_object} arg0
- */
-initEffects : function (
-map 
 )
 {
 },
@@ -338,7 +328,7 @@ float
 /**
  * @class SpineAnimation
  */
-jsbSpine.SpineAnimation = {
+spine.SpineAnimation = {
 
 /**
  * @method setAnimation
