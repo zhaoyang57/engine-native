@@ -27,6 +27,7 @@ package org.cocos2dx.lib;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -59,6 +60,7 @@ public class CanvasRenderingContext2DImpl {
     private Path mLinePath;
     private Canvas mCanvas = new Canvas();
     private Bitmap mBitmap;
+    private Matrix mMatrix = new Matrix();
     private int mTextAlign = TEXT_ALIGN_LEFT;
     private int mTextBaseline = TEXT_BASELINE_BOTTOM;
     private int mFillStyleR = 0;
@@ -240,13 +242,13 @@ public class CanvasRenderingContext2DImpl {
     private void stroke() {
         if (mLinePaint == null) {
             mLinePaint = new Paint();
-            mLinePaint.setAntiAlias(true);
         }
 
         if(mLinePath == null) {
             mLinePath = new Path();
         }
 
+        mLinePaint.setAntiAlias(true);
         mLinePaint.setARGB(mStrokeStyleA, mStrokeStyleR, mStrokeStyleG, mStrokeStyleB);
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setStrokeWidth(mLineWidth);
@@ -292,6 +294,7 @@ public class CanvasRenderingContext2DImpl {
             mLinePath = new Path();
         }
 
+        mLinePaint.setAntiAlias(false);
         mLinePaint.setARGB(mFillStyleA, mFillStyleR, mFillStyleG, mFillStyleB);
         mLinePaint.setStyle(Paint.Style.FILL);
         mCanvas.drawPath(mLinePath, mLinePaint);
@@ -501,6 +504,37 @@ public class CanvasRenderingContext2DImpl {
     }
 
     private void scale(float x, float y) {
-        mCanvas.scale(x, y);
+        mMatrix.preScale(x, y);
+        mCanvas.setMatrix(mMatrix);
+    }
+
+    private void rotate(float angle) {
+        mMatrix.preRotate((float)Math.toDegrees(angle));
+        mCanvas.setMatrix(mMatrix);
+    }
+
+    private void translate(float x, float y) {
+        mMatrix.preTranslate(x, y);
+        mCanvas.setMatrix(mMatrix);
+    }
+
+    private void transform(float a, float b, float c, float d, float e, float f) {
+        float angle = (float)Math.atan2(b, a);
+        float denominator = (float)(Math.pow(a, 2) + Math.pow(b, 2));
+        float scaleX = (float)Math.sqrt(denominator);
+        float scaleY = (a * d - c * b) / scaleX;
+        float skewX = (float)(Math.atan2(a * c + b * d, denominator));
+        float skewY = 0;
+        // Do not adjust the order
+        mMatrix.preTranslate(e, f);
+        mMatrix.preRotate((float)Math.toDegrees(angle));
+        mMatrix.preScale(scaleX, scaleY);
+        mMatrix.preSkew(skewX, skewY);
+        mCanvas.setMatrix(mMatrix);
+    }
+
+    private void setTransform(float a, float b, float c, float d, float e, float f) {
+        mMatrix.reset();
+        transform(a, b, c, d, e, f);
     }
 }

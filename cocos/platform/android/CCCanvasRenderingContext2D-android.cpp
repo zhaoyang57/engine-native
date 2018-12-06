@@ -234,6 +234,26 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "scale", x, y);
     }
 
+    void rotate(float angle)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rotate", angle);
+    }
+
+    void translate(float x, float y)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "translate", x, y);
+    }
+
+    void transform(float a, float b, float c, float d, float e, float f)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "transform", a, b, c, d, e, f);
+    }
+
+    void setTransform(float a, float b, float c, float d, float e, float f)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setTransform", a, b, c, d, e, f);
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -593,7 +613,7 @@ void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float image
 
 void CanvasRenderingContext2D::translate(float x, float y)
 {
-     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _impl->translate(x, y);
 }
 
 void CanvasRenderingContext2D::scale(float x, float y)
@@ -603,17 +623,17 @@ void CanvasRenderingContext2D::scale(float x, float y)
 
 void CanvasRenderingContext2D::rotate(float angle)
 {
-     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _impl->rotate(angle);
 }
 
 void CanvasRenderingContext2D::transform(float a, float b, float c, float d, float e, float f)
 {
-     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _impl->transform(a, b, c, d, e, f);
 }
 
 void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, float e, float f)
 {
-     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _impl->setTransform(a, b, c, d, e, f);
 }
 
 NS_CC_END
