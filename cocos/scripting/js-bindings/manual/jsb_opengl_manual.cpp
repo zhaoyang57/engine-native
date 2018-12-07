@@ -1385,12 +1385,11 @@ static bool JSB_glDrawElements(se::State& s) {
     }
 
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    int size = 0;
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(arg2 == GL_UNSIGNED_BYTE || arg2 == GL_UNSIGNED_SHORT, false, GL_INVALID_ENUM);
 
     SE_PRECONDITION4(arg1 >= 0 && offset >= 0, false, GL_INVALID_VALUE);
-
-    int size = 0;
 
     switch (arg2)
     {
@@ -1413,6 +1412,21 @@ static bool JSB_glDrawElements(se::State& s) {
     SE_PRECONDITION4(buffer > 0, false, GL_INVALID_OPERATION);
 
     GLint elementSize = 0;
+    if (size == 0)
+    {
+        switch (arg2)
+        {
+            case GL_UNSIGNED_BYTE:
+                size = sizeof(GLbyte);
+                break;
+            case GL_UNSIGNED_SHORT:
+                size = sizeof(GLshort);
+                break;
+            default:
+                size = 1;
+                break;
+        }
+    }
     glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &elementSize);
     SE_PRECONDITION4(arg1 == 0 || ((elementSize > offset) && arg1 <= ((elementSize - offset) / size)), false, GL_INVALID_OPERATION);
 #endif
@@ -2186,8 +2200,11 @@ static bool JSB_glTexImage2D(se::State& s) {
         }
         if (type != GL_UNSIGNED_BYTE) bytes = 2;
         SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
+    }
 #endif
 #if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
+    if (!args[8].isNullOrUndefined())
+    {
         int textureBinding = 0;
         JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
         if (textureBinding <= 0) {
@@ -2314,8 +2331,11 @@ static bool JSB_glTexSubImage2D(se::State& s) {
         }
         if (type != GL_UNSIGNED_BYTE) bytes = 2;
         SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
+    }
 #endif
 #if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
+    if (!args[8].isNullOrUndefined())
+    {
         int textureBinding = 0;
         JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
         if (textureBinding <= 0) {
@@ -4681,16 +4701,15 @@ static bool JSB_glFlushCommand(se::State& s) {
             case GL_COMMAND_DRAW_ELEMENTS:
             {
                 LOG_GL_COMMAND("Flush: DRAW_ELEMENTS\n");
-#if OPENGL_PARAMETER_CHECK
                 int elementsOffset = (int) p[4];
+                int elementsSize = 0;
+#if OPENGL_PARAMETER_CHECK
                 SE_PRECONDITION4(
                         (GLenum) p[3] == GL_UNSIGNED_BYTE || (GLenum) p[3] == GL_UNSIGNED_SHORT,
                         false, GL_INVALID_ENUM);
 
                 SE_PRECONDITION4((GLsizei) p[2] >= 0 && elementsOffset >= 0, false,
                                  GL_INVALID_VALUE);
-
-                int elementsSize = 0;
 
                 switch ((GLenum) p[3]) {
                     case GL_UNSIGNED_BYTE:
@@ -4712,6 +4731,17 @@ static bool JSB_glFlushCommand(se::State& s) {
                 JSB_GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &elementsArrayBuffer));
                 SE_PRECONDITION4(elementsArrayBuffer > 0, false, GL_INVALID_OPERATION);
 
+                if (elementsSize == 0)
+                {
+                    switch ((GLenum) p[3]) {
+                        case GL_UNSIGNED_BYTE:
+                            elementsSize = sizeof(GLbyte);
+                            break;
+                        case GL_UNSIGNED_SHORT:
+                            elementsSize = sizeof(GLshort);
+                            break;
+                    }
+                }
                 glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &elementsArrayBuffer);
                 SE_PRECONDITION4((GLsizei) p[2] == 0 || ((elementsArrayBuffer > elementsOffset) &&
                                                          (GLsizei) p[2] <=
