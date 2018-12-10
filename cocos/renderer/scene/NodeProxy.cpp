@@ -47,7 +47,6 @@ float NodeProxy::_inheritOpacity = 1.0;
 NodeProxy::NodeProxy()
 : _jsTRS(nullptr)
 , _jsTRSData(nullptr)
-, _jsOwner(nullptr)
 , _parent(nullptr)
 {
     _localMat = Mat4::IDENTITY;
@@ -199,7 +198,7 @@ SystemHandle* NodeProxy::getHandle(const std::string& sysid)
     return nullptr;
 }
 
-void NodeProxy::updateJSOwner(se::Object* owner)
+void NodeProxy::updateJSTRS(se::Object* trs)
 {
     se::ScriptEngine::getInstance()->clearException();
     se::AutoHandleScope hs;
@@ -209,20 +208,7 @@ void NodeProxy::updateJSOwner(se::Object* owner)
         _jsTRS->unroot();
         _jsTRS->decRef();
     }
-    if (_jsOwner != nullptr)
-    {
-        _jsOwner->unroot();
-        _jsOwner->decRef();
-    }
     
-    owner->root();
-    owner->incRef();
-    _jsOwner = owner;
-    
-    se::Value jsVal;
-    bool ok = owner->getProperty("_trs", &jsVal);
-    SE_PRECONDITION2_VOID(ok, "NodeProxy_updateJSOwner : Invalid JS Node object");
-    se::Object* trs = jsVal.toObject();
     trs->root();
     trs->incRef();
     _jsTRS = trs;
@@ -244,13 +230,7 @@ void NodeProxy::updateMatrix()
 
 void NodeProxy::updateFromJS()
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-    
-    se::Value renderFlag;
-    bool ok = _jsOwner->getProperty("__renderFlag", &renderFlag);
-    SE_PRECONDITION2_VOID(ok, "NodeProxy_updateJSOwner : Invalid JS Node object");
-    int flag = renderFlag.toInt32();
+    uint32_t flag = _jsTRSData[0];
     if (flag & _TRANSFORM)
     {
         _localMat.setIdentity();
@@ -260,9 +240,7 @@ void NodeProxy::updateFromJS()
         _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
         _localMat.rotate(q);
         _localMat.scale(_jsTRSData[8], _jsTRSData[9], _jsTRSData[10]);
-        
-        flag = flag & ~_TRANSFORM;
-        renderFlag.setInt32(flag);
+        _jsTRSData[0] = 0;
 
         _matrixUpdated = true;
     }

@@ -69,7 +69,7 @@ public:
 
     /// @} end of Children and Parent
     
-    void updateJSOwner(se::Object* owner);
+    void updateJSTRS(se::Object* trs);
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
     inline uint8_t getOpacity() const { return _opacity; };
@@ -121,7 +121,6 @@ private:
 
     float* _jsTRSData;
     se::Object* _jsTRS;
-    se::Object* _jsOwner;
     NodeProxy* _parent;                  ///< weak reference to parent node
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
     

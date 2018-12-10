@@ -670,14 +670,14 @@ static bool js_renderer_RenderHandle_updateNativeEffect(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeEffect)
 
-static bool js_renderer_NodeProxy_updateJSOwner(se::State& s)
+static bool js_renderer_NodeProxy_updateJSTRS(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
     const auto& args = s.args();
-    cobj->updateJSOwner(args[0].toObject());
+    cobj->updateJSTRS(args[0].toObject());
     return true;
 }
-SE_BIND_FUNC(js_renderer_NodeProxy_updateJSOwner);
+SE_BIND_FUNC(js_renderer_NodeProxy_updateJSTRS);
 
 bool jsb_register_renderer_manual(se::Object* global)
 {
@@ -730,7 +730,7 @@ bool jsb_register_renderer_manual(se::Object* global)
     __jsb_cocos2d_renderer_RenderHandle_proto->defineFunction("updateNativeMesh", _SE(js_renderer_RenderHandle_updateNativeMesh));
     
     // NodeProxy
-    __jsb_cocos2d_renderer_NodeProxy_proto->defineFunction("updateJSOwner", _SE(js_renderer_NodeProxy_updateJSOwner));
+    __jsb_cocos2d_renderer_NodeProxy_proto->defineFunction("updateJSTRS", _SE(js_renderer_NodeProxy_updateJSTRS));
 
     return true;
 }
