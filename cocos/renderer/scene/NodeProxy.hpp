@@ -69,7 +69,7 @@ public:
 
     /// @} end of Children and Parent
     
-    void generateTypedArray();
+    void updateJSOwner(se::Object* owner);
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
     inline uint8_t getOpacity() const { return _opacity; };
@@ -100,6 +100,13 @@ private:
     static int _parentOpacityDirty;
     static float _inheritOpacity;
     
+    static const int _TRANSFORM = 1 << 0;
+    static const int _UPDATE_RENDER_DATA = 1 << 1;
+    static const int _OPACITY = 1 << 2;
+    static const int _COLOR = 1 << 3;
+    static const int _CHILDREN = 1 << 4;
+    static const int _POST_UPDATE_RENDER_DATA = 1 << 5;
+    
     bool _childrenOrderDirty = true;
     bool _matrixUpdated = false;
     bool _opacityUpdated = false;
@@ -114,6 +121,7 @@ private:
 
     float* _jsTRSData;
     se::Object* _jsTRS;
+    se::Object* _jsOwner;
     NodeProxy* _parent;                  ///< weak reference to parent node
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
     

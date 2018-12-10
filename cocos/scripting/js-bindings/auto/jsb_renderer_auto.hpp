@@ -166,7 +166,6 @@ extern se::Class* __jsb_cocos2d_renderer_NodeProxy_class;
 bool js_register_cocos2d_renderer_NodeProxy(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_addChild);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_generateTypedArray);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_removeAllChildren);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_addHandle);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildren);

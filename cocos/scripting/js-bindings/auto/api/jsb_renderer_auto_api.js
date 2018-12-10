@@ -1141,14 +1141,6 @@ nodeproxy
 },
 
 /**
- * @method generateTypedArray
- */
-generateTypedArray : function (
-)
-{
-},
-
-/**
  * @method removeAllChildren
  */
 removeAllChildren : function (

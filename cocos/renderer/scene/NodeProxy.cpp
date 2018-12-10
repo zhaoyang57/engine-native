@@ -28,9 +28,7 @@ THE SOFTWARE.
 
 #include "NodeProxy.hpp"
 
-#include <algorithm>
 #include <string>
-#include <regex>
 
 #include "ModelBatcher.hpp"
 #include "../renderer/Scene.h"
@@ -49,6 +47,7 @@ float NodeProxy::_inheritOpacity = 1.0;
 NodeProxy::NodeProxy()
 : _jsTRS(nullptr)
 , _jsTRSData(nullptr)
+, _jsOwner(nullptr)
 , _parent(nullptr)
 {
     _localMat = Mat4::IDENTITY;
@@ -200,26 +199,36 @@ SystemHandle* NodeProxy::getHandle(const std::string& sysid)
     return nullptr;
 }
 
-void NodeProxy::generateTypedArray()
+void NodeProxy::updateJSOwner(se::Object* owner)
 {
-    if (_jsTRS == nullptr)
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
+    
+    if (_jsTRS != nullptr)
     {
-        se::ScriptEngine::getInstance()->clearException();
-        se::AutoHandleScope hs;
-        
-        se::Value jsVal;
-        bool ok = native_ptr_to_seval<NodeProxy>((NodeProxy*)this, &jsVal);
-        CCASSERT(ok, "NodeProxy_generateTypedArray : JS object missing");
-        
-        _jsTRS = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 4 * 11);
-        // root it
-        _jsTRS->root();
-        // Pass to js
-        jsVal.toObject()->setProperty("_trs", se::Value(_jsTRS));
-        // Save to cpp
-        size_t length;
-        _jsTRS->getTypedArrayData((uint8_t**)(&_jsTRSData), &length);
+        _jsTRS->unroot();
+        _jsTRS->decRef();
     }
+    if (_jsOwner != nullptr)
+    {
+        _jsOwner->unroot();
+        _jsOwner->decRef();
+    }
+    
+    owner->root();
+    owner->incRef();
+    _jsOwner = owner;
+    
+    se::Value jsVal;
+    bool ok = owner->getProperty("_trs", &jsVal);
+    SE_PRECONDITION2_VOID(ok, "NodeProxy_updateJSOwner : Invalid JS Node object");
+    se::Object* trs = jsVal.toObject();
+    trs->root();
+    trs->incRef();
+    _jsTRS = trs;
+    _jsTRSData = nullptr;
+    size_t length;
+    trs->getTypedArrayData((uint8_t**)(&_jsTRSData), &length);
 }
 
 void NodeProxy::updateMatrix()
@@ -235,8 +244,14 @@ void NodeProxy::updateMatrix()
 
 void NodeProxy::updateFromJS()
 {
-    uint8_t* uintData = (uint8_t*)_jsTRSData;
-    if (uintData[0] > 0)
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
+    
+    se::Value renderFlag;
+    bool ok = _jsOwner->getProperty("__renderFlag", &renderFlag);
+    SE_PRECONDITION2_VOID(ok, "NodeProxy_updateJSOwner : Invalid JS Node object");
+    int flag = renderFlag.toInt32();
+    if (flag & _TRANSFORM)
     {
         _localMat.setIdentity();
 
@@ -245,13 +260,11 @@ void NodeProxy::updateFromJS()
         _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
         _localMat.rotate(q);
         _localMat.scale(_jsTRSData[8], _jsTRSData[9], _jsTRSData[10]);
+        
+        flag = flag & ~_TRANSFORM;
+        renderFlag.setInt32(flag);
 
         _matrixUpdated = true;
-    }
-    if (uintData[1] > 0)
-    {
-        _opacity = uintData[2];
-        _opacityUpdated = true;
     }
 }
 

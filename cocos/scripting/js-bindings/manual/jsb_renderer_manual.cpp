@@ -28,6 +28,7 @@
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "renderer/INode.h"
+#include "scene/NodeProxy.hpp"
 #include "scene/RenderHandle.hpp"
 #include "jsb_conversions.hpp"
 
@@ -669,6 +670,15 @@ static bool js_renderer_RenderHandle_updateNativeEffect(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeEffect)
 
+static bool js_renderer_NodeProxy_updateJSOwner(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    const auto& args = s.args();
+    cobj->updateJSOwner(args[0].toObject());
+    return true;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_updateJSOwner);
+
 bool jsb_register_renderer_manual(se::Object* global)
 {
     // Get the ns
@@ -718,6 +728,9 @@ bool jsb_register_renderer_manual(se::Object* global)
     // RenderHandle
     __jsb_cocos2d_renderer_RenderHandle_proto->defineFunction("updateNativeEffect", _SE(js_renderer_RenderHandle_updateNativeEffect));
     __jsb_cocos2d_renderer_RenderHandle_proto->defineFunction("updateNativeMesh", _SE(js_renderer_RenderHandle_updateNativeMesh));
+    
+    // NodeProxy
+    __jsb_cocos2d_renderer_NodeProxy_proto->defineFunction("updateJSOwner", _SE(js_renderer_NodeProxy_updateJSOwner));
 
     return true;
 }

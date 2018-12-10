@@ -2603,21 +2603,6 @@ static bool js_renderer_NodeProxy_addChild(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_addChild)
 
-static bool js_renderer_NodeProxy_generateTypedArray(se::State& s)
-{
-    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_generateTypedArray : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->generateTypedArray();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_NodeProxy_generateTypedArray)
-
 static bool js_renderer_NodeProxy_removeAllChildren(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
@@ -2987,7 +2972,6 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     auto cls = se::Class::create("NodeProxy", obj, nullptr, _SE(js_renderer_NodeProxy_constructor));
 
     cls->defineFunction("addChild", _SE(js_renderer_NodeProxy_addChild));
-    cls->defineFunction("generateTypedArray", _SE(js_renderer_NodeProxy_generateTypedArray));
     cls->defineFunction("removeAllChildren", _SE(js_renderer_NodeProxy_removeAllChildren));
     cls->defineFunction("addHandle", _SE(js_renderer_NodeProxy_addHandle));
     cls->defineFunction("getChildren", _SE(js_renderer_NodeProxy_getChildren));
