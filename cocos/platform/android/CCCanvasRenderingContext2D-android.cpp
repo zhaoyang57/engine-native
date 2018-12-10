@@ -254,6 +254,11 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setTransform", a, b, c, d, e, f);
     }
 
+    void resetTransform()
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "resetTransform");
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -634,6 +639,11 @@ void CanvasRenderingContext2D::transform(float a, float b, float c, float d, flo
 void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, float e, float f)
 {
     _impl->setTransform(a, b, c, d, e, f);
+}
+
+void CanvasRenderingContext2D::resetTransform()
+{
+    _impl->resetTransform();
 }
 
 NS_CC_END

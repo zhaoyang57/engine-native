@@ -930,4 +930,9 @@ void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, 
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::resetTransform()
+{
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
 NS_CC_END

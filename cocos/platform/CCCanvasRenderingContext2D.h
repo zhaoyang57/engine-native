@@ -104,6 +104,7 @@ public:
 
     void transform(float a, float b, float c, float d, float e, float f);
     void setTransform(float a, float b, float c, float d, float e, float f);
+    void resetTransform();
 
 private:
     GLint _maxTextureSize;

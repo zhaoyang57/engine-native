@@ -1648,6 +1648,21 @@ static bool js_engine_CanvasRenderingContext2D_save(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_save)
 
+static bool js_engine_CanvasRenderingContext2D_resetTransform(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_resetTransform : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->resetTransform();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_resetTransform)
+
 static bool js_engine_CanvasRenderingContext2D_fillRect(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -1849,6 +1864,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("fillText", _SE(js_engine_CanvasRenderingContext2D_fillText));
     cls->defineFunction("strokeText", _SE(js_engine_CanvasRenderingContext2D_strokeText));
     cls->defineFunction("save", _SE(js_engine_CanvasRenderingContext2D_save));
+    cls->defineFunction("resetTransform", _SE(js_engine_CanvasRenderingContext2D_resetTransform));
     cls->defineFunction("fillRect", _SE(js_engine_CanvasRenderingContext2D_fillRect));
     cls->defineFunction("rotate", _SE(js_engine_CanvasRenderingContext2D_rotate));
     cls->defineFunction("beginPath", _SE(js_engine_CanvasRenderingContext2D_beginPath));

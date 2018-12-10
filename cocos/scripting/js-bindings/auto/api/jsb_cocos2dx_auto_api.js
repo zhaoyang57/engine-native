@@ -874,6 +874,14 @@ save : function (
 },
 
 /**
+ * @method resetTransform
+ */
+resetTransform : function (
+)
+{
+},
+
+/**
  * @method fillRect
  * @param {float} arg0
  * @param {float} arg1

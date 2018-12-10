@@ -537,4 +537,9 @@ public class CanvasRenderingContext2DImpl {
         mMatrix.reset();
         transform(a, b, c, d, e, f);
     }
+
+    private void resetTransform() {
+        mMatrix.reset();
+        mCanvas.setMatrix(mMatrix);
+    }
 }
