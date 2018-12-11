@@ -72,6 +72,12 @@ public:
     void updateJSTRS(se::Object* trs);
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
+    void getPosition(cocos2d::Vec3* out) const;
+    void getRotation(cocos2d::Quaternion* out) const;
+    void getScale(cocos2d::Vec3* out) const;
+    void getWorldPosition(cocos2d::Vec3* out) const;
+    void getWorldRT(cocos2d::Mat4* out) const;
+    
     inline uint8_t getOpacity() const { return _opacity; };
     
     inline int getGroupID() const { return _groupID; };

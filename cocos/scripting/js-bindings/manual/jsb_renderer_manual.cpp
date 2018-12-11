@@ -27,7 +27,6 @@
 #if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
-#include "renderer/INode.h"
 #include "scene/NodeProxy.hpp"
 #include "scene/RenderHandle.hpp"
 #include "jsb_conversions.hpp"
@@ -312,74 +311,6 @@ static bool js_renderer_getStageID(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_getStageID);
 
-class JSNode : public INode
-{
-public:
-    JSNode(const se::Value& jsNode)
-    : _jsNode(jsNode)
-    {
-    }
-    
-    se::Object* getJSNode() const
-    {
-        return _jsNode.toObject();
-    }
-
-    virtual Mat4 getWorldMatrix() const override
-    {
-        se::ScriptEngine::getInstance()->clearException();
-        se::AutoHandleScope hs;
-        
-        Mat4 worldMatrix;
-        se::Value func;
-        if (_jsNode.toObject()->getProperty("getWorldMatrixInAB", &func))
-        {
-            se::Value ret;
-            func.toObject()->call(se::EmptyValueArray, _jsNode.toObject(), &ret);
-            seval_to_Mat4(ret, &worldMatrix);
-        }
-        return worldMatrix;
-    }
-
-    virtual Mat4 getWorldRT() const override
-    {
-        se::ScriptEngine::getInstance()->clearException();
-        se::AutoHandleScope hs;
-        
-        Mat4 worldRT;
-        se::Value func;
-        if (_jsNode.toObject()->getProperty("getWorldRTInAB", &func))
-        {
-            se::Value ret;
-            func.toObject()->call(se::EmptyValueArray, _jsNode.toObject(), &ret);
-            seval_to_Mat4(ret, &worldRT);
-        }
-        return worldRT;
-    }
-
-    virtual Vec3 getWorldPosition() const override
-    {
-        se::ScriptEngine::getInstance()->clearException();
-        se::AutoHandleScope hs;
-        
-        Vec3 pos;
-        se::Value func;
-        if (_jsNode.toObject()->getProperty("getWorldPosition", &func))
-        {
-            se::Value ret;
-            se::ValueArray args;
-            se::HandleObject obj(se::Object::createPlainObject());
-            args.push_back(se::Value(obj));
-            func.toObject()->call(args, _jsNode.toObject(), &ret);
-            seval_to_Vec3(ret, &pos);
-        }
-        return pos;
-    }
-
-private:
-    se::Value _jsNode;
-};
-
 static bool js_renderer_Camera_setNode(se::State& s)
 {
     cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
@@ -388,10 +319,13 @@ static bool js_renderer_Camera_setNode(se::State& s)
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 1) {
-        INode* node = cobj->getNode();
-        delete node;
-        node = new JSNode(args[0]);
-        cobj->setNode(node);
+        se::Value jsproxy;
+        ok = args[0].toObject()->getProperty("_proxy", &jsproxy);
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setNode : Cannot find node proxy form Node");
+        NodeProxy* proxy = nullptr;
+        ok = seval_to_native_ptr(jsproxy, &proxy);
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setNode : Invalid Node Proxy");
+        cobj->setNode(proxy);
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
@@ -403,9 +337,12 @@ static bool js_renderer_Camera_getNode(se::State& s)
 {
     cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_renderer_Camera_getNode : Invalid Native Object");
-    JSNode* node = dynamic_cast<JSNode*>(cobj->getNode());
-    se::Object* retObj = node->getJSNode();
-    s.rval().setObject(retObj);
+    cocos2d::renderer::NodeProxy* node = cobj->getNode();
+    se::Value jsproxy;
+    native_ptr_to_seval<cocos2d::renderer::NodeProxy>(node, &jsproxy);
+    se::Value jsnode;
+    jsproxy.toObject()->getProperty("_owner", &jsnode);
+    s.rval().setObject(jsnode.toObject());
     return true;
 }
 SE_BIND_FUNC(js_renderer_Camera_getNode)

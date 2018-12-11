@@ -33,7 +33,6 @@
 #include "InputAssembler.h"
 #include "Pass.h"
 #include "Camera.h"
-#include "INode.h"
 #include "Model.h"
 
 RENDERER_BEGIN

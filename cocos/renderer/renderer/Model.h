@@ -37,7 +37,6 @@ RENDERER_BEGIN
 class Effect;
 class InputAssembler;
 class Model;
-class INode;
 
 struct DrawItem
 {

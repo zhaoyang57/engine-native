@@ -24,7 +24,6 @@
 
 #include "Camera.h"
 #include "gfx/FrameBuffer.h"
-#include "INode.h"
 #include "math/MathUtil.h"
 
 RENDERER_BEGIN
@@ -40,6 +39,7 @@ Camera::Camera()
 Camera::~Camera()
 {
     RENDERER_SAFE_RELEASE(_framebuffer);
+    RENDERER_SAFE_RELEASE(_node);
 }
 
 void Camera::setFrameBuffer(FrameBuffer* framebuffer)
@@ -97,9 +97,17 @@ void Camera::setStages(const std::vector<std::string>& stages)
 }
 
 
-void Camera::setNode(INode* node)
+void Camera::setNode(NodeProxy* node)
 {
+    if (_node != nullptr)
+    {
+        _node->release();
+    }
     _node = node;
+    if (_node != nullptr)
+    {
+        _node->retain();
+    }
 }
 
 const View& Camera::extractView( int width, int height)
@@ -114,7 +122,7 @@ const View& Camera::extractView( int width, int height)
 
     // view matrix
     //REFINE:
-    _worldRTInv.set(_node->getWorldRT());
+    _node->getWorldRT(&_worldRTInv);
     _cachedView.matView.set(_worldRTInv.getInversed());
 
     // projecton matrix
@@ -158,7 +166,7 @@ Vec3& Camera::screenToWorld(Vec3& out, const Vec3& screenPos, int width, int hei
         Mat4::createOrthographic(-x, x, -y, y, &matProj);
     }
     
-    const_cast<Camera*>(this)->_worldRTInv = _node->getWorldRT();
+    _node->getWorldRT(&(const_cast<Camera*>(this)->_worldRTInv));
     const_cast<Camera*>(this)->_worldRTInv.inverse();
     
     // view projection
@@ -177,7 +185,7 @@ Vec3& Camera::screenToWorld(Vec3& out, const Vec3& screenPos, int width, int hei
         
         // Transform to world position.
         matInvViewProj.transformPoint(&out);
-        const_cast<Camera*>(this)->_worldPos.set(_node->getWorldPosition());
+        _node->getWorldPosition(&(const_cast<Camera*>(this)->_worldPos));
         Vec3 tmpVec3 = _worldPos;
         out = tmpVec3.lerp(out, MathUtil::lerp(_near / _far, 1, screenPos.z));
     }
@@ -213,7 +221,7 @@ Vec3& Camera::worldToScreen(Vec3& out, const Vec3& worldPos, int width, int heig
         Mat4::createOrthographic(-x, x, -y, y, &matProj);
     }
     
-    const_cast<Camera*>(this)->_worldRTInv = _node->getWorldRT();
+    _node->getWorldRT(&(const_cast<Camera*>(this)->_worldRTInv));
     const_cast<Camera*>(this)->_worldRTInv.inverse();
     // view projection
     Mat4 matViewProj;

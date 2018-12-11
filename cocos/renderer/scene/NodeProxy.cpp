@@ -217,6 +217,83 @@ void NodeProxy::updateJSTRS(se::Object* trs)
     trs->getTypedArrayData((uint8_t**)(&_jsTRSData), &length);
 }
 
+void NodeProxy::getPosition(cocos2d::Vec3* out) const
+{
+    out->x = _jsTRSData[1];
+    out->y = _jsTRSData[2];
+    out->z = _jsTRSData[3];
+}
+
+void NodeProxy::getRotation(cocos2d::Quaternion* out) const
+{
+    out->x = _jsTRSData[4];
+    out->y = _jsTRSData[5];
+    out->z = _jsTRSData[6];
+    out->w = _jsTRSData[7];
+}
+
+void NodeProxy::getScale(cocos2d::Vec3* out) const
+{
+    out->x = _jsTRSData[8];
+    out->y = _jsTRSData[9];
+    out->z = _jsTRSData[10];
+}
+
+void NodeProxy::getWorldPosition(cocos2d::Vec3* out) const
+{
+    if (_jsTRSData != nullptr)
+    {
+        getPosition(out);
+        
+        cocos2d::Vec3 pos;
+        cocos2d::Quaternion rot;
+        cocos2d::Vec3 scale;
+        NodeProxy* curr = _parent;
+        while (curr != nullptr)
+        {
+            curr->getPosition(&pos);
+            curr->getRotation(&rot);
+            curr->getScale(&scale);
+            
+            out->multiply(scale);
+            out->transformQuat(rot);
+            out->add(pos);
+            curr = curr->getParent();
+        }
+    }
+}
+
+void NodeProxy::getWorldRT(cocos2d::Mat4* out) const
+{
+    if (_jsTRSData != nullptr)
+    {
+        cocos2d::Vec3 opos(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
+        cocos2d::Quaternion orot(_jsTRSData[4], _jsTRSData[5], _jsTRSData[6], _jsTRSData[7]);
+        
+        cocos2d::Vec3 pos;
+        cocos2d::Quaternion rot;
+        cocos2d::Vec3 scale;
+        NodeProxy* curr = _parent;
+        while (curr != nullptr)
+        {
+            curr->getPosition(&pos);
+            curr->getRotation(&rot);
+            curr->getScale(&scale);
+            
+            opos.multiply(scale);
+            opos.transformQuat(rot);
+            opos.add(pos);
+            orot.multiply(rot);
+            curr = curr->getParent();
+        }
+        out->setIdentity();
+        out->translate(opos);
+        cocos2d::Mat4 quatMat;
+        cocos2d::Mat4::createRotation(orot, &quatMat);
+        out->multiply(quatMat);
+    }
+}
+
 void NodeProxy::updateMatrix()
 {
     if (_matrixUpdated || _worldMatDirty > 0)
