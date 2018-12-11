@@ -308,11 +308,10 @@ void Technique::Parameter::copyValue(const Parameter& rh)
             _value = rh._value;
             RENDERER_SAFE_RETAIN((Texture*)_value);
         }
-        else
+        else if (_count > 0)
         {
-            if (_count > 0)
-                _value = malloc(_count * sizeof(void*));
-            
+            _value = malloc(_count * sizeof(void*));
+            memcpy(_value, rh._value, _count * sizeof(void*));
             Texture** texture = (Texture**)_value;
             for (uint8_t i = 0; i < _count; ++i)
             {

@@ -70,6 +70,10 @@ THE SOFTWARE.
     #ifndef USE_DRAGONBONES
     #define USE_DRAGONBONES 1
     #endif
+
+    #ifndef USE_PARTICLE
+    #define USE_PARTICLE 1
+    #endif
 #endif
 
 /** @def CC_ENABLE_STACKABLE_ACTIONS

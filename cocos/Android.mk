@@ -36,7 +36,6 @@ base/TGAlib.cpp \
 base/ZipUtils.cpp \
 base/base64.cpp \
 base/ccCArray.cpp \
-base/ccRandom.cpp \
 base/ccTypes.cpp \
 base/ccUTF8.cpp \
 base/ccUtils.cpp \
@@ -174,7 +173,7 @@ endif # USE_NET_WORK
 
 ifneq ($(USE_MIDDLEWARE),0_0)
 LOCAL_STATIC_LIBRARIES += editor_support_static
-endif # USE_SPINE or USE_DRAGONBONES
+endif # USE_MIDDLEWARE
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \

@@ -16,6 +16,12 @@ IOTypedArray.cpp \
 MiddlewareManager.cpp \
 ../scripting/js-bindings/auto/jsb_cocos2dx_editor_support_auto.cpp
 
+ifeq ($(USE_PARTICLE),1)
+LOCAL_SRC_FILES += \
+particle/ParticleSimulator.cpp \
+../scripting/js-bindings/auto/jsb_cocos2dx_particle_auto.cpp
+endif # USE_PARTICLE
+
 ifeq ($(USE_SPINE),1)
 LOCAL_SRC_FILES += \
 spine/Animation.c \
