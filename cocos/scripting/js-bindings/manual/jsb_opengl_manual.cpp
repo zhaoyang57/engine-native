@@ -397,7 +397,8 @@ namespace {
     };
 
 }
-
+// debug view drawcount
+int drawCallCount = 0;
 template<typename T>
 static bool JSB_jsval_typedarray_to_data(const se::Value& v, GLData<T>& data)
 {
@@ -1357,7 +1358,7 @@ static bool JSB_glDrawArrays(se::State& s) {
     SE_PRECONDITION4(total <= data, false, GL_INVALID_OPERATION);
 #endif
     JSB_GL_CHECK(glDrawArrays((GLenum)arg0 , (GLint)arg1 , (GLsizei)arg2  ));
-
+    drawCallCount++;
     return true;
 }
 SE_BIND_FUNC(JSB_glDrawArrays)
@@ -1431,7 +1432,7 @@ static bool JSB_glDrawElements(se::State& s) {
     SE_PRECONDITION4(arg1 == 0 || ((elementSize > offset) && arg1 <= ((elementSize - offset) / size)), false, GL_INVALID_OPERATION);
 #endif
     JSB_GL_CHECK(glDrawElements((GLenum)arg0 , (GLsizei)arg1 , (GLenum)arg2 , (GLvoid*)arg3  ));
-
+    drawCallCount++;
     return true;
 }
 SE_BIND_FUNC(JSB_glDrawElements)
@@ -4696,6 +4697,7 @@ static bool JSB_glFlushCommand(se::State& s) {
 #endif
                 JSB_GL_CHECK_VOID(glDrawArrays((GLenum)p[1], (GLint)p[2], (GLsizei)p[3]));
                 p += 4;
+                drawCallCount++;
                 break;
             }
             case GL_COMMAND_DRAW_ELEMENTS:
@@ -4750,6 +4752,7 @@ static bool JSB_glFlushCommand(se::State& s) {
 #endif
                 JSB_GL_CHECK_VOID(glDrawElements((GLenum) p[1], (GLsizei) p[2], (GLenum) p[3], (const GLvoid *) (intptr_t) p[4]));
                 p += 5;
+                drawCallCount++;
                 break;
             }
             case GL_COMMAND_ENABLE:

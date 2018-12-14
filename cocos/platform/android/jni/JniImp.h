@@ -44,6 +44,6 @@ extern std::string getSystemVersionJNI();
 extern bool openURLJNI(const std::string& url);
 extern void setPreferredFramesPerSecondJNI(int fps);
 extern void setGameInfoDebugViewTextJNI(int index, const std::string& text);
-extern void setJSBInvocationCountJNI(int count);
+extern void setDrawCallAndJSTimeJNI(const std::string& info);
 extern void openDebugViewJNI();
 extern void disableBatchGLCommandsToNativeJNI();

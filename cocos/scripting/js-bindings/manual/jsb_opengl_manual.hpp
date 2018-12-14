@@ -28,5 +28,6 @@
 namespace se {
     class Object;
 }
-
+// debug view drawcount
+extern int drawCallCount;
 bool JSB_register_opengl(se::Object* obj);

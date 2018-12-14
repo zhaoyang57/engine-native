@@ -32,7 +32,9 @@
 #include "platform/CCApplication.h"
 #include "scripting/js-bindings/jswrapper/SeApi.h"
 #include "scripting/js-bindings/event/EventDispatcher.h"
+#include "scripting/js-bindings/manual/jsb_opengl_manual.hpp"
 #include "platform/android/CCFileUtils-android.h"
+
 #include "base/CCScheduler.h"
 #include "base/CCAutoreleasePool.h"
 #include "base/CCGLUtils.h"
@@ -82,6 +84,7 @@
 #define KEYCODE_DPAD_RIGHT 0x16
 #define KEYCODE_ENTER 0x42
 #define KEYCODE_DPAD_CENTER  0x17
+#define SAMPLE_TIME 0.5
 
 using namespace cocos2d;
 
@@ -248,10 +251,32 @@ extern "C"
             ++jsbInvocationTotalFrames;
             jsbInvocationTotalCount += __jsbInvocationCount;
 
-            if (dtSum > 1.0f)
+            if (dtSum >= SAMPLE_TIME)
             {
+                float FPS = jsbInvocationTotalFrames / dtSum;
+                if(FPS > 99.9)
+                {
+                    FPS = 99.9;
+                }
+
+                int jsbCount = jsbInvocationTotalCount  / jsbInvocationTotalFrames;
+                if(jsbCount > 999)
+                {
+                    jsbCount = 999;
+                }
+
+                int drawCount = drawCallCount  / jsbInvocationTotalFrames;
+                if(drawCount > 999)
+                {
+                    drawCount = 999;
+                }
+
+                char info[50] = {0};
+                sprintf(info, "[FPS]%4.1f [JSB Call]%3d [Draw Call]%3d",
+                        FPS, jsbCount,drawCount);
+                setDrawCallAndJSTimeJNI(info);
+                drawCallCount = 0;
                 dtSum = 0.0f;
-                setJSBInvocationCountJNI(jsbInvocationTotalCount / jsbInvocationTotalFrames);
                 jsbInvocationTotalCount = 0;
                 jsbInvocationTotalFrames = 0;
             }
@@ -491,7 +516,9 @@ extern "C"
     {
         // cocos_audioengine_focus_change(focusChange);
     }
-} // end of extern "C"
+}
+
+// end of extern "C"
 
 void restartJSVM()
 {
@@ -601,11 +628,12 @@ void setGameInfoDebugViewTextJNI(int index, const std::string& text)
     JniHelper::callStaticVoidMethod(JCLS_HELPER, "setGameInfoDebugViewText", index, text);
 }
 
-void setJSBInvocationCountJNI(int count)
+void setDrawCallAndJSTimeJNI(const std::string& info)
 {
-    if (!__isOpenDebugView)
-        return;
-    JniHelper::callStaticVoidMethod(JCLS_HELPER, "setJSBInvocationCount", count);
+      if (!__isOpenDebugView) {
+             return;
+      }
+      JniHelper::callStaticVoidMethod(JCLS_HELPER, "setDrawInfoText",info);
 }
 
 void openDebugViewJNI()
