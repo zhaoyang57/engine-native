@@ -249,7 +249,7 @@ USING_NS_CC;
 
 //The event handling method
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::CLICKED);
+    _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::CLICKED, "");
 }
 
 // this allows you to dispatch touches
@@ -263,7 +263,7 @@ USING_NS_CC;
     {
         if([self.moviePlayer playbackState] != MPMoviePlaybackStateStopped)
         {
-            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::COMPLETED);
+            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::COMPLETED, "");
         }
     }
 }
@@ -273,7 +273,7 @@ USING_NS_CC;
     MPMoviePlaybackState state = [self.moviePlayer playbackState];
     switch (state) {
         case MPMoviePlaybackStatePlaying:
-            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::PLAYING);
+            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::PLAYING, "");
             break;
         default:
             break;
@@ -290,13 +290,13 @@ USING_NS_CC;
         if (playState != MPMoviePlaybackStatePlaying)
             [self.moviePlayer pause];
         
-        _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::READY_TO_PLAY);
+        _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::READY_TO_PLAY, "");
     }
 }
 
 -(void) metadataUpdate:(NSNotification *)notification
 {
-    _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::META_LOADED);
+    _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::META_LOADED, "");
 }
 
 -(void) seekTo:(float)sec
@@ -371,7 +371,7 @@ USING_NS_CC;
 {
     if (self.moviePlayer != NULL) {
         if([self.moviePlayer playbackState] == MPMoviePlaybackStatePlaying) {
-            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::PAUSED);
+            _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::PAUSED, "");
         }
 
         [self.moviePlayer pause];
@@ -393,7 +393,7 @@ USING_NS_CC;
     if (self.moviePlayer != NULL) {
         [self.moviePlayer pause];
         [self seekTo:0];
-        _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::STOPPED);
+        _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::STOPPED, "");
     }
 }
 
@@ -513,29 +513,29 @@ void VideoPlayer::addEventListener(const std::string& name, const VideoPlayer::c
     _eventCallback[name] = callback;
 }
 
-void VideoPlayer::onPlayEvent(int event)
+void VideoPlayer::onPlayEvent(int event, std::string params)
 {
     switch ((EventType)event) {
         case EventType::PLAYING:
-            _eventCallback["play"]();
+            _eventCallback["play"]("");
             break;
         case EventType::PAUSED:
-            _eventCallback["pause"]();
+            _eventCallback["pause"]("");
             break;
         case EventType::STOPPED:
-            _eventCallback["stoped"]();
+            _eventCallback["stoped"]("");
             break;
         case EventType::COMPLETED:
-            _eventCallback["ended"]();
+            _eventCallback["ended"]("");
             break;
         case EventType::META_LOADED:
-            _eventCallback["loadedmetadata"]();
+            _eventCallback["loadedmetadata"]("");
             break;
         case EventType::CLICKED:
-            _eventCallback["click"]();
+            _eventCallback["click"]("");
             break;
         case EventType::READY_TO_PLAY:
-            _eventCallback["suspend"]();
+            _eventCallback["suspend"]("");
             break;
         default:
             break;
@@ -567,8 +567,26 @@ void VideoPlayer::setMute()
     //
 }
 
-void VideoPlayer::removeEventListener(const std::string& name)
-{
-//
+//void VideoPlayer::removeEventListener(const std::string& name)
+//{
+////
+//}
+
+void VideoPlayer::setObjectFitStyle(std::string objectFit) {
+}
+
+void VideoPlayer::setPoster(std::string path) {
+}
+
+void VideoPlayer::enableControls(bool enable) {
+}
+
+void VideoPlayer::showCenterPlayBtn(bool enable) {
+}
+
+void VideoPlayer::enableProgressGesture(bool enable) {
+}
+
+void VideoPlayer::setLive(bool isLive) {
 }
 #endif

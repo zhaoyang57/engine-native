@@ -182,7 +182,6 @@
 		1A586C4A2064C97800B47573 /* EJConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A586C472064C97800B47573 /* EJConvert.h */; };
 		1A586C4B2064C97800B47573 /* EJConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A586C482064C97800B47573 /* EJConvert.m */; };
 		1A586C4C2064C97800B47573 /* EJConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A586C482064C97800B47573 /* EJConvert.m */; };
-		1A9A4C6E1F98B1C000C14552 /* libcocosanalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A9A4C6D1F98B1C000C14552 /* libcocosanalytics.a */; };
 		1AAAC873205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC871205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.cpp */; };
 		1AAAC874205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC871205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.cpp */; };
 		1AAAC875205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC872205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.hpp */; };
@@ -785,7 +784,6 @@
 		ED30579E1BEC77BD0083C3ED /* ConvertUTFWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3057991BEC77B70083C3ED /* ConvertUTFWrapper.cpp */; };
 		ED3057A11BEC77D50083C3ED /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = ED30579F1BEC77D50083C3ED /* xxhash.c */; };
 		ED3057A21BEC77D50083C3ED /* xxhash.h in Headers */ = {isa = PBXBuildFile; fileRef = ED3057A01BEC77D50083C3ED /* xxhash.h */; };
-		ED3057C21BEC78A80083C3ED /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = ED30579F1BEC77D50083C3ED /* xxhash.c */; };
 		ED3057CF1BEC7DA80083C3ED /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3057C91BEC7DA80083C3ED /* libglfw3.a */; };
 		ED3057D01BEC7DA80083C3ED /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3057CA1BEC7DA80083C3ED /* libjpeg.a */; };
 		ED3057D11BEC7DA80083C3ED /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3057CB1BEC7DA80083C3ED /* libpng.a */; };
@@ -1308,7 +1306,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A9A4C6E1F98B1C000C14552 /* libcocosanalytics.a in Frameworks */,
 				EDE5DFF81C0D6B3F0014147A /* libwebsockets.a in Frameworks */,
 				1ACF6A3C1E4AFDC80033C137 /* libcrypto.a in Frameworks */,
 				1ACF6A3D1E4AFDC80033C137 /* libssl.a in Frameworks */,
@@ -2924,7 +2921,6 @@
 				1A28FF801F20AFAB007A1D9D /* SRMutex.m in Sources */,
 				46AE400C2092F3A600F3A228 /* env.cc in Sources */,
 				46FDDC69202D733800931238 /* CCApplication-ios.mm in Sources */,
-				ED3057C21BEC78A80083C3ED /* xxhash.c in Sources */,
 				4037F5CF2108751E001C205C /* CCAsyncTaskPool.cpp in Sources */,
 				ED30578C1BEC77510083C3ED /* ioapi.cpp in Sources */,
 				4617866C2052609B008256E1 /* jsb_cocos2dx_network_auto.cpp in Sources */,
