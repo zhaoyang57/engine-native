@@ -457,9 +457,12 @@ private:
             _url = url;
             jstring jurl = methodInfo.env->NewStringUTF(url.c_str());
             jobject jObj = methodInfo.env->CallStaticObjectMethod(methodInfo.classID, methodInfo.methodID, jurl);
-            _httpURLConnection = methodInfo.env->NewGlobalRef(jObj);
+            if (jObj != nullptr)
+            {
+                _httpURLConnection = methodInfo.env->NewGlobalRef(jObj);
+                methodInfo.env->DeleteLocalRef(jObj);
+            }
             methodInfo.env->DeleteLocalRef(jurl);
-            methodInfo.env->DeleteLocalRef(jObj);
             methodInfo.env->DeleteLocalRef(methodInfo.classID);
         }
         else
