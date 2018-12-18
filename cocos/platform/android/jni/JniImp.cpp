@@ -272,8 +272,8 @@ extern "C"
                 }
 
                 char info[50] = {0};
-                sprintf(info, "[FPS]%4.1f [JSB Call]%3d [Draw Call]%3d",
-                        FPS, jsbCount,drawCount);
+                sprintf(info, "[FPS]%4.1f [Draw Call]%3d [JSB Call]%3d",
+                        FPS, drawCount, jsbCount);
                 setDrawCallAndJSTimeJNI(info);
                 drawCallCount = 0;
                 dtSum = 0.0f;
