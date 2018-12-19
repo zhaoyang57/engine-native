@@ -608,9 +608,12 @@
 		40CEAEB720CFDC45007A3281 /* CCReachability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A37E9C4200DD0680078AF72 /* CCReachability.cpp */; };
 		40CEAEB820CFDC47007A3281 /* CCReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A37E9C3200DD0680078AF72 /* CCReachability.h */; };
 		40CEAEBA20CFDE19007A3281 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40CEAEB920CFDE19007A3281 /* SystemConfiguration.framework */; };
-		40F373DA21B67A7D0083E4E7 /* libv8_snapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */; };
 		40FF7AA1216B29CC00E73029 /* VideoPlayer-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40FF7A9E216B29CB00E73029 /* VideoPlayer-ios.mm */; };
 		40FF7AA2216B29CC00E73029 /* VideoPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 40FF7A9F216B29CB00E73029 /* VideoPlayer.h */; };
+		425D011521C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */; };
+		425D011621C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */; };
+		425D011721C6810F00DD59F4 /* GraphicsRenderHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */; };
+		425D011821C6810F00DD59F4 /* GraphicsRenderHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */; };
 		4617861920522469008256E1 /* SocketIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461785FE20522468008256E1 /* SocketIO.cpp */; };
 		4617861A20522469008256E1 /* SocketIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461785FE20522468008256E1 /* SocketIO.cpp */; };
 		4617862120522469008256E1 /* HttpCookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4617860220522468008256E1 /* HttpCookie.cpp */; };
@@ -1125,6 +1128,7 @@
 		BA04379521801CD4006BA60F /* RenderFlow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA04379221801CD4006BA60F /* RenderFlow.hpp */; };
 		BA04379621801CD4006BA60F /* RenderFlow.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BA04379221801CD4006BA60F /* RenderFlow.hpp */; };
 		BA0DAAEF1DB76F2C00EE23AD /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0DAAEE1DB76F2C00EE23AD /* libwebp.a */; };
+		BA0E9DC221CA15F4001CB261 /* libv8_snapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA0E9DC121CA15F4001CB261 /* libv8_snapshot.a */; };
 		BA21055821008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21055721008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp */; };
 		BA21055921008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21055721008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp */; };
 		BA21055A21009A2600E19975 /* AssetsManagerEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21054721008AC300E19975 /* AssetsManagerEx.cpp */; };
@@ -1512,6 +1516,8 @@
 		40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_snapshot.a; path = "../../../cocos2d-x-lite-external/mac/libs/libv8_snapshot.a"; sourceTree = "<group>"; };
 		40FF7A9E216B29CB00E73029 /* VideoPlayer-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "VideoPlayer-ios.mm"; sourceTree = "<group>"; };
 		40FF7A9F216B29CB00E73029 /* VideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayer.h; sourceTree = "<group>"; };
+		425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphicsRenderHandle.cpp; path = scene/GraphicsRenderHandle.cpp; sourceTree = "<group>"; };
+		425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GraphicsRenderHandle.hpp; path = scene/GraphicsRenderHandle.hpp; sourceTree = "<group>"; };
 		461785FE20522468008256E1 /* SocketIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketIO.cpp; sourceTree = "<group>"; };
 		4617860220522468008256E1 /* HttpCookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpCookie.cpp; sourceTree = "<group>"; };
 		4617860420522469008256E1 /* CCIDownloaderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIDownloaderImpl.h; sourceTree = "<group>"; };
@@ -1793,6 +1799,7 @@
 		BA04379121801CD4006BA60F /* RenderFlow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RenderFlow.cpp; path = scene/RenderFlow.cpp; sourceTree = "<group>"; };
 		BA04379221801CD4006BA60F /* RenderFlow.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = RenderFlow.hpp; path = scene/RenderFlow.hpp; sourceTree = "<group>"; };
 		BA0DAAEE1DB76F2C00EE23AD /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebp.a; path = ../external/mac/libs/libwebp.a; sourceTree = "<group>"; };
+		BA0E9DC121CA15F4001CB261 /* libv8_snapshot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_snapshot.a; path = ../external/mac/libs/libv8_snapshot.a; sourceTree = "<group>"; };
 		BA21054721008AC300E19975 /* AssetsManagerEx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssetsManagerEx.cpp; sourceTree = "<group>"; };
 		BA21054821008AC300E19975 /* AssetsManagerEx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AssetsManagerEx.h; sourceTree = "<group>"; };
 		BA21054921008AC300E19975 /* CCEventAssetsManagerEx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCEventAssetsManagerEx.cpp; sourceTree = "<group>"; };
@@ -1852,7 +1859,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40F373DA21B67A7D0083E4E7 /* libv8_snapshot.a in Frameworks */,
+				BA0E9DC221CA15F4001CB261 /* libv8_snapshot.a in Frameworks */,
 				ED99765F216C453D00A46923 /* libv8_base.a in Frameworks */,
 				ED99766F216C459E00A46923 /* libv8_libsampler.a in Frameworks */,
 				ED997668216C459E00A46923 /* libv8_libbase.a in Frameworks */,
@@ -2210,6 +2217,7 @@
 			isa = PBXGroup;
 			children = (
 				40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */,
+				BA0E9DC121CA15F4001CB261 /* libv8_snapshot.a */,
 				ED997664216C459D00A46923 /* libinspector.a */,
 				ED997661216C459D00A46923 /* libuv_a.a */,
 				ED997662216C459D00A46923 /* libv8_builtins_generators.a */,
@@ -3032,6 +3040,8 @@
 		BAB85DD7217750A7009DF7DC /* scene */ = {
 			isa = PBXGroup;
 			children = (
+				425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */,
+				425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */,
 				BACCED2B217DB797000CDD81 /* scene-bindings.h */,
 				BAB85DD9217750B7009DF7DC /* NodeProxy.hpp */,
 				BAB85DD8217750B7009DF7DC /* NodeProxy.cpp */,
@@ -3210,6 +3220,7 @@
 				1A28FF551F20AFAB007A1D9D /* SRIOConsumerPool.h in Headers */,
 				BADF57E2219AB3A3000B259B /* MeshBuffer.hpp in Headers */,
 				461786632052607E008256E1 /* jsb_socketio.hpp in Headers */,
+				425D011721C6810F00DD59F4 /* GraphicsRenderHandle.hpp in Headers */,
 				046E06BD2185B49F00B24E2D /* UserData.h in Headers */,
 				46FDDBDD202ADDCE00931238 /* TGAlib.h in Headers */,
 				046B688C219FA61200B33469 /* MiddlewareManager.h in Headers */,
@@ -3641,6 +3652,7 @@
 				1A28FF4E1F20AFAB007A1D9D /* SRDelegateController.h in Headers */,
 				469301D0203FC696004A3D6C /* CCConfiguration.h in Headers */,
 				46FDDB6E202ADDCE00931238 /* etc1.h in Headers */,
+				425D011821C6810F00DD59F4 /* GraphicsRenderHandle.hpp in Headers */,
 				461DCA3720BBFA2D00B22827 /* EditBox.h in Headers */,
 				1AAAC8E6205CB6E9005321B9 /* AudioPlayer.h in Headers */,
 				469303A52046AE05004A3D6C /* ScriptEngine.hpp in Headers */,
@@ -4029,6 +4041,7 @@
 				1A28FF731F20AFAB007A1D9D /* SRHash.m in Sources */,
 				BAB85DDA217750B7009DF7DC /* NodeProxy.cpp in Sources */,
 				46FDDAB3202ACC6A00931238 /* VertexBuffer.cpp in Sources */,
+				425D011521C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */,
 				046E06722185B42500B24E2D /* BaseObject.cpp in Sources */,
 				4008729420CE20C2002EB77B /* jsb_cocos2dx_network_manual.cpp in Sources */,
 				469303842046AE05004A3D6C /* MappingUtils.cpp in Sources */,
@@ -4327,6 +4340,7 @@
 				4DC57D331F7B840E005B6546 /* xxtea.cpp in Sources */,
 				1A29D77C2056667800168D9A /* csscolorparser.cpp in Sources */,
 				046E06D42185B49F00B24E2D /* SkinData.cpp in Sources */,
+				425D011621C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */,
 				46FDDA8E202ACC6A00931238 /* Config.cpp in Sources */,
 				1A29D795205666F500168D9A /* jsb_opengl_manual.cpp in Sources */,
 				46AE3FFC2092F3A600F3A228 /* inspector_io.cc in Sources */,

@@ -54,6 +54,11 @@ VertexFormat* VertexFormat::XY_UV_Color = new VertexFormat(std::vector<Info>({
     Info(ATTRIB_NAME_COLOR, AttribType::UINT8, 4, true)
 }));
 
+VertexFormat* VertexFormat::XY_Color = new VertexFormat(std::vector<Info>({
+    Info(ATTRIB_NAME_POSITION, AttribType::FLOAT32, 2),
+    Info(ATTRIB_NAME_COLOR, AttribType::UINT8, 4, true)
+}));
+
 VertexFormat::VertexFormat()
 {
 }

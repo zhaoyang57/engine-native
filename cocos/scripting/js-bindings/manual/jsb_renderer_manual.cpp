@@ -29,6 +29,7 @@
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "scene/NodeProxy.hpp"
 #include "scene/RenderHandle.hpp"
+#include "scene/GraphicsRenderHandle.hpp"
 #include "jsb_conversions.hpp"
 
 using namespace cocos2d;
@@ -605,7 +606,41 @@ static bool js_renderer_RenderHandle_updateNativeEffect(se::State& s)
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeEffect)
+SE_BIND_FUNC(js_renderer_RenderHandle_updateNativeEffect);
+
+static bool js_renderer_GraphicsRenderHandle_updateNativeMesh(se::State& s)
+{
+    cocos2d::renderer::GraphicsRenderHandle* cobj = (cocos2d::renderer::GraphicsRenderHandle*)s.nativeThisObject();
+    CC_UNUSED bool ok = true;
+    const auto& args = s.args();
+    uint32_t index = 0;
+    ok = seval_to_uint32(args[0], &index);
+    SE_PRECONDITION2(ok, false, "js_renderer_GraphicsRenderHandle_updateNativeMesh: Convert index failed!");
+    cobj->updateNativeMesh(index, args[1].toObject(), args[2].toObject());
+    return true;
+}
+SE_BIND_FUNC(js_renderer_GraphicsRenderHandle_updateNativeMesh);
+
+static bool js_renderer_GraphicsRenderHandle_updateNativeEffect(se::State& s)
+{
+    cocos2d::renderer::GraphicsRenderHandle* cobj = (cocos2d::renderer::GraphicsRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_GraphicsRenderHandle_updateNativeEffect : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        unsigned int arg0 = 0;
+        cocos2d::renderer::Effect* arg1 = nullptr;
+        ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_GraphicsRenderHandle_updateNativeEffect : Error processing arguments");
+        seval_to_native_ptr(args[1], &arg1);
+        cobj->updateNativeEffect(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_GraphicsRenderHandle_updateNativeEffect);
 
 static bool js_renderer_NodeProxy_updateJSTRS(se::State& s)
 {
@@ -668,7 +703,11 @@ bool jsb_register_renderer_manual(se::Object* global)
     
     // NodeProxy
     __jsb_cocos2d_renderer_NodeProxy_proto->defineFunction("updateJSTRS", _SE(js_renderer_NodeProxy_updateJSTRS));
-
+    
+    // GraphicsRenderHandle
+    __jsb_cocos2d_renderer_GraphicsRenderHandle_proto->defineFunction("updateNativeEffect", _SE(js_renderer_GraphicsRenderHandle_updateNativeEffect));
+    __jsb_cocos2d_renderer_GraphicsRenderHandle_proto->defineFunction("updateNativeMesh", _SE(js_renderer_GraphicsRenderHandle_updateNativeMesh));
+    
     return true;
 }
 

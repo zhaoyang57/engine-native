@@ -128,6 +128,262 @@ View : function (
 };
 
 /**
+ * @class NodeProxy
+ */
+renderer.NodeProxy = {
+
+/**
+ * @method addChild
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+addChild : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method removeAllChildren
+ */
+removeAllChildren : function (
+)
+{
+},
+
+/**
+ * @method addHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addHandle : function (
+str, 
+systemhandle 
+)
+{
+},
+
+/**
+ * @method getChildren
+ * @return {Array}
+ */
+getChildren : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method getRotation
+ * @param {cc.Quaternion} arg0
+ */
+getRotation : function (
+quaternion 
+)
+{
+},
+
+/**
+ * @method removeHandle
+ * @param {String} arg0
+ */
+removeHandle : function (
+str 
+)
+{
+},
+
+/**
+ * @method setChildrenOrderDirty
+ */
+setChildrenOrderDirty : function (
+)
+{
+},
+
+/**
+ * @method setParent
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+setParent : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method getName
+ * @return {String}
+ */
+getName : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method getWorldRT
+ * @param {mat4_object} arg0
+ */
+getWorldRT : function (
+mat4 
+)
+{
+},
+
+/**
+ * @method getOpacity
+ * @return {unsigned char}
+ */
+getOpacity : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method setName
+ * @param {String} arg0
+ */
+setName : function (
+str 
+)
+{
+},
+
+/**
+ * @method getWorldPosition
+ * @param {vec3_object} arg0
+ */
+getWorldPosition : function (
+vec3 
+)
+{
+},
+
+/**
+ * @method setGroupID
+ * @param {int} arg0
+ */
+setGroupID : function (
+int 
+)
+{
+},
+
+/**
+ * @method visitAsRoot
+ * @param {cc.renderer::ModelBatcher} arg0
+ * @param {cc.renderer::Scene} arg1
+ */
+visitAsRoot : function (
+modelbatcher, 
+scene 
+)
+{
+},
+
+/**
+ * @method getScale
+ * @param {vec3_object} arg0
+ */
+getScale : function (
+vec3 
+)
+{
+},
+
+/**
+ * @method getPosition
+ * @param {vec3_object} arg0
+ */
+getPosition : function (
+vec3 
+)
+{
+},
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method getParent
+* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
+*/
+getParent : function(
+)
+{
+    return cc.renderer::NodeProxy;
+},
+
+/**
+ * @method getGroupID
+ * @return {int}
+ */
+getGroupID : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method removeChild
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+removeChild : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method setLocalZOrder
+ * @param {int} arg0
+ */
+setLocalZOrder : function (
+int 
+)
+{
+},
+
+/**
+ * @method getChildrenCount
+ * @return {int}
+ */
+getChildrenCount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getHandle
+ * @param {String} arg0
+ * @return {cc.renderer::SystemHandle}
+ */
+getHandle : function (
+str 
+)
+{
+    return cc.renderer::SystemHandle;
+},
+
+/**
+ * @method NodeProxy
+ * @constructor
+ */
+NodeProxy : function (
+)
+{
+},
+
+};
+
+/**
  * @class Camera
  */
 renderer.Camera = {
@@ -1126,212 +1382,6 @@ Scene : function (
 };
 
 /**
- * @class NodeProxy
- */
-renderer.NodeProxy = {
-
-/**
- * @method addChild
- * @param {cc.renderer::NodeProxy} arg0
- */
-addChild : function (
-nodeproxy 
-)
-{
-},
-
-/**
- * @method removeAllChildren
- */
-removeAllChildren : function (
-)
-{
-},
-
-/**
- * @method addHandle
- * @param {String} arg0
- * @param {cc.renderer::SystemHandle} arg1
- */
-addHandle : function (
-str, 
-systemhandle 
-)
-{
-},
-
-/**
- * @method getChildren
- * @return {Array}
- */
-getChildren : function (
-)
-{
-    return new Array();
-},
-
-/**
- * @method removeHandle
- * @param {String} arg0
- */
-removeHandle : function (
-str 
-)
-{
-},
-
-/**
- * @method setChildrenOrderDirty
- */
-setChildrenOrderDirty : function (
-)
-{
-},
-
-/**
- * @method setParent
- * @param {cc.renderer::NodeProxy} arg0
- */
-setParent : function (
-nodeproxy 
-)
-{
-},
-
-/**
- * @method getName
- * @return {String}
- */
-getName : function (
-)
-{
-    return ;
-},
-
-/**
- * @method getOpacity
- * @return {unsigned char}
- */
-getOpacity : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method setName
- * @param {String} arg0
- */
-setName : function (
-str 
-)
-{
-},
-
-/**
- * @method setGroupID
- * @param {int} arg0
- */
-setGroupID : function (
-int 
-)
-{
-},
-
-/**
- * @method visitAsRoot
- * @param {cc.renderer::ModelBatcher} arg0
- * @param {cc.renderer::Scene} arg1
- */
-visitAsRoot : function (
-modelbatcher, 
-scene 
-)
-{
-},
-
-/**
- * @method reset
- */
-reset : function (
-)
-{
-},
-
-/**
- * @method getParent
-* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
-*/
-getParent : function(
-)
-{
-    return cc.renderer::NodeProxy;
-},
-
-/**
- * @method getGroupID
- * @return {int}
- */
-getGroupID : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method removeChild
- * @param {cc.renderer::NodeProxy} arg0
- */
-removeChild : function (
-nodeproxy 
-)
-{
-},
-
-/**
- * @method setLocalZOrder
- * @param {int} arg0
- */
-setLocalZOrder : function (
-int 
-)
-{
-},
-
-/**
- * @method getChildrenCount
- * @return {int}
- */
-getChildrenCount : function (
-)
-{
-    return 0;
-},
-
-/**
- * @method getHandle
- * @param {String} arg0
- * @return {cc.renderer::SystemHandle}
- */
-getHandle : function (
-str 
-)
-{
-    return cc.renderer::SystemHandle;
-},
-
-/**
- * @method NodeProxy
- * @constructor
- */
-NodeProxy : function (
-)
-{
-},
-
-};
-
-/**
  * @class MeshBuffer
  */
 renderer.MeshBuffer = {
@@ -1965,6 +2015,64 @@ RenderFlow : function (
 devicegraphics, 
 scene, 
 forwardrenderer 
+)
+{
+},
+
+};
+
+/**
+ * @class GraphicsRenderHandle
+ */
+renderer.GraphicsRenderHandle = {
+
+/**
+ * @method setMeshCount
+ * @param {unsigned int} arg0
+ */
+setMeshCount : function (
+int 
+)
+{
+},
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method updateIA
+ * @param {unsigned int} arg0
+ * @param {int} arg1
+ * @param {int} arg2
+ */
+updateIA : function (
+int, 
+int, 
+int 
+)
+{
+},
+
+/**
+ * @method getMeshCount
+ * @return {unsigned int}
+ */
+getMeshCount : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method GraphicsRenderHandle
+ * @constructor
+ */
+GraphicsRenderHandle : function (
 )
 {
 },

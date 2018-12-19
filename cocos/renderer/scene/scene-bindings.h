@@ -29,3 +29,4 @@
 #include "ModelBatcher.hpp"
 #include "RenderFlow.hpp"
 #include "MeshBuffer.hpp"
+#include "GraphicsRenderHandle.hpp"

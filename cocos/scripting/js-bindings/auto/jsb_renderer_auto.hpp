@@ -30,6 +30,37 @@ bool js_register_cocos2d_renderer_View(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_View_View);
 
+extern se::Object* __jsb_cocos2d_renderer_NodeProxy_proto;
+extern se::Class* __jsb_cocos2d_renderer_NodeProxy_class;
+
+bool js_register_cocos2d_renderer_NodeProxy(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_addChild);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_removeAllChildren);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_addHandle);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildren);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getRotation);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_removeHandle);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setChildrenOrderDirty);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setParent);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getName);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getWorldRT);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getOpacity);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setName);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getWorldPosition);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setGroupID);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_visitAsRoot);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getScale);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getPosition);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_reset);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getParent);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getGroupID);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_removeChild);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_setLocalZOrder);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildrenCount);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_getHandle);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_NodeProxy);
+
 extern se::Object* __jsb_cocos2d_renderer_Camera_proto;
 extern se::Class* __jsb_cocos2d_renderer_Camera_class;
 
@@ -160,32 +191,6 @@ SE_DECLARE_FUNC(js_renderer_Scene_addLight);
 SE_DECLARE_FUNC(js_renderer_Scene_removeLight);
 SE_DECLARE_FUNC(js_renderer_Scene_Scene);
 
-extern se::Object* __jsb_cocos2d_renderer_NodeProxy_proto;
-extern se::Class* __jsb_cocos2d_renderer_NodeProxy_class;
-
-bool js_register_cocos2d_renderer_NodeProxy(se::Object* obj);
-bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_addChild);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_removeAllChildren);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_addHandle);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildren);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_removeHandle);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_setChildrenOrderDirty);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_setParent);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getName);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getOpacity);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_setName);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_setGroupID);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_visitAsRoot);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_reset);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getParent);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getGroupID);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_removeChild);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_setLocalZOrder);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildrenCount);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_getHandle);
-SE_DECLARE_FUNC(js_renderer_NodeProxy_NodeProxy);
-
 extern se::Object* __jsb_cocos2d_renderer_MeshBuffer_proto;
 extern se::Class* __jsb_cocos2d_renderer_MeshBuffer_class;
 
@@ -273,5 +278,16 @@ SE_DECLARE_FUNC(js_renderer_RenderFlow_getModelBatcher);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_getDevice);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_render);
 SE_DECLARE_FUNC(js_renderer_RenderFlow_RenderFlow);
+
+extern se::Object* __jsb_cocos2d_renderer_GraphicsRenderHandle_proto;
+extern se::Class* __jsb_cocos2d_renderer_GraphicsRenderHandle_class;
+
+bool js_register_cocos2d_renderer_GraphicsRenderHandle(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_setMeshCount);
+SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_reset);
+SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_updateIA);
+SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_getMeshCount);
+SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_GraphicsRenderHandle);
 
 #endif //#if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

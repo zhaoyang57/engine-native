@@ -94,6 +94,7 @@ public:
     uint32_t getBytes() const { return _bytes; };
     
     static VertexFormat* XY_UV_Color;
+    static VertexFormat* XY_Color;
 
 private:
     std::vector<std::string> _names;
