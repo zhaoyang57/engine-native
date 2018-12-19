@@ -513,38 +513,33 @@ void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
  * */
 void CanvasRenderingContext2D::set_font(const std::string& font)
 {
-    if (_font != font)
+    std::string fontName = "sans-serif";
+    std::string fontSizeStr = "30";
+    std::regex re("\\s*((\\d+)([\\.]\\d+)?)px\\s+([^\\r\\n]*)");
+    std::match_results<std::string::const_iterator> results;
+    if (std::regex_search(font.cbegin(), font.cend(), results, re))
     {
-        _font = font;
-        std::string fontName = "sans-serif";
-        std::string fontSizeStr = "30";
-        std::regex re("\\s*((\\d+)([\\.]\\d+)?)px\\s+([^\\r\\n]*)");
-        std::match_results<std::string::const_iterator> results;
-        if (std::regex_search(_font.cbegin(), _font.cend(), results, re))
+        fontSizeStr = results[2].str();
+        // support get font name from `60px American` or `60px "American abc-abc_abc"`
+        // support get font name contain space,example `times new roman`
+        // if regex rule that does not conform to the rules,such as Chinese,it defaults to sans-serif
+        std::match_results<std::string::const_iterator> fontResults;
+        std::regex fontRe("([\\w\\s-]+|\"[\\w\\s-]+\"$)");
+        if(std::regex_match(results[4].str(), fontResults, fontRe))
         {
-            fontSizeStr = results[2].str();
-            // support get font name from `60px American` or `60px "American abc-abc_abc"`
-            // support get font name contain space,example `times new roman`
-            // if regex rule that does not conform to the rules,such as Chinese,it defaults to sans-serif
-            std::match_results<std::string::const_iterator> fontResults;
-            std::regex fontRe("([\\w\\s-]+|\"[\\w\\s-]+\"$)");
-            if(std::regex_match(results[4].str(), fontResults, fontRe))
-            {
-                fontName = results[4].str();
-            }
+            fontName = results[4].str();
         }
-
-        float fontSize = atof(fontSizeStr.c_str());
-        bool isBold = font.find("bold", 0) != std::string::npos;
-        bool isItalic = font.find("italic", 0) != std::string::npos;
-        bool isSmallCaps = font.find("small-caps", 0) != std::string::npos;
-        bool isOblique = font.find("oblique", 0) != std::string::npos;
-        //font-style: italic, oblique, normal
-        //font-weight: normal, bold
-        //font-variant: normal, small-caps
-        _impl->updateFont(fontName, fontSize, isBold, isItalic, isOblique, isSmallCaps);
-
     }
+
+    float fontSize = atof(fontSizeStr.c_str());
+    bool isBold = font.find("bold", 0) != std::string::npos;
+    bool isItalic = font.find("italic", 0) != std::string::npos;
+    bool isSmallCaps = font.find("small-caps", 0) != std::string::npos;
+    bool isOblique = font.find("oblique", 0) != std::string::npos;
+    //font-style: italic, oblique, normal
+    //font-weight: normal, bold
+    //font-variant: normal, small-caps
+    _impl->updateFont(fontName, fontSize, isBold, isItalic, isOblique, isSmallCaps);
 }
 
 void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
