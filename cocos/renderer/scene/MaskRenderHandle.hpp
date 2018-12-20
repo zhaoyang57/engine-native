@@ -27,13 +27,12 @@
 #include "./RenderHandle.hpp"
 #include "./SystemHandle.hpp"
 #include "./MeshBuffer.hpp"
+#include "./GraphicsRenderHandle.hpp"
 #include "math/CCMath.h"
 
 class ModelBatcher;
 
 RENDERER_BEGIN
-
-using namespace cocos2d::renderer;
 
 class MaskRenderHandle: public RenderHandle
 {
@@ -44,21 +43,21 @@ public:
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat) override;
 
-    void setMaskInverted(bool inverted) { _inverted = inverted;};
-    bool getMaskInverted() { return _inverted;};
+    void setMaskInverted(bool inverted) { _inverted = inverted; };
+    bool getMaskInverted() { return _inverted; };
 
-    void addSubHandle(const std::string& sysid, cocos2d::renderer::SystemHandle* handle);
-    void removeSubHandle(const std::string& sysid);
-    cocos2d::renderer::SystemHandle* getSubHandle(const std::string& sysid);
+    void setRenderSubHandle(GraphicsRenderHandle* renderSubHandle) { _renderSubHandle = renderSubHandle; };
+    void setClearSubHandle(GraphicsRenderHandle* clearSubHandle) { _clearSubHandle = clearSubHandle; };
 
-    void setImageStencil(bool isImageStencil) {_imageStencil = isImageStencil;};
+    void setImageStencil(bool isImageStencil) { _imageStencil = isImageStencil; };
 protected:
     bool _inverted;
     bool _imageStencil;
 
 private:
-    std::map<std::string, cocos2d::renderer::SystemHandle*> _subHandles;
     ModelBatcher* _batcher;
+    GraphicsRenderHandle* _renderSubHandle;
+    GraphicsRenderHandle* _clearSubHandle;
 };
 
 RENDERER_END

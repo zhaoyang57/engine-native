@@ -32,8 +32,6 @@
 #include "./MeshBuffer.hpp"
 #include "../gfx/VertexFormat.h"
 
-//using namespace cocos2d::renderer;
-
 namespace se {
     class Object;
     class HandleObject;

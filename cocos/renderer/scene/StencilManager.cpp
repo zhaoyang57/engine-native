@@ -29,8 +29,6 @@
 
 RENDERER_BEGIN
 
-using namespace cocos2d;
-
 static const std::string techStage = "transparent";
 StencilManager* StencilManager::_instance = nullptr;
 

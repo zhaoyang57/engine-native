@@ -31,8 +31,6 @@
 
 RENDERER_BEGIN
 
-using namespace cocos2d::renderer;
-
 // Stage types
 enum class Stage{
     // Stencil disabled

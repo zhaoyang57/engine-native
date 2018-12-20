@@ -30,8 +30,8 @@
 #include "RenderHandle.hpp"
 #include "CustomRenderHandle.hpp"
 #include "MeshBuffer.hpp"
-#include "math/CCMath.h"
 #include "../renderer/Renderer.h"
+#include "math/CCMath.h"
 
 RENDERER_BEGIN
 

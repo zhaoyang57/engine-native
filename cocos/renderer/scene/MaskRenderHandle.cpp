@@ -25,23 +25,26 @@
 #include "MaskRenderHandle.hpp"
 #include "./ModelBatcher.hpp"
 #include "./StencilManager.hpp"
-#include "./GraphicsRenderHandle.hpp"
 
 RENDERER_BEGIN
 
 MaskRenderHandle::MaskRenderHandle()
-: _batcher(nullptr)
+:_batcher(nullptr)
+,_renderSubHandle(nullptr)
+,_clearSubHandle(nullptr)
+,_imageStencil(false)
+,_inverted(false)
 {
 }
 
 void MaskRenderHandle::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
 {
     _batcher = batcher;
-    batcher->commit(node, this);
+    batcher->commit(node, (RenderHandle*)this);
     StencilManager* instance = StencilManager::getInstance();
-    if(!_imageStencil) {
-        auto* render = getSubHandle("render");
-        render->handle(node, batcher, scene);
+    if (!_imageStencil && _renderSubHandle)
+    {
+        _renderSubHandle->handle(node, batcher, scene);
     }
     instance->enableMask();
 };
@@ -53,35 +56,14 @@ void MaskRenderHandle::postHandle(NodeProxy *node, ModelBatcher *batcher, Scene 
     StencilManager::getInstance()->exitMask();
 }
 
-void MaskRenderHandle::addSubHandle(const std::string& sysid, cocos2d::renderer::SystemHandle* handle)
-{
-    _subHandles[sysid] = handle;
-}
-
-void MaskRenderHandle::removeSubHandle(const std::string& sysid)
-{
-    _subHandles.erase(sysid);
-}
-
-SystemHandle* MaskRenderHandle::getSubHandle(const std::string& sysid)
-{
-    auto it = _subHandles.find(sysid);
-    if (it != _subHandles.end())
-    {
-        return it->second;
-    }
-    return nullptr;
-}
-
 void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &worldMat)
 {
     StencilManager* instance = StencilManager::getInstance();
     instance->pushMask(_inverted);
     instance->clear();
 
-    GraphicsRenderHandle* clear = (GraphicsRenderHandle*)getSubHandle("clear");
-    _batcher->setCurrentEffect(clear->getEffect(0));
-    clear->renderIA(0, _batcher);
+    _batcher->setCurrentEffect(_clearSubHandle->getEffect(0));
+    _clearSubHandle->renderIA(0, _batcher);
     StencilManager::getInstance()->enterLevel();
 
     if(_imageStencil)
