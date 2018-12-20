@@ -511,7 +511,6 @@
         "cocos/renderer/renderer/Effect.h", 
         "cocos/renderer/renderer/ForwardRenderer.cpp", 
         "cocos/renderer/renderer/ForwardRenderer.h", 
-        "cocos/renderer/renderer/INode.h", 
         "cocos/renderer/renderer/InputAssembler.cpp", 
         "cocos/renderer/renderer/InputAssembler.h", 
         "cocos/renderer/renderer/Light.cpp", 
