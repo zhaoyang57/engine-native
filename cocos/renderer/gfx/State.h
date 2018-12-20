@@ -50,7 +50,7 @@ struct State final
 
     // blend
     bool blend;
-    bool blendSepartion;
+    bool blendSeparation;
     uint32_t blendColor;
     BlendOp blendEq;
     BlendOp blendAlphaEq;
