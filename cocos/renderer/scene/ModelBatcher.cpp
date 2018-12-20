@@ -23,7 +23,6 @@
  ****************************************************************************/
 
 #include "ModelBatcher.hpp"
-
 #include "RenderFlow.hpp"
 #include "StencilManager.hpp"
 
@@ -50,6 +49,8 @@ ModelBatcher::ModelBatcher(RenderFlow* flow)
     {
         _modelPool.push_back(new Model());
     }
+
+    _stencilMgr = StencilManager::getInstance();
 }
 
 ModelBatcher::~ModelBatcher()
@@ -101,7 +102,7 @@ void ModelBatcher::reset()
     _currEffect = nullptr;
     _walking = false;
     
-    StencilManager::getInstance()->reset();
+    _stencilMgr->reset();
 }
 
 void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
@@ -177,8 +178,9 @@ void ModelBatcher::flushIA(InputAssembler* customIA)
     ia->setIndexBuffer(customIA->getIndexBuffer());
     ia->setStart(customIA->getStart());
     ia->setCount(customIA->getCount());
-    
+
     // Stencil manager process
+    _stencilMgr->handleEffect(_currEffect);
     
     // Generate model
     Model* model = nullptr;
@@ -240,6 +242,7 @@ void ModelBatcher::flush()
     ia->setCount(indexCount);
     
     // Stencil manager process
+    _stencilMgr->handleEffect(_currEffect);
     
     // Generate model
     Model* model = nullptr;

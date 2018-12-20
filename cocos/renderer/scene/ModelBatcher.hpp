@@ -73,7 +73,7 @@ private:
     MeshBuffer* _buffer;
     Effect* _currEffect;
     RenderFlow* _flow;
-//    StencilManager* _stencilMgr;
+    StencilManager* _stencilMgr;
     
     std::vector<InputAssembler*> _iaPool;
     std::vector<Model*> _modelPool;
