@@ -76,7 +76,6 @@ public:
     static const int INIT_VERTEX_COUNT = 256;
     static const uint8_t VDATA_BYTE = sizeof(float);
     static const uint8_t IDATA_BYTE = sizeof(uint16_t);
-
 protected:
     void reallocBuffers();
     

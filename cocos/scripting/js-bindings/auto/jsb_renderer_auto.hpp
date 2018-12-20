@@ -290,4 +290,17 @@ SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_updateIA);
 SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_getMeshCount);
 SE_DECLARE_FUNC(js_renderer_GraphicsRenderHandle_GraphicsRenderHandle);
 
+extern se::Object* __jsb_cocos2d_renderer_MaskRenderHandle_proto;
+extern se::Class* __jsb_cocos2d_renderer_MaskRenderHandle_class;
+
+bool js_register_cocos2d_renderer_MaskRenderHandle(se::Object* obj);
+bool register_all_renderer(se::Object* obj);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_setMaskInverted);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_removeSubHandle);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_getSubHandle);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_setImageStencil);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_getMaskInverted);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_addSubHandle);
+SE_DECLARE_FUNC(js_renderer_MaskRenderHandle_MaskRenderHandle);
+
 #endif //#if (USE_GFX_RENDERER > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

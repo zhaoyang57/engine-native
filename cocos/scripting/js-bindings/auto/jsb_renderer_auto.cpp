@@ -4512,6 +4512,176 @@ bool js_register_renderer_GraphicsRenderHandle(se::Object* obj)
     return true;
 }
 
+se::Object* __jsb_cocos2d_renderer_MaskRenderHandle_proto = nullptr;
+se::Class* __jsb_cocos2d_renderer_MaskRenderHandle_class = nullptr;
+
+static bool js_renderer_MaskRenderHandle_setMaskInverted(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_setMaskInverted : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_setMaskInverted : Error processing arguments");
+        cobj->setMaskInverted(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_setMaskInverted)
+
+static bool js_renderer_MaskRenderHandle_removeSubHandle(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_removeSubHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= seval_to_std_string(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_removeSubHandle : Error processing arguments");
+        cobj->removeSubHandle(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_removeSubHandle)
+
+static bool js_renderer_MaskRenderHandle_getSubHandle(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_getSubHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= seval_to_std_string(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_getSubHandle : Error processing arguments");
+        cocos2d::renderer::SystemHandle* result = cobj->getSubHandle(arg0);
+        ok &= native_ptr_to_seval<cocos2d::renderer::SystemHandle>((cocos2d::renderer::SystemHandle*)result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_getSubHandle : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_getSubHandle)
+
+static bool js_renderer_MaskRenderHandle_setImageStencil(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_setImageStencil : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_setImageStencil : Error processing arguments");
+        cobj->setImageStencil(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_setImageStencil)
+
+static bool js_renderer_MaskRenderHandle_getMaskInverted(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_getMaskInverted : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        bool result = cobj->getMaskInverted();
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_getMaskInverted : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_getMaskInverted)
+
+static bool js_renderer_MaskRenderHandle_addSubHandle(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_MaskRenderHandle_addSubHandle : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        std::string arg0;
+        cocos2d::renderer::SystemHandle* arg1 = nullptr;
+        ok &= seval_to_std_string(args[0], &arg0);
+        ok &= seval_to_native_ptr(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_renderer_MaskRenderHandle_addSubHandle : Error processing arguments");
+        cobj->addSubHandle(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_MaskRenderHandle_addSubHandle)
+
+SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_MaskRenderHandle_finalize)
+
+static bool js_renderer_MaskRenderHandle_constructor(se::State& s)
+{
+    cocos2d::renderer::MaskRenderHandle* cobj = new (std::nothrow) cocos2d::renderer::MaskRenderHandle();
+    s.thisObject()->setPrivateData(cobj);
+    se::NonRefNativePtrCreatedByCtorMap::emplace(cobj);
+    return true;
+}
+SE_BIND_CTOR(js_renderer_MaskRenderHandle_constructor, __jsb_cocos2d_renderer_MaskRenderHandle_class, js_cocos2d_renderer_MaskRenderHandle_finalize)
+
+
+
+extern se::Object* __jsb_cocos2d_renderer_RenderHandle_proto;
+
+static bool js_cocos2d_renderer_MaskRenderHandle_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::renderer::MaskRenderHandle)", s.nativeThisObject());
+    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
+    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
+    {
+        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
+        cocos2d::renderer::MaskRenderHandle* cobj = (cocos2d::renderer::MaskRenderHandle*)s.nativeThisObject();
+        delete cobj;
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_renderer_MaskRenderHandle_finalize)
+
+bool js_register_renderer_MaskRenderHandle(se::Object* obj)
+{
+    auto cls = se::Class::create("MaskRenderHandle", obj, __jsb_cocos2d_renderer_RenderHandle_proto, _SE(js_renderer_MaskRenderHandle_constructor));
+
+    cls->defineFunction("setMaskInverted", _SE(js_renderer_MaskRenderHandle_setMaskInverted));
+    cls->defineFunction("removeSubHandle", _SE(js_renderer_MaskRenderHandle_removeSubHandle));
+    cls->defineFunction("getSubHandle", _SE(js_renderer_MaskRenderHandle_getSubHandle));
+    cls->defineFunction("setImageStencil", _SE(js_renderer_MaskRenderHandle_setImageStencil));
+    cls->defineFunction("getMaskInverted", _SE(js_renderer_MaskRenderHandle_getMaskInverted));
+    cls->defineFunction("addSubHandle", _SE(js_renderer_MaskRenderHandle_addSubHandle));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_MaskRenderHandle_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::renderer::MaskRenderHandle>(cls);
+
+    __jsb_cocos2d_renderer_MaskRenderHandle_proto = cls->getProto();
+    __jsb_cocos2d_renderer_MaskRenderHandle_class = cls;
+
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
 bool register_all_renderer(se::Object* obj)
 {
     // Get the ns
@@ -4538,6 +4708,7 @@ bool register_all_renderer(se::Object* obj)
     js_register_renderer_Camera(ns);
     js_register_renderer_BaseRenderer(ns);
     js_register_renderer_Pass(ns);
+    js_register_renderer_MaskRenderHandle(ns);
     js_register_renderer_ForwardRenderer(ns);
     js_register_renderer_View(ns);
     return true;

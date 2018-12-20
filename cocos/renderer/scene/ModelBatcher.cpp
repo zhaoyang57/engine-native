@@ -25,6 +25,7 @@
 #include "ModelBatcher.hpp"
 
 #include "RenderFlow.hpp"
+#include "StencilManager.hpp"
 
 RENDERER_BEGIN
 
@@ -99,6 +100,8 @@ void ModelBatcher::reset()
     _cullingMask = 0;
     _currEffect = nullptr;
     _walking = false;
+    
+    StencilManager::getInstance()->reset();
 }
 
 void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)

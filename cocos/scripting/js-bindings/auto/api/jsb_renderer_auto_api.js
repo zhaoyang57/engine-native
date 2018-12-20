@@ -2078,3 +2078,83 @@ GraphicsRenderHandle : function (
 },
 
 };
+
+/**
+ * @class MaskRenderHandle
+ */
+renderer.MaskRenderHandle = {
+
+/**
+ * @method setMaskInverted
+ * @param {bool} arg0
+ */
+setMaskInverted : function (
+bool 
+)
+{
+},
+
+/**
+ * @method removeSubHandle
+ * @param {String} arg0
+ */
+removeSubHandle : function (
+str 
+)
+{
+},
+
+/**
+ * @method getSubHandle
+ * @param {String} arg0
+ * @return {cc.renderer::SystemHandle}
+ */
+getSubHandle : function (
+str 
+)
+{
+    return cc.renderer::SystemHandle;
+},
+
+/**
+ * @method setImageStencil
+ * @param {bool} arg0
+ */
+setImageStencil : function (
+bool 
+)
+{
+},
+
+/**
+ * @method getMaskInverted
+ * @return {bool}
+ */
+getMaskInverted : function (
+)
+{
+    return false;
+},
+
+/**
+ * @method addSubHandle
+ * @param {String} arg0
+ * @param {cc.renderer::SystemHandle} arg1
+ */
+addSubHandle : function (
+str, 
+systemhandle 
+)
+{
+},
+
+/**
+ * @method MaskRenderHandle
+ * @constructor
+ */
+MaskRenderHandle : function (
+)
+{
+},
+
+};

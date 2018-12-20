@@ -36,6 +36,7 @@
 RENDERER_BEGIN
 
 class RenderFlow;
+class StencilManager;
 
 class ModelBatcher
 {
@@ -61,6 +62,7 @@ public:
     
     RenderFlow* getFlow() const { return _flow; };
     
+    void setCurrentEffect(Effect* effect) { _currEffect = effect; };
 private:
     int _iaOffset;
     int _modelOffset;

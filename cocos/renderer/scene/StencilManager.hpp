@@ -1,18 +1,18 @@
 /****************************************************************************
  Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
-
+ 
  http://www.cocos2d-x.org
-
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,10 +24,60 @@
 
 #pragma once
 
-#include "NodeProxy.hpp"
-#include "RenderHandle.hpp"
-#include "ModelBatcher.hpp"
-#include "RenderFlow.hpp"
-#include "MeshBuffer.hpp"
-#include "GraphicsRenderHandle.hpp"
-#include "MaskRenderHandle.hpp"
+#include <stdio.h>
+#include <vector>
+#include "../../base/CCVector.h"
+#include "renderer/Effect.h"
+
+RENDERER_BEGIN
+
+using namespace cocos2d::renderer;
+
+// Stage types
+enum class Stage{
+    // Stencil disabled
+    DISABLED = 0,
+    // Clear stencil buffer
+    CLEAR = 1,
+    // Entering a new level, should handle new stencil
+    ENTER_LEVEL = 2,
+    // In content
+    ENABLED = 3,
+    // Exiting a level, should restore old stencil or disable
+    EXIT_LEVEL = 4
+};
+
+class StencilManager
+{
+public:
+    StencilManager();
+    ~StencilManager();
+    void reset();
+    Effect* handleEffect(Effect* effect);
+    void pushMask(bool mask);
+    void clear();
+    void enterLevel();
+    void enableMask();
+    void exitMask();
+    uint8_t getWriteMask();
+    uint8_t getExitWriteMask();
+    uint32_t getStencilRef();
+    uint32_t getInvertedRef();
+
+    static StencilManager* getInstance()
+    {
+        if (_instance == nullptr)
+        {
+            _instance = new StencilManager;
+        }
+        
+        return _instance;
+    }
+private:
+    const int _maxLevel = 8;
+    std::vector<bool> _maskStack;
+    Stage _stage;
+    static StencilManager* _instance;
+};
+
+RENDERER_END
