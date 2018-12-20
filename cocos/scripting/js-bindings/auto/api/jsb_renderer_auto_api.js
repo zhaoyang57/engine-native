@@ -2095,33 +2095,21 @@ bool
 },
 
 /**
- * @method removeSubHandle
- * @param {String} arg0
- */
-removeSubHandle : function (
-str 
-)
-{
-},
-
-/**
- * @method getSubHandle
- * @param {String} arg0
- * @return {cc.renderer::SystemHandle}
- */
-getSubHandle : function (
-str 
-)
-{
-    return cc.renderer::SystemHandle;
-},
-
-/**
  * @method setImageStencil
  * @param {bool} arg0
  */
 setImageStencil : function (
 bool 
+)
+{
+},
+
+/**
+ * @method setClearSubHandle
+ * @param {cc.renderer::GraphicsRenderHandle} arg0
+ */
+setClearSubHandle : function (
+graphicsrenderhandle 
 )
 {
 },
@@ -2137,13 +2125,11 @@ getMaskInverted : function (
 },
 
 /**
- * @method addSubHandle
- * @param {String} arg0
- * @param {cc.renderer::SystemHandle} arg1
+ * @method setRenderSubHandle
+ * @param {cc.renderer::GraphicsRenderHandle} arg0
  */
-addSubHandle : function (
-str, 
-systemhandle 
+setRenderSubHandle : function (
+graphicsrenderhandle 
 )
 {
 },
