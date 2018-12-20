@@ -2209,6 +2209,7 @@
 				46A170851807CE87005B8026 /* math */,
 				50ABBEDB1926664700A911A9 /* platform */,
 				1551A340158F2AB200E66CFE /* Products */,
+				BA0E9DC821CB7C53001CB261 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 0;
@@ -3017,6 +3018,14 @@
 			name = ios;
 			sourceTree = "<group>";
 		};
+		BA0E9DC821CB7C53001CB261 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				BA0E9DC121CA15F4001CB261 /* libv8_snapshot.a */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		BA21050A21008AC200E19975 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -3047,27 +3056,27 @@
 		BAB85DD7217750A7009DF7DC /* scene */ = {
 			isa = PBXGroup;
 			children = (
-				425D012C21C6ABCE00DD59F4 /* MaskRenderHandle.cpp */,
-				425D012B21C6ABCE00DD59F4 /* MaskRenderHandle.hpp */,
-				425D012321C6A61200DD59F4 /* StencilManager.cpp */,
-				425D012421C6A61200DD59F4 /* StencilManager.hpp */,
-				425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */,
-				425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */,
 				BACCED2B217DB797000CDD81 /* scene-bindings.h */,
 				BAB85DD9217750B7009DF7DC /* NodeProxy.hpp */,
 				BAB85DD8217750B7009DF7DC /* NodeProxy.cpp */,
 				BACCED28217D9C48000CDD81 /* SystemHandle.hpp */,
 				BACCED27217D9C48000CDD81 /* SystemHandle.cpp */,
-				BACCED2F217DE136000CDD81 /* RenderHandle.hpp */,
-				BACCED2E217DE136000CDD81 /* RenderHandle.cpp */,
-				BA04378C217EFD4E006BA60F /* CustomRenderHandle.hpp */,
-				BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */,
 				BA043786217EEF74006BA60F /* ModelBatcher.hpp */,
 				BA043785217EEF74006BA60F /* ModelBatcher.cpp */,
 				BA04379221801CD4006BA60F /* RenderFlow.hpp */,
 				BA04379121801CD4006BA60F /* RenderFlow.cpp */,
 				BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */,
 				BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */,
+				425D012321C6A61200DD59F4 /* StencilManager.cpp */,
+				425D012421C6A61200DD59F4 /* StencilManager.hpp */,
+				BACCED2F217DE136000CDD81 /* RenderHandle.hpp */,
+				BACCED2E217DE136000CDD81 /* RenderHandle.cpp */,
+				BA04378C217EFD4E006BA60F /* CustomRenderHandle.hpp */,
+				BA04378B217EFD4E006BA60F /* CustomRenderHandle.cpp */,
+				425D011421C6810F00DD59F4 /* GraphicsRenderHandle.hpp */,
+				425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */,
+				425D012B21C6ABCE00DD59F4 /* MaskRenderHandle.hpp */,
+				425D012C21C6ABCE00DD59F4 /* MaskRenderHandle.cpp */,
 			);
 			name = scene;
 			sourceTree = "<group>";
