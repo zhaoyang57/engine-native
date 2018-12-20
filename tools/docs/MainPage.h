@@ -41,12 +41,13 @@ and non-transferable rights to use the software according to the following condi
 - h.  The laws of the People's Republic of China apply to this Licensing Agreement.\n
 - i.  This Agreement is made in both Chinese and English, and the Chinese version shall prevail\n
     the event of conflict.\n
-\n
+
+
 附件：MIT开源协议\n
 Attached: MIT Open Source Agreement\n
-   著作权（2017-2018）：厦门雅基\n
+著作权（2017-2018）：厦门雅基\n
 Copyright (c) 2017-2018 Xiamen Yaji\n
- 著作权（2013-2016）：触控科技\n
+著作权（2013-2016）：触控科技\n
 Copyright (c) 2013-2016 Chukong Technologies\n
 著作权（2010-2012）：cocos2d-x 社区\n
 Copyright (c) 2010-2012 cocos2d-x community\n
