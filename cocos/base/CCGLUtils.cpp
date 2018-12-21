@@ -408,7 +408,7 @@ void ccFlipYIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLsizei height)
 {
     if (!pixels
         || !__unpackFlipY
-        || height <= 1)
+        || height <= 1 || pixelBytes <= 0)
     {
         return;
     }
@@ -476,7 +476,7 @@ namespace
 void ccPremultiptyAlphaIfNeeded(GLvoid* pixels, uint32_t pixelBytes, GLenum format, GLenum type)
 {
     if (!pixels
-        || !__premultiplyAlpha)
+        || !__premultiplyAlpha || pixelBytes <= 0)
     {
         return;
     }

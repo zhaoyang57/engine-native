@@ -2217,9 +2217,12 @@ static bool JSB_glTexImage2D(se::State& s) {
     void* pixelCopy = pixels;
     if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha())
     {
-        pixelCopy = malloc(count);
-        if (!pixelCopy) return true;
-        memcpy(pixelCopy, pixels, count);
+        if (count > 0)
+        {
+            pixelCopy = malloc(count);
+            if (!pixelCopy) return true;
+            memcpy(pixelCopy, pixels, count);
+        }
     }
     ccFlipYIfNeeded(pixelCopy, count, height);
     ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
@@ -2348,9 +2351,12 @@ static bool JSB_glTexSubImage2D(se::State& s) {
     void* pixelCopy = pixels;
     if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha())
     {
-        pixelCopy = malloc(count);
-        if (!pixelCopy) return true;
-        memcpy(pixelCopy, pixels, count);
+        if (count > 0)
+        {
+            pixelCopy = malloc(count);
+            if (!pixelCopy) return true;
+            memcpy(pixelCopy, pixels, count);
+        }
     }
     ccFlipYIfNeeded(pixelCopy, count, height);
     ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
