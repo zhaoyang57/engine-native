@@ -93,7 +93,7 @@ private:
 
     static void stopAll();
 
-    void destroy();
+    void setDestroy();
 
     inline void setState(State state)
     { _state = state; };
@@ -101,6 +101,8 @@ private:
     void playEventCallback(SLPlayItf caller, SLuint32 playEvent);
 
     void setVolumeToSLPlayer(float volume);
+
+    void Destroy(float);
 
 private:
     SLEngineItf _engineItf;
@@ -130,6 +132,8 @@ private:
 
     friend class SLUrlAudioPlayerCallbackProxy;
     friend class AudioPlayerProvider;
+
+    std::string _schedulerKey;
 };
 
 } // namespace cocos2d { 

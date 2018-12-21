@@ -27,6 +27,8 @@ THE SOFTWARE.
 
 #include "audio/android/UrlAudioPlayer.h"
 #include "audio/android/ICallerThreadUtils.h"
+#include "platform/CCApplication.h"
+#include "base/CCScheduler.h"
 
 #include <math.h>
 #include <algorithm> // for std::find
@@ -39,7 +41,7 @@ std::once_flag __onceFlag;
 
 }
 
-namespace cocos2d { 
+namespace cocos2d {
 
 class SLUrlAudioPlayerCallbackProxy
 {
@@ -128,8 +130,7 @@ void UrlAudioPlayer::playEventCallback(SLPlayItf caller, SLuint32 playEvent)
                 }
 
                 ALOGV("UrlAudioPlayer (%p) played over, destroy self ...", this);
-                destroy();
-                delete this;
+                setDestroy();
             }
         };
 
@@ -165,8 +166,7 @@ void UrlAudioPlayer::stop()
             _playEventCallback(State::STOPPED);
         }
 
-        destroy();
-        delete this;
+        setDestroy();
     }
     else
     {
@@ -410,15 +410,27 @@ void UrlAudioPlayer::stopAll()
     }
 }
 
-void UrlAudioPlayer::destroy()
+void UrlAudioPlayer::setDestroy()
 {
     if (!*_isDestroyed)
     {
         *_isDestroyed = true;
-        ALOGV("UrlAudioPlayer::destroy() %p", this);
-        SL_DESTROY_OBJ(_playObj);
-        ALOGV("UrlAudioPlayer::destroy end");
+        char key[128];
+        sprintf(key, "UrlAudioPlayer(%p)", this);
+        _schedulerKey = key;
+        //delay 0.05 seconds to avoid anr
+        Application::getInstance()->getScheduler()
+                ->schedule(CC_CALLBACK_1(UrlAudioPlayer::Destroy, this),
+                           this,0.05f,0,0.f,false,_schedulerKey);
     }
+}
+
+void UrlAudioPlayer::Destroy(float /*dt*/)
+{
+    ALOGV("UrlAudioPlayer::destroy() %p", this);
+    SL_DESTROY_OBJ(_playObj);
+    ALOGV("UrlAudioPlayer::destroy end");
+    delete this;
 }
 
 } // namespace cocos2d { 
