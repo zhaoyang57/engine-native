@@ -33,23 +33,53 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
+/**
+ *  @brief Responsible for visit all node.
+ */
 class RenderFlow
 {
 public:
+    /**
+     *  @brief Get model batcher which is responsible for collect render data.
+     */
     ModelBatcher* getModelBatcher() const { return _batcher; };
+    /**
+     *  @brief Get graphics device which is render api's abstract.
+     */
     DeviceGraphics* getDevice() const { return _device; };
+    /**
+     *  @brief Get render scene.
+     */
     Scene* getRenderScene() const { return _scene; };
-    
+    /**
+     *  @brief Begin to render node tree.
+     *  @param[in] scene The root node.
+     */
     void render(NodeProxy* scene);
-    
+    /**
+     *  @brief Constructor.
+     *  @param[in] device DeviceGraphics.
+     *  @param[in] scene Scene.
+     *  @param[in] forward ForwardRenderer.
+     */
     RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
+    /**
+     *  @brief Destructor.
+     */
     ~RenderFlow();
-    
 private:
     ModelBatcher* _batcher;
     Scene* _scene;
     DeviceGraphics* _device;
     ForwardRenderer* _forward;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END

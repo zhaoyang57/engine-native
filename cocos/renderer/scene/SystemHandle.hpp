@@ -32,12 +32,38 @@ class NodeProxy;
 class ModelBatcher;
 class Scene;
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
+/**
+ *  @brief All NodeProxy Handle Base
+ */
 class SystemHandle
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     virtual ~SystemHandle() = default;
+    /**
+     *  @brief invoke before visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
+    /**
+     *  @brief invoke after visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END

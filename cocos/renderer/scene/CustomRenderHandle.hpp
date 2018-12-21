@@ -32,14 +32,38 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
+/**
+ *  @brief custom render base handle,such spine,dragonBones render can use the type handle.
+ */
 class CustomRenderHandle : public SystemHandle
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     CustomRenderHandle();
+    /**
+     *  @brief The default destructor.
+     */
     virtual ~CustomRenderHandle();
     
+    /**
+     *  @brief Collect render data by index.
+     *  @param[in] index Render data index.
+     *  @param[in] batcher Which is collector.
+     */
     virtual void renderIA(std::size_t index, ModelBatcher* batcher) {};
     
+    /**
+     *  @brief Get render material by material index.
+     *  @param[in] index Material index.
+     *  @return material pointer.
+     */
     inline Effect* getEffect(uint32_t index) const
     {
         if (index >= _effects.size())
@@ -49,29 +73,66 @@ public:
         return _effects.at(index);
     }
     
+    /**
+     *  @brief Get material count.
+     *  @return count.
+     */
     inline std::size_t getEffectCount() const
     {
         return _effects.size();
     }
     
+    /**
+     *  @brief Get input assembler count.
+     *  @return count.
+     */
     virtual inline std::size_t getIACount() const
     {
         return 0;
     }
     
+    /**
+     *  @brief Update materiar.
+     *  @param[in] index Effect index.
+     *  @param[in] effect Effect pointer.
+     */
     virtual void updateNativeEffect(std::size_t index, Effect* effect);
-    bool getUseModel() const { return _useModel; };
-    void setUseModel(bool useModel) { _useModel = useModel; };
-    void enable() { _enabled = true; }
-    void disable() { _enabled = false; }
     
+    /**
+     *  @brief Get use model switch.
+     *  @return useModel.
+     */
+    bool getUseModel() const { return _useModel; };
+    
+    /**
+     *  @brief Set use model switch.
+     *  @param[in] useModel Switch value.
+     */
+    void setUseModel(bool useModel) { _useModel = useModel; };
+    /**
+     *  @brief Invoke before visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
+    /**
+     *  @brief Invoke after visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override {}
     
+    void enable() { _enabled = true; }
+    void disable() { _enabled = false; }
 protected:
     cocos2d::Vector<Effect*> _effects;//weak container
     bool _useModel = false;
     bool _enabled = false;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END

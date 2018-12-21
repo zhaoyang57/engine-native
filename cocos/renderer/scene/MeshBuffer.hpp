@@ -35,31 +35,92 @@ RENDERER_BEGIN
 
 class ModelBatcher;
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
+/**
+ *  @brief Render buffer
+ */
 class MeshBuffer
 {
 public:
+    /**
+     *  @brief render buffer info
+     */
     struct OffsetInfo
     {
+        // bytes count
         uint32_t vByte;
+        // index offset
         uint32_t index;
+        // vertex offset
         uint32_t vertex;
     };
     
+    /**
+     *  @brief Constructor
+     *  @param[in] batcher To collect vertex and index data,and then set in render buffer.
+     *  @param[in] fmt Buffer format.
+     */
     MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt);
+    /**
+     *  @brief Destructor
+     */
     ~MeshBuffer();
     
+    /**
+     *  @brief Guarantee render buffer has enough capacity.
+     *  @param[in] vertexCount.
+     *  @param[in] indexCount.
+     *  @param[out] offset.
+     */
     bool request(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset);
     bool requestStatic(uint32_t vertexCount, uint32_t indexCount);
+    
+    /**
+     *  @brief Upload data.
+     */
     void uploadData();
+    /**
+     *  @brief Reset render buffer state.
+     */
     void reset();
+    /**
+     *  @brief Destroy render buffer.
+     */
     void destroy();
     
+    /**
+     *  @brief Get render buffer byte offset.
+     *  @return byte offset.
+     */
     uint32_t getByteOffset() const { return _byteOffset; };
+    /**
+     *  @brief Get render buffer vertex start.
+     *  @return vertex start.
+     */
     uint32_t getVertexStart() const { return _vertexStart; };
+    /**
+     *  @brief Get render buffer vertex offset.
+     *  @return vertex offset.
+     */
     uint32_t getVertexOffset() const { return _vertexOffset; };
+    /**
+     *  @brief Get index buffer index start.
+     *  @return index start.
+     */
     uint32_t getIndexStart() const { return _indexStart; };
+    /**
+     *  @brief Get index buffer index offset.
+     *  @return index offset.
+     */
     uint32_t getIndexOffset() const { return _indexOffset; };
     
+    /**
+     *  @brief Update offset.
+     */
     void updateOffset()
     {
         _byteStart = _byteOffset;
@@ -67,12 +128,28 @@ public:
         _indexStart = _indexOffset;
     };
     
+    /**
+     *  @brief Get vertex buffer.
+     */
     VertexBuffer* getVertexBuffer() const { return _vb; };
+    /**
+     *  @brief Get index buffer.
+     */
     IndexBuffer* getIndexBuffer() const { return _ib; };
     
+    /**
+     *  @brief Use to storage vertex data.
+     */
     std::vector<float> vData;
+    /**
+     *  @brief Use to storage index data.
+     */
     std::vector<uint16_t> iData;
+    /**
+     *  @brief Vertex format.
+     */
     VertexFormat* _vertexFmt;
+    
     static const int INIT_VERTEX_COUNT = 256;
     static const uint8_t VDATA_BYTE = sizeof(float);
     static const uint8_t IDATA_BYTE = sizeof(uint16_t);
@@ -95,5 +172,8 @@ private:
     VertexBuffer* _vb;
     IndexBuffer* _ib;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END

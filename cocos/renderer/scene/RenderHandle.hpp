@@ -40,18 +40,52 @@ RENDERER_BEGIN
 class NodeProxy;
 class ModelBatcher;
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
+/**
+ *  @brief Compute NodeProxy local vertex data to world vertex data,and put vertex,uv,color into render buffer.
+ */
 class RenderHandle : SystemHandle
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     RenderHandle();
+    /**
+     *  @brief The default destructor.
+     */
     virtual ~RenderHandle();
+    /**
+     *  @brief Invoke before visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
+    /**
+     *  @brief Invoke after visit child node.
+     *  @param[in] node The node will be handle.
+     *  @param[in] batcher The global render data collector.
+     *  @param[in] scene Graphics scene.
+     */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
-    
+    /**
+     *  @brief To fill render data in buffer.
+     *  @param[in] buffer The container to put render data in it.
+     *  @param[in] index Index of render times.
+     *  @param[in] worldMat The world transform matrix.
+     */
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
-//
-//    void getVertices(uint32_t index, uint8_t** buffer, size_t* length);
-//    void getIndices(uint32_t index, uint8_t** buffer, size_t* length);
+
+    /**
+     *  @brief Get render material by material index.
+     *  @param[in] index Material index.
+     *  @return material pointer.
+     */
     Effect* getEffect(uint32_t index);
     
     /**
@@ -59,14 +93,44 @@ public:
      *  @return count.
      */
     uint32_t getMeshCount() const { return (uint32_t)_datas.size(); };
+    /**
+     *  @brief Set the model mesh data count.
+     *  @param[in] count Mesh data count.
+     */
     void setMeshCount(uint32_t count);
+    /**
+     *  @brief Update mesh data by index.
+     *  @param[in] index Mesh data index.
+     *  @param[in] vertices Vertex data.
+     *  @param[in] indices Index data.
+     */
     void updateNativeMesh(uint32_t index, se::Object* vertices, se::Object* indices);
+    /**
+     *  @brief Update materiar.
+     *  @param[in] index Effect index.
+     *  @param[in] effect Effect pointer.
+     */
     void updateNativeEffect(uint32_t index, Effect* effect);
-    
+    /**
+     *  @brief Get use model switch.
+     *  @return useModel.
+     */
     bool getUseModel() const { return _useModel; };
+    /**
+     *  @brief Set use model switch.
+     *  @param[in] useModel Switch value.
+     */
     void setUseModel(bool useModel) { _useModel = useModel; };
     
+    /**
+     *  @brief Get vertex format.
+     *  @return VertexFormat pointer.
+     */
     VertexFormat* getVertexFormat() const { return _vfmt; };
+    /**
+     *  @brief Get vertex format.
+     *  @return VertexFormat pointer.
+     */
     void setVertexFormat(VertexFormat* vfmt);
     
     void enable();
@@ -104,5 +168,8 @@ protected:
     const VertexFormat::Element* _vfpos;
     std::vector<RenderData> _datas;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END
