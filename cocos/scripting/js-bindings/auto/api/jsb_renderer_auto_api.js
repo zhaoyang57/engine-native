@@ -312,9 +312,9 @@ reset : function (
 
 /**
  * @method getParent
-* @return {cc.renderer::NodeProxy|cc.renderer::NodeProxy}
-*/
-getParent : function(
+ * @return {cc.renderer::NodeProxy}
+ */
+getParent : function (
 )
 {
     return cc.renderer::NodeProxy;
@@ -352,7 +352,7 @@ int
 
 /**
  * @method getChildrenCount
- * @return {int}
+ * @return {unsigned int}
  */
 getChildrenCount : function (
 )
@@ -1622,14 +1622,6 @@ enabled : function (
 )
 {
     return false;
-},
-
-/**
- * @method setVertsDirty
- */
-setVertsDirty : function (
-)
-{
 },
 
 /**

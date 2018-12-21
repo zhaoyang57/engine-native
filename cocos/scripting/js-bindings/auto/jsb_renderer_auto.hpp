@@ -224,7 +224,6 @@ SE_DECLARE_FUNC(js_renderer_RenderHandle_postHandle);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getUseModel);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_setUseModel);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_enabled);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_setVertsDirty);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_fillBuffers);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_disable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getMeshCount);

@@ -36,7 +36,6 @@
 RENDERER_BEGIN
 
 static MeshBuffer::OffsetInfo s_offsets;
-static cocos2d::Vec3 s_worldPos(0, 0, 0);
 
 RenderHandle::RenderData::~RenderData()
 {
@@ -48,7 +47,6 @@ RenderHandle::RenderData::~RenderData()
 
 RenderHandle::RenderHandle()
 : _enabled(false)
-, _vertsDirty(true)
 , _useModel(false)
 , _vfmt(nullptr)
 {
@@ -166,44 +164,40 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
 
     // must retrieve offset before request
     buffer->request(vertexCount, indexCount, &s_offsets);
-    uint32_t vBufferOffset = s_offsets.vByte / 4;
+    uint32_t vBufferOffset = s_offsets.vByte / sizeof(float);
     uint32_t indexId = s_offsets.index;
     uint32_t vertexId = s_offsets.vertex;
+    uint32_t num = _vfpos->num;
+    
+    float* worldVerts = &buffer->vData[vBufferOffset];
+    memcpy(worldVerts, (float*)data.vertices, data.vBytes);
     
     // Calculate vertices world positions
     if (!_useModel)
     {
-        if (_vertsDirty)
-        {
-            data.worldVerts.resize(data.vBytes);
-            memcpy(data.worldVerts.data(), data.vertices, data.vBytes);
-            _vertsDirty = false;
+        size_t dataPerVertex = _bytesPerVertex / sizeof(float);
+        
+        switch (num) {
+           // Vertex is X Y Z Format
+            case 3:
+                for (uint32_t i = 0; i < vertexCount; ++i)
+                {
+                    worldMat.transformPoint((cocos2d::Vec3*)worldVerts);
+                    worldVerts += dataPerVertex;
+                }
+                break;
+            // Vertex is X Y Format
+            case 2:
+                for (uint32_t i = 0; i < vertexCount; ++i)
+                {
+                    float z = worldVerts[2];
+                    worldVerts[2] = 0;
+                    worldMat.transformPoint((cocos2d::Vec3*)worldVerts);
+                    worldVerts[2] = z;
+                    worldVerts += dataPerVertex;
+                }
+                break;
         }
-        // Assume position is stored in floats
-        float* vertices = (float*)data.vertices;
-        float* worldVerts = (float*)data.worldVerts.data();
-        uint32_t num = _vfpos->num;
-        size_t dataPerVertex = _bytesPerVertex / 4;
-        size_t offset = _posOffset;
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            s_worldPos.x = vertices[offset];
-            s_worldPos.y = vertices[offset + 1];
-            if (num == 3)
-                s_worldPos.z = vertices[offset + 2];
-            worldMat.transformPoint(&s_worldPos);
-            worldVerts[offset] = s_worldPos.x;
-            worldVerts[offset + 1] = s_worldPos.y;
-            if (num == 3)
-                worldVerts[offset + 2] = s_worldPos.z;
-            offset += dataPerVertex;
-        }
-        memcpy(&buffer->vData[vBufferOffset], (float*)data.worldVerts.data(), data.vBytes);
-    }
-    else
-    {
-        // Copy vertex buffer memory
-        memcpy(&buffer->vData[vBufferOffset], (float*)data.vertices, data.vBytes);
     }
     
     // Copy index buffer with vertex offset

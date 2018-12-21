@@ -54,10 +54,10 @@ public:
 //    void getIndices(uint32_t index, uint8_t** buffer, size_t* length);
     Effect* getEffect(uint32_t index);
     
-    void enable();
-    void disable();
-    bool enabled() const { return _enabled; };
-    
+    /**
+     *  @brief Get the model mesh data count.
+     *  @return count.
+     */
     uint32_t getMeshCount() const { return (uint32_t)_datas.size(); };
     void setMeshCount(uint32_t count);
     void updateNativeMesh(uint32_t index, se::Object* vertices, se::Object* indices);
@@ -69,7 +69,9 @@ public:
     VertexFormat* getVertexFormat() const { return _vfmt; };
     void setVertexFormat(VertexFormat* vfmt);
     
-    void setVertsDirty() { _vertsDirty = true; };
+    void enable();
+    void disable();
+    bool enabled() const { return _enabled; };
     
 protected:
     struct RenderData {
@@ -90,12 +92,10 @@ protected:
         uint8_t* indices;
         se::Object* jsVertices;
         se::Object* jsIndices;
-        std::vector<uint8_t> worldVerts;
     };
     
 protected:
     bool _enabled;
-    bool _vertsDirty;
     bool _useModel;
     uint32_t _bytesPerVertex;
     size_t _posOffset;
