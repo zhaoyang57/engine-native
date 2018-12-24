@@ -31,15 +31,30 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * Abstract class for GL graphic classes that uses a GL handle id.
+ * Such as Texture, FrameBuffer, IndexBuffer, VertexBuffer, Program.
+ */
 class GraphicsHandle : public Ref
 {
 public:
     GraphicsHandle();
     virtual ~GraphicsHandle();
+    /**
+     * Gets the GL handle
+     */
     inline GLuint getHandle() const { return _glID; }
 
 protected:
     GLuint _glID;
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

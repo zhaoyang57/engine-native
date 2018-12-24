@@ -31,12 +31,23 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
 class DeviceGraphics;
 
+/**
+ * RenderBuffer manages the GL render buffer.
+ * A render buffer stores data such as an image, or can be source or target of a rendering operation.
+ */
 class RenderBuffer final : public RenderTarget
 {
 public:
-    // render-buffer format
+    /**
+     * RenderBuffer's pixel format
+     */
     enum class Format : uint32_t
     {
         RGBA4 = GL_RGBA4,
@@ -46,11 +57,17 @@ public:
 //        D24S8 = GL_DEPTH_STENCIL
     };
 
+    /**
+     * Creates a RenderBuffer with device, pixel format and size
+     */
     RENDERER_DEFINE_CREATE_METHOD_4(RenderBuffer, init,  DeviceGraphics*, Format, uint16_t, uint16_t)
 
     RenderBuffer();
     virtual ~RenderBuffer();
 
+    /**
+     * Initializes a RenderBuffer with device, pixel format and size
+     */
     bool init(DeviceGraphics* device, Format format, uint16_t width, uint16_t height);
 
 private:
@@ -59,5 +76,8 @@ private:
     uint16_t _width;
     uint16_t _height;
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

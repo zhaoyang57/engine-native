@@ -31,15 +31,39 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * The 2d texture class
+ */
 class Texture2D : public Texture
 {
 public:
     Texture2D();
     ~Texture2D();
 
+    /**
+     * Init the texture with device and options
+     * @see Texture::Options
+     */
     bool init(DeviceGraphics* device, Options& options);
+    /**
+     * Update the texture with new options
+     * @see Texture::Options
+     */
     void update(const Options& options);
+    /**
+     * Update a sub area of the texture with sub image option
+     * @see Texture::SubImageOption
+     */
     void updateSubImage(const SubImageOption& option);
+    /**
+     * Update the image of a given level mipmap specified in image option
+     * @see Texture::ImageOption
+     */
     void updateImage(const ImageOption& option);
 
 private:
@@ -49,5 +73,8 @@ private:
     void setTexInfo();
 
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

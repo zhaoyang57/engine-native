@@ -33,11 +33,30 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * The vertex format defines the attributes and their data layout in the VertexBuffer
+ */
 class VertexFormat : public Ref
 {
 public:
+    /**
+     * Informations used to define an attribute in vertex data layout.
+     * @struct Info
+     */
     struct Info
     {
+        /**
+         * Constructor
+         * @param[in] name Attribute name
+         * @param[in] type Data type of each component
+         * @param[in] num Number of components per attribute
+         * @param[in] normalized Whether integer data values should be normalized into a certain range when being casted to a float
+         */
         Info(const std::string& name, AttribType type, uint32_t num, bool normalize = false)
         : _name(name)
         , _num(num)
@@ -53,6 +72,10 @@ public:
 
     static Info INFO_END;
 
+    /**
+     * Element describes informations of an attribute
+     * @struct Info
+     */
     struct Element
     {
         Element()
@@ -70,30 +93,78 @@ public:
             return type != AttribType::INVALID;
         }
 
+        /**
+         * Name of the attribute
+         */
         std::string name;
+        /**
+         * Byte offset in each vertex data
+         */
         size_t offset;
+        /**
+         * Specifies the offset in bytes between the beginning of consecutive vertex attributes
+         */
         uint32_t stride;
         int32_t stream;
+        /**
+         * Number of components per attribute unit
+         */
         uint32_t num;
+        /**
+         * Total bytes per attribute unit
+         */
         uint32_t bytes;
+        /**
+         * Data type of each component
+         */
         AttribType type;
+        /**
+         * Specifies whether integer data values should be normalized into a certain range when being casted to a float
+         */
         bool normalize;
     };
 
+    /**
+     * Default constructor
+     */
     VertexFormat();
+    /**
+     * Constructor with specific attribute informations
+     */
     VertexFormat(const std::vector<Info>& infos);
+    /**
+     * Copy constructor
+     */
     VertexFormat(const VertexFormat& o);
+    /**
+     * Move constructor
+     */
     VertexFormat(VertexFormat&& o);
 
     VertexFormat& operator=(const VertexFormat& o);
     VertexFormat& operator=(VertexFormat&& o);
 
+    /**
+     * Gets all attribute names
+     */
     const std::vector<std::string>& getAttributeNames() const { return _names; };
+    /**
+     * Getes an attribute element by name
+     */
     const Element* getElement(const std::string& attrName) const;
     
+    /**
+     * Gets total byte size of a vertex
+     */
     uint32_t getBytes() const { return _bytes; };
     
+    /**
+     * Builtin VertexFormat with 2d position, uv, color attributes
+     */
     static VertexFormat* XY_UV_Color;
+    /**
+     * Builtin VertexFormat with 2d position, color attributes
+     */
     static VertexFormat* XY_Color;
 
 private:
@@ -106,5 +177,8 @@ private:
 
     friend class VertexBuffer;
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

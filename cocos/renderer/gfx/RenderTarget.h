@@ -33,10 +33,21 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * Abstract class for all classes that could act as a render target
+ */
 class RenderTarget : public GraphicsHandle
 {
 public:
     virtual ~RenderTarget() {}
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

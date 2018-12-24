@@ -32,30 +32,87 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
 class DeviceGraphics;
 
+/**
+ * VertexBuffer manages the GL vertex attributes buffer.
+ * It creates, updates and destoies the GL vertex buffer.
+ */
 class VertexBuffer final : public GraphicsHandle
 {
 public:
+    /**
+     * Creates a vertex buffer object
+     * @param[in] device DeviceGraphics pointer
+     * @param[in] format Specifies the vertex attributes layout
+     * @param[in] usage The usage pattern
+     * @param[in] data Data pointer, could be nullptr, then nothing is updated to the buffer.
+     * @param[in] dataByteLength Data's byte length.
+     * @param[in] numVertices Count of vertices.
+     */
     RENDERER_DEFINE_CREATE_METHOD_6(VertexBuffer, init,  DeviceGraphics*, VertexFormat*, Usage, const void*, size_t, uint32_t)
 
     VertexBuffer();
     virtual ~VertexBuffer();
 
+    /**
+     * Initializes a vertex buffer object
+     * @param[in] device DeviceGraphics pointer
+     * @param[in] format Specifies the vertex attributes layout
+     * @param[in] usage The usage pattern
+     * @param[in] data Data pointer, could be nullptr, then nothing is updated to the buffer.
+     * @param[in] dataByteLength Data's byte length.
+     * @param[in] numVertices Count of vertices.
+     */
     bool init(DeviceGraphics* device, VertexFormat* format, Usage usage, const void* data, size_t dataByteLength, uint32_t numVertices);
+    /**
+     * Update data to the GL vertex buffer
+     * @param[in] offset Destination offset for filling buffer data.
+     * @param[in] data Data to be updated.
+     * @param[in] dataByteLength Data byte length to be updated.
+     */
     void update(uint32_t offset, const void* data, size_t dataByteLength);
 
+    /**
+     * Gets the count of vertices
+     */
     inline uint32_t getCount() const { return _numVertices; }
+    /**
+     * Sets the count of vertices
+     */
     inline void setCount(uint32_t numVertices) { _numVertices = numVertices; }
 
+    /**
+     * Gets the attributes layout and format of vertices.
+     */
     inline const VertexFormat& getFormat() const { return *_format; }
 //    inline void setFormat(VertexFormat&& format) { _format = std::move(format); }
+    /**
+     * Sets the attributes layout and format of vertices.
+     */
     void setFormat(VertexFormat* format);
 
+    /**
+     * Gets usage pattern of the vertex buffer
+     */
     inline Usage getUsage() const { return _usage; }
+    /**
+     * Sets usage pattern of the vertex buffer
+     */
     inline void setUsage(Usage usage) { _usage = usage; }
 
+    /**
+     * Gets byte size of the vertex buffer
+     */
     inline uint32_t getBytes() const { return _bytes; }
+    /**
+     * Sets byte size of the vertex buffer
+     */
     inline void setBytes(uint32_t bytes) { _bytes = bytes; }
 
     using FetchDataCallback = std::function<uint8_t*(size_t*)>;
@@ -68,7 +125,10 @@ public:
         }
         return _fetchDataCallback(bytes);
     }
-    
+
+    /**
+     * Destroies the vertex buffer
+     */
     void destroy();
 
 private:
@@ -82,5 +142,8 @@ private:
 
     CC_DISALLOW_COPY_ASSIGN_AND_MOVE(VertexBuffer)
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END
