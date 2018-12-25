@@ -38,6 +38,11 @@ class Effect;
 class InputAssembler;
 class Model;
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
 struct DrawItem
 {
     Model* model = nullptr;
@@ -58,28 +63,71 @@ private:
     static ccCArray* _pool;;
 };
 
+/**
+ *  @brief Model contains InputAssembler, effect, culling mask and model matrix.
+ */
 class Model
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     Model();
+    /**
+     *  @brief The default destructor.
+     */
     ~Model();
-    
+    /**
+     *  @brief Gets input assembler count.
+     */
     inline uint32_t getInputAssemblerCount() const { return (uint32_t)_inputAssemblers.size(); }
-    
+    /**
+     *  @brief Indicates whether the model's data is in dynamic input assembler.
+     */
     inline bool isDynamicIA() const { return _dynamicIA; }
+    /**
+     *  @brief Sets whether the model's data is in dynamic input assembler.
+     */
     inline void setDynamicIA(bool value) { _dynamicIA =  value; }
-    
+    /**
+     *  @brief Gets draw item count.
+     */
     inline uint32_t getDrawItemCount() const { return _dynamicIA ? 1 :  (uint32_t)_inputAssemblers.size(); }
+    /**
+     *  @brief Sets model matrix.
+     */
     inline void setWorldMatix(const Mat4& matrix) { _worldMatrix = std::move(matrix); }
+    /**
+     *  @brief Gets mode matrix.
+     */
     inline const Mat4& getWorldMatrix() const { return _worldMatrix; }
-    
+    /**
+     *  @brief Sets culling mask.
+     */
     inline void setCullingMask(int val) { _cullingMask = val; }
+    /**
+     *  @brief Gets culling mask.
+     */
     inline int getCullingMask() const { return _cullingMask; }
-    
+    /**
+     *  @brief Adds a input assembler.
+     */
     void addInputAssembler(const InputAssembler& ia);
+    /**
+     *  @brief Clears all input assemblers.
+     */
     void clearInputAssemblers();
+    /**
+     *  @brief Adds an effect.
+     */
     void addEffect(Effect* effect);
+    /**
+     *  @brief Clears all effects.
+     */
     void clearEffects();
+    /**
+     *  @brief Extract draw item for the given index during rendering process.
+     */
     void extractDrawItem(DrawItem& out, uint32_t index) const;
 
 private:
@@ -94,5 +142,8 @@ private:
     bool _dynamicIA = false;
     int _cullingMask = -1;
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END

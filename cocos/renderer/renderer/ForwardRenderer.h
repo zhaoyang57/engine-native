@@ -29,13 +29,38 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief A builtin forward renderer implementation
+ */
 class ForwardRenderer final : public BaseRenderer
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     ForwardRenderer();
 
+    /**
+     *  @brief Initializes the forward renderer.
+     *  @param[in] device DeviceGraphics pointer.
+     *  @param[in] programTemplates All linked programs.
+     *  @param[in] defaultTexture Default texture pointer.
+     *  @param[in] width.
+     *  @param[in] height.
+     */
     bool init(DeviceGraphics* device, std::vector<ProgramLib::Template>& programTemplates, Texture2D* defaultTexture, int width, int height);
+    /**
+     *  @brief Renders the given render scene.
+     */
     void render(Scene* scene);
+    /**
+     *  @brief Renders the given render scene with a given camera setting.
+     */
     void renderCamera(Camera* camera, Scene* scene);
 
 private:
@@ -44,5 +69,8 @@ private:
     int _width = 0;
     int _height = 0;
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END

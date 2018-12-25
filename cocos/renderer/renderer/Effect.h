@@ -33,36 +33,93 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief Fundamental class of material system, contains techniques, shader template define settings and uniform properties.
+ */
 class Effect : public Ref
 {
 public:
     
     using Property = Technique::Parameter;
     
+    /**
+     *  @brief The default constructor.
+     */
     Effect();
+    /**
+     *  @brief The default destructor.
+     */
     ~Effect();
     
+    /**
+     *  @brief Initialize with techniques, properties and define settings.
+     */
     void init(const Vector<Technique*>& techniques,
               const std::unordered_map<std::string, Property>& properties,
               const std::vector<ValueMap>& defineTemplates);
+    /**
+     *  @brief Clears techniques and define list.
+     */
     void clear();
     
+    /**
+     *  @brief Gets technique by stage.
+     */
     Technique* getTechnique(const std::string& stage) const;
+    /**
+     *  @brief Gets all techniques.
+     */
     const Vector<Technique*>& getTechniques() const { return _techniques; }
+    /**
+     *  @brief Gets define property value by name.
+     */
     Value getDefineValue(const std::string& name) const;
+    /**
+     *  @brief Gets all define value.
+     */
     const std::vector<ValueMap>& getDefines() const { return _defineTemplates; }
+    /**
+     *  @brief Sets define value.
+     */
     void setDefineValue(const std::string& name, const Value& value);
+    /**
+     *  @brief Extracts all defines.
+     */
     ValueMap* extractDefines();
     
+    /**
+     *  @brief Gets uniform property value by name.
+     */
     const Property& getProperty(const std::string& name) const;
+    /**
+     *  @brief Sets uniform property value by name.
+     */
     void setProperty(const std::string& name, const Property& property);
-    
+    /**
+     *  @brief Gets all uniform properties.
+     */
     const std::unordered_map<std::string, Property>& getProperties() const { return _properties; }
-    
+    /**
+     *  @brief Updates hash.
+     */
     void updateHash(double hash) { _hash = hash; };
+    /**
+     *  @brief Gets hash.
+     */
     double getHash() const { return _hash; };
-    
+
+    /**
+     *  @brief Gets the define key for the current define settings.
+     */
     const int32_t& getDefinesKey() { return _definesKey; };
+    /**
+     *  @brief Deep copy from other effect.
+     */
     void copy(Effect& effect);
     
 private:
@@ -75,5 +132,8 @@ private:
     
     void generateKey();
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END

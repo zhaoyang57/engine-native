@@ -44,6 +44,14 @@ class Effect;
 class Technique;
 class Texture2D;
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief Base renderer implements the basic render process.
+ */
 class BaseRenderer : public Ref
 {
 public:
@@ -57,14 +65,39 @@ public:
         int sortKey = -1;
     };
     typedef std::function<void(const View&, const std::vector<StageItem>&)> StageCallback;
-
+    
+    /**
+     *  @brief The default constructor.
+     */
     BaseRenderer();
     
+    /**
+     *  @brief Initializes the base renderer.
+     *  @param[in] device DeviceGraphics pointer.
+     *  @param[in] programTemplates All linked programs.
+     */
     bool init(DeviceGraphics* device, std::vector<ProgramLib::Template>& programTemplates);
+    /**
+     *  @brief Initializes the base renderer.
+     *  @param[in] device DeviceGraphics pointer.
+     *  @param[in] programTemplates All programs.
+     *  @param[in] defaultTexture Default texture pointer.
+     */
     bool init(DeviceGraphics* device, std::vector<ProgramLib::Template>& programTemplates, Texture2D* defaultTexture);
+    /**
+     *  @brief The default destructor.
+     */
     virtual ~BaseRenderer();
-    
+    /**
+     *  @brief Register a new render stage.
+     *  @param[in] name Stage name.
+     *  @param[in] call Stage handle callback.
+     */
     void registerStage(const std::string& name, const StageCallback& callback);
+    /**
+     *  @brief Gets the program library pointer.
+     *  @return Program library pointer.
+     */
     ProgramLib* getProgramLib() const { return _programLib; };
     
 protected:
@@ -96,4 +129,6 @@ protected:
     CC_DISALLOW_COPY_ASSIGN_AND_MOVE(BaseRenderer);
 };
 
+// end of renderer group
+/// @}
 RENDERER_END

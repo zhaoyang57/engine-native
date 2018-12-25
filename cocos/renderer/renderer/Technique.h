@@ -36,10 +36,21 @@ RENDERER_BEGIN
 class Pass;
 class Texture;
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief Technique is a important part of Effect, it contains a selective uniform parameters and all passes of effect.
+ */
 class Technique : public Ref
 {
 public:
     
+    /**
+     *  @brief Uniform parameter of Technique, defines the uniform name and type
+     */
     class Parameter final
     {
     public:
@@ -69,10 +80,25 @@ public:
         // MAT4 -> 16
         static uint8_t getElements(Type type);
         
+        /**
+         *  @brief The default constructor.
+         */
         Parameter();
+        /**
+         *  @brief Constructor with integer.
+         */
         Parameter(const std::string& name, Type type, int* value, uint8_t count = 1);
+        /**
+         *  @brief Constructor with float.
+         */
         Parameter(const std::string& name, Type type, float* value, uint8_t count = 1);
+        /**
+         *  @brief Constructor with texture.
+         */
         Parameter(const std::string& name, Type type, Texture* texture);
+        /**
+         *  @brief Constructor with texture array.
+         */
         Parameter(const std::string& name, Type type, const std::vector<Texture*>& textures);
         Parameter(const std::string& name, Type type);
         Parameter(const Parameter& rh);
@@ -81,14 +107,38 @@ public:
         
         Parameter& operator=(const Parameter& rh);
         
+        /**
+         *  @brief Gets the uniform type.
+         */
         inline Type getType() const { return _type; }
+        /**
+         *  @brief Gets the uniform name.
+         */
         inline const std::string& getName() const { return _name; }
+        /**
+         *  @brief Gets the counts of uniform components.
+         */
         inline uint8_t getCount() const { return _count; }
+        /**
+         *  @brief Gets parameter value.
+         */
         inline void* getValue() const { return _value; }
+        /**
+         *  @brief Gets bytes occupied by primitive uniform parameter.
+         */
         inline uint16_t getBytes() const { return _bytes; };
-                
+        
+        /**
+         *  @brief Gets the texture array.
+         */
         std::vector<Texture*> getTextureArray() const;
+        /**
+         *  @brief Sets the texture pointer.
+         */
         void setTexture(Texture* texture);
+        /**
+         *  @brief Gets the texture pointer.
+         */
         Texture* getTexture() const;
         
     private:
@@ -107,21 +157,50 @@ public:
         uint16_t _bytes = 0;
     };
     
+    /**
+     *  @brief Constructor.
+     *  @param[in] stages All stages it belongs to.
+     *  @param[in] parameters All uniform parameters.
+     *  @param[in] passes All passes.
+     */
     Technique(const std::vector<std::string>& stages,
               const std::vector<Parameter>& parameters,
               const Vector<Pass*>& passes,
               int layer = 0);
     
+    /**
+     *  @brief The default constructor.
+     */
     Technique();
+    /**
+     *  @brief The default destructor.
+     */
     ~Technique();
     
+    /**
+     *  @brief Sets the stages it belongs to.
+     */
     void setStages(const std::vector<std::string>& stages);
+    /**
+     *  @brief Sets the pass to the given index.
+     */
     void setPass(int index, Pass* pass);
 
+    /**
+     *  @brief Gets all uniform parameters.
+     */
     const std::vector<Parameter>& getParameters() const { return _parameters; }
+    /**
+     *  @brief Gets all passes.
+     */
     const Vector<Pass*>& getPasses() const { return _passes; }
+    /**
+     *  @brief Gets all stageID.
+     */
     uint32_t getStageIDs() const { return _stageIDs; }
-    
+    /**
+     *  @brief Deep copy from other techique.
+     */
     void copy(const Technique& tech);
     
 private:
@@ -133,5 +212,8 @@ private:
     std::vector<Parameter> _parameters;
     Vector<Pass*> _passes;
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END

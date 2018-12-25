@@ -36,12 +36,28 @@ RENDERER_BEGIN
 class Light;
 class FrameBuffer;
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief View defines a specific camera view and Light settings
+ */
 class View : public Ref
 {
 public:
+    /**
+     *  @brief The default constructor.
+     */
     View();
-    
+    /**
+     *  @brief Gets the forward direction.
+     */
     void getForward(Vec3& out) const;
+    /**
+     *  @brief Gets the position.
+     */
     void getPosition(Vec3& out) const;
     
     uint32_t id;
@@ -69,5 +85,8 @@ public:
     
     Light* shadowLight = nullptr;
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END

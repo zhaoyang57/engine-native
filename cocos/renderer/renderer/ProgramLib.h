@@ -36,9 +36,20 @@ RENDERER_BEGIN
 class DeviceGraphics;
 class Program;
 
+/**
+ * @addtogroup renderer
+ * @{
+ */
+
+/**
+ *  @brief This class manages shader template and linked programs, material can customize shader by setting different defines.
+ */
 class ProgramLib final
 {
 public:
+    /**
+     *  @brief Program template
+     */
     struct Template
     {
         uint32_t id = 0;
@@ -48,13 +59,28 @@ public:
         ValueVector defines;
     };
 
+    /**
+     *  @brief Constructor with device and all initial templates.
+     */
     ProgramLib(DeviceGraphics* device, std::vector<Template>& templates);
+    /**
+     *  @brief The default destructor.
+     */
     ~ProgramLib();
 
+    /**
+     *  @brief Define a new program with name, vertex shader name, fragement shader name and template define settings.
+     */
     void define(const std::string& name, const std::string& vert, const std::string& frag, ValueVector& defines);
+    /**
+     *  @brief Gets unique key for the given program name and defines key.
+     */
     uint32_t getKey(const std::string& name, int32_t definesKey);
 
-    //note: the return value needs to be released by its 'release' method.
+    /**
+     *  @brief Gets program by template name, define settings and defines key.
+     *  @note The return value needs to be released by its 'release' method.
+     */
     Program* getProgram(const std::string& name, const ValueMap& defines, int32_t definesKey);
 
 private:
@@ -63,5 +89,8 @@ private:
     std::unordered_map<std::string, Template> _templates;
     std::unordered_map<uint32_t, Program*> _cache;
 };
+
+// end of renderer group
+/// @}
 
 RENDERER_END
