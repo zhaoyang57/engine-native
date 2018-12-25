@@ -37,10 +37,16 @@ static MeshBuffer::OffsetInfo s_offsets;
 
 RenderHandle::RenderData::~RenderData()
 {
-    jsVertices->unroot();
-    jsVertices->decRef();
-    jsIndices->unroot();
-    jsIndices->decRef();
+    if(jsVertices != nullptr)
+    {
+        jsVertices->unroot();
+        jsVertices->decRef();
+    }
+    if(jsIndices != nullptr)
+    {
+        jsIndices->unroot();
+        jsIndices->decRef();
+    }
 }
 
 RenderHandle::RenderHandle()

@@ -30,6 +30,18 @@ RENDERER_BEGIN
 
 GraphicsRenderHandle::IARenderData::~IARenderData()
 {
+    if(jsVertices != nullptr)
+    {
+        jsVertices->unroot();
+        jsVertices->decRef();
+    }
+    if(jsIndices != nullptr)
+    {
+        jsIndices->unroot();
+        jsIndices->decRef();
+    }
+    vb->release();
+    ib->release();
 }
 
 GraphicsRenderHandle::GraphicsRenderHandle()
@@ -134,11 +146,19 @@ void GraphicsRenderHandle::updateNativeMesh(uint32_t index, se::Object* vertices
         data->vb = new VertexBuffer();
         data->vb->init(DeviceGraphics::getInstance(), VertexFormat::XY_Color, Usage::DYNAMIC, nullptr, 0, (uint32_t)data->vBytes);
     }
+    else
+    {
+        data->vb->setBytes((uint32_t)data->vBytes);
+    }
     
     if(!data->ib)
     {
         data->ib = new IndexBuffer();
         data->ib->init(DeviceGraphics::getInstance(), IndexFormat::UINT16, Usage::STATIC, nullptr, 0, (uint32_t)data->iBytes);
+    }
+    else
+    {
+        data->ib->setBytes((uint32_t)data->iBytes);
     }
 }
 
