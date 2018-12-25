@@ -33,7 +33,7 @@ and non-transferable rights to use the software according to the following condi
     + iv. Apply it to any third-party products or services without Licensor’s permission;\n
     + v. Publish, copy, rent, lease, sell, export, import, distribute or lend any products\n
         containing these portions of code;\n
-    + vi. Allow others to use any services relevant to the technology of these codes; and\n
+    + vi. Allow others to use any services relevant to the technology of these codes;\n
     + vii. Conduct any other act beyond the scope of this Licensing Agreement.\n
 - g.  This Licensing Agreement terminates immediately if the Licensee breaches this Agreement.\n
     The Licensor may claim compensation from the Licensee where the Licensee’s breach causes\n
