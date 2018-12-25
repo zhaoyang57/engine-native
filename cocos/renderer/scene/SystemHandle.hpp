@@ -38,27 +38,25 @@ class Scene;
  */
 
 /**
- *  @brief All NodeProxy Handle Base
+ * @brief Abstract class for all system handle
+ * A system handle could take actions during node visit process, before and after all children visit.
  */
 class SystemHandle
 {
 public:
-    /**
-     *  @brief The default constructor.
-     */
     virtual ~SystemHandle() = default;
     /**
-     *  @brief invoke before visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Callback which will be invoked before visiting child nodes.
+     *  @param[in] node The node being processed.
+     *  @param[in] batcher
+     *  @param[in] scene
      */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
     /**
-     *  @brief invoke after visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Callback which will be invoked after visiting child nodes.
+     *  @param[in] node The node being processed.
+     *  @param[in] batcher
+     *  @param[in] scene
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
 };

@@ -38,31 +38,26 @@ RENDERER_BEGIN
  */
 
 /**
- *  @brief custom render base handle,such spine,dragonBones render can use the type handle.
+ *  @brief Custom render handle base class
+ *  Render components that manages render buffer directly like spine, dragonBones should extend from this handle type.
  */
 class CustomRenderHandle : public SystemHandle
 {
 public:
-    /**
-     *  @brief The default constructor.
-     */
     CustomRenderHandle();
-    /**
-     *  @brief The default destructor.
-     */
     virtual ~CustomRenderHandle();
     
     /**
-     *  @brief Collect render data by index.
+     *  @brief Submit the InputAssembler for the given index to ModelBatcher
      *  @param[in] index Render data index.
-     *  @param[in] batcher Which is collector.
+     *  @param[in] batcher The ModelBatcher which will transform render data to Model
      */
     virtual void renderIA(std::size_t index, ModelBatcher* batcher) {};
     
     /**
-     *  @brief Get render material by material index.
-     *  @param[in] index Material index.
-     *  @return material pointer.
+     *  @brief Gets the material for the given index.
+     *  @param[in] index Render data index.
+     *  @return Effect pointer.
      */
     inline Effect* getEffect(uint32_t index) const
     {
@@ -74,8 +69,8 @@ public:
     }
     
     /**
-     *  @brief Get material count.
-     *  @return count.
+     *  @brief Gets Effect count.
+     *  @return Count.
      */
     inline std::size_t getEffectCount() const
     {
@@ -83,8 +78,8 @@ public:
     }
     
     /**
-     *  @brief Get input assembler count.
-     *  @return count.
+     *  @brief Gets input assembler count.
+     *  @return Count.
      */
     virtual inline std::size_t getIACount() const
     {
@@ -92,35 +87,29 @@ public:
     }
     
     /**
-     *  @brief Update materiar.
-     *  @param[in] index Effect index.
+     *  @brief Update the material for the given index
+     *  @param[in] index Render data index.
      *  @param[in] effect Effect pointer.
      */
     virtual void updateNativeEffect(std::size_t index, Effect* effect);
     
     /**
-     *  @brief Get use model switch.
-     *  @return useModel.
+     *  @brief Gets whether the current handle should use model matrix uniform during rendering
+     *  @return useModel
      */
     bool getUseModel() const { return _useModel; };
     
     /**
-     *  @brief Set use model switch.
-     *  @param[in] useModel Switch value.
+     *  @brief Sets whether the current handle should use model matrix uniform during rendering
+     *  @param[in] useModel
      */
     void setUseModel(bool useModel) { _useModel = useModel; };
     /**
-     *  @brief Invoke before visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Commit the current render handle to ModelBatcher
      */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     /**
-     *  @brief Invoke after visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Do nothing
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override {}
     

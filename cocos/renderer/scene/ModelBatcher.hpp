@@ -44,17 +44,18 @@ class StencilManager;
  */
 
 /**
- *  @brief Collect render data.
+ *  @brief ModelBatcher is responsible for transforming node's render handles into final render datas.
+ *  It collects render data, batches different render handle together into Models and submits to render Scene.
  */
 class ModelBatcher
 {
 public:
     /**
-     *  @brief The default constructor.
+     *  @brief The constructor.
      */
     ModelBatcher(RenderFlow* flow);
     /**
-     *  @brief The default destructor.
+     *  @brief The destructor.
      */
     ~ModelBatcher();
     /**
@@ -63,51 +64,53 @@ public:
     void reset();
     
     /**
-     *  @brief Begin to collect render data.
-     *  @param[in] node Be collect node.
-     *  @param[in] handle Specific collect performer.
+     *  @brief Commit a render handle to the model batcher
+     *  @param[in] node The node which owns the render handle
+     *  @param[in] handle The render handle contains render datas
      */
     void commit(NodeProxy* node, RenderHandle* handle);
     /**
-     *  @brief Begin to collect custom render data.
-     *  @param[in] node Be collect node.
-     *  @param[in] handle Specific collect performer.
+     *  @brief Commit a custom render handle to the model batcher
+     *  @param[in] node The node which owns the render handle
+     *  @param[in] handle The custom render handle contains render datas
      */
     void commitIA(NodeProxy* node, CustomRenderHandle* handle);
     
     /**
-     *  @brief Invoke before all node visit.
+     *  @brief This method should be invoked before commit any render handles each frame.
+     * It notifies the model batcher to get ready for constructing Models
      */
     void startBatch();
     /**
-     *  @brief End once render batcher.
+     *  @brief Flush all cached render data into a new Model and add the Model to render Scene.
      */
     void flush();
     /**
-     *  @brief End once custom render batcher.
+     *  @brief Construct a new Model from custom input assembler provided by CustomRenderHandle and add the Model to render Scene.
      */
     void flushIA(InputAssembler* customIA);
     /**
-     *  @brief Invoke after all node visit.
+     *  @brief This method should be invoked after committed all render handles each frame.
      */
     void terminateBatch();
     
     /**
-     *  @brief Get corresponding vertex format render buffer.
-     *  @param[in] fmt Vertex format value
+     *  @brief Gets a suitable MeshBuffer for the given VertexFormat.
+     *  Render datas arranged in different VertexFormat can't share the same buffer.
+     *  @param[in] fmt The VertexFormat
      */
     MeshBuffer* getBuffer(VertexFormat* fmt);
     /**
-     *  @brief Get current render buffer.
+     *  @brief Gets the current MeshBuffer.
      */
     const MeshBuffer* getCurrentBuffer() const { return _buffer; };
     /**
-     *  @brief Set current render buffer.
+     *  @brief Sets the current MeshBuffer.
      *  @param[in] buffer
      */
     void setCurrentBuffer(MeshBuffer* buffer) { _buffer = buffer; };
     /**
-     *  @brief Get render flow pointer.
+     *  @brief Gets the global RenderFlow pointer.
      */
     RenderFlow* getFlow() const { return _flow; };
     

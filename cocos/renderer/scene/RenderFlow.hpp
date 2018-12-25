@@ -39,37 +39,38 @@ RENDERER_BEGIN
  */
 
 /**
- *  @brief Responsible for visit all node.
+ *  @brief This class is responsible for the rendering process.
+ *  It visits the node tree, let nodes commit their render handles, starts the device level rendering process with ForwardRenderer.
  */
 class RenderFlow
 {
 public:
     /**
-     *  @brief Get model batcher which is responsible for collect render data.
+     *  @brief Gets the ModelBatcher which is responsible for collecting render Models.
      */
     ModelBatcher* getModelBatcher() const { return _batcher; };
     /**
-     *  @brief Get graphics device which is render api's abstract.
+     *  @brief Gets the DeviceGraphics using by the current RenderFlow.
      */
     DeviceGraphics* getDevice() const { return _device; };
     /**
-     *  @brief Get render scene.
+     *  @brief Gets the render Scene which manages all render Models.
      */
     Scene* getRenderScene() const { return _scene; };
     /**
-     *  @brief Begin to render node tree.
+     *  @brief Render the scene specified by its root node.
      *  @param[in] scene The root node.
      */
     void render(NodeProxy* scene);
     /**
-     *  @brief Constructor.
-     *  @param[in] device DeviceGraphics.
-     *  @param[in] scene Scene.
-     *  @param[in] forward ForwardRenderer.
+     *  @brief The constructor.
+     *  @param[in] device
+     *  @param[in] scene
+     *  @param[in] forward
      */
     RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
     /**
-     *  @brief Destructor.
+     *  @brief The destructor.
      */
     ~RenderFlow();
 private:

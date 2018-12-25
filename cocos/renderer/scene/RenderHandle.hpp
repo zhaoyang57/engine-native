@@ -46,90 +46,76 @@ class ModelBatcher;
  */
 
 /**
- *  @brief Compute NodeProxy local vertex data to world vertex data,and put vertex,uv,color into render buffer.
+ *  @brief The render handle is a system handle which occupies rendering datas.
+ *  It's kind of a cpp delegate for js RenderComponent and should be created and updated by js RenderComponent.
+ *  It update local vertex data to world vertex data if necessary, commit all render datas to the shared vertex and index buffer.
  */
 class RenderHandle : SystemHandle
 {
 public:
-    /**
-     *  @brief The default constructor.
-     */
     RenderHandle();
-    /**
-     *  @brief The default destructor.
-     */
     virtual ~RenderHandle();
     /**
-     *  @brief Invoke before visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Commit the current render handle to ModelBatcher
      */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     /**
-     *  @brief Invoke after visit child node.
-     *  @param[in] node The node will be handle.
-     *  @param[in] batcher The global render data collector.
-     *  @param[in] scene Graphics scene.
+     *  @brief Do nothing
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     /**
-     *  @brief To fill render data in buffer.
-     *  @param[in] buffer The container to put render data in it.
-     *  @param[in] index Index of render times.
-     *  @param[in] worldMat The world transform matrix.
+     *  @brief Fills render data in given index to the MeshBuffer
+     *  @param[in] buffer The shared mesh buffer
+     *  @param[in] index The index of render data to be updated
+     *  @param[in] worldMat The world transform matrix
      */
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
 
     /**
-     *  @brief Get render material by material index.
-     *  @param[in] index Material index.
-     *  @return material pointer.
+     *  @brief Gets rendering material for the given index.
+     *  @param[in] index The material index.
+     *  @return The material pointer.
      */
     Effect* getEffect(uint32_t index);
     
     /**
-     *  @brief Get the model mesh data count.
-     *  @return count.
+     *  @brief Gets the count of render datas
+     *  @return Count.
      */
     uint32_t getMeshCount() const { return (uint32_t)_datas.size(); };
     /**
-     *  @brief Set the model mesh data count.
-     *  @param[in] count Mesh data count.
+     *  @brief Sets the count of render datas
+     *  @param[in] count
      */
     void setMeshCount(uint32_t count);
     /**
-     *  @brief Update mesh data by index.
-     *  @param[in] index Mesh data index.
+     *  @brief Update the mesh data for the given index.
+     *  @param[in] index Render data index.
      *  @param[in] vertices Vertex data.
      *  @param[in] indices Index data.
      */
     void updateNativeMesh(uint32_t index, se::Object* vertices, se::Object* indices);
     /**
-     *  @brief Update materiar.
-     *  @param[in] index Effect index.
+     *  @brief Update the material for the given index.
+     *  @param[in] index Render data index.
      *  @param[in] effect Effect pointer.
      */
     void updateNativeEffect(uint32_t index, Effect* effect);
     /**
-     *  @brief Get use model switch.
-     *  @return useModel.
+     *  @brief Gets whether the current handle should use model matrix uniform during rendering
      */
     bool getUseModel() const { return _useModel; };
     /**
-     *  @brief Set use model switch.
-     *  @param[in] useModel Switch value.
+     *  @brief Sets whether the current handle should use model matrix uniform during rendering
      */
     void setUseModel(bool useModel) { _useModel = useModel; };
     
     /**
-     *  @brief Get vertex format.
-     *  @return VertexFormat pointer.
+     *  @brief Gets the vertex format.
      */
     VertexFormat* getVertexFormat() const { return _vfmt; };
     /**
-     *  @brief Get vertex format.
-     *  @return VertexFormat pointer.
+     *  @brief Sets the vertex format.
      */
     void setVertexFormat(VertexFormat* vfmt);
     

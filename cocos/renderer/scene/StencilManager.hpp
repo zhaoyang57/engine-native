@@ -31,6 +31,11 @@
 
 RENDERER_BEGIN
 
+/**
+ * @addtogroup scene
+ * @{
+ */
+
 // Stage types
 enum class Stage{
     // Stencil disabled
@@ -45,17 +50,43 @@ enum class Stage{
     EXIT_LEVEL = 4
 };
 
+/**
+ * The stencil manager post process the Effect in Model to make them apply correct stencil states
+ * After activated a stencil mask and before desactivated it, all Models committed in between should apply the stencil's states in the Pass of Effect.
+ * This is a singleton class mainly used by ModelBatcher.
+ */
 class StencilManager
 {
 public:
     StencilManager();
     ~StencilManager();
+    /**
+     * Reset all states
+     */
     void reset();
+    /**
+     * Apply correct stencil states to the Effect
+     */
     Effect* handleEffect(Effect* effect);
+    /**
+     * Add a mask to the stack
+     */
     void pushMask(bool mask);
+    /**
+     * Stage for clearing the stencil buffer for the last mask
+     */
     void clear();
+    /**
+     * Enters a new mask level, this stage is for drawing the stencil ref to the stencil buffer.
+     */
     void enterLevel();
+    /**
+     * Enables the current mask, this stage is for applying stencil states defined by the current mask.
+     */
     void enableMask();
+    /**
+     * Exits a mask level
+     */
     void exitMask();
     uint8_t getWriteMask();
     uint8_t getExitWriteMask();
@@ -77,5 +108,8 @@ private:
     Stage _stage;
     static StencilManager* _instance;
 };
+
+// end of scene group
+/// @}
 
 RENDERER_END

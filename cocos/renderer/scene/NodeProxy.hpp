@@ -49,158 +49,160 @@ class Scene;
  */
 
 /**
- *  @brief NodeProxy correspond js CCNode.
+ * @brief NodeProxy is a cpp delegator of js Node.
+ * It synchronize the hierarchy from js node tree, update the transform each frame, and manages system handles like RenderHandle which represent the render component.
  */
 class NodeProxy : public Ref
 {
 public:
     /**
-     *  @brief The default constructor.
+     * @brief The default constructor.
      */
     NodeProxy();
     /**
-     *  @brief The destructor.
+     * @brief The destructor.
      */
     ~NodeProxy();
     
     /**
-     *  @brief Reset property value.
+     * @brief Resets all states.
      */
     void reset();
 
     /// @{
-    /// @name Children and Parent
+    /// @name Hierarchy
 
     /**
-     *  @brief Add child node proxy to the node proxy.
+     *  @brief Adds child node proxy to the node proxy.
      *  @param[in] child A child node proxy pointer.
      */
     void addChild(NodeProxy * child);
     /**
-     *  @brief Remove child node proxy from the node proxy.
+     *  @brief Removes child node proxy from the node proxy.
      *  @param[in] child A child node proxy pointer.
      */
     void removeChild(NodeProxy* child);
     /**
-     *  @brief Remove all child node proxy from the node proxy.
+     *  @brief Removes all child node proxies from the current one.
      */
     void removeAllChildren();
     
     /**
-     *  @brief Set the node proxy parent.
+     *  @brief Sets the node proxy parent.
      *  @param[in] parent.
      */
     inline void setParent(NodeProxy* parent) { _parent = parent; };
     /**
-     *  @brief Get the node proxy parent.
-     *  @return parent.
+     *  @brief Gets the node proxy parent.
+     *  @return Parent.
      */
     inline NodeProxy* getParent() const { return _parent; };
     /**
-     *  @brief Get the node proxy all children.
-     *  @return children container.
+     *  @brief Gets the node proxy all children.
+     *  @return Children container.
      */
     inline const Vector<NodeProxy*>& getChildren() const { return _children; };
     /**
-     *  @brief Get the node proxy child count.
-     *  @return child count.
+     *  @brief Gets the node proxy child count.
+     *  @return Child count.
      */
     inline size_t getChildrenCount() const { return _children.size(); };
     /**
-     *  @brief Set the node proxy local zorder.
+     *  @brief Sets the node proxy's local zorder.
      *  @param[in] zOrder The value of zorder.
      */
     void setLocalZOrder(int zOrder);
     /**
-     *  @brief Set children order dirty,set it true,will reorder children when visit node.
+     *  @brief Sets children order dirty, then children will get sorted during visit process.
      */
     inline void setChildrenOrderDirty() { _childrenOrderDirty = true; };
 
-    /// @} end of Children and Parent
+    /// @} end of Hierarchy
     
     /**
-     *  @brief update translate,rotation,scale data.
-     *  @param[in] trs Js Float32Array object contain translate,rotation scale data.
+     *  @brief Update the TypedArray contains translation, rotation and scale data.
+     *  @param[in] trs JS TypedArray object
      */
     void updateJSTRS(se::Object* trs);
     /**
-     *  @brief Get world matrix.
-     *  @return world matrix.
+     *  @brief Gets the world matrix.
+     *  @return World matrix.
      */
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
     /**
-     *  @brief Get position value.
-     *  @param[out] out The position value will set in the pointer.
+     *  @brief Gets the position.
+     *  @param[out] out The position vector
      */
     void getPosition(cocos2d::Vec3* out) const;
     /**
-     *  @brief Get rotation value.
-     *  @param[out] out The rotation value will set in the pointer.
+     *  @brief Gets the rotation.
+     *  @param[out] out The rotation quaternion.
      */
     void getRotation(cocos2d::Quaternion* out) const;
     /**
-     *  @brief Get scale value.
-     *  @param[out] out The scale value will set in the pointer.
+     *  @brief Gets the scale.
+     *  @param[out] out The scale vector.
      */
     void getScale(cocos2d::Vec3* out) const;
     /**
-     *  @brief Get world position value.
-     *  @param[out] out The world position value will set in the pointer.
+     *  @brief Gets the position in world coordinates.
+     *  @param[out] out The world position vector.
      */
     void getWorldPosition(cocos2d::Vec3* out) const;
     /**
-     *  @brief Get world to local transform matrix.
-     *  @param[out] out The matrix value will set in the pointer.
+     *  @brief Gets the matrix contains the world rotation and translation.
+     *  @param[out] out The matrix to store datas.
      */
     void getWorldRT(cocos2d::Mat4* out) const;
     
     /**
-     *  @brief Get node opacity.
+     *  @brief Gets the node's opacity.
      */
     inline uint8_t getOpacity() const { return _opacity; };
     /**
-     *  @brief Get groupID,use to culling node render if don't want to render the node.
+     *  @brief Gets the node's group id, this controls which camera can see the node.
      */
     inline int getGroupID() const { return _groupID; };
     /**
-     *  @brief Set groupID.
-     *  @param[in] groupID.
+     *  @brief Sets the node's group id.
+     *  @param[in] groupID The group id
      */
     inline void setGroupID(int groupID) { _groupID = groupID; };
     
     /**
-     *  @brief Get node proxy name,correspond to js CCNode name.
-     *  @return name.
+     *  @brief Gets the node's name.
+     *  This equals to the one in JS node, helps to debug in cpp.
+     *  @return name
      */
     inline const std::string& getName() const { return _name; };
     /**
-     *  @brief Set node proxy name,correspond to js CCNode name.
-     *  @param[in] name.
+     *  @brief Sets the node's name.
+     *  The name should be updated once JS node's name changes.
+     *  @param[in] name
      */
     inline void setName(const std::string& name) { _name = name; };
     
     /**
-     *  @brief Add system handle into node proxy,then node will invoke per frame.
-     *  @param[in] sysid The system handle id.
+     *  @brief Adds a system handle to the node proxy, system handle will be invoked during node's visit process.
+     *  @param[in] sysid The system id.
      *  @param[in] handle The system handle pointer.
      */
     void addHandle(const std::string& sysid, SystemHandle* handle);
     /**
-     *  @brief Remove system handle from node proxy by system id.
+     *  @brief Removes a system handle from node proxy by system id.
      *  @param[in] sysid The system id.
      */
     void removeHandle(const std::string& sysid);
     /**
-     *  @brief Get system handle by system id.
+     *  @brief Gets the system handle by system id.
      *  @param[in] sysid The system id.
+     *  @return The system handle object or nullptr if not exist
      */
     SystemHandle* getHandle(const std::string& sysid);
     
     /**
-     *  @brief Begin to traverse all node proxy in scene.
-     *  @param[in] batcher The ModelBatcher pointer which take charge collect render data.
-     *  @param[in] scene The root node proxy.
+     *  @brief Traverse all node proxy in the current node tree.
      */
     void visitAsRoot(ModelBatcher* batcher, Scene* scene);
     

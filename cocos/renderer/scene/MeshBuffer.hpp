@@ -41,28 +41,29 @@ class ModelBatcher;
  */
 
 /**
- *  @brief Render buffer
+ *  @brief The buffer which stores mesh render datas, including the vertices data and the indices data.
+ *  It can be used as a global buffer shared by multiple render handles and eventually shared by Models
  */
 class MeshBuffer
 {
 public:
     /**
-     *  @brief render buffer info
+     *  @brief It describes a range of buffer in the global buffer, it contains result when you request the buffer.
      */
     struct OffsetInfo
     {
-        // bytes count
+        /** bytes count of the requested buffer */
         uint32_t vByte;
-        // index offset
+        /** offset in index buffer */
         uint32_t index;
-        // vertex offset
+        /** offset in vertex buffer */
         uint32_t vertex;
     };
     
     /**
      *  @brief Constructor
-     *  @param[in] batcher To collect vertex and index data,and then set in render buffer.
-     *  @param[in] fmt Buffer format.
+     *  @param[in] batcher The ModelBatcher which creates the current buffer
+     *  @param[in] fmt The vertex format of vertex data
      */
     MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt);
     /**
@@ -71,55 +72,55 @@ public:
     ~MeshBuffer();
     
     /**
-     *  @brief Guarantee render buffer has enough capacity.
-     *  @param[in] vertexCount.
-     *  @param[in] indexCount.
-     *  @param[out] offset.
+     *  @brief Requests a range of buffer for the given count of vertices and indices
+     *  @param[in] vertexCount Requested count of vertices
+     *  @param[in] indexCount Requested count of indices
+     *  @param[out] offset The result indicates the allocated buffer range
      */
     bool request(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset);
     bool requestStatic(uint32_t vertexCount, uint32_t indexCount);
     
     /**
-     *  @brief Upload data.
+     *  @brief Upload data to GPU memory
      */
     void uploadData();
     /**
-     *  @brief Reset render buffer state.
+     *  @brief Reset all states.
      */
     void reset();
     /**
-     *  @brief Destroy render buffer.
+     *  @brief Destroy the mesh buffer.
      */
     void destroy();
     
     /**
-     *  @brief Get render buffer byte offset.
-     *  @return byte offset.
+     *  @brief Gets the current byte offset which indicates the start of empty range
+     *  @return Byte offset.
      */
     uint32_t getByteOffset() const { return _byteOffset; };
     /**
-     *  @brief Get render buffer vertex start.
-     *  @return vertex start.
+     *  @brief Gets the current vertex start offset since last time updateOffset is invoked
+     *  @return Vertex start.
      */
     uint32_t getVertexStart() const { return _vertexStart; };
     /**
-     *  @brief Get render buffer vertex offset.
-     *  @return vertex offset.
+     *  @brief Gets the current vertex offset, which should equals to total allocated vertex count.
+     *  @return Vertex offset.
      */
     uint32_t getVertexOffset() const { return _vertexOffset; };
     /**
-     *  @brief Get index buffer index start.
-     *  @return index start.
+     *  @brief Gets the current index start offset since last time updateOffset is invoked
+     *  @return Index start.
      */
     uint32_t getIndexStart() const { return _indexStart; };
     /**
-     *  @brief Get index buffer index offset.
-     *  @return index offset.
+     *  @brief Gets the current index offset, which should equals to total allocated index count.
+     *  @return Index offset.
      */
     uint32_t getIndexOffset() const { return _indexOffset; };
     
     /**
-     *  @brief Update offset.
+     *  @brief Update the current allocated offsets to the start offsets.
      */
     void updateOffset()
     {
@@ -129,24 +130,24 @@ public:
     };
     
     /**
-     *  @brief Get vertex buffer.
+     *  @brief Gets the vertex buffer.
      */
     VertexBuffer* getVertexBuffer() const { return _vb; };
     /**
-     *  @brief Get index buffer.
+     *  @brief Gets the index buffer.
      */
     IndexBuffer* getIndexBuffer() const { return _ib; };
     
     /**
-     *  @brief Use to storage vertex data.
+     *  @brief The vertex data storage in memory
      */
     std::vector<float> vData;
     /**
-     *  @brief Use to storage index data.
+     *  @brief The index data storage in memory
      */
     std::vector<uint16_t> iData;
     /**
-     *  @brief Vertex format.
+     *  @brief Vertex format of the vertex data.
      */
     VertexFormat* _vertexFmt;
     
