@@ -1,11 +1,24 @@
 /*!
 @cond GEN_REFERENCE_BOOK
 
-@mainpage Cocos Runtime
+@mainpage Cocos Runtime Native Renderer
 
 @image html img-cocos.jpg
 
-@section sec1 License
+@section sec1 Introduction
+Native Renderer is an abstraction of game engine's rendering process, it's designed to achieve maximum performance based on JavaScript Bounding architecture.
+
+JavaScript Bounding is the fundamental technology which permit a web game running on runtime like environment, it provides JavaScript virtual machine and port WebGL APIs to OpenGL APIs or other rendering backend APIs.
+
+However, when the bounding level is built upon WebGL APIs, game logic and game engine is still running in JavaScript which has a huge limitation on performance and native features like multi thread or SIMD operations.
+
+The Native Renderer is exactly designed to solve these problems, by raise up the bounding level to an abstract and general purpose native render engine.
+
+To better explain the architecture, the upper part of the graph below is showing how we build the relationship between JavaScript engine and Native Renderer. Then a sequence graph shows how the general rendering process looks like.
+
+@image html native-renderer-sequence.png
+
+@section sec2 License
 Xiamen Yaji Software Co., Ltd., (the “Licensor”) grants the user (the “Licensee”) non-exclusive\n
 and non-transferable rights to use the software according to the following conditions:\n
 - a.  The Licensee shall pay royalties to the Licensor, and the amount of those royalties and the\n
