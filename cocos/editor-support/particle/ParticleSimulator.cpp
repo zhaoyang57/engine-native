@@ -445,9 +445,13 @@ void ParticleSimulator::update(float dt)
     
     renderHandle->updateIA(0, indexStart, indexCount);
     
-    if (!_active) {
+    if (_particles.size() == 0 && !_active)
+    {
         _finished = true;
-        _finishedCallback();
+        if (_finishedCallback)
+        {
+            _finishedCallback();
+        }
     }
 }
 
