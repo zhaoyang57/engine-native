@@ -676,9 +676,9 @@ bool js_register_FacebookPCGameSDK(se::Object* obj)
     cls->defineFunction("getGraphVersion", _SE(js_FacebookPCGameSDK_getGraphVersion));
     cls->defineFunction("getGraphBaseURL", _SE(js_FacebookPCGameSDK_getGraphBaseURL));
     // GraphAPI kernal API, return JSON string
-    cls->defineFunction("GraphPOST", _SE(js_FacebookPCGameSDK_GraphPOST));
-    cls->defineFunction("GraphGET", _SE(js_FacebookPCGameSDK_GraphGET));
-    cls->defineFunction("GraphDELETE", _SE(js_FacebookPCGameSDK_GraphDELETE));
+    cls->defineFunction("graphPOST", _SE(js_FacebookPCGameSDK_GraphPOST));
+    cls->defineFunction("graphGET", _SE(js_FacebookPCGameSDK_GraphGET));
+    cls->defineFunction("graphDELETE", _SE(js_FacebookPCGameSDK_GraphDELETE));
 
     cls->install();
     JSBClassType::registerClass<FacebookPCGameSDK>(cls);
