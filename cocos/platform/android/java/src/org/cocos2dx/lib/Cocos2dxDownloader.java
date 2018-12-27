@@ -121,6 +121,7 @@ class HeadTaskHandler extends AsyncHttpResponseHandler {
                 break;
             }
         }
+        _downloader.onHeadTaskSuccess();
         Cocos2dxDownloader.setResumingSupport(_host, acceptRanges);
         Cocos2dxDownloader.createTask(_downloader, _id, _url, _path, _header);
     }
@@ -262,6 +263,10 @@ public class Cocos2dxDownloader {
                 nativeOnProgress(_id, id, downloadBytes, downloadNow, downloadTotal);
             }
         });
+    }
+
+    public void onHeadTaskSuccess(){
+        _runningTaskCount -=1;
     }
 
     public void onStart(int id) {
@@ -419,6 +424,7 @@ public class Cocos2dxDownloader {
                     if (null != task.handle && Integer.parseInt(key.toString()) == id) {
                         task.handle.cancel(true);
                         downloader._taskMap.remove(id);
+                        downloader._runningTaskCount --;
                         downloader.runNextTaskIfExists();
                         break;
                     }
