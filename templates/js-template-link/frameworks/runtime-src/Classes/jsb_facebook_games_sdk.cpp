@@ -128,7 +128,7 @@ public:
         return facebook_games_sdk::GraphAPI::getBaseURL();
     }
     // GraphAPI (post/get/del), return json string
-    utility::string_t GraphPOST(
+    utility::string_t graphPOST(
         const utility::string_t& path,
         const std::vector<utility::string_t>& args = {}
     )
@@ -142,7 +142,7 @@ public:
         return responseTask.get();
     }
 
-    utility::string_t GraphGET(
+    utility::string_t graphGET(
         const utility::string_t& path,
         const std::vector<utility::string_t>& args = {}
     )
@@ -156,7 +156,7 @@ public:
         return responseTask.get();
     }
 
-    utility::string_t GraphDELETE(
+    utility::string_t graphDELETE(
         const utility::string_t& path,
         const std::vector<utility::string_t>& args = {}
     )
@@ -229,6 +229,9 @@ bool FB_User_to_seval(std::shared_ptr<facebook_games_sdk::User> user, se::Value*
 bool seval_to_FB_Strings(const se::Value& v, std::wstring* ret)
 {
     assert(ret != nullptr);
+
+    SE_PRECONDITION3(!v.isNullOrUndefined(), false, ret->clear());
+
     std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
 
     *ret = convert.from_bytes(v.toStringForce());
@@ -247,6 +250,9 @@ bool FB_Strings_to_seval(const std::wstring& w, se::Value* ret)
 bool seval_to_FB_StringsMap(const se::Value& v, std::map<utility::string_t, utility::string_t>* ret)
 {
     assert(ret != nullptr);
+
+    SE_PRECONDITION3(!v.isNullOrUndefined(), false, ret->clear());
+
     std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
 
     std::map<std::string, std::string> tmp;
@@ -262,6 +268,9 @@ bool seval_to_FB_StringsMap(const se::Value& v, std::map<utility::string_t, util
 bool seval_to_FB_StringsVector(const se::Value& v, std::vector<utility::string_t>* ret)
 {
     assert(ret != nullptr);
+
+    SE_PRECONDITION3(!v.isNullOrUndefined(), false, ret->clear());
+
     std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
 
     std::vector<std::string> tmp;
@@ -576,14 +585,24 @@ bool js_FacebookPCGameSDK_getGraphBaseURL(se::State& s)
 }
 SE_BIND_FUNC(js_FacebookPCGameSDK_getGraphBaseURL)
 
-bool js_FacebookPCGameSDK_GraphPOST(se::State& s)
+bool js_FacebookPCGameSDK_graphPOST(se::State& s)
 {
     FacebookPCGameSDK* cobj = (FacebookPCGameSDK*)s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_FacebookPCGameSDK_getAccessToken : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 2)
+    if (argc == 1)
+    {
+        std::wstring arg0;
+        ok &= seval_to_FB_Strings(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        auto response = cobj->graphPOST(arg0);
+        ok = FB_Strings_to_seval(response, &s.rval());
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        return true;
+    }
+    else if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
@@ -592,24 +611,34 @@ bool js_FacebookPCGameSDK_GraphPOST(se::State& s)
         ok &= seval_to_FB_StringsVector(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "seval_to_FB_StringsVector failed");
         // call Graph API
-        auto response = cobj->GraphPOST(arg0, arg1);
+        auto response = cobj->graphPOST(arg0, arg1);
         ok = FB_Strings_to_seval(response, &s.rval());
         SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting >= %d", (int)argc, 1);
     return false;
 }
-SE_BIND_FUNC(js_FacebookPCGameSDK_GraphPOST)
+SE_BIND_FUNC(js_FacebookPCGameSDK_graphPOST)
 
-bool js_FacebookPCGameSDK_GraphGET(se::State& s)
+bool js_FacebookPCGameSDK_graphGET(se::State& s)
 {
     FacebookPCGameSDK* cobj = (FacebookPCGameSDK*)s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_FacebookPCGameSDK_getAccessToken : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 2)
+    if (argc == 1)
+    {
+        std::wstring arg0;
+        ok &= seval_to_FB_Strings(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        auto response = cobj->graphGET(arg0);
+        ok = FB_Strings_to_seval(response, &s.rval());
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        return true;
+    }
+    else if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
@@ -618,24 +647,35 @@ bool js_FacebookPCGameSDK_GraphGET(se::State& s)
         ok &= seval_to_FB_StringsVector(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "seval_to_FB_StringsVector failed");
         // call Graph API
-        auto response = cobj->GraphGET(arg0, arg1);
+        auto response = cobj->graphGET(arg0, arg1);
         ok = FB_Strings_to_seval(response, &s.rval());
         SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting >= %d", (int)argc, 1);
     return false;
 }
-SE_BIND_FUNC(js_FacebookPCGameSDK_GraphGET)
+SE_BIND_FUNC(js_FacebookPCGameSDK_graphGET)
 
-bool js_FacebookPCGameSDK_GraphDELETE(se::State& s)
+bool js_FacebookPCGameSDK_graphDELETE(se::State& s)
 {
     FacebookPCGameSDK* cobj = (FacebookPCGameSDK*)s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_FacebookPCGameSDK_getAccessToken : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 2)
+    if (argc == 1)
+    {
+        std::wstring arg0;
+        ok &= seval_to_FB_Strings(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        // call Graph API
+        auto response = cobj->graphDELETE(arg0);
+        ok = FB_Strings_to_seval(response, &s.rval());
+        SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
+        return true;
+    }
+    else if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
@@ -644,15 +684,15 @@ bool js_FacebookPCGameSDK_GraphDELETE(se::State& s)
         ok &= seval_to_FB_StringsVector(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "seval_to_FB_StringsVector failed");
         // call Graph API
-        auto response = cobj->GraphDELETE(arg0, arg1);
+        auto response = cobj->graphDELETE(arg0, arg1);
         ok = FB_Strings_to_seval(response, &s.rval());
         SE_PRECONDITION2(ok, false, "FB_Strings_to_seval failed");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting >= %d", (int)argc, 1);
     return false;
 }
-SE_BIND_FUNC(js_FacebookPCGameSDK_GraphDELETE)
+SE_BIND_FUNC(js_FacebookPCGameSDK_graphDELETE)
 
 bool js_register_FacebookPCGameSDK(se::Object* obj)
 {
@@ -676,9 +716,9 @@ bool js_register_FacebookPCGameSDK(se::Object* obj)
     cls->defineFunction("getGraphVersion", _SE(js_FacebookPCGameSDK_getGraphVersion));
     cls->defineFunction("getGraphBaseURL", _SE(js_FacebookPCGameSDK_getGraphBaseURL));
     // GraphAPI kernal API, return JSON string
-    cls->defineFunction("graphPOST", _SE(js_FacebookPCGameSDK_GraphPOST));
-    cls->defineFunction("graphGET", _SE(js_FacebookPCGameSDK_GraphGET));
-    cls->defineFunction("graphDELETE", _SE(js_FacebookPCGameSDK_GraphDELETE));
+    cls->defineFunction("graphPOST", _SE(js_FacebookPCGameSDK_graphPOST));
+    cls->defineFunction("graphGET", _SE(js_FacebookPCGameSDK_graphGET));
+    cls->defineFunction("graphDELETE", _SE(js_FacebookPCGameSDK_graphDELETE));
 
     cls->install();
     JSBClassType::registerClass<FacebookPCGameSDK>(cls);
