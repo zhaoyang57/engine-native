@@ -583,7 +583,7 @@ bool js_FacebookPCGameSDK_GraphPOST(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 3)
+    if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
@@ -609,7 +609,7 @@ bool js_FacebookPCGameSDK_GraphGET(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 3)
+    if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
@@ -635,7 +635,7 @@ bool js_FacebookPCGameSDK_GraphDELETE(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     bool ok = true;
-    if (argc == 3)
+    if (argc == 2)
     {
         std::wstring arg0;
         std::vector<std::wstring> arg1;
