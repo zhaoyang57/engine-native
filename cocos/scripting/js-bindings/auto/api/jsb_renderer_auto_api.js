@@ -221,6 +221,16 @@ getName : function (
 },
 
 /**
+ * @method setOpacity
+ * @param {unsigned char} arg0
+ */
+setOpacity : function (
+char 
+)
+{
+},
+
+/**
  * @method getWorldRT
  * @param {mat4_object} arg0
  */
@@ -228,6 +238,16 @@ getWorldRT : function (
 mat4 
 )
 {
+},
+
+/**
+ * @method getRealOpacity
+ * @return {unsigned char}
+ */
+getRealOpacity : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -1626,14 +1646,16 @@ enabled : function (
 
 /**
  * @method fillBuffers
- * @param {cc.renderer::MeshBuffer} arg0
- * @param {int} arg1
- * @param {mat4_object} arg2
- */
-fillBuffers : function (
-meshbuffer, 
-int, 
-mat4 
+* @param {cc.renderer::MeshBuffer|cc.renderer::MeshBuffer} meshbuffer
+* @param {int|int} int
+* @param {mat4_object|mat4_object} mat4
+* @param {unsigned char} char
+*/
+fillBuffers : function(
+meshbuffer,
+int,
+mat4,
+char 
 )
 {
 },
@@ -1774,10 +1796,12 @@ bool
  * @method renderIA
  * @param {unsigned int} arg0
  * @param {cc.renderer::ModelBatcher} arg1
+ * @param {cc.renderer::NodeProxy} arg2
  */
 renderIA : function (
 int, 
-modelbatcher 
+modelbatcher, 
+nodeproxy 
 )
 {
 },

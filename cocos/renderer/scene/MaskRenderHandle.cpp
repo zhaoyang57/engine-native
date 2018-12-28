@@ -38,6 +38,7 @@ MaskRenderHandle::MaskRenderHandle()
 void MaskRenderHandle::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
 {
     _batcher = batcher;
+    _node = node;
     batcher->commit(node, (RenderHandle*)this);
     StencilManager* instance = StencilManager::getInstance();
     if (!_imageStencil && _renderSubHandle)
@@ -61,7 +62,7 @@ void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &wo
     instance->clear();
 
     _batcher->setCurrentEffect(_clearSubHandle->getEffect(0));
-    _clearSubHandle->renderIA(0, _batcher);
+    _clearSubHandle->renderIA(0, _batcher, _node);
     StencilManager::getInstance()->enterLevel();
 
     if(_imageStencil)
@@ -70,6 +71,11 @@ void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &wo
         RenderHandle::fillBuffers(buffer, index, worldMat);
         _batcher->flush();
     }
+}
+
+void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &worldMat, uint8_t opacity)
+{
+    fillBuffers(buffer, index, worldMat);
 }
 
 RENDERER_END

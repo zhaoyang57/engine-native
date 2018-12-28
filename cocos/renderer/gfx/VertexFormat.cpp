@@ -143,7 +143,7 @@ VertexFormat& VertexFormat::operator=(VertexFormat&& o)
 
 const VertexFormat::Element* VertexFormat::getElement(const std::string& attrName) const
 {
-    static const Element* INVALID_ELEMENT_VALUE;
+    static const Element* INVALID_ELEMENT_VALUE = nullptr;
     const auto& iter = _attr2el.find(attrName);
     if (iter != _attr2el.end())
     {

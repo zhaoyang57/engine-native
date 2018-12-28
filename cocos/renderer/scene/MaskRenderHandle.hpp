@@ -41,6 +41,7 @@ public:
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat) override;
+    virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat, uint8_t opacity) override;
 
     void setMaskInverted(bool inverted) { _inverted = inverted; };
     bool getMaskInverted() { return _inverted; };
@@ -55,6 +56,7 @@ protected:
 
 private:
     ModelBatcher* _batcher;
+    NodeProxy* _node;
     GraphicsRenderHandle* _renderSubHandle;
     GraphicsRenderHandle* _clearSubHandle;
 };

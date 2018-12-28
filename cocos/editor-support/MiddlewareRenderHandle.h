@@ -36,7 +36,7 @@ class MiddlewareRenderHandle : public cocos2d::renderer::CustomRenderHandle
 public:
     MiddlewareRenderHandle();
     virtual ~MiddlewareRenderHandle();
-    virtual void renderIA(std::size_t index, cocos2d::renderer::ModelBatcher* batcher) override;
+    virtual void renderIA(std::size_t index, cocos2d::renderer::ModelBatcher* batcher, cocos2d::renderer::NodeProxy* node) override;
     void updateIA(std::size_t index, int start, int count);
     void reset()
     {

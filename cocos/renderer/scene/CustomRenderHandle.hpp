@@ -50,7 +50,7 @@ public:
      *  @param[in] index Render data index.
      *  @param[in] batcher The ModelBatcher which will transform render data to Model
      */
-    virtual void renderIA(std::size_t index, ModelBatcher* batcher) {};
+    virtual void renderIA(std::size_t index, ModelBatcher* batcher, NodeProxy* node) {};
     
     /**
      *  @brief Gets the material for the given index.

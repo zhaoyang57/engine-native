@@ -46,6 +46,7 @@ GraphicsRenderHandle::IARenderData::~IARenderData()
 
 GraphicsRenderHandle::GraphicsRenderHandle()
 {
+    _bytesPerVertex = VertexFormat::XY_Color->getBytes();
 }
 
 GraphicsRenderHandle::~GraphicsRenderHandle()
@@ -89,7 +90,7 @@ void GraphicsRenderHandle::updateIA(std::size_t index, int start, int count)
     ia->setStart(start);
 }
 
-void GraphicsRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher)
+void GraphicsRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher, NodeProxy* node)
 {
     if (index >= _iaCount)
     {
@@ -100,6 +101,14 @@ void GraphicsRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher)
     batcher->flushIA(_iaPool[index]);
     
     IARenderData* data = &_datas[index];
+    uint8_t* verts = data->vertices;
+    uint32_t vertexCount = (uint32_t)data->vBytes / _bytesPerVertex;
+    uint8_t alpha = node->getRealOpacity();
+    for (uint32_t i = 0; i < vertexCount; ++i)
+    {
+        *(verts + 11) = alpha;
+        verts += _bytesPerVertex;
+    }
     data->vb->update(0, (float*)data->vertices, data->vBytes);
     data->ib->update(0, (float*)data->indices, data->iBytes);
 }

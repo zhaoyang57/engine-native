@@ -159,6 +159,14 @@ public:
      */
     inline uint8_t getOpacity() const { return _opacity; };
     /**
+     *  @brief Sets the node's opacity.
+     */
+    void setOpacity(uint8_t opacity);
+    /**
+     *  @brief Gets the node's realOpacity.
+     */
+    inline const uint8_t getRealOpacity() const {return _realOpacity;};
+    /**
      *  @brief Gets the node's group id, this controls which camera can see the node.
      */
     inline int getGroupID() const { return _groupID; };
@@ -229,6 +237,7 @@ private:
     bool _matrixUpdated = false;
     bool _opacityUpdated = false;
     uint8_t _opacity = 0;
+    uint8_t _realOpacity = 0;
     int _localZOrder = 0;
     int _groupID = 0;
 

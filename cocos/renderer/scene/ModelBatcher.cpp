@@ -112,6 +112,8 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
         return;
     }
     bool useModel = handle->getUseModel();
+    uint8_t alpha = node->getRealOpacity();
+    bool writeAlpha = (alpha == node->getOpacity());
     for (uint32_t i = 0, l = handle->getMeshCount(); i < l; ++i)
     {
         Effect* effect = handle->getEffect((uint32_t)i);
@@ -132,14 +134,18 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
             _cullingMask = cullingMask;
         }
         
-        if(!_buffer || vfmt != _buffer->_vertexFmt)
+        MeshBuffer* buffer = _buffer;
+        if (!_buffer || vfmt != _buffer->_vertexFmt)
         {
-            MeshBuffer* buffer = getBuffer(vfmt);
-            handle->fillBuffers(buffer, i, worldMat);
+            buffer = getBuffer(vfmt);
+        }
+        if (writeAlpha)
+        {
+            handle->fillBuffers(buffer, i, worldMat, alpha);
         }
         else
         {
-            handle->fillBuffers(_buffer, i, worldMat);
+            handle->fillBuffers(buffer, i, worldMat);
         }
     }
 }
@@ -154,7 +160,7 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomRenderHandle* handle)
         _currEffect = handle->getEffect((uint32_t)i);
         _cullingMask = (1 << node->getGroupID());
         _modelMat.set(worldMat);
-        handle->renderIA(i, this);
+        handle->renderIA(i, this, node);
     }
 }
 

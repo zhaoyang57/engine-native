@@ -68,7 +68,7 @@ class GraphicsRenderHandle: public CustomRenderHandle
     public:
         GraphicsRenderHandle();
         virtual ~GraphicsRenderHandle();
-        virtual void renderIA(std::size_t index, ModelBatcher* batcher) override;
+        virtual void renderIA(std::size_t index, ModelBatcher* batcher, NodeProxy* node) override;
         void updateIA(std::size_t index, int start, int count);
         uint32_t getMeshCount() const { return (uint32_t)_datas.size(); };
         void setMeshCount(uint32_t count);
@@ -84,6 +84,7 @@ class GraphicsRenderHandle: public CustomRenderHandle
         std::vector<IARenderData> _datas;
         std::size_t _iaCount = 0;
         int _dataOffset = 0;
+        uint32_t _bytesPerVertex;
 };
 
 RENDERER_END

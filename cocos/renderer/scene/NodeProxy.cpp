@@ -288,6 +288,16 @@ void NodeProxy::getWorldRT(cocos2d::Mat4* out) const
     }
 }
 
+void NodeProxy::setOpacity(uint8_t opacity)
+{
+    if (_opacity != opacity)
+    {
+        _opacity = opacity;
+        _realOpacity = opacity;
+        _opacityUpdated = true;
+    }
+}
+
 void NodeProxy::updateMatrix()
 {
     if (_matrixUpdated || _worldMatDirty > 0)
@@ -329,15 +339,8 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
 {
     bool worldMatUpdated = false;
     bool parentOpacityUpdated = false;
-    uint8_t opacity = _opacity;
-    if (_parent != nullptr && _parentOpacityDirty > 0)
-    {
-        opacity = (uint8_t)(_opacity * _inheritOpacity);
-        _inheritOpacity = (float)opacity / 255;
-    }
-    
+
     reorderChildren();
-    
     updateFromJS();
     
     if (_matrixUpdated)
@@ -352,6 +355,14 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
         _parentOpacityDirty++;
         _opacityUpdated = false;
         parentOpacityUpdated = true;
+    }
+    
+    uint8_t opacity = _opacity;
+    if (_parent != nullptr && _parentOpacityDirty > 0)
+    {
+        opacity = (uint8_t)(_opacity * _inheritOpacity);
+        _realOpacity = opacity;
+        _inheritOpacity = (float)opacity / 255;
     }
     
     for (const auto& handler : _handles)

@@ -77,7 +77,7 @@ void MiddlewareRenderHandle::updateIA(std::size_t index, int start, int count)
     ia->setStart(start);
 }
 
-void MiddlewareRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher)
+void MiddlewareRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher, NodeProxy* node)
 {
     if (index >= _iaCount)
     {
