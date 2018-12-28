@@ -1579,9 +1579,13 @@ vertexformat
 },
 
 /**
- * @method enable
+ * @method updateOpacity
+ * @param {int} arg0
+ * @param {unsigned char} arg1
  */
-enable : function (
+updateOpacity : function (
+int, 
+char 
 )
 {
 },
@@ -1645,25 +1649,31 @@ enabled : function (
 },
 
 /**
- * @method fillBuffers
-* @param {cc.renderer::MeshBuffer|cc.renderer::MeshBuffer} meshbuffer
-* @param {int|int} int
-* @param {mat4_object|mat4_object} mat4
-* @param {unsigned char} char
-*/
-fillBuffers : function(
-meshbuffer,
-int,
-mat4,
-char 
+ * @method disable
+ */
+disable : function (
 )
 {
 },
 
 /**
- * @method disable
+ * @method fillBuffers
+ * @param {cc.renderer::MeshBuffer} arg0
+ * @param {int} arg1
+ * @param {mat4_object} arg2
  */
-disable : function (
+fillBuffers : function (
+meshbuffer, 
+int, 
+mat4 
+)
+{
+},
+
+/**
+ * @method enable
+ */
+enable : function (
 )
 {
 },

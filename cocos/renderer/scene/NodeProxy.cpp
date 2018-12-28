@@ -34,9 +34,8 @@
 
 RENDERER_BEGIN
 
+int NodeProxy::parentOpacityDirty = 0;
 int NodeProxy::_worldMatDirty = 0;
-int NodeProxy::_parentOpacityDirty = 0;
-float NodeProxy::_inheritOpacity = 1.0;
 
 NodeProxy::NodeProxy()
 : _jsTRS(nullptr)
@@ -330,8 +329,7 @@ void NodeProxy::updateFromJS()
 void NodeProxy::visitAsRoot(ModelBatcher* batcher, Scene* scene)
 {
     _worldMatDirty = 0;
-    _parentOpacityDirty = 0;
-    _inheritOpacity = 1.0;
+    parentOpacityDirty = 0;
     visit(batcher, scene);
 }
 
@@ -352,17 +350,17 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     
     if (_opacityUpdated)
     {
-        _parentOpacityDirty++;
+        parentOpacityDirty++;
         _opacityUpdated = false;
         parentOpacityUpdated = true;
     }
     
     uint8_t opacity = _opacity;
-    if (_parent != nullptr && _parentOpacityDirty > 0)
+    if (_parent != nullptr && parentOpacityDirty > 0)
     {
-        opacity = (uint8_t)(_opacity * _inheritOpacity);
+        float parentOpacity = _parent->getRealOpacity() / 255.0f;
+        opacity = (uint8_t)(_opacity * parentOpacity);
         _realOpacity = opacity;
-        _inheritOpacity = (float)opacity / 255;
     }
     
     for (const auto& handler : _handles)
@@ -386,7 +384,7 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     }
     if (parentOpacityUpdated)
     {
-        _parentOpacityDirty--;
+        parentOpacityDirty--;
     }
 }
 

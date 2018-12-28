@@ -69,13 +69,11 @@ public:
      */
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
     /**
-     *  @brief Fills render data in given index to the MeshBuffer
-     *  @param[in] buffer The shared mesh buffer
+     *  @brief Update local render buffer opacity
      *  @param[in] index The index of render data to be updated
-     *  @param[in] worldMat The world transform matrix
-     *  @param[in] opacity The real opacity for vertices, it means node's real opacity doesn't equal to the original opacity
+     *  @param[in] opacity Inherit opacity
      */
-    virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat, uint8_t opacity);
+    virtual void updateOpacity(int index, uint8_t opacity);
 
     /**
      *  @brief Gets rendering material for the given index.
@@ -128,7 +126,6 @@ public:
     void enable();
     void disable();
     bool enabled() const { return _enabled; };
-    
 protected:
     struct RenderData {
         RenderData ()

@@ -108,6 +108,9 @@ void RenderHandle::updateNativeMesh(uint32_t index, se::Object* vertices, se::Ob
     data->indices = nullptr;
     data->jsVertices->getTypedArrayData(&data->vertices, (std::size_t*)&data->vBytes);
     data->jsIndices->getTypedArrayData(&data->indices, (std::size_t*)&data->iBytes);
+    
+    // Initialize opacity in vertex buffer
+    this->updateOpacity(index, 255);
 }
 
 void RenderHandle::updateNativeEffect(uint32_t index, Effect* effect)
@@ -215,8 +218,14 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
     }
 }
 
-void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat, uint8_t opacity)
+void RenderHandle::updateOpacity(int index, uint8_t opacity)
 {
+    // has no color info in vertex buffer
+    if(!_vfColor)
+    {
+        return;
+    }
+    
     if (index >= _datas.size() || _vfmt == nullptr)
     {
         return;
@@ -224,66 +233,14 @@ void RenderHandle::fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldM
     RenderData& data = _datas[index];
     
     CCASSERT(data.vBytes % _bytesPerVertex == 0, "RenderHandle::fillBuffers vertices data doesn't follow vertex format");
-    CCASSERT(data.iBytes % 2 == 0, "RenderHandle::fillBuffers indices data is not saved in 16bit");
     uint32_t vertexCount = (uint32_t)data.vBytes / _bytesPerVertex;
-    uint32_t indexCount = (uint32_t)data.iBytes / 2;
     
-    // must retrieve offset before request
-    buffer->request(vertexCount, indexCount, &s_offsets);
-    uint32_t vBufferOffset = s_offsets.vByte / sizeof(float);
-    uint32_t indexId = s_offsets.index;
-    uint32_t vertexId = s_offsets.vertex;
-    uint32_t num = _vfPos->num;
-    
-    float* worldVerts = &buffer->vData[vBufferOffset];
-    memcpy(worldVerts, (float*)data.vertices, data.vBytes);
-    
-    // Calculate vertices world positions
-    if (!_useModel)
+    size_t dataPerVertex = _bytesPerVertex / sizeof(uint8_t);
+    uint8_t* ptrAlpha = (uint8_t*)data.vertices + _alphaOffset;
+    for (uint32_t i = 0; i < vertexCount; ++i)
     {
-        size_t dataPerVertex = _bytesPerVertex / sizeof(float);
-        float* ptrPos = worldVerts + _posOffset;
-        
-        switch (num) {
-                // Vertex is X Y Z Format
-            case 3:
-                for (uint32_t i = 0; i < vertexCount; ++i)
-                {
-                    worldMat.transformPoint((cocos2d::Vec3*)ptrPos);
-                    ptrPos += dataPerVertex;
-                }
-                break;
-                // Vertex is X Y Format
-            case 2:
-                for (uint32_t i = 0; i < vertexCount; ++i)
-                {
-                    float z = ptrPos[2];
-                    ptrPos[2] = 0;
-                    worldMat.transformPoint((cocos2d::Vec3*)ptrPos);
-                    ptrPos[2] = z;
-                    ptrPos += dataPerVertex;
-                }
-                break;
-        }
-    }
-
-    // Color channel exists
-    if (_vfColor)
-    {
-        size_t dataPerVertex = _bytesPerVertex / sizeof(uint8_t);
-        uint8_t* ptrAlpha = (uint8_t*)worldVerts + _alphaOffset;
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            *(ptrAlpha) = opacity;
-            ptrAlpha += dataPerVertex;
-        }
-    }
-    
-    // Copy index buffer with vertex offset
-    uint16_t* indices = (uint16_t*)data.indices;
-    for (int i = 0; i < indexCount; ++i)
-    {
-        buffer->iData[indexId++] = vertexId + indices[i];
+        *ptrAlpha = opacity;
+        ptrAlpha += dataPerVertex;
     }
 }
 

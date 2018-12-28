@@ -242,7 +242,7 @@ void SpineRenderer::update (float deltaTime)
     _skeleton->r = _nodeColor.r / (float)255;
     _skeleton->g = _nodeColor.g / (float)255;
     _skeleton->b = _nodeColor.b / (float)255;
-    _skeleton->a = _nodeColor.a / (float)255;
+    _skeleton->a = _nodeProxy->getRealOpacity() / (float)255;
     
     Color4F color;
     AttachmentVertices* attachmentVertices = nullptr;

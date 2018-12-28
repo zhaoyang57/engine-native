@@ -3470,20 +3470,26 @@ static bool js_renderer_RenderHandle_setVertexFormat(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_setVertexFormat)
 
-static bool js_renderer_RenderHandle_enable(se::State& s)
+static bool js_renderer_RenderHandle_updateOpacity(se::State& s)
 {
     cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_enable : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_updateOpacity : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
-    if (argc == 0) {
-        cobj->enable();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        int arg0 = 0;
+        uint8_t arg1;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        ok &= seval_to_uint8(args[1], (uint8_t*)&arg1);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_updateOpacity : Error processing arguments");
+        cobj->updateOpacity(arg0, arg1);
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
     return false;
 }
-SE_BIND_FUNC(js_renderer_RenderHandle_enable)
+SE_BIND_FUNC(js_renderer_RenderHandle_updateOpacity)
 
 static bool js_renderer_RenderHandle_handle(se::State& s)
 {
@@ -3586,53 +3592,6 @@ static bool js_renderer_RenderHandle_enabled(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_enabled)
 
-static bool js_renderer_RenderHandle_fillBuffers(se::State& s)
-{
-    CC_UNUSED bool ok = true;
-    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
-    SE_PRECONDITION2( cobj, false, "js_renderer_RenderHandle_fillBuffers : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    do {
-        if (argc == 4) {
-            cocos2d::renderer::MeshBuffer* arg0 = nullptr;
-            ok &= seval_to_native_ptr(args[0], &arg0);
-            if (!ok) { ok = true; break; }
-            int arg1 = 0;
-            do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
-            if (!ok) { ok = true; break; }
-            cocos2d::Mat4 arg2;
-            ok &= seval_to_Mat4(args[2], &arg2);
-            if (!ok) { ok = true; break; }
-            uint8_t arg3;
-            ok &= seval_to_uint8(args[3], (uint8_t*)&arg3);
-            if (!ok) { ok = true; break; }
-            cobj->fillBuffers(arg0, arg1, arg2, arg3);
-            return true;
-        }
-    } while(false);
-
-    do {
-        if (argc == 3) {
-            cocos2d::renderer::MeshBuffer* arg0 = nullptr;
-            ok &= seval_to_native_ptr(args[0], &arg0);
-            if (!ok) { ok = true; break; }
-            int arg1 = 0;
-            do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
-            if (!ok) { ok = true; break; }
-            cocos2d::Mat4 arg2;
-            ok &= seval_to_Mat4(args[2], &arg2);
-            if (!ok) { ok = true; break; }
-            cobj->fillBuffers(arg0, arg1, arg2);
-            return true;
-        }
-    } while(false);
-
-    SE_REPORT_ERROR("wrong number of arguments: %d", (int)argc);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_RenderHandle_fillBuffers)
-
 static bool js_renderer_RenderHandle_disable(se::State& s)
 {
     cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
@@ -3647,6 +3606,44 @@ static bool js_renderer_RenderHandle_disable(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_disable)
+
+static bool js_renderer_RenderHandle_fillBuffers(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_fillBuffers : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 3) {
+        cocos2d::renderer::MeshBuffer* arg0 = nullptr;
+        int arg1 = 0;
+        cocos2d::Mat4 arg2;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
+        ok &= seval_to_Mat4(args[2], &arg2);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_fillBuffers : Error processing arguments");
+        cobj->fillBuffers(arg0, arg1, arg2);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_fillBuffers)
+
+static bool js_renderer_RenderHandle_enable(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_enable : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->enable();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_enable)
 
 static bool js_renderer_RenderHandle_getMeshCount(se::State& s)
 {
@@ -3739,14 +3736,15 @@ bool js_register_renderer_RenderHandle(se::Object* obj)
 
     cls->defineFunction("setMeshCount", _SE(js_renderer_RenderHandle_setMeshCount));
     cls->defineFunction("setVertexFormat", _SE(js_renderer_RenderHandle_setVertexFormat));
-    cls->defineFunction("enable", _SE(js_renderer_RenderHandle_enable));
+    cls->defineFunction("updateOpacity", _SE(js_renderer_RenderHandle_updateOpacity));
     cls->defineFunction("handle", _SE(js_renderer_RenderHandle_handle));
     cls->defineFunction("postHandle", _SE(js_renderer_RenderHandle_postHandle));
     cls->defineFunction("getUseModel", _SE(js_renderer_RenderHandle_getUseModel));
     cls->defineFunction("setUseModel", _SE(js_renderer_RenderHandle_setUseModel));
     cls->defineFunction("enabled", _SE(js_renderer_RenderHandle_enabled));
-    cls->defineFunction("fillBuffers", _SE(js_renderer_RenderHandle_fillBuffers));
     cls->defineFunction("disable", _SE(js_renderer_RenderHandle_disable));
+    cls->defineFunction("fillBuffers", _SE(js_renderer_RenderHandle_fillBuffers));
+    cls->defineFunction("enable", _SE(js_renderer_RenderHandle_enable));
     cls->defineFunction("getMeshCount", _SE(js_renderer_RenderHandle_getMeshCount));
     cls->defineFunction("getVertexFormat", _SE(js_renderer_RenderHandle_getVertexFormat));
     cls->defineFunction("getEffect", _SE(js_renderer_RenderHandle_getEffect));

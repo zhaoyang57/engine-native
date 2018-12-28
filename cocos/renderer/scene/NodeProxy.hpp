@@ -221,10 +221,10 @@ protected:
     void updateFromJS();
     void updateMatrix();
 
+public:
+    static int parentOpacityDirty;
 private:
     static int _worldMatDirty;
-    static int _parentOpacityDirty;
-    static float _inheritOpacity;
     
     static const int _TRANSFORM = 1 << 0;
     static const int _UPDATE_RENDER_DATA = 1 << 1;
@@ -236,8 +236,8 @@ private:
     bool _childrenOrderDirty = true;
     bool _matrixUpdated = false;
     bool _opacityUpdated = false;
-    uint8_t _opacity = 0;
-    uint8_t _realOpacity = 0;
+    uint8_t _opacity = 255;
+    uint8_t _realOpacity = 255;
     int _localZOrder = 0;
     int _groupID = 0;
 

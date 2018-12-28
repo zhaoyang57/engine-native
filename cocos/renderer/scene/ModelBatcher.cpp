@@ -112,8 +112,6 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
         return;
     }
     bool useModel = handle->getUseModel();
-    uint8_t alpha = node->getRealOpacity();
-    bool writeAlpha = (alpha != node->getOpacity());
     for (uint32_t i = 0, l = handle->getMeshCount(); i < l; ++i)
     {
         Effect* effect = handle->getEffect((uint32_t)i);
@@ -139,14 +137,11 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
         {
             buffer = getBuffer(vfmt);
         }
-        if (writeAlpha)
+        if (NodeProxy::parentOpacityDirty > 0)
         {
-            handle->fillBuffers(buffer, i, worldMat, alpha);
+            handle->updateOpacity(i, node->getRealOpacity());
         }
-        else
-        {
-            handle->fillBuffers(buffer, i, worldMat);
-        }
+        handle->fillBuffers(buffer, i, worldMat);
     }
 }
 

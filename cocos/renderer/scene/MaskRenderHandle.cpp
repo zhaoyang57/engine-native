@@ -73,9 +73,4 @@ void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &wo
     }
 }
 
-void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &worldMat, uint8_t opacity)
-{
-    fillBuffers(buffer, index, worldMat);
-}
-
 RENDERER_END

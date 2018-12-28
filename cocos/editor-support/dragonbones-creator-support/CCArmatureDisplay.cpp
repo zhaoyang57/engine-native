@@ -208,6 +208,8 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
     IOBuffer& vb = mgr->vb;
     IOBuffer& ib = mgr->ib;
     
+    uint8_t realOpacity = _nodeProxy->getRealOpacity();
+    
     for (std::size_t i = 0, len = slots.size(); i < len; i++)
     {
         CCSlot* slot = (CCSlot*)slots[i];
@@ -315,7 +317,7 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         }
         
         // Calculation vertex color.
-        _finalColor.a = _nodeColor.a * slot->color.a * 255;
+        _finalColor.a = realOpacity * slot->color.a * 255;
         float multiplier = _premultipliedAlpha ? slot->color.a : 255;
         _finalColor.r = _nodeColor.r * slot->color.r * multiplier;
         _finalColor.g = _nodeColor.g * slot->color.g * multiplier;
