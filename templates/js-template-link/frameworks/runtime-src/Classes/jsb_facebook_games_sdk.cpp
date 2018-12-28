@@ -400,6 +400,7 @@ bool js_FacebookPCGameSDK_hasAccessToken(se::State& s)
     if (argc == 0) {
         auto has = cobj->hasAccessToken();
         s.rval().setBoolean(has);
+        return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
