@@ -113,7 +113,7 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
     }
     bool useModel = handle->getUseModel();
     uint8_t alpha = node->getRealOpacity();
-    bool writeAlpha = (alpha == node->getOpacity());
+    bool writeAlpha = (alpha != node->getOpacity());
     for (uint32_t i = 0, l = handle->getMeshCount(); i < l; ++i)
     {
         Effect* effect = handle->getEffect((uint32_t)i);
