@@ -84,6 +84,8 @@ ParticleSimulator::ParticleSimulator()
 
 ParticleSimulator::~ParticleSimulator()
 {
+    onDisable();
+    
     CC_SAFE_RELEASE(_effect);
     CC_SAFE_RELEASE(_nodeProxy);
     

@@ -247,7 +247,7 @@ private:
 public:
     int                 positionType        = PositionType::FREE;
     float               emissionRate        = 0.0f;
-    std::size_t         totalParticles      = 0.0f;
+    std::size_t         totalParticles      = 0;
     float               duration            = -1.0f;
     int                 emitterMode         = EmitterMode::GRAVITY;
     float               life                = 0.0f;
