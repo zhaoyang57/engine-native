@@ -128,6 +128,11 @@ private:
     ValueMap _cachedNameValues;
     std::unordered_map<std::string, Property> _properties;
     
+    // Global define order.
+    static std::map<std::string,std::size_t> _defineBitOrder;
+    static std::vector<std::string> _sharedDefineList;
+    static void _updateDefineBitOrder(const ValueMap& nameValues);
+    
     void generateKey();
 };
 

@@ -25,8 +25,12 @@
 
 RENDERER_BEGIN
 
+std::map<std::string,std::size_t> Effect::_defineBitOrder;
+std::vector<std::string> Effect::_sharedDefineList;
+
 Effect::Effect()
 : _hash(0)
+, _definesKey(0)
 {}
 
 void Effect::init(const Vector<Technique*>& techniques,
@@ -89,8 +93,11 @@ void Effect::setDefineValue(const std::string& name, const Value& value)
         if (name == def.at("name").asString())
         {
             def["value"] = value;
-            _cachedNameValues[name] = value;
-            generateKey();
+            if (_cachedNameValues[name] != value)
+            {
+                _cachedNameValues[name] = value;
+                generateKey();
+            }
             return;
         }
     };
@@ -98,9 +105,6 @@ void Effect::setDefineValue(const std::string& name, const Value& value)
 
 ValueMap* Effect::extractDefines()
 {
-//    for (auto& def : _defineTemplates)
-//        out.emplace(def.at("name").asString(), def.at("value"));
-
     return &_cachedNameValues;
 }
 
@@ -118,15 +122,33 @@ void Effect::setProperty(const std::string& name, const Property& property)
     _properties[name] = property;
 }
 
+void Effect::_updateDefineBitOrder(const ValueMap& nameValues)
+{
+    for (auto& tmplDefs : nameValues)
+    {
+        if (_defineBitOrder.find(tmplDefs.first) == _defineBitOrder.end())
+        {
+            _sharedDefineList.push_back(tmplDefs.first);
+            _defineBitOrder[tmplDefs.first] = _sharedDefineList.size();
+        }
+    }
+}
+
 void Effect::generateKey()
 {
-    int32_t key = 0;
-    for (auto& tmplDefs : _cachedNameValues) {
-        uint32_t offset = tmplDefs.second.asUnsignedInt();
-        key = (key | offset) << 1;
-   }
+    // Update global order when has new define.
+    _updateDefineBitOrder(_cachedNameValues);
     
-    _definesKey = key << 8;
+    _definesKey = 0;
+    for (auto& tmplDefs : _cachedNameValues) {
+        uint32_t value = tmplDefs.second.asUnsignedInt();
+        CCASSERT(value <= 1,"Define value can't greater than 1");
+        value <<= _defineBitOrder[tmplDefs.first];
+        _definesKey |= value;
+    }
+    
+    // Reserve 8 bit for the OR operation with program id in ProgramLib.
+    _definesKey <<= 8;
 }
 
 void Effect::copy(Effect& effect)
@@ -143,6 +165,7 @@ void Effect::copy(Effect& effect)
     _defineTemplates = effect._defineTemplates;
     _cachedNameValues = effect._cachedNameValues;
     _properties = effect._properties;
+    _definesKey = effect._definesKey;
 }
 
 RENDERER_END
