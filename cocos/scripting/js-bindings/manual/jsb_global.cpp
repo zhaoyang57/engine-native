@@ -214,10 +214,14 @@ void jsb_init_file_operation_delegate()
             assert(!path.empty());
             return FileUtils::getInstance()->isFileExist(path);
         };
-
+        
         assert(delegate.isValid());
-
-        se::ScriptEngine::getInstance()->setFileOperationDelegate(delegate);
+    }
+    
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se::ScriptEngine::FileOperationDelegate seDelegate = se->getFileOperationDelegate();
+    if (!seDelegate.isValid()) {
+        se->setFileOperationDelegate(delegate);
     }
 }
 
