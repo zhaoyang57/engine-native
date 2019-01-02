@@ -100,6 +100,8 @@ void ModelBatcher::reset()
     _currEffect = nullptr;
     _walking = false;
     
+    _modelMat.set(Mat4::IDENTITY);
+    
     _stencilMgr->reset();
 }
 
