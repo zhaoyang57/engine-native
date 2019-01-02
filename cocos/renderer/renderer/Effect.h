@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include "base/CCRef.h"
 #include "base/CCValue.h"
 #include "../Macro.h"
@@ -119,7 +120,7 @@ public:
      *  @brief Deep copy from other effect.
      */
     void copy(Effect& effect);
-    
+
 private:
     double _hash;
     int32_t _definesKey;
