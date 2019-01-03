@@ -179,7 +179,7 @@ XMLHttpRequest::~XMLHttpRequest()
 
 bool XMLHttpRequest::open(const std::string& method, const std::string& url)
 {
-    if (_readyState != ReadyState::UNSENT)
+    if (_readyState != ReadyState::UNSENT && _readyState != ReadyState::DONE)
         return false;
 
     _method = method;
