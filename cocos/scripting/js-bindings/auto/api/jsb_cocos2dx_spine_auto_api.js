@@ -79,16 +79,6 @@ bool
 },
 
 /**
- * @method getMaterialData
- * @return {se::Object}
- */
-getMaterialData : function (
-)
-{
-    return se::Object;
-},
-
-/**
  * @method initWithJsonFile
 * @param {String|String} str
 * @param {String|spAtlas} str
@@ -234,6 +224,16 @@ onDisable : function (
  */
 setColor : function (
 color4b 
+)
+{
+},
+
+/**
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+bindNodeProxy : function (
+nodeproxy 
 )
 {
 },

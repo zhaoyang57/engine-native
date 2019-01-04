@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -143,10 +143,13 @@ SpineAnimation::~SpineAnimation () {
 void SpineAnimation::update (float deltaTime) {
 	super::update(deltaTime);
 
-	deltaTime *= _timeScale;
-	spAnimationState_update(_state, deltaTime);
-	spAnimationState_apply(_state, _skeleton);
-	spSkeleton_updateWorldTransform(_skeleton);
+    if (!_paused)
+    {
+        deltaTime *= _timeScale;
+        spAnimationState_update(_state, deltaTime);
+        spAnimationState_apply(_state, _skeleton);
+        spSkeleton_updateWorldTransform(_skeleton);
+    }
 }
 
 void SpineAnimation::setAnimationStateData (spAnimationStateData* stateData) {

@@ -27,10 +27,11 @@
 #include "map"
 #include "vector"
 #include "base/CCRef.h"
+#include "renderer/gfx/VertexBuffer.h"
+#include "renderer/gfx/IndexBuffer.h"
 #include "MiddlewareMacro.h"
 
 MIDDLEWARE_BEGIN
-
 /**
  * All middleware must implement IMiddleware interface.
  */
@@ -82,40 +83,38 @@ public:
      * @param[in] editor Module must implement IMiddleware interface.
      */
     void removeTimer(IMiddleware* editor);
-    
-    /**
-     * @return opengl index buffer id
-     */
-    uint32_t getGLIBID()
+
+    inline cocos2d::renderer::VertexBuffer* getVB()
     {
-        return _glIBID;
+        return glVB;
+    }
+        
+    inline cocos2d::renderer::IndexBuffer* getIB()
+    {
+        return glIB;
     }
     
-    /**
-     * @return opengl vertex buffer id
-     */
-    uint32_t getGLVBID()
-    {
-        return _glVBID;
-    }
-    
-    cocos2d::middleware::IOBuffer vb;
-    cocos2d::middleware::IOBuffer ib;
-    
+	cocos2d::middleware::IOBuffer vb;
+	cocos2d::middleware::IOBuffer ib;
     MiddlewareManager();
     ~MiddlewareManager();
-    
+        
     // If manager is traversing _updateMap,will set the flag,untill traverse is finished.
     bool isUpdating = false;
-    
+        
 private:
     void uploadVB();
     void uploadIB();
+
+    void updateGLIB();
+    void updateGLVB();
 private:
     std::map<IMiddleware*, bool> _updateMap;
     std::vector<IMiddleware*> _removeList;
-    uint32_t _glIBID = 0;
-    uint32_t _glVBID = 0;
+        
+    cocos2d::renderer::VertexBuffer* glVB = nullptr;
+    cocos2d::renderer::IndexBuffer* glIB = nullptr;
+        
     static MiddlewareManager* _instance;
 };
 MIDDLEWARE_END

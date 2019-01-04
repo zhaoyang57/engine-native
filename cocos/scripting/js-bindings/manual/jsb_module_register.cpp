@@ -69,6 +69,10 @@
 #include "cocos/scripting/js-bindings/manual/jsb_dragonbones_manual.hpp"
 #endif
 
+#if USE_PARTICLE
+#include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_particle_auto.hpp"
+#endif
+
 #if USE_VIDEO && (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "cocos/scripting/js-bindings/auto/jsb_video_auto.hpp"
 #endif
@@ -110,10 +114,6 @@ bool jsb_register_all_modules()
     se->addRegisterCallback(register_all_cocos2dx_manual);
     se->addRegisterCallback(register_platform_bindings);
     
-#if USE_MIDDLEWARE
-    se->addRegisterCallback(register_all_cocos2dx_editor_support);
-#endif
-    
 #if USE_GFX_RENDERER
     se->addRegisterCallback(register_all_gfx);
     se->addRegisterCallback(jsb_register_gfx_manual);
@@ -133,6 +133,10 @@ bool jsb_register_all_modules()
     se->addRegisterCallback(register_all_audioengine);
 #endif
 
+#if USE_MIDDLEWARE
+    se->addRegisterCallback(register_all_cocos2dx_editor_support);
+#endif
+    
 #if USE_SPINE
     se->addRegisterCallback(register_all_cocos2dx_spine);
     se->addRegisterCallback(register_all_spine_manual);
@@ -141,6 +145,10 @@ bool jsb_register_all_modules()
 #if USE_DRAGONBONES
     se->addRegisterCallback(register_all_cocos2dx_dragonbones);
     se->addRegisterCallback(register_all_dragonbones_manual);
+#endif
+    
+#if USE_PARTICLE
+    se->addRegisterCallback(register_all_cocos2dx_particle);
 #endif
     
 #if USE_NET_WORK
@@ -160,7 +168,7 @@ bool jsb_register_all_modules()
 #if USE_WEB_VIEW && (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     se->addRegisterCallback(register_all_webview);
 #endif
-
+    
     se->addAfterCleanupHook([](){
         PoolManager::getInstance()->getCurrentPool()->clear();
         JSBClassType::destroy();

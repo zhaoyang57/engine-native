@@ -1,25 +1,23 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
-
- http://www.cocos2d-x.org
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ LICENSING AGREEMENT
+ 
+ Xiamen Yaji Software Co., Ltd., (the “Licensor”) grants the user (the “Licensee”) non-exclusive and non-transferable rights to use the software according to the following conditions:
+ a.  The Licensee shall pay royalties to the Licensor, and the amount of those royalties and the payment method are subject to separate negotiations between the parties.
+ b.  The software is licensed for use rather than sold, and the Licensor reserves all rights over the software that are not expressly granted (whether by implication, reservation or prohibition).
+ c.  The open source codes contained in the software are subject to the MIT Open Source Licensing Agreement (see the attached for the details);
+ d.  The Licensee acknowledges and consents to the possibility that errors may occur during the operation of the software for one or more technical reasons, and the Licensee shall take precautions and prepare remedies for such events. In such circumstance, the Licensor shall provide software patches or updates according to the agreement between the two parties. The Licensor will not assume any liability beyond the explicit wording of this Licensing Agreement.
+ e.  Where the Licensor must assume liability for the software according to relevant laws, the Licensor’s entire liability is limited to the annual royalty payable by the Licensee.
+ f.  The Licensor owns the portions listed in the root directory and subdirectory (if any) in the software and enjoys the intellectual property rights over those portions. As for the portions owned by the Licensor, the Licensee shall not:
+ - i. Bypass or avoid any relevant technical protection measures in the products or services;
+ - ii. Release the source codes to any other parties;
+ - iii. Disassemble, decompile, decipher, attack, emulate, exploit or reverse-engineer these portion of code;
+ - iv. Apply it to any third-party products or services without Licensor’s permission;
+ - v. Publish, copy, rent, lease, sell, export, import, distribute or lend any products containing these portions of code;
+ - vi. Allow others to use any services relevant to the technology of these codes;
+ - vii. Conduct any other act beyond the scope of this Licensing Agreement.
+ g.  This Licensing Agreement terminates immediately if the Licensee breaches this Agreement. The Licensor may claim compensation from the Licensee where the Licensee’s breach causes any damage to the Licensor.
+ h.  The laws of the People's Republic of China apply to this Licensing Agreement.
+ i.  This Agreement is made in both Chinese and English, and the Chinese version shall prevail the event of conflict.
  ****************************************************************************/
 
 #pragma once
@@ -37,10 +35,21 @@ RENDERER_BEGIN
 
 class DeviceGraphics;
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * The base texture class
+ */
 class Texture : public RenderTarget
 {
 public:
-    // texture filter
+    /**
+     * @enum Filter
+     * Texture filter modes
+     */
     enum class Filter : int8_t
     {
         NONE = -1,
@@ -48,7 +57,10 @@ public:
         LINEAR = 1
     };
 
-    // texture wrap mode
+    /**
+     * @enum Filter
+     * Texture wrap modes
+     */
     enum class WrapMode : uint16_t
     {
         REPEAT = GL_REPEAT,
@@ -56,7 +68,10 @@ public:
         MIRROR = GL_MIRRORED_REPEAT
     };
 
-    // texture format
+    /**
+     * @enum Format
+     * Texture formats
+     */
     enum class Format : uint8_t
     {
         BEGIN = 0,
@@ -95,35 +110,95 @@ public:
     //
     };
     
+    /**
+     * @struct Image
+     * Raw image data
+     */
     struct Image
     {
         uint8_t* data = nullptr;
         size_t length = 0;
     };
 
+    /**
+     * @struct Options
+     * Texture setting options including format, width, height, wrap mode, filter etc.
+     */
     struct Options
     {
+        /**
+         * Image mipmaps
+         */
         std::vector<Image> images;
+        /**
+         * The maximum anisotropy for the texture
+         */
         int32_t anisotropy = 1;
+        /**
+         * The internal format specifying the color components in the texture
+         */
         GLenum glInternalFormat = GL_RGBA;
+        /**
+         * The pixel format of the texel data
+         */
         GLenum glFormat = GL_RGB;
+        /**
+         * The data type of the texel data
+         */
         GLenum glType = GL_UNSIGNED_BYTE;
+        /**
+         * The width of the texture
+         */
         uint16_t width = 4;
+        /**
+         * The height of the texture
+         */
         uint16_t height = 4;
         uint8_t bpp = 0;
         
+        /**
+         * The wrapping function for texture coordinate s
+         */
         WrapMode wrapS = WrapMode::REPEAT;
+        /**
+         * The wrapping function for texture coordinate t
+         */
         WrapMode wrapT = WrapMode::REPEAT;
+        /**
+         * The texture minification filter
+         */
         Filter minFilter = Filter::LINEAR;
+        /**
+         * The texture magnification filter
+         */
         Filter magFilter = Filter::LINEAR;
+        /**
+         * The texture filter for mipmaps
+         */
         Filter mipFilter = Filter::LINEAR;
         
+        /**
+         * Specifies whether the texture have mipmaps
+         */
         bool hasMipmap = false;
+        /**
+         * Specifies whether the texture if flipped vertically
+         */
         bool flipY = true;
+        /**
+         * Specifies whether the texture have alpha premultiplied
+         */
         bool premultiplyAlpha = false;
+        /**
+         * Specifies whether the texture is compressed
+         */
         bool compressed = false;
     };
 
+    /**
+     * @struct ImageOption
+     * The informations of Image which indicates the mipmap level, width, height, filpY and premultiplyAlpha
+     */
     struct ImageOption
     {
         Image image;
@@ -135,6 +210,10 @@ public:
         bool premultiplyAlpha = false;
     };
 
+    /**
+     * @struct SubImageOption
+     * The informations of sub image which indicates the area to update, mipmap level, filpY and premultiplyAlpha
+     */
     struct SubImageOption
     {
         SubImageOption(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t level, bool flipY, bool premultiplyAlpha)
@@ -160,8 +239,17 @@ public:
         bool premultiplyAlpha = false;
     };
 
+    /**
+     * Gets the target gl location
+     */
     inline GLuint getTarget() const { return _target; }
+    /**
+     * Gets the width of texture
+     */
     inline uint16_t getWidth() const { return _width; }
+    /**
+     * Gets the height of texture
+     */
     inline uint16_t getHeight() const { return _height; }
 
 protected:
@@ -197,5 +285,8 @@ protected:
     bool _hasMipmap;
     bool _compressed;
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

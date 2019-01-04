@@ -36,7 +36,6 @@ base/TGAlib.cpp \
 base/ZipUtils.cpp \
 base/base64.cpp \
 base/ccCArray.cpp \
-base/ccRandom.cpp \
 base/ccTypes.cpp \
 base/ccUTF8.cpp \
 base/ccUtils.cpp \
@@ -82,7 +81,7 @@ scripting/js-bindings/event/EventDispatcher.cpp \
 ../external/sources/ConvertUTF/ConvertUTF.c \
 ui/edit-box/EditBox-android.cpp
 
-# v8 debugger source files, always enable it
+# only compile v8 debugger in DEBUG mode
 LOCAL_SRC_FILES += \
 scripting/js-bindings/jswrapper/v8/debugger/SHA1.cpp \
 scripting/js-bindings/jswrapper/v8/debugger/util.cc \
@@ -131,6 +130,16 @@ renderer/renderer/Scene.cpp \
 renderer/renderer/Technique.cpp \
 renderer/renderer/View.cpp \
 renderer/renderer/ForwardRenderer.cpp \
+renderer/scene/CustomRenderHandle.cpp \
+renderer/scene/MeshBuffer.cpp \
+renderer/scene/ModelBatcher.cpp \
+renderer/scene/NodeProxy.cpp \
+renderer/scene/RenderFlow.cpp \
+renderer/scene/StencilManager.cpp \
+renderer/scene/RenderHandle.cpp \
+renderer/scene/SystemHandle.cpp \
+renderer/scene/GraphicsRenderHandle.cpp \
+renderer/scene/MaskRenderHandle.cpp \
 scripting/js-bindings/auto/jsb_gfx_auto.cpp \
 scripting/js-bindings/auto/jsb_renderer_auto.cpp \
 scripting/js-bindings/manual/jsb_renderer_manual.cpp \
@@ -165,7 +174,7 @@ endif # USE_NET_WORK
 
 ifneq ($(USE_MIDDLEWARE),0_0)
 LOCAL_STATIC_LIBRARIES += editor_support_static
-endif # USE_SPINE or USE_DRAGONBONES
+endif # USE_MIDDLEWARE
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \

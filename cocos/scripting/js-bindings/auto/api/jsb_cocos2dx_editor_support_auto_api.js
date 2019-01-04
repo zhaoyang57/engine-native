@@ -29,6 +29,16 @@ func
 },
 
 /**
+ * @method setNativeEffect
+ * @param {cc.renderer::Effect} arg0
+ */
+setNativeEffect : function (
+effect 
+)
+{
+},
+
+/**
  * @method setPixelsHigh
  * @param {int} arg0
  */
@@ -39,6 +49,16 @@ int
 },
 
 /**
+ * @method getNativeTexture
+ * @return {cc.renderer::Texture}
+ */
+getNativeTexture : function (
+)
+{
+    return cc.renderer::Texture;
+},
+
+/**
  * @method setPixelsWide
  * @param {int} arg0
  */
@@ -46,6 +66,16 @@ setPixelsWide : function (
 int 
 )
 {
+},
+
+/**
+ * @method getNativeEffect
+ * @return {cc.renderer::Effect}
+ */
+getNativeEffect : function (
+)
+{
+    return cc.renderer::Effect;
 },
 
 /**
@@ -79,6 +109,16 @@ int
 },
 
 /**
+ * @method setNativeTexture
+ * @param {cc.renderer::Texture} arg0
+ */
+setNativeTexture : function (
+texture 
+)
+{
+},
+
+/**
  * @method setTexParameters
  * @param {cc.middleware::Texture2D::_TexParams} arg0
  */
@@ -105,16 +145,6 @@ Texture2D : function (
 middleware.MiddlewareManager = {
 
 /**
- * @method getGLVBID
- * @return {unsigned int}
- */
-getGLVBID : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method removeTimer
  * @param {cc.middleware::IMiddleware} arg0
  */
@@ -122,6 +152,16 @@ removeTimer : function (
 imiddleware 
 )
 {
+},
+
+/**
+ * @method getVB
+ * @return {cc.renderer::VertexBuffer}
+ */
+getVB : function (
+)
+{
+    return cc.renderer::VertexBuffer;
 },
 
 /**
@@ -145,13 +185,13 @@ imiddleware
 },
 
 /**
- * @method getGLIBID
- * @return {unsigned int}
+ * @method getIB
+ * @return {cc.renderer::IndexBuffer}
  */
-getGLIBID : function (
+getIB : function (
 )
 {
-    return 0;
+    return cc.renderer::IndexBuffer;
 },
 
 /**
@@ -177,6 +217,44 @@ getInstance : function (
  * @constructor
  */
 MiddlewareManager : function (
+)
+{
+},
+
+};
+
+/**
+ * @class MiddlewareRenderHandle
+ */
+middleware.MiddlewareRenderHandle = {
+
+/**
+ * @method reset
+ */
+reset : function (
+)
+{
+},
+
+/**
+ * @method updateIA
+ * @param {unsigned int} arg0
+ * @param {int} arg1
+ * @param {int} arg2
+ */
+updateIA : function (
+int, 
+int, 
+int 
+)
+{
+},
+
+/**
+ * @method MiddlewareRenderHandle
+ * @constructor
+ */
+MiddlewareRenderHandle : function (
 )
 {
 },

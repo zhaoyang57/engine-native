@@ -23,17 +23,23 @@
  ****************************************************************************/
 #include "middleware-adapter.h"
 #include "base/ccMacros.h"
+#include "renderer/gfx/Texture.h"
+
+using namespace cocos2d;
+using namespace cocos2d::renderer;
 
 MIDDLEWARE_BEGIN
 
 Texture2D::Texture2D()
 {
-    
+        
 }
 
 Texture2D::~Texture2D()
 {
-    
+    CC_SAFE_RELEASE(_effect);
+    CC_SAFE_RELEASE(_texture);
+    _texParamCallback = nullptr;
 }
 
 int Texture2D::getPixelsWide() const
@@ -79,57 +85,81 @@ void Texture2D::setTexParameters(const TexParams& texParams)
     }
 }
 
+void Texture2D::setNativeEffect(Effect* effect)
+{
+    CC_SAFE_RELEASE(_effect);
+    _effect = effect;
+    CC_SAFE_RETAIN(_effect);
+}
+
+Effect* Texture2D::getNativeEffect() const
+{
+    return _effect;
+}
+
+void Texture2D::setNativeTexture(Texture* texture)
+{
+    CC_SAFE_RELEASE(_texture);
+    _texture = texture;
+    CC_SAFE_RETAIN(_texture);
+}
+
+Texture* Texture2D::getNativeTexture() const
+{
+    return _texture;
+}
+
 SpriteFrame* SpriteFrame::createWithTexture(Texture2D *texture, const cocos2d::Rect& rect)
 {
     SpriteFrame *spriteFrame = new (std::nothrow) SpriteFrame();
     spriteFrame->initWithTexture(texture, rect);
     spriteFrame->autorelease();
-    
+        
     return spriteFrame;
 }
-
+    
 SpriteFrame* SpriteFrame::createWithTexture(Texture2D* texture, const cocos2d::Rect& rect, bool rotated, const cocos2d::Vec2& offset, const cocos2d::Size& originalSize)
 {
     SpriteFrame *spriteFrame = new (std::nothrow) SpriteFrame();
     spriteFrame->initWithTexture(texture, rect, rotated, offset, originalSize);
     spriteFrame->autorelease();
-    
+        
     return spriteFrame;
 }
-
+    
 bool SpriteFrame::initWithTexture(Texture2D* texture, const cocos2d::Rect& rect)
 {
     return initWithTexture(texture, rect, false, cocos2d::Vec2::ZERO, rect.size);
 }
-
+    
 bool SpriteFrame::initWithTexture(Texture2D* texture, const cocos2d::Rect& rect, bool rotated, const cocos2d::Vec2& offset, const cocos2d::Size& originalSize)
 {
     _texture = texture;
-    
+        
     if (texture)
     {
         texture->retain();
     }
-    
+        
     _rectInPixels = rect;
     _offsetInPixels = offset;
     _originalSizeInPixels = originalSize;
     _rotated = rotated;
     _anchorPoint = cocos2d::Vec2(NAN, NAN);
-    
+        
     return true;
 }
-
+    
 SpriteFrame::SpriteFrame()
 {
-    
+        
 }
-
+    
 SpriteFrame::~SpriteFrame()
 {
     CC_SAFE_RELEASE(_texture);
 }
-
+    
 void SpriteFrame::setTexture(Texture2D * texture)
 {
     if( _texture != texture )
@@ -139,7 +169,7 @@ void SpriteFrame::setTexture(Texture2D * texture)
         _texture = texture;
     }
 }
-
+    
 Texture2D* SpriteFrame::getTexture()
 {
     return _texture;

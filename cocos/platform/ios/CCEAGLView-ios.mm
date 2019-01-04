@@ -430,9 +430,7 @@ namespace
     if(![_context presentRenderbuffer:GL_RENDERBUFFER])
          NSLog(@"cocos2d: Failed to swap renderbuffer in %s\n", __FUNCTION__);
 
-#if COCOS2D_DEBUG
     CHECK_GL_ERROR();
-#endif
     
     // We can safely re-bind the framebuffer here, since this will be the
     // 1st instruction of the new main loop

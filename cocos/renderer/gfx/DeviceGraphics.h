@@ -1,25 +1,23 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
-
- http://www.cocos2d-x.org
+ LICENSING AGREEMENT
  
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ Xiamen Yaji Software Co., Ltd., (the “Licensor”) grants the user (the “Licensee”) non-exclusive and non-transferable rights to use the software according to the following conditions:
+ a.  The Licensee shall pay royalties to the Licensor, and the amount of those royalties and the payment method are subject to separate negotiations between the parties.
+ b.  The software is licensed for use rather than sold, and the Licensor reserves all rights over the software that are not expressly granted (whether by implication, reservation or prohibition).
+ c.  The open source codes contained in the software are subject to the MIT Open Source Licensing Agreement (see the attached for the details);
+ d.  The Licensee acknowledges and consents to the possibility that errors may occur during the operation of the software for one or more technical reasons, and the Licensee shall take precautions and prepare remedies for such events. In such circumstance, the Licensor shall provide software patches or updates according to the agreement between the two parties. The Licensor will not assume any liability beyond the explicit wording of this Licensing Agreement.
+ e.  Where the Licensor must assume liability for the software according to relevant laws, the Licensor’s entire liability is limited to the annual royalty payable by the Licensee.
+ f.  The Licensor owns the portions listed in the root directory and subdirectory (if any) in the software and enjoys the intellectual property rights over those portions. As for the portions owned by the Licensor, the Licensee shall not:
+ - i. Bypass or avoid any relevant technical protection measures in the products or services;
+ - ii. Release the source codes to any other parties;
+ - iii. Disassemble, decompile, decipher, attack, emulate, exploit or reverse-engineer these portion of code;
+ - iv. Apply it to any third-party products or services without Licensor’s permission;
+ - v. Publish, copy, rent, lease, sell, export, import, distribute or lend any products containing these portions of code;
+ - vi. Allow others to use any services relevant to the technology of these codes;
+ - vii. Conduct any other act beyond the scope of this Licensing Agreement.
+ g.  This Licensing Agreement terminates immediately if the Licensee breaches this Agreement. The Licensor may claim compensation from the Licensee where the Licensee’s breach causes any damage to the Licensor.
+ h.  The laws of the People's Republic of China apply to this Licensing Agreement.
+ i.  This Agreement is made in both Chinese and English, and the Chinese version shall prevail the event of conflict.
  ****************************************************************************/
 
 #pragma once
@@ -38,7 +36,6 @@
 #include "../Types.h"
 #include "State.h"
 
-
 RENDERER_BEGIN
 
 class FrameBuffer;
@@ -47,6 +44,15 @@ class IndexBuffer;
 class Program;
 class Texture;
 
+/**
+ * @addtogroup gfx
+ * @{
+ */
+
+/**
+ * DeviceGraphics is a direct abstraction for OpenGL APIs.
+ * This fundamental class takes responsibility for all GL states management and GL call invocations.
+ */
 class DeviceGraphics final : public Ref
 {
 public:
@@ -60,69 +66,227 @@ public:
         int maxColorAttatchments;
     };
     
+    /**
+     * Returns a shared instance of the director.
+     */
     static DeviceGraphics* getInstance();
-        
-    inline const Capacity& getCapacity() const { return _caps; }
+    
+    /**
+     * Checks whether a gl extension is supported
+     */
     bool supportGLExtension(const std::string& extension) const;
 
+    /**
+     * Sets the target FrameBuffer
+     */
     void setFrameBuffer(const FrameBuffer* fb);
+    /**
+     * Sets viewport with x, y, width and height
+     */
     void setViewport(int x, int y, int w, int h);
+    /**
+     * Sets scissor clipping area
+     */
     void setScissor(int x, int y, int w, int h);
-    
+
+    /**
+     * Clear with flags, including color, depth and stencil,
+     * you should also specify the color, depth and stencil value to use.
+     */
     void clear(uint8_t flags, Color4F *color, double depth, int32_t stencil);
-    
+
+    /**
+     * Enables blend in GL state
+     */
     void enableBlend();
+    /**
+     * Enables depth test in GL state
+     */
     void enableDepthTest();
+    /**
+     * Enables depth write in GL state
+     */
     void enableDepthWrite();
+    /**
+     * Enables stencil test in GL state
+     */
     void enableStencilTest();
-    
+
+    /**
+     * Sets both the front and back function and reference value for stencil testing
+     */
     void setStencilFunc(StencilFunc func, int ref, unsigned int mask);
+    /**
+     * Sets the front function and reference value for stencil testing
+     */
     void setStencilFuncFront(StencilFunc func, int ref, unsigned int mask);
+    /**
+     * Sets the back function and reference value for stencil testing
+     */
     void setStencilFuncBack(StencilFunc func, int ref, unsigned int mask);
-    
+
+    /**
+     * Sets both the front and back-facing stencil test actions
+     */
     void setStencilOp(StencilOp failOp, StencilOp zFailOp, StencilOp zPassOp, unsigned int writeMask);
+    /**
+     * Sets the front stencil test actions
+     */
     void setStencilOpFront(StencilOp failOp, StencilOp zFailOp, StencilOp zPassOp, unsigned int writeMask);
+    /**
+     * Sets the back stencil test actions
+     */
     void setStencilOpBack(StencilOp failOp, StencilOp zFailOp, StencilOp zPassOp, unsigned int writeMask);
-    
+
+    /**
+     * Specifies the depth comparison function, which sets the conditions under which the pixel will be drawn.
+     */
     void setDepthFunc(DepthFunc func);
-    
+
+    /**
+     * Sets the source and destination blending factors with all channel packed into a 32bit unsigned int
+     */
     void setBlendColor(uint32_t rgba);
+    /**
+     * Sets the source and destination blending factors with separate color channel values
+     */
     void setBlendColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+    /**
+     * Sets which function is used for blending pixel arithmetic
+     */
     void setBlendFunc(BlendFactor src, BlendFactor dst);
+    /**
+     * Sets which function is used for blending pixel arithmetic for RGB and alpha components separately
+     */
     void setBlendFuncSeparate(BlendFactor srcRGB, BlendFactor dstRGB, BlendFactor srcAlpha, BlendFactor dstAlpha);
+    /**
+     * Sets both the RGB blend equation and alpha blend equation to a single equation.
+     */
     void setBlendEquation(BlendOp mode);
+    /**
+     * Sets the RGB blend equation and alpha blend equation separately.
+     */
     void setBlendEquationSeparate(BlendOp modeRGB, BlendOp modeAlpha);
-    
+
+    /**
+     * Specifies whether or not front and/or back-facing polygons can be culled.
+     */
     void setCullMode(CullMode mode);
-    
+
+    /**
+     * Sets the vertex buffer
+     */
     void setVertexBuffer(int stream, VertexBuffer* buffer, int start = 0);
+    /**
+     * Sets the index buffer
+     */
     void setIndexBuffer(IndexBuffer *buffer);
+    /**
+     * Sets a linked program
+     */
     void setProgram(Program *program);
+    /**
+     * Sets a texture into a GL texture slot then set to the specified uniform
+     */
     void setTexture(const std::string& name, Texture* texture, int slot);
+    /**
+     * Sets textures array into GL texture slots then set to the specified uniform
+     */
     void setTextureArray(const std::string& name, const std::vector<Texture*>& textures, const std::vector<int>& slots);
-    
+
+    /**
+     * Sets a integer to the specified uniform
+     */
     void setUniformi(const std::string& name, int i1);
+    /**
+     * Sets two integers to the specified uniform
+     */
     void setUniformi(const std::string& name, int i1, int i2);
+    /**
+     * Sets three integers to the specified uniform
+     */
     void setUniformi(const std::string& name, int i1, int i2, int i3);
+    /**
+     * Sets four integers to the specified uniform
+     */
     void setUniformi(const std::string& name, int i1, int i2, int i3, int i4);
+    /**
+     * Sets a vector of integers to the specified uniform
+     */
     void setUniformiv(const std::string& name, size_t count, const int* value);
+    /**
+     * Sets a float to the specified uniform
+     */
     void setUniformf(const std::string& name, float f1);
+    /**
+     * Sets two floats to the specified uniform
+     */
     void setUniformf(const std::string& name, float f1, float f2);
+    /**
+     * Sets three floats to the specified uniform
+     */
     void setUniformf(const std::string& name, float f1, float f2, float f3);
+    /**
+     * Sets four floats to the specified uniform
+     */
     void setUniformf(const std::string& name, float f1, float f2, float f3, float f4);
+    /**
+     * Sets a vector of floats to the specified uniform
+     */
     void setUniformfv(const std::string& name, size_t count, const float* value);
+    /**
+     * Sets a Vec2 to the specified uniform
+     */
     void setUniformVec2(const std::string& name, const cocos2d::Vec2& value);
+    /**
+     * Sets a Vec3 to the specified uniform
+     */
     void setUniformVec3(const std::string& name, const cocos2d::Vec3& value);
+    /**
+     * Sets a Vec4 to the specified uniform
+     */
     void setUniformVec4(const std::string& name, const cocos2d::Vec4& value);
+    /**
+     * Sets a 2x2 matrix to the specified uniform
+     */
     void setUniformMat2(const std::string& name, float* value);
+    /**
+     * Sets a 3x3 matrix to the specified uniform
+     */
     void setUniformMat3(const std::string& name, float* value);
+    /**
+     * Sets a 4x4 matrix specified by float pointer to the given uniform
+     */
     void setUniformMat4(const std::string& name, float* value);
+    /**
+     * Sets a Mat4 object to the given uniform
+     */
     void setUniformMat4(const std::string& name, const cocos2d::Mat4& value);
+    /**
+     * Sets data specified by data pointer, type and bytes to the given uniform
+     */
     void setUniform(const std::string& name, const void* v, size_t bytes, UniformElementType elementType);
 
+    /**
+     * Sets the primitive type for draw calls
+     */
     void setPrimitiveType(PrimitiveType type);
-    
+
+    /**
+     * Draw elements using the current gl states
+     */
     void draw(size_t base, GLsizei count);
+
+    /**
+     * Resets the draw call counter to 0
+     */
+    void resetDrawCalls() { _drawCalls = 0; };
+    /**
+     * Gets current draw call counts
+     */
+    uint32_t getDrawCalls() const { return _drawCalls; };
+    
+    inline const Capacity& getCapacity() const { return _caps; }
     
 private:
     
@@ -170,6 +334,8 @@ private:
     int _sy;
     int _sw;
     int _sh;
+    
+    uint32_t _drawCalls = 0;
 
     int _defaultFbo;
     
@@ -187,5 +353,8 @@ private:
     friend class IndexBuffer;
     friend class Texture2D;
 };
+
+// end of gfx group
+/// @}
 
 RENDERER_END

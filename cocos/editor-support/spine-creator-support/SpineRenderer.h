@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -31,9 +31,14 @@
 #include "scripting/js-bindings/jswrapper/Object.hpp"
 #include "IOTypedArray.h"
 #include "MiddlewareManager.h"
+#include "renderer/scene/NodeProxy.hpp"
+#include "base/CCMap.h"
+#include "middleware-adapter.h"
+#include "base/ccMacros.h"
 
 namespace spine {
 
+    class NodeProxy;
     class AttachmentVertices;
 
     /** Draws a skeleton.
@@ -44,11 +49,11 @@ namespace spine {
         static SpineRenderer* createWithData (spSkeletonData* skeletonData, bool ownsSkeletonData = false);
         static SpineRenderer* createWithFile (const std::string& skeletonDataFile, spAtlas* atlas, float scale = 1);
         static SpineRenderer* createWithFile (const std::string& skeletonDataFile, const std::string& atlasFile, float scale = 1);
-
+        
         virtual void update (float deltaTime);
 
         spSkeleton* getSkeleton() const;
-
+        
         void setTimeScale (float scale);
         float getTimeScale () const;
 
@@ -92,19 +97,13 @@ namespace spine {
             return nullptr;
         }
         
-        /**
-         * @return material data,it's a Uint32Array,
-         * format |material length|index offset|[texture index|blend src|blend dst|indice length|...loop...]
-         */
-        se_object_ptr getMaterialData() const
+        void bindNodeProxy(cocos2d::renderer::NodeProxy* node)
         {
-            if (_materialBuffer)
-            {
-                return _materialBuffer->getTypeArray();
-            }
-            return nullptr;
+            CC_SAFE_RELEASE(_nodeProxy);
+            _nodeProxy = node;
+            CC_SAFE_RETAIN(_nodeProxy);
         }
-
+        
         void setColor (cocos2d::Color4B& color);
         void setDebugBonesEnabled (bool enabled);
         void setDebugSlotsEnabled (bool enabled);
@@ -151,8 +150,8 @@ namespace spine {
         cocos2d::Color4B    _nodeColor = cocos2d::Color4B::WHITE;
         bool                _premultipliedAlpha = false;
         
-        cocos2d::middleware::IOTypedArray* _materialBuffer = nullptr;
         cocos2d::middleware::IOTypedArray* _debugBuffer = nullptr;
+        cocos2d::renderer::NodeProxy* _nodeProxy = nullptr;
     };
 
 }

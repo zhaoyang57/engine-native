@@ -137,13 +137,13 @@ namespace se {
         bool isShared = false;
         JS::AutoCheckCannotGC nogc;
         uint8_t* tmpData = JS_GetArrayBufferData(jsobj, &isShared, nogc);
-        if (data)
+        if (data == nullptr)
         {
-            memcpy((void*)tmpData, (const void*)data, byteLength);
+            memset((void*)tmpData, 0, byteLength);
         }
         else
         {
-            memset((void*)tmpData, 0, byteLength);
+            memcpy(tmpData, (const void*)data, byteLength);
         }
         Object* obj = Object::_createJSObject(nullptr, jsobj);
         return obj;
@@ -206,11 +206,13 @@ namespace se {
                 break;
         }
 
-        //If data has content,then will copy data into buffer,or will only clear buffer.
-        if (data) {
-            memcpy(tmpData, (const void*)data, byteLength);
-        }else{
+        if (data == nullptr)
+        {
             memset(tmpData, 0, byteLength);
+        }
+        else
+        {
+            memcpy(tmpData, (const void*)data, byteLength);
         }
 
         Object* obj = Object::_createJSObject(nullptr, arr);
