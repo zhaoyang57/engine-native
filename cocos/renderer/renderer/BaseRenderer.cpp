@@ -1,25 +1,23 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
-
- http://www.cocos2d-x.org
+ LICENSING AGREEMENT
  
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ Xiamen Yaji Software Co., Ltd., (the “Licensor”) grants the user (the “Licensee”) non-exclusive and non-transferable rights to use the software according to the following conditions:
+ a.  The Licensee shall pay royalties to the Licensor, and the amount of those royalties and the payment method are subject to separate negotiations between the parties.
+ b.  The software is licensed for use rather than sold, and the Licensor reserves all rights over the software that are not expressly granted (whether by implication, reservation or prohibition).
+ c.  The open source codes contained in the software are subject to the MIT Open Source Licensing Agreement (see the attached for the details);
+ d.  The Licensee acknowledges and consents to the possibility that errors may occur during the operation of the software for one or more technical reasons, and the Licensee shall take precautions and prepare remedies for such events. In such circumstance, the Licensor shall provide software patches or updates according to the agreement between the two parties. The Licensor will not assume any liability beyond the explicit wording of this Licensing Agreement.
+ e.  Where the Licensor must assume liability for the software according to relevant laws, the Licensor’s entire liability is limited to the annual royalty payable by the Licensee.
+ f.  The Licensor owns the portions listed in the root directory and subdirectory (if any) in the software and enjoys the intellectual property rights over those portions. As for the portions owned by the Licensor, the Licensee shall not:
+ - i. Bypass or avoid any relevant technical protection measures in the products or services;
+ - ii. Release the source codes to any other parties;
+ - iii. Disassemble, decompile, decipher, attack, emulate, exploit or reverse-engineer these portion of code;
+ - iv. Apply it to any third-party products or services without Licensor’s permission;
+ - v. Publish, copy, rent, lease, sell, export, import, distribute or lend any products containing these portions of code;
+ - vi. Allow others to use any services relevant to the technology of these codes;
+ - vii. Conduct any other act beyond the scope of this Licensing Agreement.
+ g.  This Licensing Agreement terminates immediately if the Licensee breaches this Agreement. The Licensor may claim compensation from the Licensee where the Licensee’s breach causes any damage to the Licensor.
+ h.  The laws of the People's Republic of China apply to this Licensing Agreement.
+ i.  This Agreement is made in both Chinese and English, and the Chinese version shall prevail the event of conflict.
  ****************************************************************************/
 
 #include "BaseRenderer.h"
@@ -33,7 +31,6 @@
 #include "InputAssembler.h"
 #include "Pass.h"
 #include "Camera.h"
-#include "INode.h"
 #include "Model.h"
 
 RENDERER_BEGIN
@@ -100,20 +97,20 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     
     // get all draw items
     _drawItems.clear();
-    int modelViewId = -1;
+    int modelMask = -1;
     uint32_t drawItemCount = 0;
     DrawItem drawItem;
     for (const auto& model : scene->getModels())
     {
-        modelViewId = model->getViewId();
+        modelMask = model->getCullingMask();
         if (view.cullingByID)
         {
-            if (modelViewId != view.id)
+            if ((modelMask & view.cullingMask) == 0)
                 continue;
         }
         else
         {
-            if (-1 != modelViewId)
+            if (-1 != modelMask)
                 continue;
         }
         
@@ -155,13 +152,13 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     
     // render stages
     std::unordered_map<std::string, StageCallback>::iterator foundIter;
-    for (const auto& stageInfo : _stageInfos)
+    for (const auto& stageInfoEntry : _stageInfos)
     {
-        foundIter = _stage2fn.find(stageInfo.stage);
+        foundIter = _stage2fn.find(stageInfoEntry.stage);
         if (_stage2fn.end() != foundIter)
         {
             auto& fn = foundIter->second;
-            fn(view, *stageInfo.items);
+            fn(view, *stageInfoEntry.items);
         }
     }
 }
@@ -255,77 +252,83 @@ void BaseRenderer::draw(const StageItem& item)
             else
                 _device->setUniformfv(param.getName(), bytes / sizeof(float), (const float*)prop->getValue());
         }
+    }
+    
+    const int32_t& definesKey = item.effect->getDefinesKey();
+    // for each pass
+    for (const auto& pass : item.technique->getPasses())
+    {
+        // set vertex buffer
+        _device->setVertexBuffer(0, ia->getVertexBuffer());
         
-        // for each pass
-        for (const auto& pass : item.technique->getPasses())
+        // set index buffer
+        if (ia->_indexBuffer)
+            _device->setIndexBuffer(ia->_indexBuffer);
+        
+        // set primitive type
+        _device->setPrimitiveType(ia->_primitiveType);
+        
+        // set program
+        if(!_program || _programName != pass->_programName || _definesKey != definesKey)
         {
-            // set vertex buffer
-            _device->setVertexBuffer(0, ia->getVertexBuffer());
-            
-            // set index buffer
-            if (ia->_indexBuffer)
-                _device->setIndexBuffer(ia->_indexBuffer);
-            
-            // set primitive type
-            _device->setPrimitiveType(ia->_primitiveType);
-            
-            // set program
-            auto program = _programLib->getProgram(pass->_programName, *(item.defines));
-            _device->setProgram(program);
-            
-            // cull mode
-            _device->setCullMode(pass->_cullMode);
-            
-            // blend
-            if (pass->_blend)
-            {
-                _device->enableBlend();
-                _device->setBlendFuncSeparate(pass->_blendSrc,
-                                              pass->_blendDst,
-                                              pass->_blendSrcAlpha,
-                                              pass->_blendDstAlpha);
-                _device->setBlendEquationSeparate(pass->_blendEq, pass->_blendAlphaEq);
-                _device->setBlendColor(pass->_blendColor);
-            }
-            
-            // depth test & write
-            if (pass->_depthTest)
-            {
-                _device->enableDepthTest();
-                _device->setDepthFunc(pass->_depthFunc);
-            }
-            if (pass->_depthWrite)
-                _device->enableDepthWrite();
-            
-            // setencil
-            if (pass->_stencilTest)
-            {
-                _device->enableStencilTest();
-                
-                // front
-                _device->setStencilFuncFront(pass->_stencilFuncFront,
-                                             pass->_stencilRefFront,
-                                             pass->_stencilMaskFront);
-                _device->setStencilOpFront(pass->_stencilFailOpFront,
-                                           pass->_stencilZFailOpFront,
-                                           pass->_stencilZPassOpFront,
-                                           pass->_stencilWriteMaskFront);
-                
-                // back
-                _device->setStencilFuncBack(pass->_stencilFuncBack,
-                                            pass->_stencilRefBack,
-                                            pass->_stencilMaskBack);
-                _device->setStencilOpBack(pass->_stencilFailOpBack,
-                                          pass->_stencilZFailOpBack,
-                                          pass->_stencilZPassOpBack,
-                                          pass->_stencilWriteMaskBack);
-            }
-            
-            // draw pass
-            _device->draw(ia->_start, ia->getPrimitiveCount());
-            
-            resetTextureUint();
+            _programName = pass->_programName;
+            _definesKey = definesKey;
+            _program = _programLib->getProgram(pass->_programName, *(item.defines), _definesKey);
         }
+        _device->setProgram(_program);
+        
+        // cull mode
+        _device->setCullMode(pass->_cullMode);
+        
+        // blend
+        if (pass->_blend)
+        {
+            _device->enableBlend();
+            _device->setBlendFuncSeparate(pass->_blendSrc,
+                                          pass->_blendDst,
+                                          pass->_blendSrcAlpha,
+                                          pass->_blendDstAlpha);
+            _device->setBlendEquationSeparate(pass->_blendEq, pass->_blendAlphaEq);
+            _device->setBlendColor(pass->_blendColor);
+        }
+        
+        // depth test & write
+        if (pass->_depthTest)
+        {
+            _device->enableDepthTest();
+            _device->setDepthFunc(pass->_depthFunc);
+        }
+        if (pass->_depthWrite)
+            _device->enableDepthWrite();
+        
+        // setencil
+        if (pass->_stencilTest)
+        {
+            _device->enableStencilTest();
+            
+            // front
+            _device->setStencilFuncFront(pass->_stencilFuncFront,
+                                         pass->_stencilRefFront,
+                                         pass->_stencilMaskFront);
+            _device->setStencilOpFront(pass->_stencilFailOpFront,
+                                       pass->_stencilZFailOpFront,
+                                       pass->_stencilZPassOpFront,
+                                       pass->_stencilWriteMaskFront);
+            
+            // back
+            _device->setStencilFuncBack(pass->_stencilFuncBack,
+                                        pass->_stencilRefBack,
+                                        pass->_stencilMaskBack);
+            _device->setStencilOpBack(pass->_stencilFailOpBack,
+                                      pass->_stencilZFailOpBack,
+                                      pass->_stencilZPassOpBack,
+                                      pass->_stencilWriteMaskBack);
+        }
+        
+        // draw pass
+        _device->draw(ia->_start, ia->getPrimitiveCount());
+        
+        resetTextureUint();
     }
 }
 

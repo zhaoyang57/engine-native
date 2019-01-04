@@ -23,9 +23,15 @@
 #include "dragonbones-creator-support/CCArmatureDisplay.h"
 #include "dragonbones-creator-support/CCSlot.h"
 #include "MiddlewareMacro.h"
+#include "renderer/renderer/Pass.h"
+#include "renderer/renderer/Technique.h"
 
 USING_NS_CC;
 USING_NS_MW;
+using namespace cocos2d::renderer;
+
+static const std::string techStage = "transparent";
+static const std::string textureKey = "texture";
 
 DRAGONBONES_NAMESPACE_BEGIN
 
@@ -45,23 +51,20 @@ CCArmatureDisplay* CCArmatureDisplay::create()
 
 CCArmatureDisplay::CCArmatureDisplay()
 {
-    _materialBuffer = new IOTypedArray(se::Object::TypedArrayType::UINT32, MAX_MATERIAL_BUFFER_SIZE);
+    
 }
 
 CCArmatureDisplay::~CCArmatureDisplay()
 {
     dispose();
-    if (_materialBuffer)
-    {
-        delete _materialBuffer;
-        _materialBuffer = nullptr;
-    }
 
     if (_debugBuffer)
     {
         delete _debugBuffer;
         _debugBuffer = nullptr;
     }
+    
+    CC_SAFE_RELEASE(_nodeProxy);
 }
 
 void CCArmatureDisplay::dbInit(Armature* armature)
@@ -92,16 +95,25 @@ void CCArmatureDisplay::dbUpdate()
     auto mgr = MiddlewareManager::getInstance();
     if (!mgr->isUpdating) return;
     
-    IOBuffer& vb = mgr->vb;
     IOBuffer& ib = mgr->ib;
     
-    _materialBuffer->reset();
+    if (_nodeProxy == nullptr)
+    {
+        return;
+    }
     
-    _preBlendSrc = -1;
-    _preBlendDst = -1;
+    _renderHandle = (MiddlewareRenderHandle*)_nodeProxy->getHandle("render");
+    if (_renderHandle == nullptr)
+    {
+        return;
+    }
+    _renderHandle->reset();
+    
+    _preBlendSrc = BlendFactor::ZERO;
+    _preBlendDst = BlendFactor::ONE;
+    _curBlendSrc = BlendFactor::ONE;
+    _curBlendDst = BlendFactor::ZERO;
     _preTextureIndex = -1;
-    _curBlendSrc = -1;
-    _curBlendDst = -1;
     _curTextureIndex = -1;
     
     _preISegWritePos = -1;
@@ -109,43 +121,10 @@ void CCArmatureDisplay::dbUpdate()
     
     _debugSlotsLen = 0;
     _materialLen = 0;
-    
-    // Reserved space to save material len
-    _materialBuffer->writeUint32(0);
-    // Reserved space to save index offset
-    _materialBuffer->writeUint32((uint32_t)mgr->ib.getCurPos()/sizeof(unsigned short));
+    _indexStart = (uint32_t)ib.getCurPos()/sizeof(unsigned short);
     
     // Traverse all aramture to fill vertex and index buffer.
     traverseArmature(_armature);
-    
-    bool isVBOutRange = vb.isOutRange();
-    bool isIBOutRange = ib.isOutRange();
-    bool isMatOutRange = _materialBuffer->isOutRange();
-    
-    // If vertex buffer or index buffer or material buffer out of range,then discard this time render
-    // next time will enlarge vertex buffer or index buffer to fill the animation data.
-    if (isVBOutRange || isIBOutRange || isMatOutRange)
-    {
-        _materialBuffer->writeUint32(0, 0);
-    }
-    else
-    {
-        _materialBuffer->writeUint32(0, _materialLen);
-        
-        if (_preISegWritePos != -1)
-        {
-            _materialBuffer->writeUint32(_preISegWritePos, _curISegLen);
-        }
-    }
-    
-    // If material buffer is out of range,it will no enlarge automatically,because the size which is 512 bytes is
-    // enough large,exceed the size means call gl draw function too many times,you better to optimize resource.
-    if (isMatOutRange)
-    {
-        cocos2d::log("Dragonbones material data is too large,buffer has no space to put in it!!!!!!!!!!");
-        cocos2d::log("You can adjust MAX_MATERIAL_BUFFER_SIZE in Macro");
-        cocos2d::log("But It's better to optimize resource to avoid large material.Because it can advance performance");
-    }
     
     if (_debugDraw)
     {
@@ -185,7 +164,7 @@ void CCArmatureDisplay::dbUpdate()
         {
             _debugBuffer->writeFloat32(0, 0);
             cocos2d::log("Dragonbones debug data is too large,debug buffer has no space to put in it!!!!!!!!!!");
-            cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in Macro");
+            cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in MiddlewareMacro");
         }
     }
 }
@@ -229,6 +208,8 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
     IOBuffer& vb = mgr->vb;
     IOBuffer& ib = mgr->ib;
     
+    uint8_t realOpacity = _nodeProxy->getRealOpacity();
+    
     for (std::size_t i = 0, len = slots.size(); i < len; i++)
     {
         CCSlot* slot = (CCSlot*)slots[i];
@@ -250,20 +231,20 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         switch (slot->_blendMode)
         {
             case BlendMode::Add:
-                _curBlendSrc = _premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA;
-                _curBlendDst = GL_ONE;
+                _curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                _curBlendDst = BlendFactor::ONE;
                 break;
             case BlendMode::Multiply:
-                _curBlendSrc = GL_DST_COLOR;
-                _curBlendDst = GL_ONE_MINUS_SRC_ALPHA;
+                _curBlendSrc = BlendFactor::DST_COLOR;
+                _curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
                 break;
             case BlendMode::Screen:
-                _curBlendSrc = GL_ONE;
-                _curBlendDst = GL_ONE_MINUS_SRC_COLOR;
+                _curBlendSrc = BlendFactor::ONE;
+                _curBlendDst = BlendFactor::ONE_MINUS_SRC_COLOR;
                 break;
             default:
-                _curBlendSrc = _premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA;
-                _curBlendDst = GL_ONE_MINUS_SRC_ALPHA;
+                _curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                _curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
                 break;
         }
         
@@ -274,18 +255,57 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         // If texture or blendMode change,will change material.
         if (_preTextureIndex != _curTextureIndex || _preBlendDst != _curBlendDst || _preBlendSrc != _curBlendSrc)
         {
-            if (_preISegWritePos != -1)
+            _indexStart += _curISegLen;
+            double curHash = _curTextureIndex + (int)_curBlendSrc + (int)_curBlendDst;
+            
+            Effect* renderEffect = _renderHandle->getEffect(_materialLen);
+            Technique::Parameter* param = nullptr;
+            Pass* pass = nullptr;
+            
+            if (renderEffect)
             {
-                _materialBuffer->writeUint32(_preISegWritePos,_curISegLen);
+                double renderHash = renderEffect->getHash();
+                if (abs(renderHash - curHash) >= 0.01)
+                {
+                    param = (Technique::Parameter*)&(renderEffect->getProperty(textureKey));
+                    Technique* tech = renderEffect->getTechnique(techStage);
+                    Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
+                    pass = *(passes.begin());
+                }
+            }
+            else
+            {
+                auto tplEffect = texture->getNativeEffect();
+                if (tplEffect == nullptr)
+                {
+                    cocos2d::log("SpineRender:update get effect failed");
+                    _renderHandle->reset();
+                    return;
+                }
+                auto effect = new cocos2d::renderer::Effect();
+                effect->autorelease();
+                effect->copy(*tplEffect);
+                
+                Technique* tech = effect->getTechnique(techStage);
+                Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
+                pass = *(passes.begin());
+                
+                _renderHandle->updateNativeEffect(_materialLen, effect);
+                renderEffect = effect;
             }
             
-            _materialBuffer->writeUint32(_curTextureIndex);
-            _materialBuffer->writeUint32(_curBlendSrc);
-            _materialBuffer->writeUint32(_curBlendDst);
+            if (param)
+            {
+                param->setTexture(texture->getNativeTexture());
+            }
             
-            //Reserve indice segamentation count.
-            _preISegWritePos = (int)_materialBuffer->getCurPos();
-            _materialBuffer->writeUint32(0);
+            if (pass)
+            {
+                pass->setBlend(BlendOp::ADD, _curBlendSrc, _curBlendDst,
+                               BlendOp::ADD, _curBlendSrc, _curBlendDst);
+            }
+            
+            renderEffect->updateHash(curHash);
             
             _preTextureIndex = _curTextureIndex;
             _preBlendDst = _curBlendDst;
@@ -293,12 +313,11 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
             
             // Clear index segmentation count,prepare to next segmentation.
             _curISegLen = 0;
-            
             _materialLen++;
         }
         
         // Calculation vertex color.
-        _finalColor.a = _nodeColor.a * slot->color.a * 255;
+        _finalColor.a = realOpacity * slot->color.a * 255;
         float multiplier = _premultipliedAlpha ? slot->color.a : 255;
         _finalColor.r = _nodeColor.r * slot->color.r * multiplier;
         _finalColor.g = _nodeColor.g * slot->color.g * multiplier;
@@ -343,6 +362,7 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         
         // Record this turn index segmentation count,it will store in material buffer in the end.
         _curISegLen += triangles.indexCount;
+        _renderHandle->updateIA(_materialLen-1, _indexStart, _curISegLen);
     }
 }
 

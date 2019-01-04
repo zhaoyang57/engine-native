@@ -28,8 +28,7 @@
 #define MAX_VB_BUFFER_SIZE 1024000
 // index buffer max capacity
 #define MAX_IB_BUFFER_SIZE 1024000
-// can fill material data max capacity
-#define MAX_MATERIAL_BUFFER_SIZE 512
+
 // fill debug data max capacity
 #define MAX_DEBUG_BUFFER_SIZE 40960
 // type array pool min size

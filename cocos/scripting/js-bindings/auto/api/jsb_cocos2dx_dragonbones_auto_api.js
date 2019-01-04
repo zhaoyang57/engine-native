@@ -2366,11 +2366,11 @@ str
 },
 
 /**
- * @method setColor
- * @param {color4b_object} arg0
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
  */
-setColor : function (
-color4b 
+bindNodeProxy : function (
+nodeproxy 
 )
 {
 },
@@ -2398,13 +2398,13 @@ func
 },
 
 /**
- * @method getMaterialData
- * @return {se::Object}
+ * @method getRootDisplay
+ * @return {dragonBones::CCArmatureDisplay}
  */
-getMaterialData : function (
+getRootDisplay : function (
 )
 {
-    return se::Object;
+    return dragonBones::CCArmatureDisplay;
 },
 
 /**
@@ -2443,16 +2443,6 @@ setOpacityModifyRGB : function (
 bool 
 )
 {
-},
-
-/**
- * @method getRootDisplay
- * @return {dragonBones::CCArmatureDisplay}
- */
-getRootDisplay : function (
-)
-{
-    return dragonBones::CCArmatureDisplay;
 },
 
 /**
@@ -2525,6 +2515,16 @@ getDebugData : function (
 )
 {
     return se::Object;
+},
+
+/**
+ * @method setColor
+ * @param {color4b_object} arg0
+ */
+setColor : function (
+color4b 
+)
+{
 },
 
 /**

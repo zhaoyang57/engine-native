@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2018 Xiamen Yaji Software Co., Ltd.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -27,9 +27,11 @@
 #include "spine-creator-support/AttachmentVertices.h"
 #include "spine-creator-support/CreatorAttachmentLoader.h"
 #include <algorithm>
-#include "platform/CCApplication.h"
 #include "base/CCScheduler.h"
 #include "MiddlewareMacro.h"
+#include "renderer/renderer/Pass.h"
+#include "renderer/renderer/Technique.h"
+#include "MiddlewareRenderHandle.h"
 
 USING_NS_CC;
 USING_NS_MW;
@@ -38,6 +40,11 @@ using std::min;
 using std::max;
 
 using namespace spine;
+using namespace cocos2d;
+using namespace cocos2d::renderer;
+
+static const std::string techStage = "transparent";
+static const std::string textureKey = "texture";
 
 SpineRenderer* SpineRenderer::create ()
 {
@@ -74,11 +81,6 @@ void SpineRenderer::initialize ()
         _worldVertices = new float[1000]; // Max number of vertices per mesh.
     
     beginSchedule();
-    
-    if (_materialBuffer == nullptr)
-    {
-        _materialBuffer = new IOTypedArray(se::Object::TypedArrayType::UINT32, MAX_MATERIAL_BUFFER_SIZE);
-    }
 }
 
 void SpineRenderer::beginSchedule()
@@ -134,18 +136,13 @@ SpineRenderer::~SpineRenderer ()
 	if (_attachmentLoader) spAttachmentLoader_dispose(_attachmentLoader);
 	delete [] _worldVertices;
     
-    if (_materialBuffer)
-    {
-        delete _materialBuffer;
-        _materialBuffer = nullptr;
-    }
-    
     if (_debugBuffer)
     {
         delete _debugBuffer;
         _debugBuffer = nullptr;
     }
     
+    CC_SAFE_RELEASE(_nodeProxy);
     stopSchedule();
 }
 
@@ -221,38 +218,52 @@ void SpineRenderer::initWithBinaryFile (const std::string& skeletonDataFile, con
 
 void SpineRenderer::update (float deltaTime)
 {
-    if (_paused) return;
-    
     // avoid other place call update.
     auto mgr = MiddlewareManager::getInstance();
     if (!mgr->isUpdating) return;
     
-	spSkeleton_update(_skeleton, deltaTime * _timeScale);
+    if (!_paused)
+    {
+        spSkeleton_update(_skeleton, deltaTime * _timeScale);
+    }
+    
+    if (_nodeProxy == nullptr)
+    {
+        return;
+    }
+    
+    MiddlewareRenderHandle* renderHandle = (MiddlewareRenderHandle*)_nodeProxy->getHandle("render");
+    if (renderHandle == nullptr)
+    {
+        return;
+    }
+    renderHandle->reset();
     
     _skeleton->r = _nodeColor.r / (float)255;
     _skeleton->g = _nodeColor.g / (float)255;
     _skeleton->b = _nodeColor.b / (float)255;
-    _skeleton->a = _nodeColor.a / (float)255;
+    _skeleton->a = _nodeProxy->getRealOpacity() / (float)255;
     
     Color4F color;
     AttachmentVertices* attachmentVertices = nullptr;
     middleware::IOBuffer& vb = mgr->vb;
     middleware::IOBuffer& ib = mgr->ib;
     
-    int preBlendSrc = -1;
-    int preBlendDst = -1;
+    BlendFactor preBlendSrc = BlendFactor::ZERO;
+    BlendFactor preBlendDst = BlendFactor::ONE;
+    BlendFactor curBlendSrc = BlendFactor::ONE;
+    BlendFactor curBlendDst = BlendFactor::ZERO;
+    
     int preTextureIndex = -1;
-    int curBlendSrc = -1;
-    int curBlendDst = -1;
     int curTextureIndex = -1;
     
-    int preISegWritePos = -1;
     int curISegLen = 0;
     
     int debugSlotsLen = 0;
     int materialLen = 0;
+    int indexStart = 0;
     
-    _materialBuffer->reset();
+    middleware::Texture2D* texture = nullptr;
     
     if (_debugSlots || _debugBones)
     {
@@ -270,10 +281,7 @@ void SpineRenderer::update (float deltaTime)
         }
     }
     
-    //reserved space to save material len
-    _materialBuffer->writeUint32(0);
-    //reserved space to save index offset
-    _materialBuffer->writeUint32((uint32_t)ib.getCurPos()/sizeof(unsigned short));
+    indexStart = (uint32_t)ib.getCurPos()/sizeof(unsigned short);
     
     for (int i = 0, n = _skeleton->slotsCount; i < n; ++i)
     {
@@ -325,38 +333,79 @@ void SpineRenderer::update (float deltaTime)
         switch (slot->data->blendMode)
         {
             case SP_BLEND_MODE_ADDITIVE:
-                curBlendSrc = _premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA;
-                curBlendDst = GL_ONE;
+                curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                curBlendDst = BlendFactor::ONE;
                 break;
             case SP_BLEND_MODE_MULTIPLY:
-                curBlendSrc = GL_DST_COLOR;
-                curBlendDst = GL_ONE_MINUS_SRC_ALPHA;
+                curBlendSrc = BlendFactor::DST_COLOR;
+                curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
                 break;
             case SP_BLEND_MODE_SCREEN:
-                curBlendSrc = GL_ONE;
-                curBlendDst = GL_ONE_MINUS_SRC_COLOR;
+                curBlendSrc = BlendFactor::ONE;
+                curBlendDst = BlendFactor::ONE_MINUS_SRC_COLOR;
                 break;
             default:
-                curBlendSrc = _premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA;
-                curBlendDst = GL_ONE_MINUS_SRC_ALPHA;
+                curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
         }
         
-        curTextureIndex = attachmentVertices->_texture->getRealTextureIndex();
+        texture = attachmentVertices->_texture;
+        curTextureIndex = texture->getRealTextureIndex();
         // If texture or blendMode change,will change material.
         if (preTextureIndex != curTextureIndex || preBlendDst != curBlendDst || preBlendSrc != curBlendSrc)
         {
-            if (preISegWritePos != -1)
+            indexStart += curISegLen;
+            
+            double curHash = curTextureIndex + (int)curBlendSrc + (int)curBlendDst;
+            
+            Effect* renderEffect = renderHandle->getEffect(materialLen);
+            Technique::Parameter* param = nullptr;
+            Pass* pass = nullptr;
+            
+            if (renderEffect)
             {
-                _materialBuffer->writeUint32(preISegWritePos, curISegLen);
+                double renderHash = renderEffect->getHash();
+                if (abs(renderHash - curHash) >= 0.01)
+                {
+                    param = (Technique::Parameter*)&(renderEffect->getProperty(textureKey));
+                    Technique* tech = renderEffect->getTechnique(techStage);
+                    Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
+                    pass = *(passes.begin());
+                }
+            }
+            else
+            {
+                auto tplEffect = texture->getNativeEffect();
+                if (tplEffect == nullptr)
+                {
+                    cocos2d::log("SpineRender:update get effect failed");
+                    renderHandle->reset();
+                    return;
+                }
+                auto effect = new cocos2d::renderer::Effect();
+                effect->autorelease();
+                effect->copy(*tplEffect);
+                
+                Technique* tech = effect->getTechnique(techStage);
+                Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
+                pass = *(passes.begin());
+                
+                renderHandle->updateNativeEffect(materialLen, effect);
+                renderEffect = effect;
             }
             
-            _materialBuffer->writeUint32(curTextureIndex);
-            _materialBuffer->writeUint32(curBlendSrc);
-            _materialBuffer->writeUint32(curBlendDst);
+            if (param)
+            {
+                param->setTexture(texture->getNativeTexture());
+            }
             
-           //Reserve indice segamentation count.
-            preISegWritePos = (int)_materialBuffer->getCurPos();
-            _materialBuffer->writeUint32(0);
+            if (pass)
+            {
+                pass->setBlend(BlendOp::ADD, curBlendSrc, curBlendDst,
+                               BlendOp::ADD, curBlendSrc, curBlendDst);
+            }
+            
+            renderEffect->updateHash(curHash);
             
             preTextureIndex = curTextureIndex;
             preBlendDst = curBlendDst;
@@ -369,7 +418,7 @@ void SpineRenderer::update (float deltaTime)
         
         // Calculation vertex color.
         color.a *= _skeleton->a * slot->a * 255;
-        float multiplier = _premultipliedAlpha ? color.a : 255;
+        float multiplier = _premultipliedAlpha ? slot->a * 255 : 255;
         color.r *= _skeleton->r * slot->r * multiplier;
         color.g *= _skeleton->g * slot->g * multiplier;
         color.b *= _skeleton->b * slot->b * multiplier;
@@ -405,8 +454,8 @@ void SpineRenderer::update (float deltaTime)
             ib.writeBytes((char*)attachmentVertices->_triangles->indices, ibSize);
         }
         
-        // Record this turn index segmentation count,it will store in material buffer in the end.
         curISegLen += attachmentVertices->_triangles->indexCount;
+        renderHandle->updateIA(materialLen-1, indexStart, curISegLen);
     }
     
     if (_debugSlots)
@@ -414,34 +463,6 @@ void SpineRenderer::update (float deltaTime)
         _debugBuffer->writeFloat32(0, debugSlotsLen);
     }
     
-    bool isVBOutRange = vb.isOutRange();
-    bool isIBOutRange = ib.isOutRange();
-    bool isMatOutRange = _materialBuffer->isOutRange();
-    
-    // If vertex buffer or index buffer or material buffer out of range,then discard this time render
-    // next time will enlarge vertex buffer or index buffer to fill the animation data.
-    if (isVBOutRange || isIBOutRange || isMatOutRange)
-    {
-        _materialBuffer->writeUint32(0, 0);
-    }
-    else
-    {
-        _materialBuffer->writeUint32(0, materialLen);
-        
-        if (preISegWritePos != -1)
-        {
-            _materialBuffer->writeUint32(preISegWritePos, curISegLen);
-        }
-    }
-    
-    // If material buffer is out of range,it will no enlarge automatically,because the size which is 512 bytes is
-    // enough large,exceed the size means call gl draw function too many times,you better to optimize resource.
-    if (isMatOutRange)
-    {
-        cocos2d::log("Spine material data is too large,buffer has no space to put in it!!!!!!!!!!");
-        cocos2d::log("You can adjust MAX_MATERIAL_BUFFER_SIZE in Macro");
-        cocos2d::log("But It's better to optimize resource to avoid large material.Because it can advance performance");
-    }
     
     if (_debugBones)
     {
@@ -463,7 +484,7 @@ void SpineRenderer::update (float deltaTime)
         _debugBuffer->writeFloat32(0, 0);
         _debugBuffer->writeFloat32(sizeof(float), 0);
         cocos2d::log("Spine debug data is too large,debug buffer has no space to put in it!!!!!!!!!!");
-        cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in Macro");
+        cocos2d::log("You can adjust MAX_DEBUG_BUFFER_SIZE in MiddlewareMacro");
     }
 }
 

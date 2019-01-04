@@ -164,5 +164,6 @@ tests/cpp-tests/Resources/audio
 /tools/simulator/runtime/win32
 /tools/simulator/simulator
 
-
 next*.zip
+
+tools/docs/html/

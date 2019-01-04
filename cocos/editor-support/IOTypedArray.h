@@ -41,20 +41,18 @@ public:
      * @param[in] defaultSize TypeArray capacity
      * @param[in] usePool If true,will get TypeArray from pool,or create TypeArray,default false.
      */
-    IOTypedArray (se::Object::TypedArrayType arrayType, std::size_t defaultSize, bool usePool = false);
+    IOTypedArray (se::Object::TypedArrayType arrayType, std::size_t defaultSize);
     virtual ~IOTypedArray ();
-    
+        
     inline se::Object* getTypeArray () const
     {
         return _typeArray;
     }
-
-    virtual void resize(std::size_t newLen, bool needCopy = false) override;
     
+    virtual void resize(std::size_t newLen, bool needCopy = false) override;
+        
 private:
     se::Object::TypedArrayType  _arrayType = se::Object::TypedArrayType::NONE;
     se::Object*                 _typeArray = nullptr;
-    bool                        _usePool = false;
 };
-
 MIDDLEWARE_END

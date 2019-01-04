@@ -74,13 +74,13 @@ namespace se {
         unsigned int bufferLength = 0;
         if (JsNoError == JsGetArrayBufferStorage(jsobj, &buffer, &bufferLength))
         {
-            if (data)
+            if (data == nullptr)
             {
-                memcpy((void*)buffer, data, byteLength);
+                memset((void*)buffer, 0, byteLength);
             }
             else
             {
-                memset((void*)buffer, 0, byteLength);
+                memcpy((void*)buffer, data, byteLength);
             }
             obj = Object::_createJSObject(nullptr, jsobj);
         }
@@ -152,13 +152,14 @@ namespace se {
         int elementSize = 0;
         if (JsNoError == JsGetTypedArrayStorage(jsobj, &buffer, &bufferLength, &arrType, &elementSize))
         {
-            //If data has content,then will copy data into buffer,or will only clear buffer.
-            if (data) {
-                memcpy((void*)buffer, data, byteLength);
-            }else{
-                memset((void*)buffer, 0, byteLength);
+            if (data == nullptr)
+            {
+                memset((void*)buffer, 0, byteLength);
             }
-            
+            else
+            {
+                memcpy((void*)buffer, data, byteLength);
+            }
             obj = Object::_createJSObject(nullptr, jsobj);
         }
 
