@@ -34,6 +34,7 @@ THE SOFTWARE.
 #define glDeleteVertexArrays        glDeleteVertexArraysOES
 #define glGenVertexArrays           glGenVertexArraysOES
 #define glBindVertexArray           glBindVertexArrayOES
+#define glIsVertexArray             glIsVertexArrayOES
 #define glMapBuffer                 glMapBufferOES
 #define glUnmapBuffer               glUnmapBufferOES
 #define glTexImage3D				glTexImage3DOES
@@ -69,10 +70,12 @@ typedef char GLchar;
 extern PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOESEXT;
 extern PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOESEXT;
 extern PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOESEXT;
+extern PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOESEXT;
 
 #define glGenVertexArraysOES glGenVertexArraysOESEXT
 #define glBindVertexArrayOES glBindVertexArrayOESEXT
 #define glDeleteVertexArraysOES glDeleteVertexArraysOESEXT
+#define glIsVertexArrayOES glIsVertexArrayOESEXT
 
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID

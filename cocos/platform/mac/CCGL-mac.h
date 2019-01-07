@@ -40,6 +40,7 @@ THE SOFTWARE.
 #define glDeleteVertexArrays            glDeleteVertexArraysAPPLE
 #define glGenVertexArrays               glGenVertexArraysAPPLE
 #define glBindVertexArray               glBindVertexArrayAPPLE
+#define glIsVertexArray                 glIsVertexArrayAPPLE
 #define glClearDepthf                   glClearDepth
 #define glDepthRangef                   glDepthRange
 #define glReleaseShaderCompiler(xxx)

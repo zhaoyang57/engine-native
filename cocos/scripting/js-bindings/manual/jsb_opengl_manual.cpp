@@ -159,6 +159,8 @@ namespace {
 
     GLuint __glErrorCode = GL_NO_ERROR;
 
+    GLboolean __enabledVAO = GL_FALSE;
+
     se::Class* __jsb_WebGLObject_class = nullptr;
     se::Class* __jsb_WebGLTexture_class = nullptr;
     se::Class* __jsb_WebGLBuffer_class = nullptr;
@@ -168,6 +170,9 @@ namespace {
     se::Class* __jsb_WebGLShader_class = nullptr;
     se::Class* __jsb_WebGLActiveInfo_class = nullptr;
 //    se::Class* __jsb_WebGLUniformLocation_class = nullptr;
+    se::Class* __jsb_VertexArrayObjectOES_class = nullptr;
+    se::Class* __jsb_OES_vertex_array_object_class = nullptr;
+    se::Object* __glVAOObj = nullptr;
 
     std::unordered_map<GLuint, se::Value> __shaders;
 
@@ -180,6 +185,7 @@ namespace {
     WebGLObjectMap __webglFramebufferMap;
     WebGLObjectMap __webglProgramMap;
     WebGLObjectMap __webglShaderMap;
+    WebGLObjectMap __webglVertexArrayObjectOESMap;
 
     inline void WEBGL_framebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
     {
@@ -211,7 +217,8 @@ namespace {
             RENDER_BUFFER,
             FRAME_BUFFER,
             PROGRAM,
-            SHADER
+            SHADER,
+            VAO
         };
 
     protected:
@@ -350,6 +357,25 @@ namespace {
                 SE_LOGD("Destroy WebGLShader (%u) by GC\n", _id);
                 JSB_GL_CHECK_VOID(glDeleteShader(_id));
                 safeRemoveElementFromGLObjectMap(__webglShaderMap, _id);
+            }
+        }
+    };
+
+    class WebGLVertexArrayObjectOES final : public WebGLObject
+    {
+    public:
+        WebGLVertexArrayObjectOES(GLuint id)
+        : WebGLObject(Type::VAO, id)
+        {
+            __webglVertexArrayObjectOESMap.emplace(id, this);
+        }
+        virtual ~WebGLVertexArrayObjectOES()
+        {
+            if (_id != 0)
+            {
+                SE_LOGD("Destroy WebGLVertexArrayObjectOES (%u) by GC\n", _id);
+                JSB_GL_CHECK_VOID(ccDeleteVertexArrays(1, &_id));
+                safeRemoveElementFromGLObjectMap(__webglVertexArrayObjectOESMap, _id);
             }
         }
     };
@@ -3073,7 +3099,7 @@ static bool JSB_glGetVertexAttrib(se::State& s)
         if (pname == GL_VERTEX_ATTRIB_ARRAY_ENABLED || pname == GL_VERTEX_ATTRIB_ARRAY_NORMALIZED) {
             s.rval().setBoolean(value == 0 ? false : true);
         }
-        else if (pname == GL_VERTEX_ATTRIB_ARRAY_SIZE || GL_VERTEX_ATTRIB_ARRAY_STRIDE || GL_VERTEX_ATTRIB_ARRAY_TYPE) {
+        else if (pname == GL_VERTEX_ATTRIB_ARRAY_SIZE || pname == GL_VERTEX_ATTRIB_ARRAY_STRIDE || pname == GL_VERTEX_ATTRIB_ARRAY_TYPE) {
             s.rval().setNumber(value);
         }
         else {
@@ -3692,6 +3718,130 @@ static bool JSB_glGetAttachedShaders(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glGetAttachedShaders)
 
+static bool JSB_glVertexArrayObjectOESFinalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (WebGLVertexArrayObjectOES)", s.nativeThisObject());
+    WebGLVertexArrayObjectOES* cobj = (WebGLVertexArrayObjectOES*) s.nativeThisObject();
+    if (se::ScriptEngine::getInstance()->isInCleanup())
+        cobj->release();
+    else
+        cobj->autorelease();
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(JSB_glVertexArrayObjectOESFinalize)
+
+static bool JSB_glVertexArrayObjectOES_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glVertexArrayObjectOES_constructor, __jsb_VertexArrayObjectOES_class, JSB_glVertexArrayObjectOESFinalize)
+
+static bool JSB_glOES_vertex_array_objectFinalize(se::State& s)
+{
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(JSB_glOES_vertex_array_objectFinalize)
+
+static bool JSB_glOES_vertex_array_object_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glOES_vertex_array_object_constructor, __jsb_OES_vertex_array_object_class, JSB_glOES_vertex_array_objectFinalize)
+
+// WebGLVertexArrayObjectOES? createVertexArrayOES();
+static bool JSB_glCreateVertexArrayOES(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 0, false, "Invalid number of arguments" );
+
+    GLuint buffer;
+    JSB_GL_CHECK(glGenVertexArrays(1, &buffer));
+    auto obj = se::Object::createObjectWithClass(__jsb_VertexArrayObjectOES_class);
+    s.rval().setObject(obj, true);
+    obj->setProperty("_id", se::Value(buffer));
+    auto cobj = new (std::nothrow) WebGLVertexArrayObjectOES(buffer);
+    obj->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_FUNC(JSB_glCreateVertexArrayOES)
+
+// void bindVertexArrayOES(WebGLVertexArrayObjectOES? arrayObject);
+static bool JSB_glBindVertexArrayOES(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2( argc == 1, false, "Invalid number of arguments" );
+
+    bool ok = true;
+    WebGLVertexArrayObjectOES* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLuint bufferId = arg0 != nullptr ? arg0->_id : 0;
+    JSB_GL_CHECK(ccBindVertexArray(bufferId));
+    return true;
+}
+SE_BIND_FUNC(JSB_glBindVertexArrayOES)
+
+// void deleteVertexArrayOES(WebGLVertexArrayObjectOES? arrayObject);
+static bool JSB_glDeleteVertexArrayOES(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments" );
+
+    bool ok = true;
+    WebGLVertexArrayObjectOES* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLuint bufferId = arg0 != nullptr ? arg0->_id : 0;
+    JSB_GL_CHECK(ccDeleteVertexArrays(1, &bufferId));
+    safeRemoveElementFromGLObjectMap(__webglVertexArrayObjectOESMap, bufferId);
+    if (arg0 != nullptr) arg0->_id = 0;
+    return true;
+}
+SE_BIND_FUNC(JSB_glDeleteVertexArrayOES)
+
+// [WebGLHandlesContextLoss] GLboolean isVertexArrayOES(WebGLVertexArrayObjectOES? arrayObject);
+static bool JSB_glIsVertexArrayOES(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    if (argc == 0)
+    {
+        s.rval().setBoolean(false);
+        return true;
+    }
+    SE_PRECONDITION2( argc == 1, false, "Invalid number of arguments" );
+
+    bool ok = true;
+    WebGLObject* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLboolean ret_val = GL_FALSE;
+    if (dynamic_cast<WebGLVertexArrayObjectOES*>(arg0) != nullptr)
+    {
+        GLuint id = arg0 != nullptr ? arg0->_id : 0;
+        ret_val = glIsVertexArray(id);
+    }
+    s.rval().setBoolean(ret_val == GL_TRUE);
+    return true;
+}
+SE_BIND_FUNC(JSB_glIsVertexArrayOES)
+
+static bool JSB_getVERTEX_ARRAY_BINDING_OES(se::State &s) {
+    const auto &args = s.args();
+    int argc = (int) args.size();
+
+    if (argc == 0) {
+        s.rval().setInt32(GL_VERTEX_ARRAY_BINDING_OES);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting 0", argc);
+    return false;
+}
+SE_BIND_PROP_GET(JSB_getVERTEX_ARRAY_BINDING_OES)
+
 // sequence<DOMString>? getSupportedExtensions();
 static bool JSB_glGetSupportedExtensions(se::State& s) {
     const auto& args = s.args();
@@ -3710,19 +3860,39 @@ static bool JSB_glGetSupportedExtensions(se::State& s) {
 
     size_t start_extension = 0;
     uint32_t element = 0;
+    bool add = false;
     for( size_t i=0; i<len+1; i++) {
         if( copy[i]==' ' || copy[i]==',' || i==len ) {
             copy[i] = 0;
 
             const char* extensionName = (const char*)&copy[start_extension];
             if (0 == strcmp(extensionName, "GL_EXT_texture_compression_s3tc"))
+            {
                 extensionName = "WEBGL_compressed_texture_s3tc";
+                add = true;
+            }
             else if (0 == strcmp(extensionName, "GL_OES_compressed_ETC1_RGB8_texture"))
+            {
                 extensionName = "WEBGL_compressed_texture_etc1";
+                add = true;
+            }
             else if (0 == strcmp(extensionName, "GL_IMG_texture_compression_pvrtc"))
+            {
                 extensionName = "WEBGL_compressed_texture_pvrtc";
+                add = true;
+            }
+            else if (0 == strcmp(extensionName, "GL_OES_vertex_array_object") && glGenVertexArrays != nullptr &&
+                     glBindVertexArray != nullptr && glDeleteVertexArrays != nullptr && glIsVertexArray != nullptr)
+            {
+                extensionName = "OES_vertex_array_object";
+                add = true;
+            }
 
-            jsobj->setArrayElement(element, se::Value(extensionName));
+            if (add)
+            {
+                add = false;
+                jsobj->setArrayElement(element, se::Value(extensionName));
+            }
 
             start_extension = i+1;
             ++element;
@@ -3736,6 +3906,38 @@ static bool JSB_glGetSupportedExtensions(se::State& s) {
 
 }
 SE_BIND_FUNC(JSB_glGetSupportedExtensions)
+
+// object? getExtension(DOMString name)
+static bool JSB_glGetExtension(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2( argc == 1, false, "Invalid number of arguments" );
+
+    bool ok = true;
+    std::string arg0;
+    s.rval().setNull();
+    ok &= seval_to_std_string(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    std::transform(arg0.begin(), arg0.end(), arg0.begin(), ::tolower);
+    if (arg0 == "oes_vertex_array_object")
+    {
+        if (glBindVertexArray != nullptr && glDeleteVertexArrays != nullptr &&
+            glGenVertexArrays != nullptr && glIsVertexArray != nullptr)
+        {
+            if (__glVAOObj == nullptr)
+            {
+                __glVAOObj = se::Object::createObjectWithClass(__jsb_OES_vertex_array_object_class);
+                __glVAOObj->root();
+                __enabledVAO = GL_TRUE;
+            }
+            s.rval().setObject(__glVAOObj);
+        }
+    }
+    // add other extension
+
+    return true;
+}
+SE_BIND_FUNC(JSB_glGetExtension)
 
 // any getTexParameter(GLenum target, GLenum pname);
 static bool JSB_glGetTexParameterfv(se::State& s) {
@@ -4264,6 +4466,25 @@ static bool JSB_glGetParameter(se::State& s)
                     auto objIter = se::NativePtrToObjectMap::find(iter->second);
                     if (objIter != se::NativePtrToObjectMap::end()) {
                         ret.setObject(objIter->second);
+                    }
+                }
+            }
+        }
+            break;
+
+        case GL_VERTEX_ARRAY_BINDING_OES:
+        {
+            if (__enabledVAO == GL_TRUE)
+            {
+                ret.setNull();
+                intbuffer[0] = ccGetBoundVertexArray();
+                if (intbuffer[0] > 0) {
+                    auto iter = __webglVertexArrayObjectOESMap.find(intbuffer[0]);
+                    if (iter != __webglVertexArrayObjectOESMap.end()) {
+                        auto objIter = se::NativePtrToObjectMap::find(iter->second);
+                        if (objIter != se::NativePtrToObjectMap::end()) {
+                            ret.setObject(objIter->second);
+                        }
                     }
                 }
             }
@@ -5161,8 +5382,21 @@ bool JSB_register_opengl(se::Object* obj)
     __jsb_WebGLActiveInfo_class = se::Class::create("WebGLActiveInfo", obj, nullptr, _SE(JSB_glActiveInfo_constructor));
     __jsb_WebGLActiveInfo_class->install();
 
+    __jsb_VertexArrayObjectOES_class = se::Class::create("VertexArrayObjectOES", obj, glObjectProto, _SE(JSB_glVertexArrayObjectOES_constructor));
+    __jsb_VertexArrayObjectOES_class->defineFinalizeFunction(_SE(JSB_glVertexArrayObjectOESFinalize));
+    __jsb_VertexArrayObjectOES_class->install();
+
+    __jsb_OES_vertex_array_object_class = se::Class::create("OES_vertex_array_object", obj, nullptr, _SE(JSB_glOES_vertex_array_object_constructor));
+    __jsb_OES_vertex_array_object_class->defineFunction("createVertexArrayOES", _SE(JSB_glCreateVertexArrayOES));
+    __jsb_OES_vertex_array_object_class->defineFunction("deleteVertexArrayOES", _SE(JSB_glDeleteVertexArrayOES));
+    __jsb_OES_vertex_array_object_class->defineFunction("bindVertexArrayOES", _SE(JSB_glBindVertexArrayOES));
+    __jsb_OES_vertex_array_object_class->defineFunction("isVertexArrayOES", _SE(JSB_glIsVertexArrayOES));
+    __jsb_OES_vertex_array_object_class->defineProperty("VERTEX_ARRAY_BINDING_OES", _SE(JSB_getVERTEX_ARRAY_BINDING_OES), nullptr);
+    __jsb_OES_vertex_array_object_class->install();
+
     // New WebGL functions, not present on OpenGL ES 2.0
     __glObj->defineFunction("getSupportedExtensions", _SE(JSB_glGetSupportedExtensions));
+    __glObj->defineFunction("getExtension", _SE(JSB_glGetExtension));
     __glObj->defineFunction("activeTexture", _SE(JSB_glActiveTexture));
     __glObj->defineFunction("attachShader", _SE(JSB_glAttachShader));
     __glObj->defineFunction("bindAttribLocation", _SE(JSB_glBindAttribLocation));
@@ -5302,6 +5536,12 @@ bool JSB_register_opengl(se::Object* obj)
 
     se::ScriptEngine::getInstance()->addBeforeCleanupHook([](){
         __shaders.clear();
+        if (__glVAOObj != nullptr)
+        {
+            __glVAOObj->unroot();
+            __glVAOObj->decRef();
+            __glVAOObj = nullptr;
+        }
     });
 
     return true;
