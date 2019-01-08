@@ -636,17 +636,20 @@ void setDrawCallAndJSTimeJNI(const std::string& info)
       JniHelper::callStaticVoidMethod(JCLS_HELPER, "setDrawInfoText",info);
 }
 
-void openDebugViewJNI()
+void openDebugViewJNI(bool enable)
 {
-    if (!__isOpenDebugView)
+    if (!__isOpenDebugView && enable)
     {
         LOGD("openDebugViewJNI ...");
         __isOpenDebugView = true;
-        JniHelper::callStaticVoidMethod(JCLS_HELPER, "openDebugView");
+        JniHelper::callStaticVoidMethod(JCLS_HELPER, "openDebugView", true);
         if (!__isGLOptModeEnabled)
         {
             JniHelper::callStaticVoidMethod(JCLS_HELPER, "disableBatchGLCommandsToNative");
         }
+    } else if(!enable && __isOpenDebugView) {
+        __isOpenDebugView = false;
+        JniHelper::callStaticVoidMethod(JCLS_HELPER, "openDebugView", false);
     }
 }
 

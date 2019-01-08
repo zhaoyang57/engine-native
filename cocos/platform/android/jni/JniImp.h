@@ -45,5 +45,5 @@ extern bool openURLJNI(const std::string& url);
 extern void setPreferredFramesPerSecondJNI(int fps);
 extern void setGameInfoDebugViewTextJNI(int index, const std::string& text);
 extern void setDrawCallAndJSTimeJNI(const std::string& info);
-extern void openDebugViewJNI();
+extern void openDebugViewJNI(bool enable);
 extern void disableBatchGLCommandsToNativeJNI();
