@@ -319,7 +319,7 @@ extern "C"
 
     JNIEXPORT void JNICALL JNI_RENDER(nativeOnSurfaceChanged)(JNIEnv*  env, jobject thiz, jint w, jint h)
     {
-        //REFINE
+        EventDispatcher::dispatchResizeEvent(w, h);
     }
 
     /***********************************************************
