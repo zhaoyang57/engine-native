@@ -1485,7 +1485,6 @@ bool seval_to_EffectProperty(const cocos2d::Vector<cocos2d::renderer::Technique 
     for (const auto& key : keys)
     {
         se::Value value;
-        cocos2d::renderer::Effect::Property property;
         if (obj->getProperty(key.c_str(), &value) && value.isObject())
         {
             for (const auto& techinque : techniqes)
@@ -1494,7 +1493,9 @@ bool seval_to_EffectProperty(const cocos2d::Vector<cocos2d::renderer::Technique 
                 {
                     if (key == param.getName())
                     {
-                        ret->emplace(key, param);
+                        cocos2d::renderer::Effect::Property property(key, param.getType());
+                        seval_to_TechniqueParameter_not_constructor(value, &property);
+                        ret->emplace(key, property);
                         goto theEnd;
                     }
                 }
