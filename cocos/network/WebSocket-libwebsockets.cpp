@@ -853,7 +853,9 @@ void WebSocketImpl::close()
 
 void WebSocketImpl::closeAsync(int code, const std::string &reason)
 {
-    lws_close_reason(_wsInstance, (lws_close_status)code, (unsigned char*)const_cast<char*>(reason.c_str()), reason.length());
+    if (_wsInstance != nullptr) {
+        lws_close_reason(_wsInstance, (lws_close_status)code, (unsigned char*)const_cast<char*>(reason.c_str()), reason.length());
+    }
     closeAsync();
 }
 
@@ -1418,6 +1420,9 @@ int WebSocketImpl::onConnectionClosed()
     });
 
     LOGD("WebSocket (%p) onConnectionClosed DONE!\n", this);
+
+    // when the function called, _wsInstance will be invalided
+    _wsInstance = nullptr;
     return 0;
 }
 
