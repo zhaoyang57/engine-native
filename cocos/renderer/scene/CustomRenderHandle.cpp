@@ -53,7 +53,7 @@ void CustomRenderHandle::updateNativeEffect(std::size_t index, Effect* effect)
         _effects.replace(index, effect);
         return;
     }
-    cocos2d::log("CustomRenderHandle:updateNativeEffect index:%lu out of range", index);
+    cocos2d::log("CustomRenderHandle:updateNativeEffect index:%zu out of range", index);
 }
 
 RENDERER_END

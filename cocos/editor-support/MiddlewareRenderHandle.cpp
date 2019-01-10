@@ -61,7 +61,7 @@ void MiddlewareRenderHandle::updateIA(std::size_t index, int start, int count)
     }
     else
     {
-        cocos2d::log("MiddlewareRenderHandle:updateIA index:%lu is out of range", index);
+        cocos2d::log("MiddlewareRenderHandle:updateIA index:%zu is out of range", index);
         return;
     }
     
@@ -81,7 +81,7 @@ void MiddlewareRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher, 
 {
     if (index >= _iaCount)
     {
-        cocos2d::log("MiddlewareRenderHandle:renderIA index:%lu out of range", index);
+        cocos2d::log("MiddlewareRenderHandle:renderIA index:%zu out of range", index);
         return;
     }
     

@@ -73,7 +73,7 @@ void GraphicsRenderHandle::updateIA(std::size_t index, int start, int count)
     }
     else
     {
-        cocos2d::log("GraphicsRenderHandle:updateIA index:%lu is out of range", index);
+        cocos2d::log("GraphicsRenderHandle:updateIA index:%zu is out of range", index);
         return;
     }
     
@@ -94,7 +94,7 @@ void GraphicsRenderHandle::renderIA(std::size_t index, ModelBatcher* batcher, No
 {
     if (index >= _iaCount)
     {
-        cocos2d::log("GraphicsRenderHandle:renderIA index:%lu out of range", index);
+        cocos2d::log("GraphicsRenderHandle:renderIA index:%zu out of range", index);
         return;
     }
     
