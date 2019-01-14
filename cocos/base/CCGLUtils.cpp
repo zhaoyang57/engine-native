@@ -91,7 +91,7 @@ void ccActiveTexture(GLenum texture)
 {
 #if CC_ENABLE_GL_STATE_CACHE
     auto activeTextureUnit = texture - GL_TEXTURE0;
-    if(activeTextureUnit < MAX_TEXTURE_UNIT && activeTextureUnit >= 0)
+    if(activeTextureUnit < MAX_TEXTURE_UNIT)
     {
        __currentActiveTextureUnit = activeTextureUnit;
     }
