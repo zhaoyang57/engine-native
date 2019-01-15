@@ -239,7 +239,8 @@ public class Cocos2dxEditBox {
                     } else {
                         if (keyboardVisible) {
                             keyboardVisible = false;
-                            Cocos2dxEditBox.this.hide();
+                            mEditText.setVisibility(View.INVISIBLE);
+                            mButtonLayout.setVisibility(View.INVISIBLE);
                         }
                     }
                 }
