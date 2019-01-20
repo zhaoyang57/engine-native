@@ -53,22 +53,22 @@ class RenderHandle : SystemHandle
 public:
     RenderHandle();
     virtual ~RenderHandle();
-    /**
+    /*
      *  @brief Commit the current render handle to ModelBatcher
      */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
-    /**
+    /*
      *  @brief Do nothing
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
-    /**
+    /*
      *  @brief Fills render data in given index to the MeshBuffer
      *  @param[in] buffer The shared mesh buffer
      *  @param[in] index The index of render data to be updated
      *  @param[in] worldMat The world transform matrix
      */
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
-    /**
+    /*
      *  @brief Update local render buffer opacity
      *  @param[in] index The index of render data to be updated
      *  @param[in] opacity Inherit opacity

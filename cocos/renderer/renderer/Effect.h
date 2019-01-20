@@ -46,11 +46,11 @@ public:
     
     using Property = Technique::Parameter;
     
-    /**
+    /*
      *  @brief The default constructor.
      */
     Effect();
-    /**
+    /*
      *  @brief The default destructor.
      */
     ~Effect();

@@ -53,11 +53,11 @@ class Scene;
 class NodeProxy : public Ref
 {
 public:
-    /**
+    /*
      * @brief The default constructor.
      */
     NodeProxy();
-    /**
+    /*
      * @brief The destructor.
      */
     ~NodeProxy();

@@ -42,13 +42,13 @@ RENDERER_BEGIN
 class VertexFormat : public Ref
 {
 public:
-    /**
+    /*
      * Informations used to define an attribute in vertex data layout.
      * @struct Info
      */
     struct Info
     {
-        /**
+        /*
          * Constructor
          * @param[in] name Attribute name
          * @param[in] type Data type of each component
@@ -70,7 +70,7 @@ public:
 
     static Info INFO_END;
 
-    /**
+    /*
      * Element describes informations of an attribute
      * @struct Info
      */
@@ -91,38 +91,38 @@ public:
             return type != AttribType::INVALID;
         }
 
-        /**
+        /*
          * Name of the attribute
          */
         std::string name;
-        /**
+        /*
          * Byte offset in each vertex data
          */
         size_t offset;
-        /**
+        /*
          * Specifies the offset in bytes between the beginning of consecutive vertex attributes
          */
         uint32_t stride;
         int32_t stream;
-        /**
+        /*
          * Number of components per attribute unit
          */
         uint32_t num;
-        /**
+        /*
          * Total bytes per attribute unit
          */
         uint32_t bytes;
-        /**
+        /*
          * Data type of each component
          */
         AttribType type;
-        /**
+        /*
          * Specifies whether integer data values should be normalized into a certain range when being casted to a float
          */
         bool normalize;
     };
 
-    /**
+    /*
      * Default constructor
      */
     VertexFormat();
@@ -130,11 +130,11 @@ public:
      * Constructor with specific attribute informations
      */
     VertexFormat(const std::vector<Info>& infos);
-    /**
+    /*
      * Copy constructor
      */
     VertexFormat(const VertexFormat& o);
-    /**
+    /*
      * Move constructor
      */
     VertexFormat(VertexFormat&& o);
@@ -156,11 +156,11 @@ public:
      */
     uint32_t getBytes() const { return _bytes; };
     
-    /**
+    /*
      * Builtin VertexFormat with 2d position, uv, color attributes
      */
     static VertexFormat* XY_UV_Color;
-    /**
+    /*
      * Builtin VertexFormat with 2d position, color attributes
      */
     static VertexFormat* XY_Color;

@@ -67,7 +67,7 @@ public:
      *  @param[in] forward
      */
     RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
-    /**
+    /*
      *  @brief The destructor.
      */
     ~RenderFlow();

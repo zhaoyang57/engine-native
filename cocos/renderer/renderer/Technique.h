@@ -46,7 +46,7 @@ class Technique : public Ref
 {
 public:
     
-    /**
+    /*
      *  @brief Uniform parameter of Technique, defines the uniform name and type
      */
     class Parameter final
@@ -78,23 +78,23 @@ public:
         // MAT4 -> 16
         static uint8_t getElements(Type type);
         
-        /**
+        /*
          *  @brief The default constructor.
          */
         Parameter();
-        /**
+        /*
          *  @brief Constructor with integer.
          */
         Parameter(const std::string& name, Type type, int* value, uint8_t count = 1);
-        /**
+        /*
          *  @brief Constructor with float.
          */
         Parameter(const std::string& name, Type type, float* value, uint8_t count = 1);
-        /**
+        /*
          *  @brief Constructor with texture.
          */
         Parameter(const std::string& name, Type type, Texture* texture);
-        /**
+        /*
          *  @brief Constructor with texture array.
          */
         Parameter(const std::string& name, Type type, const std::vector<Texture*>& textures);
@@ -105,36 +105,36 @@ public:
         
         Parameter& operator=(const Parameter& rh);
         
-        /**
+        /*
          *  @brief Gets the uniform type.
          */
         inline Type getType() const { return _type; }
-        /**
+        /*
          *  @brief Gets the uniform name.
          */
         inline const std::string& getName() const { return _name; }
-        /**
+        /*
          *  @brief Gets the counts of uniform components.
          */
         inline uint8_t getCount() const { return _count; }
-        /**
+        /*
          *  @brief Gets parameter value.
          */
         inline void* getValue() const { return _value; }
-        /**
+        /*
          *  @brief Gets bytes occupied by primitive uniform parameter.
          */
         inline uint16_t getBytes() const { return _bytes; };
         
-        /**
+        /*
          *  @brief Gets the texture array.
          */
         std::vector<Texture*> getTextureArray() const;
-        /**
+        /*
          *  @brief Sets the texture pointer.
          */
         void setTexture(Texture* texture);
-        /**
+        /*
          *  @brief Gets the texture pointer.
          */
         Texture* getTexture() const;
@@ -166,11 +166,11 @@ public:
               const Vector<Pass*>& passes,
               int layer = 0);
     
-    /**
+    /*
      *  @brief The default constructor.
      */
     Technique();
-    /**
+    /*
      *  @brief The default destructor.
      */
     ~Technique();
