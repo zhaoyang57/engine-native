@@ -35,13 +35,26 @@ RENDERER_BEGIN
  */
 
 /**
- *  @brief Pass describes base render pass configurations, including program, cull face, blending, depth testing and stencil testing configs.
+ * @brief Pass describes base render pass configurations, including program, cull face, blending, depth testing and stencil testing configs.\n
+ * JS API: renderer.Pass
+ * @code
+ * let pass = new renderer.Pass('sprite');
+ * pass.setDepth(false, false);
+ * pass.setCullMode(gfx.CULL_NONE);
+ * pass.setBlend(
+ *     gfx.BLEND_FUNC_ADD,
+ *     gfx.BLEND_SRC_ALPHA, gfx.BLEND_ONE_MINUS_SRC_ALPHA,
+ *     gfx.BLEND_FUNC_ADD,
+ *     gfx.BLEND_SRC_ALPHA, gfx.BLEND_ONE_MINUS_SRC_ALPHA
+ * );
+ * @endcode
  */
 class Pass : public Ref
 {
 public:
     /**
-     *  @brief Constructor with linked program name.
+     * @brief Constructor with linked program name.
+     * @param[in] programName Shader program name
      */
     Pass(const std::string& programName);
     Pass() {}
@@ -110,7 +123,7 @@ public:
      *  @brief Sets linked program name.
      */
     inline void setProgramName(const std::string& programName) { _programName = programName; }
-    /**
+    /*
      *  @brief Disable stencil test.
      */
     inline void disableStencilTest() { _stencilTest = false; }

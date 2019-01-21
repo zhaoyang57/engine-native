@@ -47,8 +47,18 @@ class Scene;
  */
 
 /**
- * @brief NodeProxy is a cpp delegator of js Node.
- * It synchronize the hierarchy from js node tree, update the transform each frame, and manages system handles like RenderHandle which represent the render component.
+ * @brief NodeProxy is a cpp delegator of js Node.\n
+ * It synchronize the hierarchy from js node tree, update the transform each frame, and manages system handles like RenderHandle which represent the render component.\n
+ * JS API: renderer.NodeProxy
+ @code
+ let node = new cc.Node();
+ // NodeProxy is automatically created by cc.Node
+ let proxy = node._proxy;
+ 
+ // You can also create NodeProxy manually, but you also need to bind it manually
+ let proxy = new renderer.NodeProxy();
+ proxy.bind(node);
+ @endcode
  */
 class NodeProxy : public Ref
 {

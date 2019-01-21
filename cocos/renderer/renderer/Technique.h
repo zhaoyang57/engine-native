@@ -40,7 +40,23 @@ class Texture;
  */
 
 /**
- *  @brief Technique is a important part of Effect, it contains a selective uniform parameters and all passes of effect.
+ * @brief Technique is a important part of Effect, it contains a selective uniform parameters and all passes of effect.\n
+ * JS API: renderer.Technique
+ * @code
+ * let pass = new renderer.Pass('sprite');
+ * pass.setDepth(false, false);
+ * pass.setCullMode(gfx.CULL_NONE);
+ * let technique = new renderer.Technique(
+ *     ['transparent'],
+ *     [
+ *         { name: 'texture', type: renderer.PARAM_TEXTURE_2D },
+ *         { name: 'color', type: renderer.PARAM_COLOR4 }
+ *     ],
+ *     [
+ *         pass
+ *     ]
+ * );
+ * @endcode
  */
 class Technique : public Ref
 {

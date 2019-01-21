@@ -37,7 +37,15 @@ RENDERER_BEGIN
  */
 
 /**
- * The vertex format defines the attributes and their data layout in the VertexBuffer
+ * The vertex format defines the attributes and their data layout in the VertexBuffer\n
+ * JS API: gfx.VertexFormat
+ @code
+ let vertexFmt = new gfx.VertexFormat([
+     { name: gfx.ATTR_POSITION, type: gfx.ATTR_TYPE_FLOAT32, num: 3 },
+     { name: gfx.ATTR_UV0, type: gfx.ATTR_TYPE_FLOAT32, num: 2 },
+     { name: gfx.ATTR_COLOR, type: gfx.ATTR_TYPE_FLOAT32, num: 4, normalize: true },
+ ]);
+ @endcode
  */
 class VertexFormat : public Ref
 {
@@ -128,6 +136,7 @@ public:
     VertexFormat();
     /**
      * Constructor with specific attribute informations
+     * @param[in] infos Array of all elements informations
      */
     VertexFormat(const std::vector<Info>& infos);
     /*

@@ -38,7 +38,37 @@ RENDERER_BEGIN
  */
 
 /**
- *  @brief Fundamental class of material system, contains techniques, shader template define settings and uniform properties.
+ * @brief Fundamental class of material system, contains techniques, shader template define settings and uniform properties.\n
+ * JS API: renderer.Effect
+ * @code
+ * let pass = new renderer.Pass('sprite');
+ * pass.setDepth(false, false);
+ * pass.setCullMode(gfx.CULL_NONE);
+ * let mainTech = new renderer.Technique(
+ *     ['transparent'],
+ *     [
+ *         { name: 'texture', type: renderer.PARAM_TEXTURE_2D },
+ *         { name: 'color', type: renderer.PARAM_COLOR4 }
+ *     ],
+ *     [
+ *         pass
+ *     ]
+ * );
+ * let effect = new renderer.Effect(
+ *     [
+ *         mainTech
+ *     ],
+ *     {
+ *         'color': {r: 1, g: 1, b: 1, a: 1}
+ *     },
+ *     [
+ *         { name: 'useTexture', value: true },
+ *         { name: 'useModel', value: false },
+ *         { name: 'alphaTest', value: false },
+ *         { name: 'useColor', value: true }
+ *     ]
+ * );
+ * @endcode
  */
 class Effect : public Ref
 {
@@ -47,7 +77,7 @@ public:
     using Property = Technique::Parameter;
     
     /*
-     *  @brief The default constructor.
+     * @brief The default constructor.
      */
     Effect();
     /*
@@ -55,8 +85,11 @@ public:
      */
     ~Effect();
     
-    /**
-     *  @brief Initialize with techniques, properties and define settings.
+    /*
+     * @brief Initialize with techniques, properties and define settings.
+     * @param[in] techniques All techniques in an array
+     * @param[in] properties All properties in a map
+     * @param[in] defineTemplates All defines and their value in a map
      */
     void init(const Vector<Technique*>& techniques,
               const std::unordered_map<std::string, Property>& properties,
@@ -79,14 +112,14 @@ public:
      */
     Value getDefineValue(const std::string& name) const;
     /**
-     *  @brief Gets all define value.
+     *  @brief Gets all define values.
      */
     const std::vector<ValueMap>& getDefines() const { return _defineTemplates; }
     /**
-     *  @brief Sets define value.
+     *  @brief Sets a define's value.
      */
     void setDefineValue(const std::string& name, const Value& value);
-    /**
+    /*
      *  @brief Extracts all defines.
      */
     ValueMap* extractDefines();
@@ -112,7 +145,7 @@ public:
      */
     double getHash() const { return _hash; };
 
-    /**
+    /*
      *  @brief Gets the define key for the current define settings.
      */
     const int32_t& getDefinesKey() { return _definesKey; };
