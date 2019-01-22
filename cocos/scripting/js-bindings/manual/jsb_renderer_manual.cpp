@@ -169,7 +169,8 @@ static bool js_renderer_Effect_setProperty(se::State& s)
                 }
             }
         }
-        assert(propType != cocos2d::renderer::Technique::Parameter::Type::UNKNOWN);
+        ok &= (propType != cocos2d::renderer::Technique::Parameter::Type::UNKNOWN);
+        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Type Error");
         cocos2d::renderer::Technique::Parameter arg1(arg0, propType);
         ok &= seval_to_TechniqueParameter_not_constructor(args[1], &arg1);
         SE_PRECONDITION2(ok, false, "js_renderer_Effect_setProperty : Error processing arguments");
@@ -646,6 +647,8 @@ static bool js_renderer_NodeProxy_updateJSTRS(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
     const auto& args = s.args();
+    bool ok = args[0].isObject() && args[0].toObject()->isTypedArray();
+    SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_updateJSTRS : Invalid JS TRS Object");
     cobj->updateJSTRS(args[0].toObject());
     return true;
 }

@@ -103,22 +103,22 @@ public:
      *  @brief Gets technique by stage.
      */
     Technique* getTechnique(const std::string& stage) const;
-    /**
+    /*
      *  @brief Gets all techniques.
      */
     const Vector<Technique*>& getTechniques() const { return _techniques; }
     /**
      *  @brief Gets define property value by name.
      */
-    Value getDefineValue(const std::string& name) const;
-    /**
-     *  @brief Gets all define values.
-     */
-    const std::vector<ValueMap>& getDefines() const { return _defineTemplates; }
+    Value getDefine(const std::string& name) const;
     /**
      *  @brief Sets a define's value.
      */
-    void setDefineValue(const std::string& name, const Value& value);
+    void define(const std::string& name, const Value& value);
+    /*
+     *  @brief Gets all define values.
+     */
+    const std::vector<ValueMap>& getDefines() const { return _defineTemplates; }
     /*
      *  @brief Extracts all defines.
      */
@@ -132,7 +132,7 @@ public:
      *  @brief Sets uniform property value by name.
      */
     void setProperty(const std::string& name, const Property& property);
-    /**
+    /*
      *  @brief Gets all uniform properties.
      */
     const std::unordered_map<std::string, Property>& getProperties() const { return _properties; }

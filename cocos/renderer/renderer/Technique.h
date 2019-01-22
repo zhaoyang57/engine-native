@@ -195,20 +195,20 @@ public:
      *  @brief Sets the stages it belongs to.
      */
     void setStages(const std::vector<std::string>& stages);
-    /**
+    /*
      *  @brief Sets the pass to the given index.
      */
     void setPass(int index, Pass* pass);
 
-    /**
+    /*
      *  @brief Gets all uniform parameters.
      */
     const std::vector<Parameter>& getParameters() const { return _parameters; }
-    /**
+    /*
      *  @brief Gets all passes.
      */
     const Vector<Pass*>& getPasses() const { return _passes; }
-    /**
+    /*
      *  @brief Gets all stageID.
      */
     uint32_t getStageIDs() const { return _stageIDs; }

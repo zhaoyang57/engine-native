@@ -110,10 +110,10 @@ extern se::Class* __jsb_cocos2d_renderer_Effect_class;
 
 bool js_register_cocos2d_renderer_Effect(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
-SE_DECLARE_FUNC(js_renderer_Effect_setDefineValue);
 SE_DECLARE_FUNC(js_renderer_Effect_getHash);
-SE_DECLARE_FUNC(js_renderer_Effect_clear);
 SE_DECLARE_FUNC(js_renderer_Effect_updateHash);
+SE_DECLARE_FUNC(js_renderer_Effect_clear);
+SE_DECLARE_FUNC(js_renderer_Effect_define);
 SE_DECLARE_FUNC(js_renderer_Effect_Effect);
 
 extern se::Object* __jsb_cocos2d_renderer_Light_proto;

@@ -111,7 +111,7 @@ public:
                         StencilOp stencilZFailOp = StencilOp::KEEP,
                         StencilOp stencilZPassOp = StencilOp::KEEP,
                         uint8_t stencilWriteMask = 0xff);
-    /**
+    /*
      *  @brief Sets stencil test enabled or not.
      */
     inline void setStencilTest(bool value) { _stencilTest = value; }
@@ -123,7 +123,7 @@ public:
      *  @brief Sets linked program name.
      */
     inline void setProgramName(const std::string& programName) { _programName = programName; }
-    /*
+    /**
      *  @brief Disable stencil test.
      */
     inline void disableStencilTest() { _stencilTest = false; }

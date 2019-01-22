@@ -745,18 +745,6 @@ ForwardRenderer : function (
 renderer.EffectNative = {
 
 /**
- * @method setDefineValue
- * @param {String} arg0
- * @param {cc.Value} arg1
- */
-setDefineValue : function (
-str, 
-value 
-)
-{
-},
-
-/**
  * @method getHash
  * @return {double}
  */
@@ -764,6 +752,16 @@ getHash : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method updateHash
+ * @param {double} arg0
+ */
+updateHash : function (
+double 
+)
+{
 },
 
 /**
@@ -775,11 +773,13 @@ clear : function (
 },
 
 /**
- * @method updateHash
- * @param {double} arg0
+ * @method define
+ * @param {String} arg0
+ * @param {cc.Value} arg1
  */
-updateHash : function (
-double 
+define : function (
+str, 
+value 
 )
 {
 },

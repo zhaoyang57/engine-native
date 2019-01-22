@@ -1483,27 +1483,6 @@ bool js_register_renderer_ForwardRenderer(se::Object* obj)
 se::Object* __jsb_cocos2d_renderer_Effect_proto = nullptr;
 se::Class* __jsb_cocos2d_renderer_Effect_class = nullptr;
 
-static bool js_renderer_Effect_setDefineValue(se::State& s)
-{
-    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_setDefineValue : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 2) {
-        std::string arg0;
-        cocos2d::Value arg1;
-        ok &= seval_to_std_string(args[0], &arg0);
-        ok &= seval_to_ccvalue(args[1], &arg1);
-        SE_PRECONDITION2(ok, false, "js_renderer_Effect_setDefineValue : Error processing arguments");
-        cobj->setDefineValue(arg0, arg1);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_Effect_setDefineValue)
-
 static bool js_renderer_Effect_getHash(se::State& s)
 {
     cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
@@ -1521,21 +1500,6 @@ static bool js_renderer_Effect_getHash(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_Effect_getHash)
-
-static bool js_renderer_Effect_clear(se::State& s)
-{
-    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_clear : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    if (argc == 0) {
-        cobj->clear();
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_Effect_clear)
 
 static bool js_renderer_Effect_updateHash(se::State& s)
 {
@@ -1555,6 +1519,42 @@ static bool js_renderer_Effect_updateHash(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_Effect_updateHash)
+
+static bool js_renderer_Effect_clear(se::State& s)
+{
+    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_clear : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->clear();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Effect_clear)
+
+static bool js_renderer_Effect_define(se::State& s)
+{
+    cocos2d::renderer::Effect* cobj = (cocos2d::renderer::Effect*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Effect_define : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        std::string arg0;
+        cocos2d::Value arg1;
+        ok &= seval_to_std_string(args[0], &arg0);
+        ok &= seval_to_ccvalue(args[1], &arg1);
+        SE_PRECONDITION2(ok, false, "js_renderer_Effect_define : Error processing arguments");
+        cobj->define(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Effect_define)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_Effect_finalize)
 
@@ -1582,10 +1582,10 @@ bool js_register_renderer_Effect(se::Object* obj)
 {
     auto cls = se::Class::create("EffectNative", obj, nullptr, _SE(js_renderer_Effect_constructor));
 
-    cls->defineFunction("setDefineValue", _SE(js_renderer_Effect_setDefineValue));
     cls->defineFunction("getHash", _SE(js_renderer_Effect_getHash));
-    cls->defineFunction("clear", _SE(js_renderer_Effect_clear));
     cls->defineFunction("updateHash", _SE(js_renderer_Effect_updateHash));
+    cls->defineFunction("clear", _SE(js_renderer_Effect_clear));
+    cls->defineFunction("define", _SE(js_renderer_Effect_define));
     cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_Effect_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::renderer::Effect>(cls);
