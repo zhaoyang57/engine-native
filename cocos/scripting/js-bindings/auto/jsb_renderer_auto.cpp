@@ -3266,18 +3266,21 @@ static bool js_renderer_MeshBuffer_requestStatic(se::State& s)
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
-    if (argc == 2) {
+    if (argc == 3) {
         unsigned int arg0 = 0;
         unsigned int arg1 = 0;
+        cocos2d::renderer::MeshBuffer::OffsetInfo* arg2 = nullptr;
         ok &= seval_to_uint32(args[0], (uint32_t*)&arg0);
         ok &= seval_to_uint32(args[1], (uint32_t*)&arg1);
+        #pragma warning NO CONVERSION TO NATIVE FOR OffsetInfo*
+        ok = false;
         SE_PRECONDITION2(ok, false, "js_renderer_MeshBuffer_requestStatic : Error processing arguments");
-        bool result = cobj->requestStatic(arg0, arg1);
+        bool result = cobj->requestStatic(arg0, arg1, arg2);
         ok &= boolean_to_seval(result, &s.rval());
         SE_PRECONDITION2(ok, false, "js_renderer_MeshBuffer_requestStatic : Error processing arguments");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 3);
     return false;
 }
 SE_BIND_FUNC(js_renderer_MeshBuffer_requestStatic)

@@ -31,60 +31,67 @@ using namespace cocos2d;
 using namespace cocos2d::renderer;
 
 MIDDLEWARE_BEGIN
-    
+
 MiddlewareManager* MiddlewareManager::_instance = nullptr;
 
 MiddlewareManager::MiddlewareManager()
-:vb(MAX_VB_BUFFER_SIZE)
-,ib(MAX_IB_BUFFER_SIZE)
+:vb(INIT_VB_BUFFER_SIZE_XYUVC)
+,ib(INIT_IB_BUFFER_SIZE)
 {
-    updateGLVB();
-    updateGLIB();
+    vb.setMaxSize(MAX_VB_BUFFER_SIZE_XYUVC);
+    vb.setFullCallback([this]
+    {
+        uploadVB();
+        nextGLVB();
+    });
+    
+    _glIB = new IndexBuffer();
+    _glIB->init(DeviceGraphics::getInstance(), IndexFormat::UINT16, Usage::STATIC, nullptr, 0, (uint32_t)ib.getCapacity()/sizeof(unsigned short));
+    
+    _glVB = new VertexBuffer();
+    _glVB->init(DeviceGraphics::getInstance(), VertexFormat::XY_UV_Color, Usage::DYNAMIC, nullptr, 0, (uint32_t)vb.getCapacity()/VertexFormat::XY_UV_Color->getBytes());
+    _vbArr.push_back(_glVB);
 }
 
 MiddlewareManager::~MiddlewareManager()
 {
-    if (glVB)
+    for (auto i = 0; i < _vbArr.size(); i++)
     {
-        delete glVB;
-        glVB = nullptr;
+        auto glVB = _vbArr[i];
+        if (glVB) {
+            delete glVB;
+        }
     }
+    _vbArr.clear();
     
-    if (glVB)
+    if (_glIB)
     {
-        delete glVB;
-        glVB = nullptr;
+        delete _glIB;
+        _glIB = nullptr;
     }
 }
 
-void MiddlewareManager::updateGLVB()
+void MiddlewareManager::nextGLVB()
 {
-    if (glVB)
+    _vbPos++;
+    if (_vbPos >= _vbArr.size())
     {
-        delete glVB;
-        glVB = nullptr;
+        _glVB = new VertexBuffer();
+        _glVB->init(DeviceGraphics::getInstance(), VertexFormat::XY_UV_Color, Usage::DYNAMIC, nullptr, 0, (uint32_t)vb.getCapacity()/VertexFormat::XY_UV_Color->getBytes());
+        _vbArr.push_back(_glVB);
     }
-    
-    glVB = new VertexBuffer();
-    glVB->init(DeviceGraphics::getInstance(), VertexFormat::XY_UV_Color, Usage::DYNAMIC, nullptr, 0, (uint32_t)vb.getCapacity()/VertexFormat::XY_UV_Color->getBytes());
-}
-
-void MiddlewareManager::updateGLIB()
-{
-    if (glIB)
+    else
     {
-        delete glIB;
-        glIB = nullptr;
+        _glVB = _vbArr[_vbPos];
     }
-    
-    glIB = new IndexBuffer();
-    glIB->init(DeviceGraphics::getInstance(), IndexFormat::UINT16, Usage::STATIC, nullptr, 0, (uint32_t)ib.getCapacity()/sizeof(unsigned short));
 }
 
 void MiddlewareManager::update(float dt)
 {
     vb.reset();
     ib.reset();
+    _vbPos = 0;
+    _glVB = _vbArr[0];
     
     isUpdating = true;
     
@@ -119,23 +126,37 @@ void MiddlewareManager::update(float dt)
     
     _removeList.clear();
     
+    uploadIB();
+    uploadVB();
+}
+
+void MiddlewareManager::uploadVB()
+{
     auto length = vb.length();
     if (length > 0)
     {
-        glVB->setBytes((uint32_t)length);
-        glVB->update(0, vb.getBuffer(), length);
+        _glVB->setBytes((uint32_t)length);
+        _glVB->update(0, vb.getBuffer(), length);
     }
-    
-    length = ib.length();
+}
+
+void MiddlewareManager::uploadIB()
+{
+    auto length = ib.length();
     if (length > 0)
     {
-        glIB->setBytes((uint32_t)length);
-        glIB->update(0, ib.getBuffer(), length);
+        _glIB->setBytes((uint32_t)length);
+        _glIB->update(0, ib.getBuffer(), length);
     }
 }
 
 void MiddlewareManager::addTimer(IMiddleware* editor)
 {
+    auto it = std::find(_removeList.begin(), _removeList.end(), editor);
+    if (it != _removeList.end())
+    {
+        _removeList.erase(it);
+    }
     _updateMap[editor] = true;
 }
 

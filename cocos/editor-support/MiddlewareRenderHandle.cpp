@@ -51,7 +51,8 @@ void MiddlewareRenderHandle::updateIA(std::size_t index, int start, int count)
 {
     auto size = _iaPool.size();
     InputAssembler* ia = nullptr;
-    if (index == size) {
+    if (index == size)
+    {
         ia = new InputAssembler();
         _iaPool.push_back(ia);
     }

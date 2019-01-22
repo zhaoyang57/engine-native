@@ -1482,11 +1482,13 @@ offsetinfo
  * @method requestStatic
  * @param {unsigned int} arg0
  * @param {unsigned int} arg1
+ * @param {cc.renderer::MeshBuffer::OffsetInfo} arg2
  * @return {bool}
  */
 requestStatic : function (
 int, 
-int 
+int, 
+offsetinfo 
 )
 {
     return false;
