@@ -430,6 +430,76 @@ namespace se {
         return true;
     }
 
+    bool Object::getTypedArrayData(int8_t** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (int8_t *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(int16_t** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (int16_t *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(int32_t** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (int32_t *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(float_t** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (float_t *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(double_t** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (double_t *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(bool** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (bool *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
+    bool Object::getTypedArrayData(std::string** ptr, size_t* length) const {
+        assert(isTypedArray());
+        v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);
+        v8::Local<v8::TypedArray> arr = v8::Local<v8::TypedArray>::Cast(obj);
+        v8::ArrayBuffer::Contents content = arr->Buffer()->GetContents();
+        *ptr = (std::string *)content.Data() + arr->ByteOffset();
+        *length = arr->ByteLength();
+        return true;
+    }
+
     bool Object::isArrayBuffer() const
     {
         v8::Local<v8::Object> obj = const_cast<Object*>(this)->_obj.handle(__isolate);

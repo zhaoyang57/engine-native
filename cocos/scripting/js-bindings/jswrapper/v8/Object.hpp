@@ -226,6 +226,15 @@ namespace se {
          */
         bool getTypedArrayData(uint8_t** ptr, size_t* length) const;
 
+        bool getTypedArrayData(int8_t** ptr, size_t* length) const;
+        bool getTypedArrayData(int16_t** ptr, size_t* length) const;
+        bool getTypedArrayData(int32_t** ptr, size_t* length) const;
+        bool getTypedArrayData(float_t** ptr, size_t* length) const;
+        bool getTypedArrayData(double_t** ptr, size_t* length) const;
+        bool getTypedArrayData(bool** ptr, size_t* length) const;
+        bool getTypedArrayData(std::string** ptr, size_t* length) const;
+
+
         /**
          *  @brief Tests whether an object is an array buffer object.
          *  @return true if object is an array buffer object, otherwise false.
