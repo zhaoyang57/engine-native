@@ -28,6 +28,7 @@
 #include <string>
 #include "MiddlewareMacro.h"
 #include <math.h>
+#include <functional>
 
 MIDDLEWARE_BEGIN
 /**
