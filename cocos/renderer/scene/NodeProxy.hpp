@@ -217,7 +217,7 @@ public:
      */
     SystemHandle* getHandle(const std::string& sysid);
     
-    /**
+    /*
      *  @brief Traverse all node proxy in the current node tree.
      */
     void visitAsRoot(ModelBatcher* batcher, Scene* scene);
