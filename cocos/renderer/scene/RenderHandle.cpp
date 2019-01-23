@@ -142,11 +142,14 @@ Effect* RenderHandle::getEffect(uint32_t index)
 void RenderHandle::setVertexFormat(VertexFormat* vfmt)
 {
     _vfmt = vfmt;
-    _bytesPerVertex = _vfmt->getBytes();
-    _vfPos = _vfmt->getElement(ATTRIB_NAME_POSITION);
-    _posOffset = _vfPos->offset / 4;
-    _vfColor = _vfmt->getElement(ATTRIB_NAME_COLOR);
-    _alphaOffset = _vfColor->offset + 3;
+    if (_vfmt)
+    {
+        _bytesPerVertex = _vfmt->getBytes();
+        _vfPos = _vfmt->getElement(ATTRIB_NAME_POSITION);
+        _posOffset = _vfPos->offset / 4;
+        _vfColor = _vfmt->getElement(ATTRIB_NAME_COLOR);
+        _alphaOffset = _vfColor->offset + 3;
+    }
 }
 
 void RenderHandle::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
