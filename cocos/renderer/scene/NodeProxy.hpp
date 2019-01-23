@@ -138,27 +138,27 @@ public:
      */
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
-    /**
+    /*
      *  @brief Gets the position.
      *  @param[out] out The position vector
      */
     void getPosition(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the rotation.
      *  @param[out] out The rotation quaternion.
      */
     void getRotation(cocos2d::Quaternion* out) const;
-    /**
+    /*
      *  @brief Gets the scale.
      *  @param[out] out The scale vector.
      */
     void getScale(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the position in world coordinates.
      *  @param[out] out The world position vector.
      */
     void getWorldPosition(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the matrix contains the world rotation and translation.
      *  @param[out] out The matrix to store datas.
      */

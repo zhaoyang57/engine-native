@@ -173,16 +173,6 @@ getChildren : function (
 },
 
 /**
- * @method getRotation
- * @param {cc.Quaternion} arg0
- */
-getRotation : function (
-quaternion 
-)
-{
-},
-
-/**
  * @method removeHandle
  * @param {String} arg0
  */
@@ -231,16 +221,6 @@ char
 },
 
 /**
- * @method getWorldRT
- * @param {mat4_object} arg0
- */
-getWorldRT : function (
-mat4 
-)
-{
-},
-
-/**
  * @method getRealOpacity
  * @return {unsigned char}
  */
@@ -271,53 +251,11 @@ str
 },
 
 /**
- * @method getWorldPosition
- * @param {vec3_object} arg0
- */
-getWorldPosition : function (
-vec3 
-)
-{
-},
-
-/**
  * @method setGroupID
  * @param {int} arg0
  */
 setGroupID : function (
 int 
-)
-{
-},
-
-/**
- * @method visitAsRoot
- * @param {cc.renderer::ModelBatcher} arg0
- * @param {cc.renderer::Scene} arg1
- */
-visitAsRoot : function (
-modelbatcher, 
-scene 
-)
-{
-},
-
-/**
- * @method getScale
- * @param {vec3_object} arg0
- */
-getScale : function (
-vec3 
-)
-{
-},
-
-/**
- * @method getPosition
- * @param {vec3_object} arg0
- */
-getPosition : function (
-vec3 
 )
 {
 },
@@ -743,6 +681,42 @@ ForwardRenderer : function (
  * @class Effect
  */
 renderer.EffectNative = {
+
+/**
+ * @method getProperty
+ * @param {String} arg0
+ * @return {cc.renderer::Technique::Parameter}
+ */
+getProperty : function (
+str 
+)
+{
+    return cc.renderer::Technique::Parameter;
+},
+
+/**
+ * @method getTechnique
+ * @param {String} arg0
+ * @return {cc.renderer::Technique}
+ */
+getTechnique : function (
+str 
+)
+{
+    return cc.renderer::Technique;
+},
+
+/**
+ * @method getDefine
+ * @param {String} arg0
+ * @return {cc.Value}
+ */
+getDefine : function (
+str 
+)
+{
+    return cc.Value;
+},
 
 /**
  * @method getHash
@@ -1174,16 +1148,6 @@ getStencilTest : function (
  * @method setStencilBack
  */
 setStencilBack : function (
-)
-{
-},
-
-/**
- * @method setStencilTest
- * @param {bool} arg0
- */
-setStencilTest : function (
-bool 
 )
 {
 },
