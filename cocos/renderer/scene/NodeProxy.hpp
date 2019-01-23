@@ -132,7 +132,7 @@ public:
      *  @param[in] trs JS TypedArray object
      */
     void updateJSTRS(se::Object* trs);
-    /**
+    /*
      *  @brief Gets the world matrix.
      *  @return World matrix.
      */
