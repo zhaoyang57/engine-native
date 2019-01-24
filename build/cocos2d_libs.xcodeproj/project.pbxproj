@@ -593,6 +593,7 @@
 		403ACADD20CE542900BB433D /* jsb_module_register.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 403ACAD920CE4EB000BB433D /* jsb_module_register.hpp */; };
 		4043D65E20D2132E00C55611 /* CCGLView-desktop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4043D65C20D2132E00C55611 /* CCGLView-desktop.cpp */; };
 		4043D65F20D2132E00C55611 /* CCGLView-desktop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4043D65D20D2132E00C55611 /* CCGLView-desktop.h */; };
+		40A346FB21F7124500E51F9B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40A346FA21F7124400E51F9B /* libfreetype.a */; };
 		40AEF7AF216D940200729AA5 /* WebViewImpl-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40AEF7A9216D940200729AA5 /* WebViewImpl-ios.mm */; };
 		40AEF7B1216D940200729AA5 /* WebView-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7AB216D940200729AA5 /* WebView-inl.h */; };
 		40AEF7B2216D940200729AA5 /* WebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7AC216D940200729AA5 /* WebView.h */; };
@@ -607,7 +608,6 @@
 		40CEAEB720CFDC45007A3281 /* CCReachability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A37E9C4200DD0680078AF72 /* CCReachability.cpp */; };
 		40CEAEB820CFDC47007A3281 /* CCReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A37E9C3200DD0680078AF72 /* CCReachability.h */; };
 		40CEAEBA20CFDE19007A3281 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40CEAEB920CFDE19007A3281 /* SystemConfiguration.framework */; };
-		40F373DA21B67A7D0083E4E7 /* libv8_snapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */; };
 		40FF7AA1216B29CC00E73029 /* VideoPlayer-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40FF7A9E216B29CB00E73029 /* VideoPlayer-ios.mm */; };
 		40FF7AA2216B29CC00E73029 /* VideoPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 40FF7A9F216B29CB00E73029 /* VideoPlayer.h */; };
 		425D011521C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 425D011321C6810F00DD59F4 /* GraphicsRenderHandle.cpp */; };
@@ -1508,6 +1508,7 @@
 		403ACAD920CE4EB000BB433D /* jsb_module_register.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_module_register.hpp; sourceTree = "<group>"; };
 		4043D65C20D2132E00C55611 /* CCGLView-desktop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "CCGLView-desktop.cpp"; sourceTree = "<group>"; };
 		4043D65D20D2132E00C55611 /* CCGLView-desktop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCGLView-desktop.h"; sourceTree = "<group>"; };
+		40A346FA21F7124400E51F9B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../external/ios/libs/libfreetype.a; sourceTree = "<group>"; };
 		40AEF7A9216D940200729AA5 /* WebViewImpl-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "WebViewImpl-ios.mm"; sourceTree = "<group>"; };
 		40AEF7AB216D940200729AA5 /* WebView-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "WebView-inl.h"; sourceTree = "<group>"; };
 		40AEF7AC216D940200729AA5 /* WebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebView.h; sourceTree = "<group>"; };
@@ -1896,6 +1897,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40A346FB21F7124500E51F9B /* libfreetype.a in Frameworks */,
 				EDE5DFF81C0D6B3F0014147A /* libwebsockets.a in Frameworks */,
 				1ACF6A3C1E4AFDC80033C137 /* libcrypto.a in Frameworks */,
 				1ACF6A3D1E4AFDC80033C137 /* libssl.a in Frameworks */,
@@ -2224,6 +2226,7 @@
 		1551A341158F2AB200E66CFE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40A346FA21F7124400E51F9B /* libfreetype.a */,
 				40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */,
 				ED997664216C459D00A46923 /* libinspector.a */,
 				ED997661216C459D00A46923 /* libuv_a.a */,
