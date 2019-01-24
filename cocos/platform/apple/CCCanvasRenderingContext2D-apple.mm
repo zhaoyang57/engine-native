@@ -862,4 +862,17 @@ void CanvasRenderingContext2D::resetTransform()
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr) {
+    //
+}
+
+std::vector<float>& CanvasRenderingContext2D::getLineDash() {
+    //
+}
+
+void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
+{
+    //
+}
+
 NS_CC_END

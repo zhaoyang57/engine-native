@@ -93,6 +93,7 @@ public:
     void set_fillStyle(const std::string& fillStyle);
     void set_strokeStyle(const std::string& strokeStyle);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
+    void set_lineDashOffsetInternal(float offset);
 
     // fill image data into Context2D
     void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
@@ -105,6 +106,8 @@ public:
     void transform(float a, float b, float c, float d, float e, float f);
     void setTransform(float a, float b, float c, float d, float e, float f);
     void resetTransform();
+    void setLineDash(std::vector<float>& arr);
+    std::vector<float>& getLineDash();
 
 private:
     GLint _maxTextureSize;
@@ -117,6 +120,7 @@ public:
 
     // Line styles
     float _lineWidth = 1.0f;
+    float _lineDashOffsetInternal = 0.0f;
     std::string _lineJoin = "miter";
     std::string _lineCap = "butt";
 

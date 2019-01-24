@@ -259,6 +259,62 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "resetTransform");
     }
 
+    void setLineDash(std::vector<float>& arr)
+    {
+        cocos2d::JniMethodInfo methodInfo;
+        if (cocos2d::JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "setLineDash",
+                                              "([F)V")) {
+            jfloatArray jArrObj = nullptr;
+            int size = arr.size();
+            if(size > 0) {
+                float* arrValue = new float[size];
+                for(int i = 0; i < size; i++) {
+                    arrValue[i] = arr[i];
+                }
+                jArrObj = methodInfo.env->NewFloatArray(size);
+                methodInfo.env->SetFloatArrayRegion(jArrObj, 0, size, (const jfloat *)arrValue);
+            }
+            methodInfo.env->CallVoidMethod(_obj, methodInfo.methodID, jArrObj);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+            if(nullptr != jArrObj) {
+                methodInfo.env->DeleteLocalRef(jArrObj);
+            }
+        }
+    }
+
+    std::vector<float>& getLineDash()
+    {
+        jfloatArray array = JniHelper::callObjectFloatArrayMethod(_obj, JCLS_CANVASIMPL,
+                                                                  "getLineDash");
+        static std::vector<float> tmp;
+        tmp.clear();
+        if (nullptr == array) {
+            return tmp;
+        }
+        JNIEnv* pEnv = JniHelper::getEnv();
+        int size = pEnv->GetArrayLength(array);
+        if (size < 1) {
+            pEnv->DeleteLocalRef(array);
+            return tmp;
+        }
+        float *values = new float[size];
+        jfloat *elems = pEnv->GetFloatArrayElements(array, 0);
+        if (elems) {
+            memcpy(values, elems, sizeof(float) * size);
+            pEnv->ReleaseFloatArrayElements(array, elems, 0);
+        };
+        pEnv->DeleteLocalRef(array);
+        for (int i = 0; i < size; ++i) {
+            tmp.push_back(values[i]);
+        }
+        return tmp;
+    }
+
+    void setLineDashOffset(float offset)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setLineDashOffset", offset);
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -602,6 +658,11 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
      SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
+{
+    _impl->setLineDashOffset(offset);
+}
+
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
@@ -639,6 +700,16 @@ void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, 
 void CanvasRenderingContext2D::resetTransform()
 {
     _impl->resetTransform();
+}
+
+void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr)
+{
+    _impl->setLineDash(arr);
+}
+
+std::vector<float>& CanvasRenderingContext2D::getLineDash()
+{
+    return _impl->getLineDash();
 }
 
 NS_CC_END

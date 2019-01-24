@@ -740,6 +740,16 @@ float
 },
 
 /**
+ * @method getLineDash
+ * @return {Array}
+ */
+getLineDash : function (
+)
+{
+    return new Array();
+},
+
+/**
  * @method stroke
  */
 stroke : function (
@@ -793,6 +803,16 @@ float
 scale : function (
 float, 
 float 
+)
+{
+},
+
+/**
+ * @method setLineDash
+ * @param {Array} arg0
+ */
+setLineDash : function (
+array 
 )
 {
 },

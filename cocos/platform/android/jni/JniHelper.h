@@ -123,6 +123,24 @@ public:
     }
 
     template <typename... Ts>
+    static jfloatArray callObjectFloatArrayMethod(jobject object,
+                                       const std::string& className,
+                                       const std::string& methodName,
+                                       Ts... xs) {
+        cocos2d::JniMethodInfo t;
+        std::string signature = "(" + std::string(getJNISignature(xs...)) + ")[F";
+        if (cocos2d::JniHelper::getMethodInfo(t, className.c_str(), methodName.c_str(), signature.c_str())) {
+            jfloatArray array = (jfloatArray) t.env->CallObjectMethod(object, t.methodID, convert(t, xs)...);
+            t.env->DeleteLocalRef(t.classID);
+            deleteLocalRefs(t.env);
+            return array;
+        } else {
+            reportError(className, methodName, signature);
+        }
+        return nullptr;
+    }
+
+    template <typename... Ts>
     static int callObjectIntMethod(jobject object,
                                        const std::string& className,
                                        const std::string& methodName,
