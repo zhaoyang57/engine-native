@@ -47,17 +47,27 @@ class Scene;
  */
 
 /**
- * @brief NodeProxy is a cpp delegator of js Node.
- * It synchronize the hierarchy from js node tree, update the transform each frame, and manages system handles like RenderHandle which represent the render component.
+ * @brief NodeProxy is a cpp delegator of js Node.\n
+ * It synchronize the hierarchy from js node tree, update the transform each frame, and manages system handles like RenderHandle which represent the render component.\n
+ * JS API: renderer.NodeProxy
+ @code
+ let node = new cc.Node();
+ // NodeProxy is automatically created by cc.Node
+ let proxy = node._proxy;
+ 
+ // You can also create NodeProxy manually, but you also need to bind it manually
+ let proxy = new renderer.NodeProxy();
+ proxy.bind(node);
+ @endcode
  */
 class NodeProxy : public Ref
 {
 public:
-    /**
+    /*
      * @brief The default constructor.
      */
     NodeProxy();
-    /**
+    /*
      * @brief The destructor.
      */
     ~NodeProxy();
@@ -122,33 +132,33 @@ public:
      *  @param[in] trs JS TypedArray object
      */
     void updateJSTRS(se::Object* trs);
-    /**
+    /*
      *  @brief Gets the world matrix.
      *  @return World matrix.
      */
     inline const cocos2d::Mat4& getWorldMatrix() const { return _worldMat; };
     
-    /**
+    /*
      *  @brief Gets the position.
      *  @param[out] out The position vector
      */
     void getPosition(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the rotation.
      *  @param[out] out The rotation quaternion.
      */
     void getRotation(cocos2d::Quaternion* out) const;
-    /**
+    /*
      *  @brief Gets the scale.
      *  @param[out] out The scale vector.
      */
     void getScale(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the position in world coordinates.
      *  @param[out] out The world position vector.
      */
     void getWorldPosition(cocos2d::Vec3* out) const;
-    /**
+    /*
      *  @brief Gets the matrix contains the world rotation and translation.
      *  @param[out] out The matrix to store datas.
      */
@@ -207,7 +217,7 @@ public:
      */
     SystemHandle* getHandle(const std::string& sysid);
     
-    /**
+    /*
      *  @brief Traverse all node proxy in the current node tree.
      */
     void visitAsRoot(ModelBatcher* batcher, Scene* scene);

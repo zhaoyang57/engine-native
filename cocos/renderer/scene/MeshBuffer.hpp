@@ -28,6 +28,7 @@
 #include "../gfx/VertexFormat.h"
 #include "../gfx/VertexBuffer.h"
 #include "../gfx/IndexBuffer.h"
+#include "base/CCVector.h"
 
 RENDERER_BEGIN
 
@@ -76,7 +77,7 @@ public:
      *  @param[out] offset The result indicates the allocated buffer range
      */
     bool request(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset);
-    bool requestStatic(uint32_t vertexCount, uint32_t indexCount);
+    bool requestStatic(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset);
     
     /**
      *  @brief Upload data to GPU memory
@@ -168,6 +169,8 @@ private:
     bool _dirty;
     
     ModelBatcher* _batcher;
+    std::size_t _vbPos;
+    cocos2d::Vector<VertexBuffer*> _vbArr;
     VertexBuffer* _vb;
     IndexBuffer* _ib;
 };

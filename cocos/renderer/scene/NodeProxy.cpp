@@ -86,9 +86,16 @@ void NodeProxy::childrenAlloc()
 
 void NodeProxy::addChild(NodeProxy* child)
 {
-    CCASSERT(child != nullptr, "Argument must be non-nil");
-    CCASSERT(child->_parent == nullptr, "child already added. It can't be added again");
-    
+    if (child == nullptr)
+    {
+        CCLOGWARN("Argument must be non-nil");
+        return;
+    }
+    if (child->_parent != nullptr)
+    {
+        CCLOGWARN("child already added. It can't be added again");
+        return;
+    }
     auto assertNotSelfChild
         ( [ this, child ]() -> bool
           {
@@ -101,8 +108,11 @@ void NodeProxy::addChild(NodeProxy* child)
           } );
     (void)assertNotSelfChild;
     
-    CCASSERT( assertNotSelfChild(),
-              "A node cannot be the child of his own children" );
+    if (!assertNotSelfChild())
+    {
+        CCLOGWARN("A node cannot be the child of his own children" );
+        return;
+    }
     
     if (_children.empty())
     {

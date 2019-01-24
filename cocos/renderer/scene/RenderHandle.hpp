@@ -44,31 +44,42 @@ class ModelBatcher;
  */
 
 /**
- *  @brief The render handle is a system handle which occupies rendering datas.
- *  It's kind of a cpp delegate for js RenderComponent and should be created and updated by js RenderComponent.
- *  It update local vertex data to world vertex data if necessary, commit all render datas to the shared vertex and index buffer.
+ *  @brief The render handle is a system handle which occupies rendering datas.\n
+ *  It's kind of a cpp delegate for js RenderComponent and should be created and updated by js RenderComponent.\n
+ *  It update local vertex data to world vertex data if necessary, commit all render datas to the shared vertex and index buffer.\n
+ *  JS API: renderer.RenderHandle
+ @code
+ // RenderHandle will be automatically created when create a render component
+ let node = new cc.Node();
+ let sprite = node.addComponent(cc.Sprite);
+ sprite._renderHandle;
+ 
+ // You can also create a RenderHandle by yourself, but you will also need to bind a render component manually
+ let renderHandle = new renderer.RenderHandle();
+ renderHandle.bind(renderComponent);
+ @endcode
  */
 class RenderHandle : SystemHandle
 {
 public:
     RenderHandle();
     virtual ~RenderHandle();
-    /**
+    /*
      *  @brief Commit the current render handle to ModelBatcher
      */
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
-    /**
+    /*
      *  @brief Do nothing
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
-    /**
+    /*
      *  @brief Fills render data in given index to the MeshBuffer
      *  @param[in] buffer The shared mesh buffer
      *  @param[in] index The index of render data to be updated
      *  @param[in] worldMat The world transform matrix
      */
     virtual void fillBuffers(MeshBuffer* buffer, int index, const Mat4& worldMat);
-    /**
+    /*
      *  @brief Update local render buffer opacity
      *  @param[in] index The index of render data to be updated
      *  @param[in] opacity Inherit opacity

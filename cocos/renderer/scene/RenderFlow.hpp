@@ -37,21 +37,26 @@ RENDERER_BEGIN
  */
 
 /**
- *  @brief This class is responsible for the rendering process.
- *  It visits the node tree, let nodes commit their render handles, starts the device level rendering process with ForwardRenderer.
+ *  @brief This class is responsible for the rendering process.\n
+ *  It visits the node tree, let nodes commit their render handles, starts the device level rendering process with ForwardRenderer.\n
+ *  JS API: renderer.RenderFlow
+ @code
+ // You actually shouldn't create RenderFlow by yourself, you can
+ let renderFlow = cc.RenderFlow._nativeFlow;
+ @endcode
  */
 class RenderFlow
 {
 public:
-    /**
+    /*
      *  @brief Gets the ModelBatcher which is responsible for collecting render Models.
      */
     ModelBatcher* getModelBatcher() const { return _batcher; };
-    /**
+    /*
      *  @brief Gets the DeviceGraphics using by the current RenderFlow.
      */
     DeviceGraphics* getDevice() const { return _device; };
-    /**
+    /*
      *  @brief Gets the render Scene which manages all render Models.
      */
     Scene* getRenderScene() const { return _scene; };
@@ -60,14 +65,14 @@ public:
      *  @param[in] scene The root node.
      */
     void render(NodeProxy* scene);
-    /**
+    /*
      *  @brief The constructor.
      *  @param[in] device
      *  @param[in] scene
      *  @param[in] forward
      */
     RenderFlow(DeviceGraphics* device, Scene* scene, ForwardRenderer* forward);
-    /**
+    /*
      *  @brief The destructor.
      */
     ~RenderFlow();
