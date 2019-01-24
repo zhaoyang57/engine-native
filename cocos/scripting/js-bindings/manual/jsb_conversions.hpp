@@ -29,8 +29,12 @@
 #include "scripting/js-bindings/manual/jsb_classtype.hpp"
 
 #include "cocos2d.h"
+#if USE_GFX_RENDERER
 #include "renderer/gfx/GFX.h"
 #include "renderer/renderer/Renderer.h"
+#else
+#include "renderer/Macro.h"
+#endif
 #include "network/CCDownloader.h"
 #include "extensions/cocos-ext.h"
 
