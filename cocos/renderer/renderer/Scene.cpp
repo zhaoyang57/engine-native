@@ -81,16 +81,12 @@ void Scene::removeModel(Model* model)
     auto iter = std::find(_models.begin(), _models.end(), model);
     if (_models.end() != iter)
     {
-        ModelPool::returnModel(model);
         _models.erase(iter);
     }
 }
 
 void Scene::removeModels()
 {
-    for (const auto& model : _models)
-        ModelPool::returnModel(model);
-
     _models.clear();
 }
 
