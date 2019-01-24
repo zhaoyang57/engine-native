@@ -660,6 +660,7 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
 
 void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 {
+    this->_lineDashOffsetInternal = offset;
     _impl->setLineDashOffset(offset);
 }
 

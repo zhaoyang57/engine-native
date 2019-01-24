@@ -399,7 +399,7 @@ SE_BIND_PROP_GET(js_##cls_get_##property)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, _width, float, seval_to_float, setFloat)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, _height, float, seval_to_float, setFloat)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, lineWidth, float, seval_to_float, setFloat)
-BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, _lineDashOffset, float, seval_to_float, setFloat)
+BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, lineDashOffsetInternal, float, seval_to_float, setFloat)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, lineJoin, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, lineCap, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, font, std::string, seval_to_std_string, setString)
@@ -521,7 +521,7 @@ static bool register_canvas_context2d(se::Object* obj)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, fillStyle)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, strokeStyle)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, globalCompositeOperation)
-    _SE_DEFINE_PROP(CanvasRenderingContext2D, _lineDashOffset)
+    _SE_DEFINE_PROP(CanvasRenderingContext2D, lineDashOffsetInternal)
 
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_setCanvasBufferUpdatedCallback", _SE(js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback));
 
