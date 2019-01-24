@@ -74,6 +74,10 @@ Texture::~Texture()
 
 bool Texture::init(DeviceGraphics* device)
 {
+    if (device == nullptr)
+    {
+        return false;
+    }
     _device = device;
     _width = 4;
     _height = 4;

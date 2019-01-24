@@ -22,12 +22,11 @@
  THE SOFTWARE.
  ****************************************************************************/
 #pragma once
-// if buffer out range,will increase with INCREASE_BUFFER_SIZE size
-#define INCREASE_BUFFER_SIZE 102400
 // vertex buffer max capacity
-#define MAX_VB_BUFFER_SIZE 1024000
+#define INIT_VB_BUFFER_SIZE_XYUVC 1310700
+#define MAX_VB_BUFFER_SIZE_XYUVC 1310700
 // index buffer max capacity
-#define MAX_IB_BUFFER_SIZE 1024000
+#define INIT_IB_BUFFER_SIZE 1024000
 
 // fill debug data max capacity
 #define MAX_DEBUG_BUFFER_SIZE 40960

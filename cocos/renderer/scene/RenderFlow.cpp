@@ -39,11 +39,14 @@ RenderFlow::~RenderFlow()
 
 void RenderFlow::render(NodeProxy* scene)
 {
-    _batcher->startBatch();
-    scene->visitAsRoot(_batcher, _scene);
-    _batcher->terminateBatch();
-    
-    _forward->render(_scene);
+    if (scene != nullptr)
+    {
+        _batcher->startBatch();
+        scene->visitAsRoot(_batcher, _scene);
+        _batcher->terminateBatch();
+        
+        _forward->render(_scene);
+    }
 }
 
 RENDERER_END

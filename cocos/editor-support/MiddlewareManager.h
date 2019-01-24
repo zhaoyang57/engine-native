@@ -86,12 +86,12 @@ public:
 
     inline cocos2d::renderer::VertexBuffer* getVB()
     {
-        return glVB;
+        return _glVB;
     }
         
     inline cocos2d::renderer::IndexBuffer* getIB()
     {
-        return glIB;
+        return _glIB;
     }
     
 	cocos2d::middleware::IOBuffer vb;
@@ -101,19 +101,19 @@ public:
         
     // If manager is traversing _updateMap,will set the flag,untill traverse is finished.
     bool isUpdating = false;
-        
+    
 private:
     void uploadVB();
     void uploadIB();
-
-    void updateGLIB();
-    void updateGLVB();
+    void nextGLVB();
 private:
     std::map<IMiddleware*, bool> _updateMap;
     std::vector<IMiddleware*> _removeList;
-        
-    cocos2d::renderer::VertexBuffer* glVB = nullptr;
-    cocos2d::renderer::IndexBuffer* glIB = nullptr;
+    
+    std::size_t _vbPos = 0;
+    std::vector<cocos2d::renderer::VertexBuffer*> _vbArr;
+    cocos2d::renderer::VertexBuffer* _glVB = nullptr;
+    cocos2d::renderer::IndexBuffer* _glIB = nullptr;
         
     static MiddlewareManager* _instance;
 };
