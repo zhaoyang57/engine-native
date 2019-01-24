@@ -108,6 +108,14 @@ public:
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
+    }
+
+    void strokeRect(float x, float y, float w, float h)
+    {
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f) {
+            return;
+        }
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
         fillData();
     }
 
@@ -222,6 +230,7 @@ public:
     void fillData()
     {
         jbyteArray arr = JniHelper::callObjectByteArrayMethod(_obj, JCLS_CANVASIMPL, "getDataRef");
+        if(nullptr == arr) return;
         jsize len  = JniHelper::getEnv()->GetArrayLength(arr);
         jbyte* jbarray = (jbyte *)malloc(len * sizeof(jbyte));
         JniHelper::getEnv()->GetByteArrayRegion(arr,0,len,jbarray);
@@ -398,12 +407,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 void CanvasRenderingContext2D::rect(float x, float y, float width, float height)
 {
 //    SE_LOGD("CanvasRenderingContext2D::rect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
-    if (recreateBufferIfNeeded()) {
-        _impl->rect(x, y, width, height);
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D rect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
-    }
+    _impl->rect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::clearRect(float x, float y, float width, float height)
@@ -426,6 +430,19 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
             _canvasBufferUpdatedCB(_impl->getDataRef());
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
+}
+
+void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
+{
+    if (recreateBufferIfNeeded()) {
+        _impl->strokeRect(x, y, width, height);
+        if (_canvasBufferUpdatedCB != nullptr) {
+            _canvasBufferUpdatedCB(_impl->getDataRef());
+        }
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
     }
 }

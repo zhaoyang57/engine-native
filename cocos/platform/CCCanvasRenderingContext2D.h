@@ -61,6 +61,7 @@ public:
     void rect(float x, float y, float width, float height);
     void clearRect(float x, float y, float width, float height);
     void fillRect(float x, float y, float width, float height);
+    void strokeRect(float x, float y, float width, float height);
 
     void fillText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);

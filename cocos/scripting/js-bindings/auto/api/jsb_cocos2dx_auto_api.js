@@ -818,22 +818,6 @@ array
 },
 
 /**
- * @method clearRect
- * @param {float} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
- */
-clearRect : function (
-float, 
-float, 
-float, 
-float 
-)
-{
-},
-
-/**
  * @method transform
  * @param {float} arg0
  * @param {float} arg1
@@ -936,6 +920,22 @@ beginPath : function (
 },
 
 /**
+ * @method clearRect
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ */
+clearRect : function (
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method rect
  * @param {float} arg0
  * @param {float} arg1
@@ -979,6 +979,22 @@ float
 )
 {
     return cc.CanvasGradient;
+},
+
+/**
+ * @method strokeRect
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ */
+strokeRect : function (
+float, 
+float, 
+float, 
+float 
+)
+{
 },
 
 /**
