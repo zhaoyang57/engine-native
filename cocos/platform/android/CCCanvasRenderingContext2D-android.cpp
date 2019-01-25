@@ -324,6 +324,11 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setLineDashOffset", offset);
     }
 
+    void setMiterLimit(float limit)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setMiterLimit", limit);
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -728,6 +733,12 @@ void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr)
 std::vector<float>& CanvasRenderingContext2D::getLineDash()
 {
     return _impl->getLineDash();
+}
+
+void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
+{
+    this->_miterLimitInternal = limit;
+    _impl->setMiterLimit(limit);
 }
 
 NS_CC_END

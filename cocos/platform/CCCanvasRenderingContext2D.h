@@ -95,6 +95,7 @@ public:
     void set_strokeStyle(const std::string& strokeStyle);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
     void set_lineDashOffsetInternal(float offset);
+    void set_miterLimitInternal(float limit);
 
     // fill image data into Context2D
     void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
@@ -122,6 +123,7 @@ public:
     // Line styles
     float _lineWidth = 1.0f;
     float _lineDashOffsetInternal = 0.0f;
+    float _miterLimitInternal = 10.0f;
     std::string _lineJoin = "miter";
     std::string _lineCap = "butt";
 

@@ -880,4 +880,9 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
     //
 }
 
+void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
+{
+    //
+}
+
 NS_CC_END
