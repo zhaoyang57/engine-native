@@ -270,7 +270,23 @@ void Device::vibrate(float duration)
 
 float Device::getBatteryLevel()
 {
+    if(![UIDevice currentDevice].isBatteryMonitoringEnabled){
+        [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+    }
+
     return [UIDevice currentDevice].batteryLevel;
+}
+
+bool Device::getIsCharging()
+{
+    if(![UIDevice currentDevice].isBatteryMonitoringEnabled){
+        [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+    }
+
+    if ([[UIDevice currentDevice] batteryState] != UIDeviceBatteryStateUnplugged) {
+        return true;
+    }
+    return false;
 }
 
 Device::NetworkType Device::getNetworkType()

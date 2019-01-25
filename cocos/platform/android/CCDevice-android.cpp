@@ -114,6 +114,12 @@ float Device::getBatteryLevel()
     return JniHelper::callStaticFloatMethod(JCLS_HELPER, "getBatteryLevel");
 }
 
+bool Device::getIsCharging()
+{
+    CCASSERT(false, "no need to call getIsCharging on Android");
+    return false;
+}
+
 Device::NetworkType Device::getNetworkType()
 {
     return (Device::NetworkType)JniHelper::callStaticIntMethod(JCLS_HELPER, "getNetworkType");

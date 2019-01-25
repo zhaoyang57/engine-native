@@ -121,6 +121,12 @@ public:
      */
     static float getBatteryLevel();
 
+    /**
+     * Get device charging state
+     * @return true if the battery is charging or fully charged
+     */
+    static bool getIsCharging();
+
     enum class NetworkType
     {
         NONE,
