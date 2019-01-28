@@ -878,6 +878,26 @@ save : function (
 },
 
 /**
+ * @method bezierCurveTo
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ */
+bezierCurveTo : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method resetTransform
  */
 resetTransform : function (

@@ -685,6 +685,11 @@ void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, fl
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+{
+    //
+}
+
 void CanvasRenderingContext2D::stroke()
 {
     [_impl stroke];
