@@ -154,7 +154,7 @@ public:
 
     void fillText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (text.empty() || _bufferWidth < 1.0f || _bufferHeight < 1.0f)
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillText", text, x, y, maxWidth);
         fillData();
@@ -162,7 +162,7 @@ public:
 
     void strokeText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (text.empty() || _bufferWidth < 1.0f || _bufferHeight < 1.0f)
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "strokeText", text, x, y, maxWidth);
         fillData();
@@ -460,8 +460,6 @@ void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float h
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
 {
 //    SE_LOGD("CanvasRenderingContext2D::fillText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
-    if (text.empty())
-        return;
     if (recreateBufferIfNeeded()) {
         _impl->fillText(text, x, y, maxWidth);
         if (_canvasBufferUpdatedCB != nullptr)
@@ -475,8 +473,6 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 void CanvasRenderingContext2D::strokeText(const std::string& text, float x, float y, float maxWidth)
 {
 //    SE_LOGD("CanvasRenderingContext2D::strokeText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
-    if (text.empty())
-        return;
     if (recreateBufferIfNeeded()) {
         _impl->strokeText(text, x, y, maxWidth);
 
