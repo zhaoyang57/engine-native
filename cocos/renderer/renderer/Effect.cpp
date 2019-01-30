@@ -74,7 +74,7 @@ Technique* Effect::getTechnique(const std::string& stage) const
     return nullptr;
 }
 
-Value Effect::getDefineValue(const std::string& name) const
+Value Effect::getDefine(const std::string& name) const
 {
     for (const auto& def : _defineTemplates)
     {
@@ -86,7 +86,7 @@ Value Effect::getDefineValue(const std::string& name) const
     return Value::Null;
 }
 
-void Effect::setDefineValue(const std::string& name, const Value& value)
+void Effect::define(const std::string& name, const Value& value)
 {
     for (auto& def : _defineTemplates)
     {

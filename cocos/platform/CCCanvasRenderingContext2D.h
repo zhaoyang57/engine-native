@@ -61,6 +61,7 @@ public:
     void rect(float x, float y, float width, float height);
     void clearRect(float x, float y, float width, float height);
     void fillRect(float x, float y, float width, float height);
+    void strokeRect(float x, float y, float width, float height);
 
     void fillText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
@@ -73,6 +74,7 @@ public:
     void moveTo(float x, float y);
     void lineTo(float x, float y);
     void quadraticCurveTo(float x1, float y1, float x2, float y2);
+    void bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3);
     void fill();
     void stroke();
     void restore();
@@ -93,6 +95,8 @@ public:
     void set_fillStyle(const std::string& fillStyle);
     void set_strokeStyle(const std::string& strokeStyle);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
+    void set_lineDashOffsetInternal(float offset);
+    void set_miterLimitInternal(float limit);
 
     // fill image data into Context2D
     void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
@@ -105,6 +109,8 @@ public:
     void transform(float a, float b, float c, float d, float e, float f);
     void setTransform(float a, float b, float c, float d, float e, float f);
     void resetTransform();
+    void setLineDash(std::vector<float>& arr);
+    std::vector<float>& getLineDash();
 
 private:
     GLint _maxTextureSize;
@@ -117,6 +123,8 @@ public:
 
     // Line styles
     float _lineWidth = 1.0f;
+    float _lineDashOffsetInternal = 0.0f;
+    float _miterLimitInternal = 10.0f;
     std::string _lineJoin = "miter";
     std::string _lineCap = "butt";
 

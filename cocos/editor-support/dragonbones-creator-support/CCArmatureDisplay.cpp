@@ -252,8 +252,10 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         if (!texture) continue;
         _curTextureIndex = texture->getRealTextureIndex();
         
+        auto vbSize = slot->triangles.vertCount * sizeof(middleware::V2F_T2F_C4B);
+        auto isFull = vb.checkSpace(vbSize, true);
         // If texture or blendMode change,will change material.
-        if (_preTextureIndex != _curTextureIndex || _preBlendDst != _curBlendDst || _preBlendSrc != _curBlendSrc)
+        if (_preTextureIndex != _curTextureIndex || _preBlendDst != _curBlendDst || _preBlendSrc != _curBlendSrc || isFull)
         {
             _indexStart += _curISegLen;
             double curHash = _curTextureIndex + (int)_curBlendSrc + (int)_curBlendDst;
@@ -341,8 +343,6 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         
         // Fill MiddlewareManager vertex buffer
         auto vertexOffset = vb.getCurPos() / sizeof(middleware::V2F_T2F_C4B);
-		auto vbSize = triangles.vertCount * sizeof(middleware::V2F_T2F_C4B);
-		vb.checkSpace(vbSize, true);
         vb.writeBytes((char*)worldTriangles, vbSize);
         
 		auto ibSize = triangles.indexCount * sizeof(unsigned short);
@@ -362,7 +362,7 @@ void CCArmatureDisplay::traverseArmature(Armature* armature)
         
         // Record this turn index segmentation count,it will store in material buffer in the end.
         _curISegLen += triangles.indexCount;
-        _renderHandle->updateIA(_materialLen-1, _indexStart, _curISegLen);
+        _renderHandle->updateIA(_materialLen - 1, _indexStart, _curISegLen);
     }
 }
 

@@ -351,14 +351,19 @@ void SpineRenderer::update (float deltaTime)
         
         texture = attachmentVertices->_texture;
         curTextureIndex = texture->getRealTextureIndex();
-        // If texture or blendMode change,will change material.
-        if (preTextureIndex != curTextureIndex || preBlendDst != curBlendDst || preBlendSrc != curBlendSrc)
+        
+        auto vbSize = attachmentVertices->_triangles->vertCount * sizeof(middleware::V2F_T2F_C4B);
+        auto isFull = vb.checkSpace(vbSize, true);
+        
+        // If texture or blendMode change or vertex is more than 65535, will change material.
+        if (preTextureIndex != curTextureIndex || preBlendDst != curBlendDst || preBlendSrc != curBlendSrc || isFull)
         {
             indexStart += curISegLen;
             
             double curHash = curTextureIndex + (int)curBlendSrc + (int)curBlendDst;
             
-            Effect* renderEffect = renderHandle->getEffect(materialLen);
+            auto nowEffectIdx = materialLen;
+            Effect* renderEffect = renderHandle->getEffect(nowEffectIdx);
             Technique::Parameter* param = nullptr;
             Pass* pass = nullptr;
             
@@ -390,7 +395,7 @@ void SpineRenderer::update (float deltaTime)
                 Vector<Pass*>& passes = (Vector<Pass*>&)tech->getPasses();
                 pass = *(passes.begin());
                 
-                renderHandle->updateNativeEffect(materialLen, effect);
+                renderHandle->updateNativeEffect(nowEffectIdx, effect);
                 renderEffect = effect;
             }
             
@@ -435,9 +440,7 @@ void SpineRenderer::update (float deltaTime)
         }
         
         // Fill MiddlewareManager vertex buffer
-        auto vertexOffset = vb.getCurPos()/sizeof(middleware::V2F_T2F_C4B);
-		auto vbSize = attachmentVertices->_triangles->vertCount * sizeof(middleware::V2F_T2F_C4B);
-		vb.checkSpace(vbSize, true);
+        auto vertexOffset = vb.getCurPos() / sizeof(middleware::V2F_T2F_C4B);
         vb.writeBytes((char*)attachmentVertices->_triangles->verts, vbSize);
         
 		auto ibSize = attachmentVertices->_triangles->indexCount * sizeof(unsigned short);
@@ -455,14 +458,13 @@ void SpineRenderer::update (float deltaTime)
         }
         
         curISegLen += attachmentVertices->_triangles->indexCount;
-        renderHandle->updateIA(materialLen-1, indexStart, curISegLen);
+        renderHandle->updateIA(materialLen - 1, indexStart, curISegLen);
     }
     
     if (_debugSlots)
     {
         _debugBuffer->writeFloat32(0, debugSlotsLen);
     }
-    
     
     if (_debugBones)
     {

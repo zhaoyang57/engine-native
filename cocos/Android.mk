@@ -172,7 +172,7 @@ LOCAL_STATIC_LIBRARIES += cocos_network_static
 LOCAL_STATIC_LIBRARIES += cocos_extension_static
 endif # USE_NET_WORK
 
-ifneq ($(USE_MIDDLEWARE),0_0)
+ifneq ($(USE_MIDDLEWARE),0)
 LOCAL_STATIC_LIBRARIES += editor_support_static
 endif # USE_MIDDLEWARE
 
@@ -228,7 +228,9 @@ include $(BUILD_STATIC_LIBRARY)
 #==============================================================
 #$(call import-module,.)
 $(call import-module,android)
+ifneq ($(USE_MIDDLEWARE),0)
 $(call import-module,editor-support)
+endif # USE_MIDDLEWARE
 $(call import-module,platform/android)
 $(call import-module,audio/android)
 $(call import-module,network)

@@ -606,6 +606,11 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
     }
 }
 
+void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
+{
+    //
+}
+
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
 {
 //    SE_LOGD("CanvasRenderingContext2D(%p)::fillText: %s, %f, %f, %f\n", this, text.c_str(), x, y, maxWidth);
@@ -678,6 +683,11 @@ void CanvasRenderingContext2D::lineTo(float x, float y)
 void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, float y2)
 {
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+{
+    //
 }
 
 void CanvasRenderingContext2D::stroke()
@@ -860,6 +870,24 @@ void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, 
 void CanvasRenderingContext2D::resetTransform()
 {
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr) {
+    //
+}
+
+std::vector<float>& CanvasRenderingContext2D::getLineDash() {
+    //
+}
+
+void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
+{
+    //
+}
+
+void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
+{
+    //
 }
 
 NS_CC_END

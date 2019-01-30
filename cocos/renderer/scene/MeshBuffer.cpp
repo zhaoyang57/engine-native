@@ -26,6 +26,8 @@
 #include "RenderFlow.hpp"
 #include "../gfx/DeviceGraphics.h"
 
+#define MAX_VB_SIZE 1310700
+
 RENDERER_BEGIN
 
 MeshBuffer::MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt)
@@ -40,12 +42,14 @@ MeshBuffer::MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt)
 , _dirty(false)
 , _vertexFmt(fmt)
 , _batcher(batcher)
+, _vbPos(0)
 {
     _bytesPerVertex = _vertexFmt->getBytes();
     
     DeviceGraphics* device = _batcher->getFlow()->getDevice();
     _vb = VertexBuffer::create(device, _vertexFmt, Usage::DYNAMIC, nullptr, 0, 0);
-    _vb->retain();
+    _vbArr.pushBack(_vb);
+    
     _ib = IndexBuffer::create(device, IndexFormat::UINT16, Usage::STATIC, nullptr, 0, 0);
     _ib->retain();
     
@@ -57,7 +61,6 @@ MeshBuffer::MeshBuffer(ModelBatcher* batcher, VertexFormat* fmt)
 
 MeshBuffer::~MeshBuffer()
 {
-    _vb->release();
     _ib->release();
 }
 
@@ -79,25 +82,66 @@ bool MeshBuffer::request(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* 
     offset->vByte = _byteOffset;
     offset->index = _indexOffset;
     offset->vertex = _vertexOffset;
-    return requestStatic(vertexCount, indexCount);
+    return requestStatic(vertexCount, indexCount, offset);
 }
 
-bool MeshBuffer::requestStatic(uint32_t vertexCount, uint32_t indexCount)
+bool MeshBuffer::requestStatic(uint32_t vertexCount, uint32_t indexCount, OffsetInfo* offset)
 {
     uint32_t byteOffset = _byteOffset + vertexCount * _bytesPerVertex;
+    if (MAX_VB_SIZE < byteOffset) {
+        // Finish pre data.
+        _batcher->flush();
+        _vb->update(0, vData.data(), _byteOffset);
+        
+        // Prepare next data.
+        _vbPos++;
+        if (_vbPos >= _vbArr.size())
+        {
+            DeviceGraphics* device = _batcher->getFlow()->getDevice();
+            _vb = VertexBuffer::create(device, _vertexFmt, Usage::DYNAMIC, nullptr, 0, 0);
+            _vb->setBytes(_vDataCount * VDATA_BYTE);
+            _vbArr.pushBack(_vb);
+        }
+        else
+        {
+            _vb = _vbArr.at(_vbPos);
+        }
+        
+        _byteStart = 0;
+        _byteOffset = 0;
+        _vertexStart = 0;
+        _vertexOffset = 0;
+        
+        offset->vByte = 0;
+        offset->vertex = 0;
+        
+        byteOffset = vertexCount * _bytesPerVertex;
+    }
+    
     uint32_t indexOffset = _indexOffset + indexCount;
     uint32_t vBytes = _vDataCount * VDATA_BYTE;
-    if (byteOffset > vBytes || indexOffset > _iDataCount)
+    
+    if (byteOffset > vBytes)
     {
-        while (vBytes < byteOffset || _iDataCount < indexOffset)
+        while (vBytes < byteOffset)
         {
             _vDataCount *= 2;
-            _iDataCount *= 2;
-            
             vBytes = _vDataCount * VDATA_BYTE;
         }
         
-        reallocBuffers();
+        vData.resize(_vDataCount);
+        _vb->setBytes(vBytes);
+    }
+    
+    if (indexOffset > _iDataCount)
+    {
+        while (_iDataCount < indexOffset)
+        {
+            _iDataCount *= 2;
+        }
+        
+        iData.resize(_iDataCount);
+        _ib->setBytes(_iDataCount * IDATA_BYTE);
     }
     
     _vertexOffset += vertexCount;
@@ -116,6 +160,8 @@ void MeshBuffer::uploadData()
 
 void MeshBuffer::reset()
 {
+    _vbPos = 0;
+    _vb = _vbArr.at(0);
     _byteStart = 0;
     _byteOffset = 0;
     _vertexStart = 0;

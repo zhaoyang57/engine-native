@@ -35,7 +35,19 @@ RENDERER_BEGIN
  */
 
 /**
- * The 2d texture class
+ * The 2d texture class\n
+ * JS API: gfx.Texture2D
+ @code
+ let texture = new gfx.Texture2D(cc.renderer.device, {
+     images: [],
+     width: 128,
+     height: 128,
+     wrapS: renderEngine.gfx.WRAP_REPEAT,
+     wrapT: renderEngine.gfx.WRAP_REPEAT,
+     format: renderEngine.gfx.TEXTURE_FMT_RGB8,
+     mipmap: false,
+ });
+ @endcode
  */
 class Texture2D : public Texture
 {
@@ -43,7 +55,7 @@ public:
     Texture2D();
     ~Texture2D();
 
-    /**
+    /*
      * Init the texture with device and options
      * @see Texture::Options
      */

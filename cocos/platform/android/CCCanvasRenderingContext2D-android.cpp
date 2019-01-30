@@ -75,6 +75,11 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "quadraticCurveTo", x1, y1, x2, y2);
     }
 
+    void bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "bezierCurveTo", x1, y1, x2, y2, x3, y3);
+    }
+
     void stroke()
     {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
@@ -107,6 +112,14 @@ public:
     {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
+    }
+
+    void strokeRect(float x, float y, float w, float h)
+    {
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f) {
+            return;
+        }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
         fillData();
     }
@@ -141,7 +154,7 @@ public:
 
     void fillText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (text.empty() || _bufferWidth < 1.0f || _bufferHeight < 1.0f)
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillText", text, x, y, maxWidth);
         fillData();
@@ -149,7 +162,7 @@ public:
 
     void strokeText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (text.empty() || _bufferWidth < 1.0f || _bufferHeight < 1.0f)
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "strokeText", text, x, y, maxWidth);
         fillData();
@@ -222,6 +235,7 @@ public:
     void fillData()
     {
         jbyteArray arr = JniHelper::callObjectByteArrayMethod(_obj, JCLS_CANVASIMPL, "getDataRef");
+        if(nullptr == arr) return;
         jsize len  = JniHelper::getEnv()->GetArrayLength(arr);
         jbyte* jbarray = (jbyte *)malloc(len * sizeof(jbyte));
         JniHelper::getEnv()->GetByteArrayRegion(arr,0,len,jbarray);
@@ -257,6 +271,67 @@ public:
     void resetTransform()
     {
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "resetTransform");
+    }
+
+    void setLineDash(std::vector<float>& arr)
+    {
+        cocos2d::JniMethodInfo methodInfo;
+        if (cocos2d::JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "setLineDash",
+                                              "([F)V")) {
+            jfloatArray jArrObj = nullptr;
+            int size = arr.size();
+            if(size > 0) {
+                float* arrValue = new float[size];
+                for(int i = 0; i < size; i++) {
+                    arrValue[i] = arr[i];
+                }
+                jArrObj = methodInfo.env->NewFloatArray(size);
+                methodInfo.env->SetFloatArrayRegion(jArrObj, 0, size, (const jfloat *)arrValue);
+            }
+            methodInfo.env->CallVoidMethod(_obj, methodInfo.methodID, jArrObj);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+            if(nullptr != jArrObj) {
+                methodInfo.env->DeleteLocalRef(jArrObj);
+            }
+        }
+    }
+
+    std::vector<float>& getLineDash()
+    {
+        jfloatArray array = JniHelper::callObjectFloatArrayMethod(_obj, JCLS_CANVASIMPL,
+                                                                  "getLineDash");
+        static std::vector<float> tmp;
+        tmp.clear();
+        if (nullptr == array) {
+            return tmp;
+        }
+        JNIEnv* pEnv = JniHelper::getEnv();
+        int size = pEnv->GetArrayLength(array);
+        if (size < 1) {
+            pEnv->DeleteLocalRef(array);
+            return tmp;
+        }
+        float *values = new float[size];
+        jfloat *elems = pEnv->GetFloatArrayElements(array, 0);
+        if (elems) {
+            memcpy(values, elems, sizeof(float) * size);
+            pEnv->ReleaseFloatArrayElements(array, elems, 0);
+        };
+        pEnv->DeleteLocalRef(array);
+        for (int i = 0; i < size; ++i) {
+            tmp.push_back(values[i]);
+        }
+        return tmp;
+    }
+
+    void setLineDashOffset(float offset)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setLineDashOffset", offset);
+    }
+
+    void setMiterLimit(float limit)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setMiterLimit", limit);
     }
 
 private:
@@ -342,12 +417,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 void CanvasRenderingContext2D::rect(float x, float y, float width, float height)
 {
 //    SE_LOGD("CanvasRenderingContext2D::rect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
-    if (recreateBufferIfNeeded()) {
-        _impl->rect(x, y, width, height);
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D rect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
-    }
+    _impl->rect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::clearRect(float x, float y, float width, float height)
@@ -374,11 +444,22 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
     }
 }
 
+void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
+{
+    if (recreateBufferIfNeeded()) {
+        _impl->strokeRect(x, y, width, height);
+        if (_canvasBufferUpdatedCB != nullptr) {
+            _canvasBufferUpdatedCB(_impl->getDataRef());
+        }
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
+}
+
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
 {
 //    SE_LOGD("CanvasRenderingContext2D::fillText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
-    if (text.empty())
-        return;
     if (recreateBufferIfNeeded()) {
         _impl->fillText(text, x, y, maxWidth);
         if (_canvasBufferUpdatedCB != nullptr)
@@ -392,8 +473,6 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 void CanvasRenderingContext2D::strokeText(const std::string& text, float x, float y, float maxWidth)
 {
 //    SE_LOGD("CanvasRenderingContext2D::strokeText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
-    if (text.empty())
-        return;
     if (recreateBufferIfNeeded()) {
         _impl->strokeText(text, x, y, maxWidth);
 
@@ -444,6 +523,11 @@ void CanvasRenderingContext2D::lineTo(float x, float y)
 void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, float y2)
 {
     _impl->quadraticCurveTo(x1, y1, x2, y2);
+}
+
+void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+{
+    _impl->bezierCurveTo(x1, y1, x2, y2, x3, y3);
 }
 
 void CanvasRenderingContext2D::stroke()
@@ -602,6 +686,12 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
      SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
+{
+    this->_lineDashOffsetInternal = offset;
+    _impl->setLineDashOffset(offset);
+}
+
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
@@ -639,6 +729,22 @@ void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, 
 void CanvasRenderingContext2D::resetTransform()
 {
     _impl->resetTransform();
+}
+
+void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr)
+{
+    _impl->setLineDash(arr);
+}
+
+std::vector<float>& CanvasRenderingContext2D::getLineDash()
+{
+    return _impl->getLineDash();
+}
+
+void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
+{
+    this->_miterLimitInternal = limit;
+    _impl->setMiterLimit(limit);
 }
 
 NS_CC_END

@@ -740,6 +740,16 @@ float
 },
 
 /**
+ * @method getLineDash
+ * @return {Array}
+ */
+getLineDash : function (
+)
+{
+    return new Array();
+},
+
+/**
  * @method stroke
  */
 stroke : function (
@@ -798,17 +808,11 @@ float
 },
 
 /**
- * @method clearRect
- * @param {float} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
+ * @method setLineDash
+ * @param {Array} arg0
  */
-clearRect : function (
-float, 
-float, 
-float, 
-float 
+setLineDash : function (
+array 
 )
 {
 },
@@ -874,6 +878,26 @@ save : function (
 },
 
 /**
+ * @method bezierCurveTo
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ */
+bezierCurveTo : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method resetTransform
  */
 resetTransform : function (
@@ -911,6 +935,22 @@ float
  * @method beginPath
  */
 beginPath : function (
+)
+{
+},
+
+/**
+ * @method clearRect
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ */
+clearRect : function (
+float, 
+float, 
+float, 
+float 
 )
 {
 },
@@ -959,6 +999,22 @@ float
 )
 {
     return cc.CanvasGradient;
+},
+
+/**
+ * @method strokeRect
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ */
+strokeRect : function (
+float, 
+float, 
+float, 
+float 
+)
+{
 },
 
 /**
