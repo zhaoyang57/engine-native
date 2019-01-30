@@ -140,7 +140,6 @@ namespace spine {
         bool                _ownsSkeletonData = true;
         spAtlas*            _atlas = nullptr;
         spAttachmentLoader* _attachmentLoader = nullptr;
-        float*              _worldVertices = nullptr;
         spSkeleton*         _skeleton = nullptr;
         float               _timeScale = 1;
         bool                _paused = false;
