@@ -758,6 +758,26 @@ stroke : function (
 },
 
 /**
+ * @method arc
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {bool} arg5
+ */
+arc : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+bool 
+)
+{
+},
+
+/**
  * @method measureText
  * @param {String} arg0
  * @return {size_object}
@@ -931,6 +951,24 @@ float
  * @method resetTransform
  */
 resetTransform : function (
+)
+{
+},
+
+/**
+ * @method arcTo
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ */
+arcTo : function (
+float, 
+float, 
+float, 
+float, 
+float 
 )
 {
 },

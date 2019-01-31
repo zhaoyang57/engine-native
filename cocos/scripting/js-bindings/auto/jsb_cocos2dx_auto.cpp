@@ -1441,6 +1441,50 @@ static bool js_engine_CanvasRenderingContext2D_stroke(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_stroke)
 
+static bool js_engine_CanvasRenderingContext2D_arc(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_arc : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 5) {
+        float arg0 = 0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        float arg4 = 0;
+        ok &= seval_to_float(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_arc : Error processing arguments");
+        cobj->arc(arg0, arg1, arg2, arg3, arg4);
+        return true;
+    }
+    if (argc == 6) {
+        float arg0 = 0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        float arg4 = 0;
+        bool arg5;
+        ok &= seval_to_float(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        ok &= seval_to_boolean(args[5], &arg5);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_arc : Error processing arguments");
+        cobj->arc(arg0, arg1, arg2, arg3, arg4, arg5);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 6);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_arc)
+
 static bool js_engine_CanvasRenderingContext2D_measureText(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -1743,6 +1787,33 @@ static bool js_engine_CanvasRenderingContext2D_resetTransform(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_resetTransform)
 
+static bool js_engine_CanvasRenderingContext2D_arcTo(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_arcTo : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 5) {
+        float arg0 = 0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        float arg4 = 0;
+        ok &= seval_to_float(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_arcTo : Error processing arguments");
+        cobj->arcTo(arg0, arg1, arg2, arg3, arg4);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 5);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_arcTo)
+
 static bool js_engine_CanvasRenderingContext2D_fillRect(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -1986,6 +2057,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("setTransform", _SE(js_engine_CanvasRenderingContext2D_setTransform));
     cls->defineFunction("getLineDash", _SE(js_engine_CanvasRenderingContext2D_getLineDash));
     cls->defineFunction("stroke", _SE(js_engine_CanvasRenderingContext2D_stroke));
+    cls->defineFunction("arc", _SE(js_engine_CanvasRenderingContext2D_arc));
     cls->defineFunction("measureText", _SE(js_engine_CanvasRenderingContext2D_measureText));
     cls->defineFunction("fill", _SE(js_engine_CanvasRenderingContext2D_fill));
     cls->defineFunction("_fillImageData", _SE(js_engine_CanvasRenderingContext2D__fillImageData));
@@ -1998,6 +2070,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("save", _SE(js_engine_CanvasRenderingContext2D_save));
     cls->defineFunction("bezierCurveTo", _SE(js_engine_CanvasRenderingContext2D_bezierCurveTo));
     cls->defineFunction("resetTransform", _SE(js_engine_CanvasRenderingContext2D_resetTransform));
+    cls->defineFunction("arcTo", _SE(js_engine_CanvasRenderingContext2D_arcTo));
     cls->defineFunction("fillRect", _SE(js_engine_CanvasRenderingContext2D_fillRect));
     cls->defineFunction("rotate", _SE(js_engine_CanvasRenderingContext2D_rotate));
     cls->defineFunction("beginPath", _SE(js_engine_CanvasRenderingContext2D_beginPath));

@@ -80,6 +80,16 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "bezierCurveTo", x1, y1, x2, y2, x3, y3);
     }
 
+    void arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "arc", x1, y1, radius, startAngle, endAngle, anticlockwise);
+    }
+
+    void arcTo(float x1, float y1, float x2, float y2, float radius)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "arcTo", x1, y1, x2, y2, radius);
+    }
+
     void stroke()
     {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
@@ -539,6 +549,16 @@ void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, fl
 void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
 {
     _impl->bezierCurveTo(x1, y1, x2, y2, x3, y3);
+}
+
+void CanvasRenderingContext2D::arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise)
+{
+    _impl->arc(x1, y1, radius, startAngle, endAngle, anticlockwise);
+}
+
+void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, float radius)
+{
+    _impl->arcTo(x1, y1, x2, y2, radius);
 }
 
 void CanvasRenderingContext2D::stroke()

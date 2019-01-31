@@ -687,6 +687,16 @@ void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, fl
 
 void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
 {
+
+}
+
+void CanvasRenderingContext2D::arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise)
+{
+    //
+}
+
+void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, float radius)
+{
     //
 }
 

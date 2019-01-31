@@ -74,6 +74,8 @@ public:
     void lineTo(float x, float y);
     void quadraticCurveTo(float x1, float y1, float x2, float y2);
     void bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3);
+    void arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise = false);
+    void arcTo(float x1, float y1, float x2, float y2, float radius);
     void fill();
     void stroke();
 
