@@ -67,7 +67,6 @@ public:
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     Size measureText(const std::string& text);
     CanvasGradient* createLinearGradient(float x0, float y0, float x1, float y1);
-    void save();
     // Paths
     void beginPath();
     void closePath();
@@ -77,7 +76,14 @@ public:
     void bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3);
     void fill();
     void stroke();
+
+    // state
+    void save();
     void restore();
+
+    // drawing images
+    void drawImage(const Data& image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh,
+                   float ow, float oh);
 
     // callback
     using CanvasBufferUpdatedCallback = std::function<void(const Data&)>;

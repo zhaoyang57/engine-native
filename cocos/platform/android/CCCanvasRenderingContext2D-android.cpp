@@ -334,6 +334,17 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setMiterLimit", limit);
     }
 
+    void drawImage(const Data &image, float sx, float sy, float sw, float sh,
+                   float dx, float dy, float dw, float dh, float ow, float oh) {
+        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
+            return;
+        jbyteArray arr = JniHelper::getEnv()->NewByteArray((jsize) image.getSize());
+        JniHelper::getEnv()->SetByteArrayRegion(arr, 0, (jsize) image.getSize(), (const jbyte *) image.getBytes());
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "drawImage", arr, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
+        JniHelper::getEnv()->DeleteLocalRef(arr);
+        fillData();
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -745,6 +756,13 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 {
     this->_miterLimitInternal = limit;
     _impl->setMiterLimit(limit);
+}
+
+void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
+                                         float dx, float dy, float dw, float dh, float ow, float oh) {
+    _impl->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
+    if (_canvasBufferUpdatedCB != nullptr)
+        _canvasBufferUpdatedCB(_impl->getDataRef());
 }
 
 NS_CC_END

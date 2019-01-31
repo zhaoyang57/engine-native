@@ -808,6 +808,36 @@ float
 },
 
 /**
+ * @method drawImage
+ * @param {cc.Data} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ * @param {float} arg6
+ * @param {float} arg7
+ * @param {float} arg8
+ * @param {float} arg9
+ * @param {float} arg10
+ */
+drawImage : function (
+data, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method setLineDash
  * @param {Array} arg0
  */

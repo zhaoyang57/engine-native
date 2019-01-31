@@ -1525,6 +1525,45 @@ static bool js_engine_CanvasRenderingContext2D_scale(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_scale)
 
+static bool js_engine_CanvasRenderingContext2D_drawImage(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_drawImage : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 11) {
+        cocos2d::Data arg0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        float arg4 = 0;
+        float arg5 = 0;
+        float arg6 = 0;
+        float arg7 = 0;
+        float arg8 = 0;
+        float arg9 = 0;
+        float arg10 = 0;
+        ok &= seval_to_Data(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        ok &= seval_to_float(args[5], &arg5);
+        ok &= seval_to_float(args[6], &arg6);
+        ok &= seval_to_float(args[7], &arg7);
+        ok &= seval_to_float(args[8], &arg8);
+        ok &= seval_to_float(args[9], &arg9);
+        ok &= seval_to_float(args[10], &arg10);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_drawImage : Error processing arguments");
+        cobj->drawImage(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 11);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_drawImage)
+
 static bool js_engine_CanvasRenderingContext2D_setLineDash(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -1951,6 +1990,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("fill", _SE(js_engine_CanvasRenderingContext2D_fill));
     cls->defineFunction("_fillImageData", _SE(js_engine_CanvasRenderingContext2D__fillImageData));
     cls->defineFunction("scale", _SE(js_engine_CanvasRenderingContext2D_scale));
+    cls->defineFunction("drawImage", _SE(js_engine_CanvasRenderingContext2D_drawImage));
     cls->defineFunction("setLineDash", _SE(js_engine_CanvasRenderingContext2D_setLineDash));
     cls->defineFunction("transform", _SE(js_engine_CanvasRenderingContext2D_transform));
     cls->defineFunction("fillText", _SE(js_engine_CanvasRenderingContext2D_fillText));
