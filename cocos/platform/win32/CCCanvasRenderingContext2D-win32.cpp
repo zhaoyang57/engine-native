@@ -935,4 +935,27 @@ void CanvasRenderingContext2D::resetTransform()
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr) {
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+std::vector<float>& CanvasRenderingContext2D::getLineDash() {
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
+{
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
+{
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
+                                         float dx, float dy, float dw, float dh, float ow, float oh) {
+    //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
 NS_CC_END
