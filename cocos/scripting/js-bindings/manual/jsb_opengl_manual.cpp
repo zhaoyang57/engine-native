@@ -1667,9 +1667,10 @@ static bool JSB_glGetUniformLocation(se::State& s) {
     WebGLProgram* arg0;
     std::string arg1;
 
+    s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_std_string(args[1], &arg1 );
-    s.rval().setNull();
     SE_PRECONDITION2(ok, false, "Error processing arguments");
     int ret_val = 0;
 
@@ -3414,7 +3415,7 @@ static bool JSB_glGetShaderParameter(se::State& s) {
     uint32_t arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0);
     ok &= seval_to_uint32(args[1], &arg1);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
@@ -3445,7 +3446,7 @@ static bool JSB_glGetProgramParameter(se::State& s) {
     uint32_t arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint32(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
@@ -3470,6 +3471,7 @@ static bool JSB_glGetProgramInfoLog(se::State& s) {
     SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments" );
 
     s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     bool ok = true;
     WebGLProgram* arg0;
     ok &= seval_to_native_ptr(args[0], &arg0 );
@@ -3505,6 +3507,7 @@ static bool JSB_glGetShaderInfoLog(se::State& s) {
     bool ok = true;
     WebGLShader* arg0;
     s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
     GLuint shaderId = arg0 != nullptr ? arg0->_id : 0;
@@ -4048,8 +4051,8 @@ static bool JSB_glGetUniformfv(se::State& s) {
     uint32_t arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
-    SE_PRECONDITION2(!args[1].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
+    SE_PRECONDITION4(!args[1].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint32(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
