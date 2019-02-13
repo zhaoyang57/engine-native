@@ -214,10 +214,10 @@ void jsb_init_file_operation_delegate()
             assert(!path.empty());
             return FileUtils::getInstance()->isFileExist(path);
         };
-        
+
         assert(delegate.isValid());
     }
-    
+
     se::ScriptEngine* se = se::ScriptEngine::getInstance();
     se::ScriptEngine::FileOperationDelegate seDelegate = se->getFileOperationDelegate();
     if (!seDelegate.isValid()) {
@@ -713,6 +713,39 @@ namespace
         bool freeData = false;
     };
 
+    uint8_t* convertRGB2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src++;
+            dst[i + 1] = *src++;
+            dst[i + 2] = *src++;
+            dst[i + 3] = 255;
+        }
+        return dst;
+    }
+
+    uint8_t* convertIA2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src;
+            dst[i + 1] = *src;
+            dst[i + 2] = *src++;
+            dst[i + 3] = *src;
+        }
+        return dst;
+    }
+
+    uint8_t* convertI2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src;
+            dst[i + 1] = *src;
+            dst[i + 2] = *src++;
+            dst[i + 3] = 255;
+        }
+        return dst;
+    }
+
     struct ImageInfo* createImageInfo(const Image* img)
     {
         struct ImageInfo* imgInfo = new struct ImageInfo();
@@ -731,24 +764,34 @@ namespace
         imgInfo->hasAlpha = img->hasAlpha();
         imgInfo->hasPremultipliedAlpha = img->hasPremultipliedAlpha();
         imgInfo->compressed = img->isCompressed();
+        imgInfo->length = img->getWidth() * img->getHeight() * 4;
 
         // Convert to RGBA888 because standard web api will return only RGBA888.
         // If not, then it may have issue in glTexSubImage. For example, engine
         // will create a big texture, and update its content with small pictures.
         // The big texture is RGBA888, then the small picture should be the same
         // format, or it will cause 0x502 error on OpenGL ES 2.
-        if (GL_RGB == imgInfo->glFormat)
-        {
-            imgInfo->length = img->getWidth() * img->getHeight() * 4;
-            uint8_t* dst = new uint8_t[imgInfo->length];
-            uint8_t* src = imgInfo->data;
-            for (uint32_t i = 0, length = imgInfo->length; i < length; i += 4)
-            {
-                dst[i] = *src++;
-                dst[i + 1] = *src++;
-                dst[i + 2] = *src++;
-                dst[i + 3] = 255;
-            }
+        uint8_t* dst = nullptr;
+        uint32_t length = imgInfo->length;
+        uint8_t* src = imgInfo->data;
+        switch(imgInfo->glFormat) {
+            case GL_RGBA: break;
+            case GL_LUMINANCE_ALPHA:
+                dst = convertIA2RGBA(length, src);
+                break;
+            case GL_ALPHA:
+            case GL_LUMINANCE:
+                dst = convertI2RGBA(length, src);
+                break;
+            case GL_RGB:
+                dst = convertRGB2RGBA(length, src);
+                break;
+            default:
+                SE_LOGE("unknown image format");
+                break;
+        }
+
+        if (imgInfo->glFormat != GL_RGBA) {
             imgInfo->data = dst;
             imgInfo->hasAlpha = true;
             imgInfo->bpp = 32;
