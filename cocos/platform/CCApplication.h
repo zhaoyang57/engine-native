@@ -178,6 +178,11 @@ public:
      @return True if the resource located by the URL was successfully opened; otherwise false.
      */
     bool openURL(const std::string &url);
+    
+    /**
+     @brief set display fps & draw call & jsb call information.
+     */
+    void openDebugView(bool enable);
 
     std::string getSystemVersion();
     

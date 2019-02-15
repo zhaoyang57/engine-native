@@ -28,6 +28,8 @@
 
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
+extern uint32_t __jsbInvocationCount;
+
 #ifdef __GNUC__
 #define SE_UNUSED __attribute__ ((unused))
 #else
@@ -46,6 +48,7 @@
 #define SE_BIND_FUNC(funcName) \
     JSValueRef funcName##Registry(JSContextRef _cx, JSObjectRef _function, JSObjectRef _thisObject, size_t _argc, const JSValueRef _argv[], JSValueRef* _exception) \
     { \
+        ++__jsbInvocationCount; \
         unsigned short argc = (unsigned short) _argc; \
         JSValueRef _jsRet = JSValueMakeUndefined(_cx); \
         void* nativeThisObject = se::internal::getPrivate(_thisObject); \
@@ -98,6 +101,7 @@
 #define SE_BIND_CTOR(funcName, cls, finalizeCb) \
     JSObjectRef funcName##Registry(JSContextRef _cx, JSObjectRef _constructor, size_t argc, const JSValueRef _argv[], JSValueRef* _exception) \
     { \
+        ++__jsbInvocationCount; \
         bool ret = true; \
         se::ValueArray args; \
         se::internal::jsToSeArgs(_cx, argc, _argv, &args); \
@@ -125,6 +129,7 @@
 #define SE_BIND_SUB_CLS_CTOR(funcName, cls, finalizeCb) \
     JSValueRef funcName##Registry(JSContextRef _cx, JSObjectRef _function, JSObjectRef _thisObject, size_t argc, const JSValueRef _argv[], JSValueRef* _exception) \
     { \
+        ++__jsbInvocationCount; \
         bool ret = true; \
         JSValueRef _jsRet = JSValueMakeUndefined(_cx); \
         se::ValueArray args; \
@@ -151,6 +156,7 @@
 #define SE_BIND_PROP_GET(funcName) \
     JSValueRef funcName##Registry(JSContextRef _cx, JSObjectRef _function, JSObjectRef _thisObject, size_t argc, const JSValueRef _argv[], JSValueRef* _exception) \
     { \
+        ++__jsbInvocationCount; \
         assert(argc == 0); \
         JSValueRef _jsRet = JSValueMakeUndefined(_cx); \
         void* nativeThisObject = se::internal::getPrivate(_thisObject); \
@@ -173,6 +179,7 @@
 #define SE_BIND_PROP_SET(funcName) \
     JSValueRef funcName##Registry(JSContextRef _cx, JSObjectRef _function, JSObjectRef _thisObject, size_t argc, const JSValueRef _argv[], JSValueRef* _exception) \
     { \
+        ++__jsbInvocationCount; \
         assert(argc == 1); \
         JSValueRef _jsRet = JSValueMakeUndefined(_cx); \
         void* nativeThisObject = se::internal::getPrivate(_thisObject); \

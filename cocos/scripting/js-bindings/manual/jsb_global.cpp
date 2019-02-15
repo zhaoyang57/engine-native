@@ -968,9 +968,7 @@ SE_BIND_FUNC(js_setDebugViewText)
 
 static bool js_openDebugView(se::State& s)
 {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    openDebugViewJNI(true);
-#endif
+    Application::getInstance()->openDebugView(true);
     return true;
 }
 SE_BIND_FUNC(js_openDebugView)

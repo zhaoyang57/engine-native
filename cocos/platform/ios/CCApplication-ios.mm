@@ -31,11 +31,14 @@
 #include "base/CCConfiguration.h"
 #include "renderer/gfx/DeviceGraphics.h"
 #include "scripting/js-bindings/event/EventDispatcher.h"
+#include "scripting/js-bindings/manual/jsb_opengl_manual.hpp"
 #include "scripting/js-bindings/jswrapper/SeApi.h"
 #include "CCEAGLView-ios.h"
 #include "base/CCGLUtils.h"
 #include "audio/include/AudioEngine.h"
 
+#define SAMPLE_TIME 0.5
+extern uint32_t __jsbInvocationCount;
 
 namespace
 {
@@ -73,12 +76,15 @@ namespace
     BOOL _isAppActive;
     cocos2d::Application* _application;
     cocos2d::Scheduler* _scheduler;
+    UILabel* _debugLabel;
+    bool _isOpenDebugView;
 }
 -(void) startMainLoop;
 -(void) stopMainLoop;
 -(void) doCaller: (id) sender;
 -(void) setPreferredFPS:(int)fps;
 -(void) firstStart:(id) view;
+-(void) showDebugView:(bool)isShow;
 @end
 
 @implementation MainLoop
@@ -90,6 +96,7 @@ namespace
     {
         _fps = 60;
         _systemVersion = [[UIDevice currentDevice].systemVersion floatValue];
+        _isOpenDebugView = false;
     
         _application = application;
         _scheduler = _application->getScheduler();
@@ -106,7 +113,9 @@ namespace
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_displayLink release];
-    
+    if (_debugLabel) {
+       [_debugLabel release];
+    }
     [super dealloc];
 }
 
@@ -172,13 +181,61 @@ namespace
     [self startMainLoop];
 }
 
+-(void) showDebugView:(bool)isShow
+{
+    if (!_debugLabel) {
+        CGFloat margin = 16;
+        UIView *egleView = (UIView *)_application->getView();
+        CGFloat labelWidth = egleView.frame.size.width - margin * 2;
+        _debugLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, 0, labelWidth, 30)];
+        _debugLabel.textColor = [UIColor redColor];
+        _debugLabel.font = [UIFont systemFontOfSize:12];
+        [egleView addSubview:_debugLabel];
+        [_debugLabel retain];
+    }
+    _isOpenDebugView = isShow;
+    [_debugLabel setHidden:not isShow];
+}
+
 -(void) doCaller: (id) sender
 {
     static std::chrono::steady_clock::time_point prevTime;
     static std::chrono::steady_clock::time_point now;
-    static float dt = 0.f;
+    static float dt = 0.0f;
+    static float dtSum = 0.0f;
+    static uint32_t jsbInvocationTotalFrames = 0;
+    static uint32_t jsbInvocationTotalCount = 0;
 
     prevTime = std::chrono::steady_clock::now();
+    
+    if (_isOpenDebugView) {
+        dtSum += dt;
+         ++jsbInvocationTotalFrames;
+        jsbInvocationTotalCount += __jsbInvocationCount;
+        
+        if (dtSum >= SAMPLE_TIME) {
+            float FPS = jsbInvocationTotalFrames / dtSum;
+            if (FPS > 99.9) {
+                FPS = 99.9;
+            }
+            int drawCount = drawCallCount / jsbInvocationTotalFrames;
+            if (drawCount > 999) {
+                drawCount = 999;
+            }
+            int jsbCount = jsbInvocationTotalCount / jsbInvocationTotalFrames;
+            if (jsbCount > 999) {
+                jsbCount = 999;
+            }
+            NSString *info = [NSString stringWithFormat:@"[FPS]%4.1f [Draw Call]%3d [JSB Call]%3d",FPS, drawCount, jsbCount];
+            [_debugLabel setText:info];
+            
+            dtSum = 0.0f;
+            drawCallCount = 0;
+            jsbInvocationTotalFrames = 0;
+            jsbInvocationTotalCount = 0;
+        }
+    }
+    __jsbInvocationCount = 0;
     
     bool downsampleEnabled = _application->isDownsampleEnabled();
     if (downsampleEnabled)
@@ -357,6 +414,11 @@ bool Application::openURL(const std::string &url)
     NSString* msg = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
     NSURL* nsUrl = [NSURL URLWithString:msg];
     return [[UIApplication sharedApplication] openURL:nsUrl];
+}
+
+void Application::openDebugView(bool enable)
+{
+    [(MainLoop*)_delegate showDebugView:enable];
 }
 
 bool Application::applicationDidFinishLaunching()

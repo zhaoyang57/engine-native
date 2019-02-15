@@ -259,6 +259,11 @@ bool Application::openURL(const std::string &url)
     return openURLJNI(url);
 }
 
+void Application::openDebugView(bool enable)
+{
+    openDebugViewJNI(enable);
+}
+
 std::string Application::getSystemVersion()
 {
     return getSystemVersionJNI();

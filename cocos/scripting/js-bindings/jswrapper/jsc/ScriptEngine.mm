@@ -39,6 +39,8 @@
 extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
 #endif
 
+uint32_t __jsbInvocationCount = 0;
+
 namespace se {
 
     AutoHandleScope::AutoHandleScope()
