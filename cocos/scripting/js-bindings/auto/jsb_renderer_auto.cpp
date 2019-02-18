@@ -374,6 +374,25 @@ static bool js_renderer_NodeProxy_removeHandle(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_removeHandle)
 
+static bool js_renderer_NodeProxy_setCullingMask(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setCullingMask : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        int arg0 = 0;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setCullingMask : Error processing arguments");
+        cobj->setCullingMask(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_setCullingMask)
+
 static bool js_renderer_NodeProxy_setChildrenOrderDirty(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
@@ -500,24 +519,38 @@ static bool js_renderer_NodeProxy_setName(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_setName)
 
-static bool js_renderer_NodeProxy_setGroupID(se::State& s)
+static bool js_renderer_NodeProxy_updateRealOpacity(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_setGroupID : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_updateRealOpacity : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->updateRealOpacity();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_updateRealOpacity)
+
+static bool js_renderer_NodeProxy_getCullingMask(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getCullingMask : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        int arg0 = 0;
-        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
-        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_setGroupID : Error processing arguments");
-        cobj->setGroupID(arg0);
+    if (argc == 0) {
+        int result = cobj->getCullingMask();
+        ok &= int32_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getCullingMask : Error processing arguments");
         return true;
     }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-SE_BIND_FUNC(js_renderer_NodeProxy_setGroupID)
+SE_BIND_FUNC(js_renderer_NodeProxy_getCullingMask)
 
 static bool js_renderer_NodeProxy_reset(se::State& s)
 {
@@ -551,24 +584,6 @@ static bool js_renderer_NodeProxy_getParent(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_getParent)
-
-static bool js_renderer_NodeProxy_getGroupID(se::State& s)
-{
-    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getGroupID : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 0) {
-        int result = cobj->getGroupID();
-        ok &= int32_to_seval(result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getGroupID : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_NodeProxy_getGroupID)
 
 static bool js_renderer_NodeProxy_removeChild(se::State& s)
 {
@@ -678,6 +693,7 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     cls->defineFunction("addHandle", _SE(js_renderer_NodeProxy_addHandle));
     cls->defineFunction("getChildren", _SE(js_renderer_NodeProxy_getChildren));
     cls->defineFunction("removeHandle", _SE(js_renderer_NodeProxy_removeHandle));
+    cls->defineFunction("setCullingMask", _SE(js_renderer_NodeProxy_setCullingMask));
     cls->defineFunction("setChildrenOrderDirty", _SE(js_renderer_NodeProxy_setChildrenOrderDirty));
     cls->defineFunction("setParent", _SE(js_renderer_NodeProxy_setParent));
     cls->defineFunction("getName", _SE(js_renderer_NodeProxy_getName));
@@ -685,10 +701,10 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     cls->defineFunction("getRealOpacity", _SE(js_renderer_NodeProxy_getRealOpacity));
     cls->defineFunction("getOpacity", _SE(js_renderer_NodeProxy_getOpacity));
     cls->defineFunction("setName", _SE(js_renderer_NodeProxy_setName));
-    cls->defineFunction("setGroupID", _SE(js_renderer_NodeProxy_setGroupID));
+    cls->defineFunction("updateRealOpacity", _SE(js_renderer_NodeProxy_updateRealOpacity));
+    cls->defineFunction("getCullingMask", _SE(js_renderer_NodeProxy_getCullingMask));
     cls->defineFunction("reset", _SE(js_renderer_NodeProxy_reset));
     cls->defineFunction("getParent", _SE(js_renderer_NodeProxy_getParent));
-    cls->defineFunction("getGroupID", _SE(js_renderer_NodeProxy_getGroupID));
     cls->defineFunction("removeChild", _SE(js_renderer_NodeProxy_removeChild));
     cls->defineFunction("setLocalZOrder", _SE(js_renderer_NodeProxy_setLocalZOrder));
     cls->defineFunction("getChildrenCount", _SE(js_renderer_NodeProxy_getChildrenCount));
@@ -781,6 +797,25 @@ static bool js_renderer_Camera_setStencil(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Camera_setStencil)
 
+static bool js_renderer_Camera_setPriority(se::State& s)
+{
+    cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_setPriority : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        int arg0 = 0;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_setPriority : Error processing arguments");
+        cobj->setPriority(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Camera_setPriority)
+
 static bool js_renderer_Camera_getOrthoHeight(se::State& s)
 {
     cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
@@ -854,6 +889,24 @@ static bool js_renderer_Camera_setType(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_Camera_setType)
+
+static bool js_renderer_Camera_getPriority(se::State& s)
+{
+    cocos2d::renderer::Camera* cobj = (cocos2d::renderer::Camera*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Camera_getPriority : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        int result = cobj->getPriority();
+        ok &= int32_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_Camera_getPriority : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Camera_getPriority)
 
 static bool js_renderer_Camera_setFar(se::State& s)
 {
@@ -1213,10 +1266,12 @@ bool js_register_renderer_Camera(se::Object* obj)
     cls->defineFunction("setFov", _SE(js_renderer_Camera_setFov));
     cls->defineFunction("getFrameBuffer", _SE(js_renderer_Camera_getFrameBuffer));
     cls->defineFunction("setStencil", _SE(js_renderer_Camera_setStencil));
+    cls->defineFunction("setPriority", _SE(js_renderer_Camera_setPriority));
     cls->defineFunction("getOrthoHeight", _SE(js_renderer_Camera_getOrthoHeight));
     cls->defineFunction("setCullingMask", _SE(js_renderer_Camera_setCullingMask));
     cls->defineFunction("getStencil", _SE(js_renderer_Camera_getStencil));
     cls->defineFunction("setType", _SE(js_renderer_Camera_setType));
+    cls->defineFunction("getPriority", _SE(js_renderer_Camera_getPriority));
     cls->defineFunction("setFar", _SE(js_renderer_Camera_setFar));
     cls->defineFunction("setFrameBuffer", _SE(js_renderer_Camera_setFrameBuffer));
     cls->defineFunction("setRect", _SE(js_renderer_Camera_setRect));
@@ -2901,6 +2956,21 @@ static bool js_renderer_Scene_getCameras(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_Scene_getCameras)
 
+static bool js_renderer_Scene_sortCameras(se::State& s)
+{
+    cocos2d::renderer::Scene* cobj = (cocos2d::renderer::Scene*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_Scene_sortCameras : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->sortCameras();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_Scene_sortCameras)
+
 static bool js_renderer_Scene_addView(se::State& s)
 {
     cocos2d::renderer::Scene* cobj = (cocos2d::renderer::Scene*)s.nativeThisObject();
@@ -3036,6 +3106,7 @@ bool js_register_renderer_Scene(se::Object* obj)
     cls->defineFunction("getCamera", _SE(js_renderer_Scene_getCamera));
     cls->defineFunction("getLight", _SE(js_renderer_Scene_getLight));
     cls->defineFunction("getCameras", _SE(js_renderer_Scene_getCameras));
+    cls->defineFunction("sortCameras", _SE(js_renderer_Scene_sortCameras));
     cls->defineFunction("addView", _SE(js_renderer_Scene_addView));
     cls->defineFunction("setDebugCamera", _SE(js_renderer_Scene_setDebugCamera));
     cls->defineFunction("removeView", _SE(js_renderer_Scene_removeView));
@@ -3590,6 +3661,25 @@ static bool js_renderer_RenderHandle_getMeshCount(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_getMeshCount)
 
+static bool js_renderer_RenderHandle_setOpacityDirty(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_setOpacityDirty : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_setOpacityDirty : Error processing arguments");
+        cobj->setOpacityDirty(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_setOpacityDirty)
+
 static bool js_renderer_RenderHandle_getVertexFormat(se::State& s)
 {
     cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
@@ -3628,6 +3718,24 @@ static bool js_renderer_RenderHandle_getEffect(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_getEffect)
+
+static bool js_renderer_RenderHandle_isOpacityDirty(se::State& s)
+{
+    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_isOpacityDirty : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        bool result = cobj->isOpacityDirty();
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_isOpacityDirty : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_RenderHandle_isOpacityDirty)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_RenderHandle_finalize)
 
@@ -3673,8 +3781,10 @@ bool js_register_renderer_RenderHandle(se::Object* obj)
     cls->defineFunction("fillBuffers", _SE(js_renderer_RenderHandle_fillBuffers));
     cls->defineFunction("enable", _SE(js_renderer_RenderHandle_enable));
     cls->defineFunction("getMeshCount", _SE(js_renderer_RenderHandle_getMeshCount));
+    cls->defineFunction("setOpacityDirty", _SE(js_renderer_RenderHandle_setOpacityDirty));
     cls->defineFunction("getVertexFormat", _SE(js_renderer_RenderHandle_getVertexFormat));
     cls->defineFunction("getEffect", _SE(js_renderer_RenderHandle_getEffect));
+    cls->defineFunction("isOpacityDirty", _SE(js_renderer_RenderHandle_isOpacityDirty));
     cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_RenderHandle_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::renderer::RenderHandle>(cls);

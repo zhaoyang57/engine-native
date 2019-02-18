@@ -34,7 +34,7 @@
 #include "InputAssembler.h"
 #include "Pass.h"
 #include "Camera.h"
-
+#include <algorithm>
 
 RENDERER_BEGIN
 
@@ -54,8 +54,8 @@ bool ForwardRenderer::init(DeviceGraphics* device, std::vector<ProgramLib::Templ
 void ForwardRenderer::render(Scene* scene)
 {
 //    reset();
-
-    const auto& cameras = scene->getCameras();
+    scene->sortCameras();
+    auto& cameras = scene->getCameras();
     for (auto camera : cameras)
         BaseRenderer::render(camera->extractView(_width, _height), scene);
     

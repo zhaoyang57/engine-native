@@ -56,6 +56,13 @@ Camera* Scene::getCamera(uint32_t index) const
     return _cameras.at(index);
 }
 
+void Scene::sortCameras()
+{
+    std::sort(_cameras.begin(), _cameras.end(), [=](const Camera* a, const Camera* b){
+        return a->getPriority() < b->getPriority();
+    });
+}
+
 void Scene::addCamera(Camera* camera)
 {
     _cameras.pushBack(camera);

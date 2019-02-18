@@ -183,6 +183,16 @@ str
 },
 
 /**
+ * @method setCullingMask
+ * @param {int} arg0
+ */
+setCullingMask : function (
+int 
+)
+{
+},
+
+/**
  * @method setChildrenOrderDirty
  */
 setChildrenOrderDirty : function (
@@ -251,13 +261,21 @@ str
 },
 
 /**
- * @method setGroupID
- * @param {int} arg0
+ * @method updateRealOpacity
  */
-setGroupID : function (
-int 
+updateRealOpacity : function (
 )
 {
+},
+
+/**
+ * @method getCullingMask
+ * @return {int}
+ */
+getCullingMask : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -276,16 +294,6 @@ getParent : function (
 )
 {
     return cc.renderer::NodeProxy;
-},
-
-/**
- * @method getGroupID
- * @return {int}
- */
-getGroupID : function (
-)
-{
-    return 0;
 },
 
 /**
@@ -387,6 +395,16 @@ int
 },
 
 /**
+ * @method setPriority
+ * @param {int} arg0
+ */
+setPriority : function (
+int 
+)
+{
+},
+
+/**
  * @method getOrthoHeight
  * @return {float}
  */
@@ -424,6 +442,16 @@ setType : function (
 projectiontype 
 )
 {
+},
+
+/**
+ * @method getPriority
+ * @return {int}
+ */
+getPriority : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -1305,6 +1333,14 @@ getCameras : function (
 },
 
 /**
+ * @method sortCameras
+ */
+sortCameras : function (
+)
+{
+},
+
+/**
  * @method addView
  * @param {cc.renderer::View} arg0
  */
@@ -1655,6 +1691,16 @@ getMeshCount : function (
 },
 
 /**
+ * @method setOpacityDirty
+ * @param {bool} arg0
+ */
+setOpacityDirty : function (
+bool 
+)
+{
+},
+
+/**
  * @method getVertexFormat
  * @return {cc.renderer::VertexFormat}
  */
@@ -1674,6 +1720,16 @@ int
 )
 {
     return cc.renderer::Effect;
+},
+
+/**
+ * @method isOpacityDirty
+ * @return {bool}
+ */
+isOpacityDirty : function (
+)
+{
+    return false;
 },
 
 /**

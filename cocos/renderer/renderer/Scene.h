@@ -86,6 +86,10 @@ public:
      *  @return All Cameras container.
      */
     inline const Vector<Camera*>& getCameras() const { return _cameras; }
+    /**
+     *  @brief Sorts all cameras.
+     */
+    void sortCameras();
     
     /**
      *  @brief Gets all models count.

@@ -73,7 +73,7 @@ void NodeProxy::reset()
     removeAllChildren();
     _localZOrder = 0;
     _childrenOrderDirty = false;
-    _groupID = 0;
+    _cullingMask = -1;
     _localMat.setIdentity();
     _worldMat.setIdentity();
 }
@@ -121,6 +121,7 @@ void NodeProxy::addChild(NodeProxy* child)
     _children.pushBack(child);
     _childrenOrderDirty = true;
     child->setParent(this);
+    child->updateRealOpacity();
 }
 
 void NodeProxy::detachChild(NodeProxy *child, ssize_t childIndex)
@@ -302,8 +303,21 @@ void NodeProxy::setOpacity(uint8_t opacity)
     if (_opacity != opacity)
     {
         _opacity = opacity;
-        _realOpacity = opacity;
-        _opacityUpdated = true;
+        updateRealOpacity();
+    }
+}
+
+void NodeProxy::updateRealOpacity()
+{
+    float parentOpacity = _parent ? _parent->getRealOpacity() / 255.0f : 1.0f;
+    float opacity = (uint8_t)(_opacity * parentOpacity);
+    _realOpacity = opacity;
+    _opacityUpdated = true;
+    
+    auto handle = getHandle("render");
+    if (handle)
+    {
+        ((RenderHandle*)handle)->setOpacityDirty(true);
     }
 }
 
@@ -358,24 +372,21 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     }
     updateMatrix();
     
-    if (_opacityUpdated)
-    {
-        parentOpacityDirty++;
-        _opacityUpdated = false;
-        parentOpacityUpdated = true;
-    }
-    
-    uint8_t opacity = _opacity;
     if (_parent != nullptr && parentOpacityDirty > 0)
     {
-        float parentOpacity = _parent->getRealOpacity() / 255.0f;
-        opacity = (uint8_t)(_opacity * parentOpacity);
-        _realOpacity = opacity;
+        updateRealOpacity();
     }
     
     for (const auto& handler : _handles)
     {
         handler.second->handle(this, batcher, scene);
+    }
+    
+    if (_opacityUpdated)
+    {
+        parentOpacityDirty++;
+        _opacityUpdated = false;
+        parentOpacityUpdated = true;
     }
     
     for (const auto& child : _children)

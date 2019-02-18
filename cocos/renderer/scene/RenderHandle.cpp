@@ -53,6 +53,7 @@ RenderHandle::RenderHandle()
 : _enabled(false)
 , _useModel(false)
 , _vfmt(nullptr)
+, _opacityDirty(true)
 {
 }
 
@@ -63,18 +64,13 @@ RenderHandle::~RenderHandle()
 
 void RenderHandle::enable()
 {
-    if (!_enabled)
-    {
-        _enabled = true;
-    }
+    _enabled = true;
+    _opacityDirty = true;
 }
 
 void RenderHandle::disable()
 {
-    if (_enabled)
-    {
-        _enabled = false;
-    }
+    _enabled = false;
 }
 
 void RenderHandle::updateNativeMesh(uint32_t index, se::Object* vertices, se::Object* indices)
@@ -109,8 +105,7 @@ void RenderHandle::updateNativeMesh(uint32_t index, se::Object* vertices, se::Ob
     data->jsVertices->getTypedArrayData(&data->vertices, (std::size_t*)&data->vBytes);
     data->jsIndices->getTypedArrayData(&data->indices, (std::size_t*)&data->iBytes);
     
-    // Initialize opacity in vertex buffer
-    this->updateOpacity(index, 255);
+    _opacityDirty = true;
 }
 
 void RenderHandle::updateNativeEffect(uint32_t index, Effect* effect)
@@ -245,6 +240,8 @@ void RenderHandle::updateOpacity(int index, uint8_t opacity)
         *ptrAlpha = opacity;
         ptrAlpha += dataPerVertex;
     }
+    
+    _opacityDirty = false;
 }
 
 RENDERER_END

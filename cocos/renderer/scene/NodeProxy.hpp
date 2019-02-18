@@ -173,18 +173,23 @@ public:
      */
     void setOpacity(uint8_t opacity);
     /**
+     *  @brief Updates opacity from parent.
+     */
+    void updateRealOpacity();
+    /**
      *  @brief Gets the node's realOpacity.
      */
+
     inline const uint8_t getRealOpacity() const {return _realOpacity;};
     /**
      *  @brief Gets the node's group id, this controls which camera can see the node.
      */
-    inline int getGroupID() const { return _groupID; };
+    inline int getCullingMask() const { return _cullingMask; };
     /**
      *  @brief Sets the node's group id.
      *  @param[in] groupID The group id
      */
-    inline void setGroupID(int groupID) { _groupID = groupID; };
+    inline void setCullingMask(int cullingMask) { _cullingMask = cullingMask; };
     
     /**
      *  @brief Gets the node's name.
@@ -246,10 +251,11 @@ private:
     bool _childrenOrderDirty = true;
     bool _matrixUpdated = false;
     bool _opacityUpdated = false;
+    
     uint8_t _opacity = 255;
     uint8_t _realOpacity = 255;
     int _localZOrder = 0;
-    int _groupID = 0;
+    int _cullingMask = 1;
 
     cocos2d::Mat4 _localMat;
     cocos2d::Mat4 _worldMat;
