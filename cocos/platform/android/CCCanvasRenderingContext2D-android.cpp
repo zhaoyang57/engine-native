@@ -6,6 +6,7 @@
 #include "platform/android/jni/JniHelper.h"
 
 #include <regex>
+#include <map>
 
 #ifndef JCLS_CANVASIMPL
 #define JCLS_CANVASIMPL  "org/cocos2dx/lib/CanvasRenderingContext2DImpl"
@@ -24,6 +25,8 @@ enum class CanvasTextBaseline {
     MIDDLE,
     BOTTOM
 };
+
+static std::map<std::string, bool> s_globalCompositeOperationMap;
 
 class CanvasRenderingContext2DImpl
 {
@@ -344,6 +347,10 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setMiterLimit", limit);
     }
 
+    void setGlobalCompositeOperation(const std::string& operation) {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setGlobalCompositeOperation", operation);
+    }
+
     void drawImage(const Data &image, float sx, float sy, float sw, float sh,
                    float dx, float dy, float dw, float dh, float ow, float oh) {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
@@ -411,6 +418,21 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
     _impl = new CanvasRenderingContext2DImpl();
     recreateBufferIfNeeded();
+
+    s_globalCompositeOperationMap["source-over"] = true;
+    s_globalCompositeOperationMap["source-in"] = true;
+    s_globalCompositeOperationMap["source-out"] = true;
+    s_globalCompositeOperationMap["source-atop"] = true;
+    s_globalCompositeOperationMap["destination-over"] = true;
+    s_globalCompositeOperationMap["destination-in"] = true;
+    s_globalCompositeOperationMap["destination-out"] = true;
+    s_globalCompositeOperationMap["destination-atop"] = true;
+    s_globalCompositeOperationMap["xor"] = true;
+    s_globalCompositeOperationMap["multiply"] = true;
+    s_globalCompositeOperationMap["screen"] = true;
+    s_globalCompositeOperationMap["overlay"] = true;
+    s_globalCompositeOperationMap["darken"] = true;
+    s_globalCompositeOperationMap["lighten"] = true;
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
@@ -714,7 +736,11 @@ void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
 {
-     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if(s_globalCompositeOperationMap.find(globalCompositeOperation) == s_globalCompositeOperationMap.end()) {
+        return;
+    }
+    this->_globalCompositeOperation = globalCompositeOperation;
+    _impl->setGlobalCompositeOperation(globalCompositeOperation);
 }
 
 void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
