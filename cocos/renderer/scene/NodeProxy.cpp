@@ -377,6 +377,11 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
         updateRealOpacity();
     }
     
+    if (_realOpacity == 0)
+    {
+        return;
+    }
+    
     for (const auto& handler : _handles)
     {
         handler.second->handle(this, batcher, scene);
