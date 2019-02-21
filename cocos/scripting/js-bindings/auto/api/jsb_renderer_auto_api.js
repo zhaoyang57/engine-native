@@ -307,6 +307,16 @@ nodeproxy
 },
 
 /**
+ * @method set3DNode
+ * @param {bool} arg0
+ */
+set3DNode : function (
+bool 
+)
+{
+},
+
+/**
  * @method setLocalZOrder
  * @param {int} arg0
  */

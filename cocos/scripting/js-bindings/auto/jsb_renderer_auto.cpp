@@ -604,6 +604,25 @@ static bool js_renderer_NodeProxy_removeChild(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_removeChild)
 
+static bool js_renderer_NodeProxy_set3DNode(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_set3DNode : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_set3DNode : Error processing arguments");
+        cobj->set3DNode(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_set3DNode)
+
 static bool js_renderer_NodeProxy_setLocalZOrder(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
@@ -706,6 +725,7 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     cls->defineFunction("reset", _SE(js_renderer_NodeProxy_reset));
     cls->defineFunction("getParent", _SE(js_renderer_NodeProxy_getParent));
     cls->defineFunction("removeChild", _SE(js_renderer_NodeProxy_removeChild));
+    cls->defineFunction("set3DNode", _SE(js_renderer_NodeProxy_set3DNode));
     cls->defineFunction("setLocalZOrder", _SE(js_renderer_NodeProxy_setLocalZOrder));
     cls->defineFunction("getChildrenCount", _SE(js_renderer_NodeProxy_getChildrenCount));
     cls->defineFunction("getHandle", _SE(js_renderer_NodeProxy_getHandle));

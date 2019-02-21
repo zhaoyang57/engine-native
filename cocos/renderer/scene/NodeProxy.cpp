@@ -341,9 +341,19 @@ void NodeProxy::updateFromJS()
 
         // Transform = Translate * Rotation * Scale;
         cocos2d::Quaternion q(_jsTRSData[4], _jsTRSData[5], _jsTRSData[6], _jsTRSData[7]);
-        _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
-        _localMat.rotate(q);
-        _localMat.scale(_jsTRSData[8], _jsTRSData[9], _jsTRSData[10]);
+        if (_is3DNode)
+        {
+            _localMat.translate(_jsTRSData[1], _jsTRSData[2], _jsTRSData[3]);
+            _localMat.rotate(q);
+            _localMat.scale(_jsTRSData[8], _jsTRSData[9], _jsTRSData[10]);
+        }
+        else
+        {
+            _localMat.translate(_jsTRSData[1], _jsTRSData[2], 0);
+            _localMat.rotate(q);
+            _localMat.scale(_jsTRSData[8], _jsTRSData[9], 1);
+        }
+
         _jsTRSData[0] = 0;
 
         _matrixUpdated = true;

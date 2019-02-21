@@ -53,6 +53,7 @@ SE_DECLARE_FUNC(js_renderer_NodeProxy_getCullingMask);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_reset);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_getParent);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_removeChild);
+SE_DECLARE_FUNC(js_renderer_NodeProxy_set3DNode);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_setLocalZOrder);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_getChildrenCount);
 SE_DECLARE_FUNC(js_renderer_NodeProxy_getHandle);

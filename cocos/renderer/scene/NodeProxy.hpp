@@ -205,6 +205,12 @@ public:
     inline void setName(const std::string& name) { _name = name; };
     
     /**
+     *  @brief Sets the node's 3D state.
+     *  @param[in] is3DNode
+     */
+    inline void set3DNode(bool is3DNode) { _is3DNode = is3DNode; };
+    
+    /**
      *  @brief Adds a system handle to the node proxy, system handle will be invoked during node's visit process.
      *  @param[in] sysid The system id.
      *  @param[in] handle The system handle pointer.
@@ -251,6 +257,7 @@ private:
     bool _childrenOrderDirty = true;
     bool _matrixUpdated = false;
     bool _opacityUpdated = false;
+    bool _is3DNode = false;
     
     uint8_t _opacity = 255;
     uint8_t _realOpacity = 255;
