@@ -905,4 +905,24 @@ void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, 
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_shadowBlur(float blur)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetX(float offsetX)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
 NS_CC_END

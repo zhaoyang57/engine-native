@@ -221,6 +221,26 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setStrokeStyle", r, g, b, a);
     }
 
+    void setShadowColor(float r, float g, float b, float a)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setShadowColor", r, g, b, a);
+    }
+
+    void setShadowBlur(float blur)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setShadowBlur", blur);
+    }
+
+    void setShadowOffsetX(float offsetX)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setShadowOffsetX", offsetX);
+    }
+
+    void setShadowOffsetY(float offsetY)
+    {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setShadowOffsetY", offsetY);
+    }
+
     void setLineWidth(float lineWidth)
     {
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setLineWidth", lineWidth);
@@ -468,6 +488,8 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasRenderingContext2D::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         _impl->clearRect(x, y, width, height);
+        if (_canvasBufferUpdatedCB != nullptr)
+            _canvasBufferUpdatedCB(_impl->getDataRef());
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -802,6 +824,31 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 {
     this->_miterLimitInternal = limit;
     _impl->setMiterLimit(limit);
+}
+
+void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
+{
+    CSSColorParser::Color color = CSSColorParser::parse(shadowColor);
+    _shadowColor = shadowColor;
+    _impl->setShadowColor(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
+}
+
+void CanvasRenderingContext2D::set_shadowBlur(float blur)
+{
+    _shadowBlur = blur;
+    _impl->setShadowBlur(blur);
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetX(float offsetX)
+{
+    _shadowOffsetX = offsetX;
+    _impl->setShadowOffsetX(offsetX);
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
+{
+    _shadowOffsetY = offsetY;
+    _impl->setShadowOffsetY(offsetY);
 }
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,

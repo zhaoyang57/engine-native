@@ -105,6 +105,10 @@ public:
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
     void set_lineDashOffsetInternal(float offset);
     void set_miterLimitInternal(float limit);
+    void set_shadowColor(const std::string& shadowColor);
+    void set_shadowBlur(float blur);
+    void set_shadowOffsetX(float offsetX);
+    void set_shadowOffsetY(float offsetY);
 
     // fill image data into Context2D
     void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
@@ -144,6 +148,12 @@ public:
     // Fill and stroke styles
     std::string _fillStyle = "#000";
     std::string _strokeStyle = "#000";
+
+    //shadow
+    std::string _shadowColor = "#000";
+    float _shadowBlur = 0.0f;
+    float _shadowOffsetX = 0.0f;
+    float _shadowOffsetY = 0.0f;
 
     // Compositing
     std::string _globalCompositeOperation = "source-over";
