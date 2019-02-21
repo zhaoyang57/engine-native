@@ -925,4 +925,12 @@ void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
+void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
+    //
+}
+
+void CanvasRenderingContext2D::clip(std::string rule) {
+    //
+}
+
 NS_CC_END

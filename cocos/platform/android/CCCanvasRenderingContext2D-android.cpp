@@ -382,6 +382,14 @@ public:
         fillData();
     }
 
+    void ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "ellipse", x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockWise);
+    }
+
+    void clip(std::string rule) {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "clip", rule);
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -856,6 +864,14 @@ void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, 
     _impl->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
     if (_canvasBufferUpdatedCB != nullptr)
         _canvasBufferUpdatedCB(_impl->getDataRef());
+}
+
+void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
+    _impl->ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockWise);
+}
+
+void CanvasRenderingContext2D::clip(std::string rule) {
+    _impl->clip(rule);
 }
 
 NS_CC_END

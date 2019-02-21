@@ -720,6 +720,14 @@ float
 },
 
 /**
+ * @method clip
+ */
+clip : function (
+)
+{
+},
+
+/**
  * @method setTransform
  * @param {float} arg0
  * @param {float} arg1
@@ -787,6 +795,30 @@ str
 )
 {
     return cc.Size;
+},
+
+/**
+ * @method ellipse
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ * @param {float} arg6
+ * @param {bool} arg7
+ */
+ellipse : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+bool 
+)
+{
 },
 
 /**

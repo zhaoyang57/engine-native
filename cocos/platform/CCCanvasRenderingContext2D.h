@@ -78,6 +78,8 @@ public:
     void arcTo(float x1, float y1, float x2, float y2, float radius);
     void fill();
     void stroke();
+    void ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise = false);
+    void clip(std::string rule = "nonzero");
 
     // state
     void save();
