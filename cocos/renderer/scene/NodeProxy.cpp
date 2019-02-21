@@ -372,16 +372,6 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     bool worldMatUpdated = false;
     bool parentOpacityUpdated = false;
 
-    reorderChildren();
-    updateFromJS();
-    
-    if (_matrixUpdated)
-    {
-        _worldMatDirty++;
-        worldMatUpdated = true;
-    }
-    updateMatrix();
-    
     if (_parent != nullptr && parentOpacityDirty > 0)
     {
         updateRealOpacity();
@@ -391,6 +381,16 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     {
         return;
     }
+    
+    reorderChildren();
+    updateFromJS();
+    
+    if (_matrixUpdated)
+    {
+        _worldMatDirty++;
+        worldMatUpdated = true;
+    }
+    updateMatrix();
     
     for (const auto& handler : _handles)
     {
