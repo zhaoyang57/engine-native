@@ -163,6 +163,11 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomRenderHandle* handle)
 
 void ModelBatcher::flushIA(InputAssembler* customIA)
 {
+    if (!_walking || _currEffect == nullptr)
+    {
+        return;
+    }
+    
     // Generate IA
     InputAssembler* ia = nullptr;
     if (_iaOffset >= _iaPool.size())

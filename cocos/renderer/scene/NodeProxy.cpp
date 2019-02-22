@@ -317,7 +317,10 @@ void NodeProxy::updateRealOpacity()
     auto handle = getHandle("render");
     if (handle)
     {
-        ((RenderHandle*)handle)->setOpacityDirty(true);
+        auto renderHandle = dynamic_cast<RenderHandle*>(handle);
+        if (renderHandle) {
+            renderHandle->setOpacityDirty(true);
+        }
     }
 }
 
