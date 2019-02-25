@@ -59,7 +59,7 @@ class ModelBatcher;
  renderHandle.bind(renderComponent);
  @endcode
  */
-class RenderHandle : SystemHandle
+class RenderHandle : public SystemHandle
 {
 public:
     RenderHandle();
@@ -134,8 +134,6 @@ public:
      */
     void setVertexFormat(VertexFormat* vfmt);
     
-    void setOpacityDirty (bool opacityDirty) { _opacityDirty = opacityDirty; }
-    bool isOpacityDirty () { return _opacityDirty; }
     void enable();
     void disable();
     bool enabled() const { return _enabled; };
@@ -161,7 +159,6 @@ protected:
     };
     
 protected:
-    bool _opacityDirty;
     bool _enabled;
     bool _useModel;
     uint32_t _bytesPerVertex;

@@ -3681,25 +3681,6 @@ static bool js_renderer_RenderHandle_getMeshCount(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_getMeshCount)
 
-static bool js_renderer_RenderHandle_setOpacityDirty(se::State& s)
-{
-    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_setOpacityDirty : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 1) {
-        bool arg0;
-        ok &= seval_to_boolean(args[0], &arg0);
-        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_setOpacityDirty : Error processing arguments");
-        cobj->setOpacityDirty(arg0);
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_RenderHandle_setOpacityDirty)
-
 static bool js_renderer_RenderHandle_getVertexFormat(se::State& s)
 {
     cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
@@ -3738,24 +3719,6 @@ static bool js_renderer_RenderHandle_getEffect(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_renderer_RenderHandle_getEffect)
-
-static bool js_renderer_RenderHandle_isOpacityDirty(se::State& s)
-{
-    cocos2d::renderer::RenderHandle* cobj = (cocos2d::renderer::RenderHandle*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_renderer_RenderHandle_isOpacityDirty : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 0) {
-        bool result = cobj->isOpacityDirty();
-        ok &= boolean_to_seval(result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_renderer_RenderHandle_isOpacityDirty : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_renderer_RenderHandle_isOpacityDirty)
 
 SE_DECLARE_FINALIZE_FUNC(js_cocos2d_renderer_RenderHandle_finalize)
 
@@ -3801,10 +3764,8 @@ bool js_register_renderer_RenderHandle(se::Object* obj)
     cls->defineFunction("fillBuffers", _SE(js_renderer_RenderHandle_fillBuffers));
     cls->defineFunction("enable", _SE(js_renderer_RenderHandle_enable));
     cls->defineFunction("getMeshCount", _SE(js_renderer_RenderHandle_getMeshCount));
-    cls->defineFunction("setOpacityDirty", _SE(js_renderer_RenderHandle_setOpacityDirty));
     cls->defineFunction("getVertexFormat", _SE(js_renderer_RenderHandle_getVertexFormat));
     cls->defineFunction("getEffect", _SE(js_renderer_RenderHandle_getEffect));
-    cls->defineFunction("isOpacityDirty", _SE(js_renderer_RenderHandle_isOpacityDirty));
     cls->defineFinalizeFunction(_SE(js_cocos2d_renderer_RenderHandle_finalize));
     cls->install();
     JSBClassType::registerClass<cocos2d::renderer::RenderHandle>(cls);

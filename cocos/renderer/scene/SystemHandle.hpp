@@ -57,6 +57,29 @@ public:
      *  @param[in] scene
      */
     virtual void postHandle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) = 0;
+    /**
+     *  @brief Notify dirty flag.
+     *  @param[in] node The node being processed.
+     *  @param[in] flag
+     */
+    virtual void notifyDirty(uint32_t flag)
+    {
+        _dirtyFlag |= flag;
+    }
+    /**
+     *  @brief Gets dirty flag.
+     */
+    uint32_t getDirtyFlag() const
+    {
+        return _dirtyFlag;
+    }
+public:
+    static const int TRANSFORM = 1 << 0;
+    static const int OPACITY = 1 << 1;
+    static const int COLOR = 1 << 2;
+    static const int CHILDREN = 1 << 3;
+protected:
+    uint32_t _dirtyFlag = 0;
 };
 
 // end of scene group

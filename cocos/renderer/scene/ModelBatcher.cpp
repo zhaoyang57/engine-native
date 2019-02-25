@@ -139,7 +139,8 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
         {
             buffer = getBuffer(vfmt);
         }
-        if (handle->isOpacityDirty())
+        auto dirtyFlag = handle->getDirtyFlag();
+        if (dirtyFlag & SystemHandle::OPACITY)
         {
             handle->updateOpacity(i, node->getRealOpacity());
         }

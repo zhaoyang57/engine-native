@@ -1701,16 +1701,6 @@ getMeshCount : function (
 },
 
 /**
- * @method setOpacityDirty
- * @param {bool} arg0
- */
-setOpacityDirty : function (
-bool 
-)
-{
-},
-
-/**
  * @method getVertexFormat
  * @return {cc.renderer::VertexFormat}
  */
@@ -1730,16 +1720,6 @@ int
 )
 {
     return cc.renderer::Effect;
-},
-
-/**
- * @method isOpacityDirty
- * @return {bool}
- */
-isOpacityDirty : function (
-)
-{
-    return false;
 },
 
 /**

@@ -242,11 +242,9 @@ protected:
     void updateFromJS();
     void updateMatrix();
 
-public:
-    static int parentOpacityDirty;
 private:
     static int _worldMatDirty;
-    
+    static int _parentOpacityDirty;
     static const int _TRANSFORM = 1 << 0;
     static const int _UPDATE_RENDER_DATA = 1 << 1;
     static const int _OPACITY = 1 << 2;

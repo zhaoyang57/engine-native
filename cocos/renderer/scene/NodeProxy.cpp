@@ -34,7 +34,7 @@
 
 RENDERER_BEGIN
 
-int NodeProxy::parentOpacityDirty = 0;
+int NodeProxy::_parentOpacityDirty = 0;
 int NodeProxy::_worldMatDirty = 0;
 
 NodeProxy::NodeProxy()
@@ -317,10 +317,7 @@ void NodeProxy::updateRealOpacity()
     auto handle = getHandle("render");
     if (handle)
     {
-        auto renderHandle = dynamic_cast<RenderHandle*>(handle);
-        if (renderHandle) {
-            renderHandle->setOpacityDirty(true);
-        }
+        handle->notifyDirty(SystemHandle::OPACITY);
     }
 }
 
@@ -366,7 +363,7 @@ void NodeProxy::updateFromJS()
 void NodeProxy::visitAsRoot(ModelBatcher* batcher, Scene* scene)
 {
     _worldMatDirty = 0;
-    parentOpacityDirty = 0;
+    _parentOpacityDirty = 0;
     visit(batcher, scene);
 }
 
@@ -375,7 +372,7 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     bool worldMatUpdated = false;
     bool parentOpacityUpdated = false;
 
-    if (_parent != nullptr && parentOpacityDirty > 0)
+    if (_parent != nullptr && _parentOpacityDirty > 0)
     {
         updateRealOpacity();
     }
@@ -402,7 +399,7 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     
     if (_opacityUpdated)
     {
-        parentOpacityDirty++;
+        _parentOpacityDirty++;
         _opacityUpdated = false;
         parentOpacityUpdated = true;
     }
@@ -423,7 +420,7 @@ void NodeProxy::visit(ModelBatcher* batcher, Scene* scene)
     }
     if (parentOpacityUpdated)
     {
-        parentOpacityDirty--;
+        _parentOpacityDirty--;
     }
 }
 

@@ -231,10 +231,8 @@ SE_DECLARE_FUNC(js_renderer_RenderHandle_disable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_fillBuffers);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_enable);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getMeshCount);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_setOpacityDirty);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getVertexFormat);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_getEffect);
-SE_DECLARE_FUNC(js_renderer_RenderHandle_isOpacityDirty);
 SE_DECLARE_FUNC(js_renderer_RenderHandle_RenderHandle);
 
 extern se::Object* __jsb_cocos2d_renderer_CustomRenderHandle_proto;
