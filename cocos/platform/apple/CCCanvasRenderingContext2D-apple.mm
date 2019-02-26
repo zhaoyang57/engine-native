@@ -530,22 +530,6 @@ namespace {
 @end
 
 NS_CC_BEGIN
-
-CanvasGradient::CanvasGradient()
-{
-    SE_LOGD("CanvasGradient constructor: %p\n", this);
-}
-
-CanvasGradient::~CanvasGradient()
-{
-    SE_LOGD("CanvasGradient destructor: %p\n", this);
-}
-
-void CanvasGradient::addColorStop(float offset, const std::string& color)
-{
-    SE_LOGD("CanvasGradient::addColorStop: %p\n", this);
-}
-
 // CanvasRenderingContext2D
 
 CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
@@ -648,11 +632,6 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 //    SE_LOGD("CanvasRenderingContext2D::measureText: %s\n", text.c_str());
     CGSize size = [_impl measureText: [NSString stringWithUTF8String:text.c_str()]];
     return cocos2d::Size(size.width, size.height);
-}
-
-CanvasGradient* CanvasRenderingContext2D::createLinearGradient(float x0, float y0, float x1, float y1)
-{
-    return nullptr;
 }
 
 void CanvasRenderingContext2D::save()
@@ -827,14 +806,14 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
+void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     [_impl setFillStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
 //    SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     [_impl setStrokeStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
@@ -930,6 +909,10 @@ void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float ra
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
+    //
+}
+
+void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
     //
 }
 

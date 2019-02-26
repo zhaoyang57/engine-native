@@ -600,21 +600,6 @@ private:
 
 NS_CC_BEGIN
 
-CanvasGradient::CanvasGradient()
-{
-    //SE_LOGD("CanvasGradient constructor: %p\n", this);
-}
-
-CanvasGradient::~CanvasGradient()
-{
-    //SE_LOGD("CanvasGradient destructor: %p\n", this);
-}
-
-void CanvasGradient::addColorStop(float offset, const std::string& color)
-{
-    //SE_LOGD("CanvasGradient::addColorStop: %p\n", this);
-}
-
 // CanvasRenderingContext2D
 
 CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
@@ -708,11 +693,6 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 {
     //SE_LOGD("CanvasRenderingContext2D::measureText: %s\n", text.c_str());
     return _impl->measureText(text);
-}
-
-CanvasGradient* CanvasRenderingContext2D::createLinearGradient(float x0, float y0, float x1, float y1)
-{
-    return nullptr;
 }
 
 void CanvasRenderingContext2D::save()
@@ -956,6 +936,18 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
+    //
+}
+
+void CanvasRenderingContext2D::clip(std::string rule) {
+    //
+}
+
+void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
+    //
 }
 
 NS_CC_END

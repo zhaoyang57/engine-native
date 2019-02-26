@@ -43,14 +43,6 @@ OBJC_CLASS(CanvasRenderingContext2DImpl);
 
 NS_CC_BEGIN
 
-class CC_DLL CanvasGradient
-{
-public:
-    CanvasGradient();
-    ~CanvasGradient();
-    void addColorStop(float offset, const std::string& color);
-};
-
 class CC_DLL CanvasRenderingContext2D
 {
 public:
@@ -66,7 +58,7 @@ public:
     void fillText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     Size measureText(const std::string& text);
-    CanvasGradient* createLinearGradient(float x0, float y0, float x1, float y1);
+    void _applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color);
     // Paths
     void beginPath();
     void closePath();
@@ -102,8 +94,8 @@ public:
     void set_font(const std::string& font);
     void set_textAlign(const std::string& textAlign);
     void set_textBaseline(const std::string& textBaseline);
-    void set_fillStyle(const std::string& fillStyle);
-    void set_strokeStyle(const std::string& strokeStyle);
+    void set_fillStyleInternal(const std::string& fillStyle);
+    void set_strokeStyleInternal(const std::string& strokeStyle);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
     void set_lineDashOffsetInternal(float offset);
     void set_miterLimitInternal(float limit);
@@ -148,8 +140,8 @@ public:
     std::string _textBaseline = "alphabetic";
 
     // Fill and stroke styles
-    std::string _fillStyle = "#000";
-    std::string _strokeStyle = "#000";
+    std::string _fillStyleInternal = "#000";
+    std::string _strokeStyleInternal = "#000";
 
     //shadow
     std::string _shadowColor = "#000";

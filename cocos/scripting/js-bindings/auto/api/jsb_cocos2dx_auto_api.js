@@ -639,34 +639,6 @@ char
 };
 
 /**
- * @class CanvasGradient
- */
-jsb.CanvasGradient = {
-
-/**
- * @method addColorStop
- * @param {float} arg0
- * @param {String} arg1
- */
-addColorStop : function (
-float, 
-str 
-)
-{
-},
-
-/**
- * @method CanvasGradient
- * @constructor
- */
-CanvasGradient : function (
-)
-{
-},
-
-};
-
-/**
  * @class CanvasRenderingContext2D
  */
 jsb.CanvasRenderingContext2D = {
@@ -890,16 +862,6 @@ float
 },
 
 /**
- * @method setLineDash
- * @param {Array} arg0
- */
-setLineDash : function (
-array 
-)
-{
-},
-
-/**
  * @method transform
  * @param {float} arg0
  * @param {float} arg1
@@ -947,6 +909,16 @@ str,
 float, 
 float, 
 float 
+)
+{
+},
+
+/**
+ * @method setLineDash
+ * @param {Array} arg0
+ */
+setLineDash : function (
+array 
 )
 {
 },
@@ -1084,21 +1056,25 @@ float
 },
 
 /**
- * @method createLinearGradient
- * @param {float} arg0
+ * @method _applyStyle_LinearGradient
+ * @param {bool} arg0
  * @param {float} arg1
  * @param {float} arg2
  * @param {float} arg3
- * @return {cc.CanvasGradient}
+ * @param {float} arg4
+ * @param {Array} arg5
+ * @param {Array} arg6
  */
-createLinearGradient : function (
+_applyStyle_LinearGradient : function (
+bool, 
 float, 
 float, 
 float, 
-float 
+float, 
+array, 
+array 
 )
 {
-    return cc.CanvasGradient;
 },
 
 /**

@@ -4,6 +4,7 @@
 
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "platform/android/jni/JniHelper.h"
+#include "cocos/base/CSSColorParser.hpp"
 
 #include <regex>
 #include <map>
@@ -13,6 +14,7 @@
 #endif
 
 using namespace cocos2d;
+using namespace CSSColorParser;
 
 enum class CanvasTextAlign {
     LEFT,
@@ -314,7 +316,7 @@ public:
             jfloatArray jArrObj = nullptr;
             int size = arr.size();
             if(size > 0) {
-                float* arrValue = new float[size];
+                float arrValue[size];
                 for(int i = 0; i < size; i++) {
                     arrValue[i] = arr[i];
                 }
@@ -390,6 +392,46 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "clip", rule);
     }
 
+    void applyStyle_Linear(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& posVec, std::vector<std::string>& colorVec ) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (cocos2d::JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "applyStyle_Linear",
+                                              "(ZFFFF[F[I)V")) {
+            jfloatArray jArrPos = nullptr;
+            jintArray jArrColor = nullptr;
+
+
+            int size = posVec.size();
+            if(size < 1) {
+                return;
+            }
+            float arrPos[size];
+            int arrColor[size];
+            for(int i = 0; i < size; i++) {
+                arrPos[i] = posVec[i];
+                Color color = parse(colorVec[i]);
+                int alpha = color.a * 255;
+                int red = color.r;
+                int green = color.g;
+                int blue = color.b;
+                arrColor[i] = alpha << 24 | red << 16 | green << 8 | blue;
+            }
+            jArrPos = methodInfo.env->NewFloatArray(size);
+            methodInfo.env->SetFloatArrayRegion(jArrPos, 0, size, (const jfloat *)arrPos);
+
+            jArrColor = methodInfo.env->NewIntArray(size);
+            methodInfo.env->SetIntArrayRegion(jArrColor, 0, size, (const jint *)arrColor);
+
+            methodInfo.env->CallVoidMethod(_obj, methodInfo.methodID, isFillStyle, x0, y0, x1, y1, jArrPos, jArrColor);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+            if(nullptr != jArrPos) {
+                methodInfo.env->DeleteLocalRef(jArrPos);
+            }
+            if(nullptr != jArrColor) {
+                methodInfo.env->DeleteLocalRef(jArrColor);
+            }
+        }
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -420,21 +462,6 @@ namespace {
 }
 
 NS_CC_BEGIN
-
-CanvasGradient::CanvasGradient()
-{
-    // SE_LOGD("CanvasGradient constructor: %p\n", this);
-}
-
-CanvasGradient::~CanvasGradient()
-{
-    // SE_LOGD("CanvasGradient destructor: %p\n", this);
-}
-
-void CanvasGradient::addColorStop(float offset, const std::string& color)
-{
-    // SE_LOGD("CanvasGradient::addColorStop: %p\n", this);
-}
 
 // CanvasRenderingContext2D
 
@@ -563,9 +590,8 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
     return cocos2d::Size(_impl->measureText(text), 0);
 }
 
-CanvasGradient* CanvasRenderingContext2D::createLinearGradient(float x0, float y0, float x1, float y1)
-{
-    return nullptr;
+void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
+    _impl->applyStyle_Linear(isFillStyle, x0, y0, x1, y1, pos, color);
 }
 
 void CanvasRenderingContext2D::save()
@@ -751,14 +777,14 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
+void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     _impl->setFillStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
     // SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     _impl->setStrokeStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
