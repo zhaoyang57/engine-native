@@ -231,8 +231,19 @@ namespace
         g_textField.frame = rect;
         setTextFieldReturnType(g_textField, showInfo.confirmType);
         setTexFiledKeyboardType(g_textField, showInfo.inputType);
-        g_textField.text = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        [g_textFieldConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        
+        NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue substringToIndex:showInfo.maxLength];
+        }
+        g_textField.text = defaultValue;
+        NSString *title = getConfirmButtonTitle(showInfo.confirmType);
+        if (title.length == 0) {
+            g_textFieldConfirmButton.hidden = YES;
+        } else {
+            g_textFieldConfirmButton.hidden = NO;
+            [g_textFieldConfirmButton setTitle:title forState:UIControlStateNormal];
+        }
     }
     
     void initTextView(const CGRect& viewRect, const CGRect& btnRect, const cocos2d::EditBox::ShowInfo& showInfo)
@@ -250,8 +261,19 @@ namespace
         }
         
         g_textView.frame = btnRect;
-        g_textView.text = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        [g_textViewConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue substringToIndex:showInfo.maxLength];
+        }
+        g_textView.text = defaultValue;
+        NSString *title = getConfirmButtonTitle(showInfo.confirmType);
+        if (title.length == 0) {
+            g_textViewConfirmButton.hidden = YES;
+        } else {
+            g_textViewConfirmButton.hidden = NO;
+            [g_textViewConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        }
+        
     }
     
     void addTextInput(const cocos2d::EditBox::ShowInfo& showInfo)
