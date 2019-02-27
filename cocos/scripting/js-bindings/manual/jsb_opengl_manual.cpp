@@ -5536,6 +5536,13 @@ bool JSB_register_opengl(se::Object* obj)
 
     se::ScriptEngine::getInstance()->addBeforeCleanupHook([](){
         __shaders.clear();
+        __webglTextureMap.clear();
+        __webglBufferMap.clear();
+        __webglRenderbufferMap.clear();
+        __webglFramebufferMap.clear();
+        __webglProgramMap.clear();
+        __webglShaderMap.clear();
+        __webglVertexArrayObjectOESMap.clear();
         if (__glVAOObj != nullptr)
         {
             __glVAOObj->unroot();
