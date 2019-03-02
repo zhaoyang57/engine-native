@@ -261,11 +261,22 @@ void Device::setKeepScreenOn(bool value)
  */
 void Device::vibrate(float duration)
 {
-    // See https://developer.apple.com/library/ios/documentation/AudioToolbox/Reference/SystemSoundServicesReference/index.html#//apple_ref/c/econst/kSystemSoundID_Vibrate
-    CC_UNUSED_PARAM(duration);
-
-    // automatically vibrates for approximately 0.4 seconds
-    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    if (duration >= 0.4) {
+        // vibrateLong
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    } else {
+        // vibrateShort
+        // Support device above iPhone7/iPhone7 plus
+        // Support system iOS10+
+        // when not match, no effect
+        if (@available(iOS 10.0, *)) {
+            //use feedBack
+            UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+            [generator prepare];
+            [generator impactOccurred];
+            [generator release];
+        }
+    }
 }
 
 float Device::getBatteryLevel()
