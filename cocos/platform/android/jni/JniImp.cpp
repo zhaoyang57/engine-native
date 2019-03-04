@@ -181,6 +181,11 @@ extern "C"
         g_isStarted = true;
     }
 
+    JNIEXPORT void JNICALL JNI_RENDER(nativeRestart)(JNIEnv*  env, jobject thiz)
+    {
+        g_isStarted = false;
+    }
+
 	JNIEXPORT void JNICALL JNI_RENDER(nativeRender)(JNIEnv* env)
 	{
         if (g_isGameFinished)
