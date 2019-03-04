@@ -293,6 +293,9 @@ namespace
             [g_textView addSubview:g_textViewConfirmButton];
         }
         
+        UIEdgeInsets containerInset = g_textView.textContainerInset;
+        containerInset.right = BUTTON_WIDTH;
+        g_textView.textContainerInset = containerInset;
         g_textView.frame = btnRect;
         NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
         if ([defaultValue unicodeLengthOfString] > showInfo.maxLength) {
