@@ -846,6 +846,328 @@ namespace se {
         *length = data.length;
         return true;
     }
+    
+    bool Object::getTypedArrayData(int8_t** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                int8_t* buf = (int8_t*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (int8_t*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(int16_t** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                int16_t* buf = (int16_t*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (int16_t*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(int32_t** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                int32_t* buf = (int32_t*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (int32_t*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(float_t** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                float_t* buf = (float_t*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (float_t*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(double_t** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                double_t* buf = (double_t*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (double_t*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(bool** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                bool* buf = (bool*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (bool*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
+    
+    bool Object::getTypedArrayData(std::string** ptr, size_t* length) const
+    {
+        assert(isTypedArray());
+#if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101200 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
+        if (isSupportTypedArrayAPI())
+        {
+            bool succeed = false;
+            JSValueRef exception = nullptr;
+            do
+            {
+                *length = JSObjectGetTypedArrayByteLength(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                size_t offset = JSObjectGetTypedArrayByteOffset(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                std::string* buf = (std::string*)JSObjectGetTypedArrayBytesPtr(__cx, _obj, &exception);
+                if (exception != nullptr)
+                    break;
+                
+                if (buf == nullptr)
+                    break;
+                
+                *ptr = buf + offset;
+                succeed = true;
+            } while (false);
+            
+            if (!succeed)
+            {
+                *ptr = nullptr;
+                *length = 0;
+                ScriptEngine::getInstance()->_clearException(exception);
+                return false;
+            }
+            
+            return true;
+        }
+#endif
+        NSMutableData* data = EJJSObjectGetTypedArrayData(__cx, _obj);
+        *ptr = (std::string*)data.mutableBytes;
+        *length = data.length;
+        return true;
+    }
 
     bool Object::_isNativeFunction() const
     {
