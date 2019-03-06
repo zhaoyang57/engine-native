@@ -1,10 +1,10 @@
 #include "platform/CCCanvasRenderingContext2D.h"
 #include "base/ccTypes.h"
 #include "base/csscolorparser.hpp"
+#include "base/ccUTF8.h"
 
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "platform/android/jni/JniHelper.h"
-#include "cocos/base/CSSColorParser.hpp"
 
 #include <regex>
 #include <map>
@@ -136,6 +136,7 @@ public:
             return;
         }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
         fillData();
     }
 
@@ -432,6 +433,26 @@ public:
         }
     }
 
+    void _applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (cocos2d::JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "applyStyle_Pattern", "(ZLjava/lang/String;[BFF)V")) {
+            int size = image.getSize();
+            if (size < 1) {
+                return;
+            }
+            jbyteArray jArrData = methodInfo.env->NewByteArray(size);
+            methodInfo.env->SetByteArrayRegion(jArrData, 0, size, (const jbyte *) image.getBytes());
+            jstring jRule = cocos2d::StringUtils::newStringUTFJNI(methodInfo.env, rule);
+
+            methodInfo.env->CallVoidMethod(_obj, methodInfo.methodID, isFillStyle, jRule, jArrData, width, height);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+            if (nullptr != jArrData) {
+                methodInfo.env->DeleteLocalRef(jArrData);
+            }
+            methodInfo.env->DeleteLocalRef(jRule);
+         }
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -592,6 +613,10 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 
 void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
     _impl->applyStyle_Linear(isFillStyle, x0, y0, x1, y1, pos, color);
+}
+
+void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
+    _impl->_applyStyle_Pattern(isFillStyle, rule, image, width, height);
 }
 
 void CanvasRenderingContext2D::save()

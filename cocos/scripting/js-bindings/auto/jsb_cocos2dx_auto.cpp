@@ -1615,6 +1615,33 @@ static bool js_engine_CanvasRenderingContext2D_drawImage(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_drawImage)
 
+static bool js_engine_CanvasRenderingContext2D__applyStyle_Pattern(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D__applyStyle_Pattern : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 5) {
+        bool arg0;
+        std::string arg1;
+        cocos2d::Data arg2;
+        float arg3 = 0;
+        float arg4 = 0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        ok &= seval_to_std_string(args[1], &arg1);
+        ok &= seval_to_Data(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D__applyStyle_Pattern : Error processing arguments");
+        cobj->_applyStyle_Pattern(arg0, arg1, arg2, arg3, arg4);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 5);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D__applyStyle_Pattern)
+
 static bool js_engine_CanvasRenderingContext2D_transform(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -2076,6 +2103,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("_fillImageData", _SE(js_engine_CanvasRenderingContext2D__fillImageData));
     cls->defineFunction("scale", _SE(js_engine_CanvasRenderingContext2D_scale));
     cls->defineFunction("drawImage", _SE(js_engine_CanvasRenderingContext2D_drawImage));
+    cls->defineFunction("_applyStyle_Pattern", _SE(js_engine_CanvasRenderingContext2D__applyStyle_Pattern));
     cls->defineFunction("transform", _SE(js_engine_CanvasRenderingContext2D_transform));
     cls->defineFunction("fillText", _SE(js_engine_CanvasRenderingContext2D_fillText));
     cls->defineFunction("strokeText", _SE(js_engine_CanvasRenderingContext2D_strokeText));

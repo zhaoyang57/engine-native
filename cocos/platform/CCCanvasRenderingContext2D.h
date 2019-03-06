@@ -59,6 +59,7 @@ public:
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     Size measureText(const std::string& text);
     void _applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color);
+    void _applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height);
     // Paths
     void beginPath();
     void closePath();

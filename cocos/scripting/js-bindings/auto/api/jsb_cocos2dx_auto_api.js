@@ -862,6 +862,24 @@ float
 },
 
 /**
+ * @method _applyStyle_Pattern
+ * @param {bool} arg0
+ * @param {String} arg1
+ * @param {cc.Data} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ */
+_applyStyle_Pattern : function (
+bool, 
+str, 
+data, 
+float, 
+float 
+)
+{
+},
+
+/**
  * @method transform
  * @param {float} arg0
  * @param {float} arg1
