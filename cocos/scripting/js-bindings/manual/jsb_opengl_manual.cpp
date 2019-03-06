@@ -389,7 +389,7 @@ namespace {
         }
         virtual ~WebGLUniformLocation()
         {
-            SE_LOGD("Destroy WebGLUniformLocation (%lu) by GC\n", _id);
+            SE_LOGD("Destroy WebGLUniformLocation (%" PRIu64 ") by GC\n", _id);
             safeRemoveElementFromGLUniformLocationMap(__webglUniformLocationMap, _id);
         }
 
