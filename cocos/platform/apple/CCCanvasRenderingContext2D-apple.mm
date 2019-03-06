@@ -37,7 +37,7 @@ enum class CanvasTextBaseline {
 };
 
 namespace {
-    void fillRectWithColor(uint8_t* buf, uint32_t totalWidth, uint32_t totalHeight, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t r, uint8_t g, uint8_t b)
+    void fillRectWithColor(uint8_t* buf, uint32_t totalWidth, uint32_t totalHeight, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         if ((x + width) > totalWidth || (y + height) > totalHeight)
             return;
@@ -49,10 +49,11 @@ namespace {
         {
             for (uint32_t offsetX = x; offsetX < (x + width); ++offsetX)
             {
-                p = buf + (totalWidth * offsetY + offsetX) * 3;
+                p = buf + (totalWidth * offsetY + offsetX) * 4;
                 *p++ = r;
                 *p++ = g;
                 *p++ = b;
+                *p++ = a;
             }
         }
     }
@@ -462,7 +463,8 @@ namespace {
         uint8_t r = _fillStyle.r * 255.0f;
         uint8_t g = _fillStyle.g * 255.0f;
         uint8_t b = _fillStyle.b * 255.0f;
-        fillRectWithColor(buffer, (uint32_t)_width, (uint32_t)_height, (uint32_t)rect.origin.x, (uint32_t)rect.origin.y, (uint32_t)rect.size.width, (uint32_t)rect.size.height, r, g, b);
+        uint8_t a = _fillStyle.a * 255.0f;
+        fillRectWithColor(buffer, (uint32_t)_width, (uint32_t)_height, (uint32_t)rect.origin.x, (uint32_t)rect.origin.y, (uint32_t)rect.size.width, (uint32_t)rect.size.height, r, g, b, a);
     }
 }
 
