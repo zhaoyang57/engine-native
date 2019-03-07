@@ -68,6 +68,7 @@
 @interface NSString (Unicode)
 - (NSUInteger)unicodeLengthOfString;
 - (NSString *)subStringWithUnicodeCount:(NSUInteger)count;
+- (NSString *)subStringWithMaxLength:(NSUInteger)length;  //防止unicode被截断
 @end
 
 @implementation NSString (Unicode)
@@ -95,6 +96,21 @@
                           }];
     return targetString;
 }
+
+-(NSString *)subStringWithMaxLength:(NSUInteger)length {
+    __block NSMutableString *targetString = [NSMutableString string];
+    [self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                             options:NSStringEnumerationByComposedCharacterSequences
+                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                              if (targetString.length + substring.length <= length) {
+                                  [targetString appendString:substring];
+                              } else {
+                                  *stop = YES;
+                              }
+                          }];
+    return targetString;
+}
+
 @end
 
 /*************************************************************************
@@ -266,8 +282,8 @@ namespace
         setTexFiledKeyboardType(g_textField, showInfo.inputType);
         
         NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        if ([defaultValue unicodeLengthOfString] > showInfo.maxLength) {
-            defaultValue = [defaultValue subStringWithUnicodeCount:showInfo.maxLength];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue subStringWithMaxLength:showInfo.maxLength];
         }
         g_textField.text = defaultValue;
         NSString *title = getConfirmButtonTitle(showInfo.confirmType);
@@ -298,8 +314,8 @@ namespace
         g_textView.textContainerInset = containerInset;
         g_textView.frame = btnRect;
         NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        if ([defaultValue unicodeLengthOfString] > showInfo.maxLength) {
-            defaultValue = [defaultValue subStringWithUnicodeCount:showInfo.maxLength];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue subStringWithMaxLength:showInfo.maxLength];
         }
         g_textView.text = defaultValue;
         NSString *title = getConfirmButtonTitle(showInfo.confirmType);
@@ -393,10 +409,10 @@ namespace
 @implementation TextFieldDelegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    NSUInteger originalLength = [textField.text unicodeLengthOfString];
-    NSUInteger addLength = [string unicodeLengthOfString];
+    NSUInteger originalLength = [textField.text length];
+    NSUInteger addLength = [string length];
     NSString *replaceString = [textField.text substringWithRange:range];
-    NSUInteger lengthToReplace = [replaceString unicodeLengthOfString];
+    NSUInteger lengthToReplace = [replaceString length];
     NSUInteger targetLength = originalLength + addLength - lengthToReplace;
     
     if (targetLength > g_maxLength && textField.markedTextRange == nil) {
@@ -412,8 +428,8 @@ namespace
         return;
     }
     NSString *targetText = textField.text;
-    if ([targetText unicodeLengthOfString] > g_maxLength) {
-        targetText = [targetText subStringWithUnicodeCount:g_maxLength];
+    if (targetText.length > g_maxLength) {
+        targetText = [targetText subStringWithMaxLength:g_maxLength];
     }
     textField.text = targetText;
     callJSFunc("input", [textField.text UTF8String]);
@@ -442,10 +458,10 @@ namespace
 @implementation TextViewDelegate
 - (BOOL) textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    NSUInteger originalLength = [textView.text unicodeLengthOfString];
-    NSUInteger addLength = [text unicodeLengthOfString];
+    NSUInteger originalLength = [textView.text length];
+    NSUInteger addLength = [text length];
     NSString *replaceString = [textView.text substringWithRange:range];
-    NSUInteger lengthToReplace = [replaceString unicodeLengthOfString];
+    NSUInteger lengthToReplace = [replaceString length];
     NSUInteger targetLength = originalLength + addLength - lengthToReplace;
     
     if (targetLength > g_maxLength && textView.markedTextRange == nil) {
@@ -462,8 +478,8 @@ namespace
     }
     
     NSString *targetText = textView.text;
-    if ([targetText unicodeLengthOfString] > g_maxLength) {
-        targetText = [targetText subStringWithUnicodeCount:g_maxLength];
+    if (targetText.length > g_maxLength) {
+        targetText = [targetText subStringWithMaxLength:g_maxLength];
     }
     textView.text = targetText;
     callJSFunc("input", [textView.text UTF8String]);
