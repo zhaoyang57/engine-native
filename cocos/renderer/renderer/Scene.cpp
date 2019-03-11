@@ -56,6 +56,13 @@ Camera* Scene::getCamera(uint32_t index) const
     return _cameras.at(index);
 }
 
+void Scene::sortCameras()
+{
+    std::sort(_cameras.begin(), _cameras.end(), [=](const Camera* a, const Camera* b){
+        return a->getPriority() < b->getPriority();
+    });
+}
+
 void Scene::addCamera(Camera* camera)
 {
     _cameras.pushBack(camera);
@@ -81,16 +88,12 @@ void Scene::removeModel(Model* model)
     auto iter = std::find(_models.begin(), _models.end(), model);
     if (_models.end() != iter)
     {
-        ModelPool::returnModel(model);
         _models.erase(iter);
     }
 }
 
 void Scene::removeModels()
 {
-    for (const auto& model : _models)
-        ModelPool::returnModel(model);
-
     _models.clear();
 }
 
