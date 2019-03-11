@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <string>
 #include "../Macro.h"
 
 RENDERER_BEGIN
