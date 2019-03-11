@@ -4401,7 +4401,10 @@ static bool JSB_glGetParameter(se::State& s)
             break;
             // Float32Array (with 0 elements)
         case GL_COMPRESSED_TEXTURE_FORMATS:
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 0), true);
+        {
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 0));
+            ret.setObject(obj, true);
+        }
             break;
 
             // Float32Array (with 2 elements)
@@ -4411,7 +4414,8 @@ static bool JSB_glGetParameter(se::State& s)
         {
             GLfloat params[2];
             JSB_GL_CHECK(glGetFloatv(pname, params));
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4437,7 +4441,8 @@ static bool JSB_glGetParameter(se::State& s)
         {
             GLfloat params[4];
             JSB_GL_CHECK(glGetFloatv(pname, params));
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4447,7 +4452,8 @@ static bool JSB_glGetParameter(se::State& s)
             GLfloat params[2];
             JSB_GL_CHECK(glGetFloatv(pname, params));
             int intParams[2] = {(int)params[0], (int)params[1]};
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4458,7 +4464,8 @@ static bool JSB_glGetParameter(se::State& s)
             GLfloat params[4];
             JSB_GL_CHECK(glGetFloatv(pname, params));
             int intParams[4] = {(int)params[0], (int)params[1], (int)params[2], (int)params[3]};
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)));
+            ret.setObject(obj, true);
         }
             break;
 
