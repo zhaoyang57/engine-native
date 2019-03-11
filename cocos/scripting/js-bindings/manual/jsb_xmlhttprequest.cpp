@@ -710,7 +710,7 @@ static bool XMLHttpRequest_constructor(se::State& s)
 }
 SE_BIND_CTOR(XMLHttpRequest_constructor, __jsb_XMLHttpRequest_class, XMLHttpRequest_finalize)
 
-static bool XMLHttpRequest_open(se::State& s)
+bool XMLHttpRequest_open(se::State& s)
 {
     const auto& args = s.args();
     int argc = (int)args.size();
