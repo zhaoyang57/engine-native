@@ -1699,6 +1699,13 @@ SE_BIND_FUNC(JSB_glGetError)
 
 static bool JSB_glUniformLocationFinalize(se::State& s)
 {
+    CCLOGINFO("jsbindings: finalizing JS object %p (WebGLUniformLocation)", s.nativeThisObject());
+    WebGLUniformLocation* cobj = (WebGLUniformLocation*) s.nativeThisObject();
+    if (se::ScriptEngine::getInstance()->isInCleanup()) {
+        cobj->release();
+    } else {
+        cobj->autorelease();
+    }
     return true;
 }
 SE_BIND_FINALIZE_FUNC(JSB_glUniformLocationFinalize)
@@ -5465,6 +5472,7 @@ bool JSB_register_opengl(se::Object* obj)
     __jsb_WebGLActiveInfo_class->install();
 
     __jsb_WebGLUniformLocation_class = se::Class::create("WebGLUniformLocation", obj, nullptr, _SE(JSB_glUniformLocation_constructor));
+    __jsb_WebGLUniformLocation_class->defineFinalizeFunction(_SE(JSB_glUniformLocationFinalize));
     __jsb_WebGLUniformLocation_class->install();
 
     __jsb_VertexArrayObjectOES_class = se::Class::create("VertexArrayObjectOES", obj, glObjectProto, _SE(JSB_glVertexArrayObjectOES_constructor));
