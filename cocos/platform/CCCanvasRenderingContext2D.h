@@ -98,6 +98,7 @@ public:
     void set_fillStyleInternal(const std::string& fillStyle);
     void set_strokeStyleInternal(const std::string& strokeStyle);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
+    void set_globalAlphaInternal(float alpha);
     void set_lineDashOffsetInternal(float offset);
     void set_miterLimitInternal(float limit);
     void set_shadowColor(const std::string& shadowColor);
@@ -152,6 +153,7 @@ public:
 
     // Compositing
     std::string _globalCompositeOperation = "source-over";
+    float _globalAlphaInternal = 1.0f;
 
 private:
 

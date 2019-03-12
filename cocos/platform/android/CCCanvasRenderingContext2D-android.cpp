@@ -374,6 +374,10 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setGlobalCompositeOperation", operation);
     }
 
+    void setGlobalAlpha(float alpha) {
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setGlobalAlpha", alpha);
+    }
+
     void drawImage(const Data &image, float sx, float sy, float sw, float sh,
                    float dx, float dy, float dw, float dh, float ow, float oh) {
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
@@ -822,6 +826,14 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
     }
     this->_globalCompositeOperation = globalCompositeOperation;
     _impl->setGlobalCompositeOperation(globalCompositeOperation);
+}
+
+void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
+    if(alpha < 0 || alpha > 1) {
+        return;
+    }
+    this->_globalAlphaInternal = alpha;
+    _impl->setGlobalAlpha(alpha);
 }
 
 void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)

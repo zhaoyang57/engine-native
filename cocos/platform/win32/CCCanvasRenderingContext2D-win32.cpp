@@ -950,4 +950,8 @@ void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, floa
     //
 }
 
+void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
+//
+}
+
 NS_CC_END

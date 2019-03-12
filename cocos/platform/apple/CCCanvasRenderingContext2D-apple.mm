@@ -916,4 +916,8 @@ void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, floa
     //
 }
 
+void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
 NS_CC_END
