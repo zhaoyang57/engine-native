@@ -121,6 +121,7 @@ public:
             return;
         }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
         fillData();
     }
 
