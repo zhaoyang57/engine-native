@@ -77,6 +77,7 @@ scripting/js-bindings/event/EventDispatcher.cpp \
 ../external/sources/unzip/ioapi_mem.cpp \
 ../external/sources/unzip/ioapi.cpp \
 ../external/sources/unzip/unzip.cpp \
+../external/sources/unzip/zip.cpp \
 ../external/sources/ConvertUTF/ConvertUTFWrapper.cpp \
 ../external/sources/ConvertUTF/ConvertUTF.c \
 ui/edit-box/EditBox-android.cpp
@@ -206,6 +207,7 @@ endif
 LOCAL_STATIC_LIBRARIES += cocos_webp_static
 LOCAL_STATIC_LIBRARIES += cocos_zlib_static
 LOCAL_STATIC_LIBRARIES += v8_static
+LOCAL_STATIC_LIBRARIES += breakpad_client
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos2dxandroid_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cpufeatures
