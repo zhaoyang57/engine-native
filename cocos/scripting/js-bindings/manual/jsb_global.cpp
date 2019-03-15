@@ -198,7 +198,13 @@ void jsb_init_file_operation_delegate()
                 }
             }
 
-            return FileUtils::getInstance()->getStringFromFile(path);
+            if (FileUtils::getInstance()->isFileExist(path)) {
+                return FileUtils::getInstance()->getStringFromFile(path);
+            }
+            else {
+                SE_LOGE("ScriptEngine::onGetStringFromFile %s not found, possible missing file.\n", path.c_str());
+            }
+            return "";
         };
 
         delegate.onGetFullPath = [](const std::string& path) -> std::string{
@@ -611,6 +617,14 @@ static bool JSBCore_getCurrentLanguage(se::State& s)
 }
 SE_BIND_FUNC(JSBCore_getCurrentLanguage)
 
+static bool JSBCore_getCurrentLanguageCode(se::State& s)
+{
+    std::string language = Application::getInstance()->getCurrentLanguageCode();
+    s.rval().setString(language);
+    return true;
+}
+SE_BIND_FUNC(JSBCore_getCurrentLanguageCode)
+
 static bool JSB_getOSVersion(se::State& s)
 {
     std::string systemVersion = Application::getInstance()->getSystemVersion();
@@ -713,6 +727,39 @@ namespace
         bool freeData = false;
     };
 
+    uint8_t* convertRGB2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src++;
+            dst[i + 1] = *src++;
+            dst[i + 2] = *src++;
+            dst[i + 3] = 255;
+        }
+        return dst;
+    }
+
+    uint8_t* convertIA2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src;
+            dst[i + 1] = *src;
+            dst[i + 2] = *src++;
+            dst[i + 3] = *src++;
+        }
+        return dst;
+    }
+
+    uint8_t* convertI2RGBA (uint32_t length, uint8_t* src) {
+        uint8_t* dst = new uint8_t[length];
+        for (uint32_t i = 0; i < length; i += 4) {
+            dst[i] = *src;
+            dst[i + 1] = *src;
+            dst[i + 2] = *src++;
+            dst[i + 3] = 255;
+        }
+        return dst;
+    }
+
     struct ImageInfo* createImageInfo(const Image* img)
     {
         struct ImageInfo* imgInfo = new struct ImageInfo();
@@ -737,18 +784,27 @@ namespace
         // will create a big texture, and update its content with small pictures.
         // The big texture is RGBA888, then the small picture should be the same
         // format, or it will cause 0x502 error on OpenGL ES 2.
-        if (GL_RGB == imgInfo->glFormat)
-        {
+        if (!imgInfo->compressed && imgInfo->glFormat != GL_RGBA) {
             imgInfo->length = img->getWidth() * img->getHeight() * 4;
-            uint8_t* dst = new uint8_t[imgInfo->length];
+            uint8_t* dst = nullptr;
+            uint32_t length = imgInfo->length;
             uint8_t* src = imgInfo->data;
-            for (uint32_t i = 0, length = imgInfo->length; i < length; i += 4)
-            {
-                dst[i] = *src++;
-                dst[i + 1] = *src++;
-                dst[i + 2] = *src++;
-                dst[i + 3] = 255;
+            switch(imgInfo->glFormat) {
+                case GL_LUMINANCE_ALPHA:
+                    dst = convertIA2RGBA(length, src);
+                    break;
+                case GL_ALPHA:
+                case GL_LUMINANCE:
+                    dst = convertI2RGBA(length, src);
+                    break;
+                case GL_RGB:
+                    dst = convertRGB2RGBA(length, src);
+                    break;
+                default:
+                    SE_LOGE("unknown image format");
+                    break;
             }
+
             imgInfo->data = dst;
             imgInfo->hasAlpha = true;
             imgInfo->bpp = 32;
@@ -850,11 +906,8 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
     size_t pos = std::string::npos;
     if (path.find("http://") == 0 || path.find("https://") == 0)
     {
-#if USE_NET_WORK
         localDownloaderCreateTask(path, initImageFunc);
-#else
-        SE_REPORT_ERROR("can't load remote image if you disable network module!");
-#endif // USE_NET_WORK
+
     }
     else if (path.find("data:") == 0 && (pos = path.find("base64,")) != std::string::npos)
     {
@@ -1000,6 +1053,24 @@ static bool JSB_openURL(se::State& s)
 }
 SE_BIND_FUNC(JSB_openURL)
 
+static bool JSB_copyTextToClipboard(se::State& s)
+{
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc > 0) {
+        std::string text;
+        ok = seval_to_std_string(args[0], &text);
+        SE_PRECONDITION2(ok, false, "text is invalid!");
+        Application::getInstance()->copyTextToClipboard(text);
+        return true;
+    }
+
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(JSB_copyTextToClipboard)
+
 static bool JSB_setPreferredFramesPerSecond(se::State& s)
 {
     const auto& args = s.args();
@@ -1137,6 +1208,8 @@ bool jsb_register_global_variables(se::Object* global)
     __jsbObj->defineFunction("openDebugView", _SE(js_openDebugView));
     __jsbObj->defineFunction("disableBatchGLCommandsToNative", _SE(js_disableBatchGLCommandsToNative));
     __jsbObj->defineFunction("openURL", _SE(JSB_openURL));
+    __jsbObj->defineFunction("copyTextToClipboard", _SE(JSB_copyTextToClipboard));
+
     __jsbObj->defineFunction("setPreferredFramesPerSecond", _SE(JSB_setPreferredFramesPerSecond));
     __jsbObj->defineFunction("showInputBox", _SE(JSB_showInputBox));
     __jsbObj->defineFunction("hideInputBox", _SE(JSB_hideInputBox));
@@ -1145,6 +1218,7 @@ bool jsb_register_global_variables(se::Object* global)
     global->defineFunction("__getOS", _SE(JSBCore_os));
     global->defineFunction("__getOSVersion", _SE(JSB_getOSVersion));
     global->defineFunction("__getCurrentLanguage", _SE(JSBCore_getCurrentLanguage));
+    global->defineFunction("__getCurrentLanguageCode", _SE(JSBCore_getCurrentLanguageCode));
     global->defineFunction("__getVersion", _SE(JSBCore_version));
     global->defineFunction("__restartVM", _SE(JSB_core_restartVM));
     global->defineFunction("__cleanScript", _SE(JSB_cleanScript));

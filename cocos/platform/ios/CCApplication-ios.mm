@@ -330,17 +330,10 @@ void Application::setPreferredFramesPerSecond(int fps)
 
 std::string Application::getCurrentLanguageCode() const
 {
-    char code[3]={0};
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSArray *languages = [defaults objectForKey:@"AppleLanguages"];
     NSString *currentLanguage = [languages objectAtIndex:0];
-
-    // get the current language code.(such as English is "en", Chinese is "zh" and so on)
-    NSDictionary* temp = [NSLocale componentsFromLocaleIdentifier:currentLanguage];
-    NSString * languageCode = [temp objectForKey:NSLocaleLanguageCode];
-    [languageCode getCString:code maxLength:3 encoding:NSASCIIStringEncoding];
-    code[2]='\0';
-    return std::string(code);
+    return [currentLanguage UTF8String];
 }
 
 bool Application::isDisplayStats() {
@@ -419,6 +412,12 @@ bool Application::openURL(const std::string &url)
 void Application::openDebugView(bool enable)
 {
     [(MainLoop*)_delegate showDebugView:enable];
+}
+
+void Application::copyTextToClipboard(const std::string &text)
+{
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
 }
 
 bool Application::applicationDidFinishLaunching()

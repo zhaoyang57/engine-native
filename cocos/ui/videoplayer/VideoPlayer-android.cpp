@@ -99,6 +99,7 @@ void VideoPlayer::setURL(const std::string& videoUrl)
     _videoURL = videoUrl;
     if (videoUrl.find("://") == std::string::npos)
     {
+        _videoURL = FileUtils::getInstance()->fullPathForFilename(videoUrl);
         _videoSource = VideoPlayer::Source::FILENAME;
     }
     else

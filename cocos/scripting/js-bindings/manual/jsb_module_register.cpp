@@ -34,6 +34,10 @@
 #include "cocos/scripting/js-bindings/manual/jsb_opengl_manual.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_platform.h"
 #include "cocos/scripting/js-bindings/manual/jsb_cocos2dx_manual.hpp"
+#include "cocos/scripting/js-bindings/manual/jsb_xmlhttprequest.hpp"
+#include "cocos/scripting/js-bindings/manual/jsb_cocos2dx_network_manual.h"
+#include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_network_auto.hpp"
+#include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_extension_auto.hpp"
 
 #if USE_MIDDLEWARE
 #include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_editor_support_auto.hpp"
@@ -46,14 +50,10 @@
 #include "cocos/scripting/js-bindings/manual/jsb_renderer_manual.hpp"
 #endif
 
-#if USE_NET_WORK
-#include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_network_auto.hpp"
-#include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_extension_auto.hpp"
-#include "cocos/scripting/js-bindings/manual/jsb_xmlhttprequest.hpp"
+#if USE_SOCKET
 #include "cocos/scripting/js-bindings/manual/jsb_websocket.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_socketio.hpp"
-#include "cocos/scripting/js-bindings/manual/jsb_cocos2dx_network_manual.h"
-#endif // USE_NET_WORK
+#endif // USE_SOCKET
 
 #if USE_AUDIO
 #include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_audioengine_auto.hpp"

@@ -324,9 +324,13 @@ std::string Application::getCurrentLanguageCode() const
 {
     LANGID lid = GetUserDefaultUILanguage();
     const LCID locale_id = MAKELCID(lid, SORT_DEFAULT);
-    static char code[3] = { 0 };
-    GetLocaleInfoA(locale_id, LOCALE_SISO639LANGNAME, code, sizeof(code));
-    code[2] = '\0';
+    int length = GetLocaleInfoA(locale_id, LOCALE_SISO639LANGNAME, nullptr, 0);
+
+    char *tempCode = new char[length];
+    GetLocaleInfoA(locale_id, LOCALE_SISO639LANGNAME, tempCode, length);
+    std::string code = tempCode;
+    delete tempCode;
+
     return code;
 }
 
@@ -367,6 +371,11 @@ bool Application::openURL(const std::string &url)
     HINSTANCE r = ShellExecuteW(NULL, L"open", temp, NULL, NULL, SW_SHOWNORMAL);
     delete[] temp;
     return (size_t)r>32;
+}
+
+void Application::copyTextToClipboard(const std::string &text)
+{
+    //TODO
 }
 
 bool Application::applicationDidFinishLaunching()

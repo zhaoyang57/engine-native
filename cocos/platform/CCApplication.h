@@ -184,6 +184,8 @@ public:
      */
     void openDebugView(bool enable);
 
+    void copyTextToClipboard(const std::string &text);
+
     std::string getSystemVersion();
     
 protected:

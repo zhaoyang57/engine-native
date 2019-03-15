@@ -24,7 +24,7 @@
  ****************************************************************************/
 #include "base/ccConfig.h"
 #include "jsb_websocket.hpp"
-#if (USE_NET_WORK > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#if (USE_SOCKET > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_global.h"
@@ -332,7 +332,7 @@ static bool WebSocket_constructor(se::State& s)
             JSB_WebSocketDelegate* delegate = new (std::nothrow) JSB_WebSocketDelegate();
             if (cobj->init(*delegate, url, &protocols, caFilePath))
             {
-                delegate->setJSDelegate(se::Value(obj));
+                delegate->setJSDelegate(se::Value(obj, true));
                 cobj->retain(); // release in finalize function and onClose delegate method
                 delegate->retain(); // release in finalize function and onClose delegate method
             }
@@ -350,7 +350,7 @@ static bool WebSocket_constructor(se::State& s)
             JSB_WebSocketDelegate* delegate = new (std::nothrow) JSB_WebSocketDelegate();
             if (cobj->init(*delegate, url))
             {
-                delegate->setJSDelegate(se::Value(obj));
+                delegate->setJSDelegate(se::Value(obj, true));
                 cobj->retain(); // release in finalize function and onClose delegate method
                 delegate->retain(); // release in finalize function and onClose delegate method
             }
@@ -573,4 +573,4 @@ bool register_all_websocket(se::Object* obj)
 
     return true;
 }
-#endif //#if (USE_NET_WORK > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#endif //#if (USE_SOCKET > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

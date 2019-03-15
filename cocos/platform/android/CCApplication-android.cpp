@@ -131,7 +131,7 @@ void Application::setPreferredFramesPerSecond(int fps)
 std::string Application::getCurrentLanguageCode() const
 {
     std::string language = getCurrentLanguageJNI();
-    return language.substr(0, 2);
+    return language;
 }
 
 bool Application::isDisplayStats() {
@@ -262,6 +262,11 @@ bool Application::openURL(const std::string &url)
 void Application::openDebugView(bool enable)
 {
     openDebugViewJNI(enable);
+}
+
+void Application::copyTextToClipboard(const std::string &text)
+{
+    copyTextToClipboardJNI(text);
 }
 
 std::string Application::getSystemVersion()
