@@ -887,15 +887,23 @@ void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
 }
 
 void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
-    //
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
-    //
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    //
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {

@@ -60,6 +60,7 @@ public:
     Size measureText(const std::string& text);
     void _applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color);
     void _applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height);
+    void _applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color);
     // Paths
     void beginPath();
     void closePath();

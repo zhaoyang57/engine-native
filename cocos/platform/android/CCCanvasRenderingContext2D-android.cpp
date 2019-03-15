@@ -457,6 +457,46 @@ public:
          }
     }
 
+    void _applyStyle_Radial(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& posVec, std::vector<std::string>& colorVec) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (cocos2d::JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "applyStyle_Radial",
+                                              "(ZFFFFFF[F[I)V")) {
+            jfloatArray jArrPos = nullptr;
+            jintArray jArrColor = nullptr;
+
+
+            int size = posVec.size();
+            if(size < 1) {
+                return;
+            }
+            float arrPos[size];
+            int arrColor[size];
+            for(int i = 0; i < size; i++) {
+                arrPos[i] = posVec[i];
+                Color color = parse(colorVec[i]);
+                int alpha = color.a * 255;
+                int red = color.r;
+                int green = color.g;
+                int blue = color.b;
+                arrColor[i] = alpha << 24 | red << 16 | green << 8 | blue;
+            }
+            jArrPos = methodInfo.env->NewFloatArray(size);
+            methodInfo.env->SetFloatArrayRegion(jArrPos, 0, size, (const jfloat *)arrPos);
+
+            jArrColor = methodInfo.env->NewIntArray(size);
+            methodInfo.env->SetIntArrayRegion(jArrColor, 0, size, (const jint *)arrColor);
+
+            methodInfo.env->CallVoidMethod(_obj, methodInfo.methodID, isFillStyle, x0, y0, r0, x1, y1, r1, jArrPos, jArrColor);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+            if(nullptr != jArrPos) {
+                methodInfo.env->DeleteLocalRef(jArrPos);
+            }
+            if(nullptr != jArrColor) {
+                methodInfo.env->DeleteLocalRef(jArrColor);
+            }
+        }
+    }
+
 private:
     jobject _obj = nullptr;
     Data _data;
@@ -621,6 +661,10 @@ void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, floa
 
 void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
     _impl->_applyStyle_Pattern(isFillStyle, rule, image, width, height);
+}
+
+void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
+    _impl->_applyStyle_Radial(isFillStyle, x0, y0, r0, x1, y1, r1, pos, color);
 }
 
 void CanvasRenderingContext2D::save()

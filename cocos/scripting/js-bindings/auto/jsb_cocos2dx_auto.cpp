@@ -1777,6 +1777,41 @@ static bool js_engine_CanvasRenderingContext2D_save(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_save)
 
+static bool js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 9) {
+        bool arg0;
+        float arg1 = 0;
+        float arg2 = 0;
+        float arg3 = 0;
+        float arg4 = 0;
+        float arg5 = 0;
+        float arg6 = 0;
+        std::vector<float> arg7;
+        std::vector<std::string> arg8;
+        ok &= seval_to_boolean(args[0], &arg0);
+        ok &= seval_to_float(args[1], &arg1);
+        ok &= seval_to_float(args[2], &arg2);
+        ok &= seval_to_float(args[3], &arg3);
+        ok &= seval_to_float(args[4], &arg4);
+        ok &= seval_to_float(args[5], &arg5);
+        ok &= seval_to_float(args[6], &arg6);
+        ok &= seval_to_std_vector_float(args[7], &arg7);
+        ok &= seval_to_std_vector_string(args[8], &arg8);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient : Error processing arguments");
+        cobj->_applyStyle_RadialGradient(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 9);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient)
+
 static bool js_engine_CanvasRenderingContext2D_bezierCurveTo(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -2109,6 +2144,7 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("strokeText", _SE(js_engine_CanvasRenderingContext2D_strokeText));
     cls->defineFunction("setLineDash", _SE(js_engine_CanvasRenderingContext2D_setLineDash));
     cls->defineFunction("save", _SE(js_engine_CanvasRenderingContext2D_save));
+    cls->defineFunction("_applyStyle_RadialGradient", _SE(js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient));
     cls->defineFunction("bezierCurveTo", _SE(js_engine_CanvasRenderingContext2D_bezierCurveTo));
     cls->defineFunction("resetTransform", _SE(js_engine_CanvasRenderingContext2D_resetTransform));
     cls->defineFunction("arcTo", _SE(js_engine_CanvasRenderingContext2D_arcTo));

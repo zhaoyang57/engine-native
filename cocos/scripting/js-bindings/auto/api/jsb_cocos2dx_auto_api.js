@@ -950,6 +950,32 @@ save : function (
 },
 
 /**
+ * @method _applyStyle_RadialGradient
+ * @param {bool} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ * @param {float} arg6
+ * @param {Array} arg7
+ * @param {Array} arg8
+ */
+_applyStyle_RadialGradient : function (
+bool, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+array, 
+array 
+)
+{
+},
+
+/**
  * @method bezierCurveTo
  * @param {float} arg0
  * @param {float} arg1

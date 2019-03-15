@@ -950,6 +950,14 @@ void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, floa
     //
 }
 
+void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
+    //
+}
+
+void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
+    //
+}
+
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
 //
 }
