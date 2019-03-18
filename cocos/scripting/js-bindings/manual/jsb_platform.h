@@ -32,4 +32,4 @@ namespace se {
 }
 
 bool register_platform_bindings(se::Object* obj);
-const std::unordered_map<std::string, std::string>& getFontFamilyNameMap();
+std::unordered_map<std::string, std::string>& getFontFamilyNameMap();

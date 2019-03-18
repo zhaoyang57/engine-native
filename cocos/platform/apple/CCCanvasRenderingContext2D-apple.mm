@@ -509,6 +509,48 @@ enum class CanvasTextBaseline {
 #endif
 }
 
+-(void) _fillImageData:(const cocos2d::Data &)imageData width:(float)imageWidth height:(float)imageHeight offsetX:(float)offsetX offsetY:(float)offsetY {
+    // check param
+    if (_width < 1.0f || _height < 1.0f) {
+        // do nothing
+        return;
+    }
+    if (offsetX < 0) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"x must be >= 0" userInfo:nil];
+    }
+    if (offsetY < 0) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"y must be >= 0" userInfo:nil];
+    }
+    if (imageWidth == 0 || imageHeight == 0) {
+        // do nothing
+        return;
+    }
+    if (imageWidth < 0) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"width must be >= 0" userInfo:nil];
+    }
+    if (imageHeight < 0) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"height must be >= 0" userInfo:nil];
+    }
+    if (offsetX + imageWidth > _width) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"x + width must be <= total width" userInfo:nil];
+    }
+    if (offsetY + imageHeight > _height) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"y + height must be <= total height" userInfo:nil];
+    }
+    
+    uint8_t *fillColors = imageData.getBytes();
+    uint8_t *imageDataTemp = _imageData.getBytes();
+    uint32_t yBegin = _height - (offsetY + imageHeight);
+    uint32_t yEnd = _height - offsetY;
+    uint32_t bytesPerRow = imageWidth * 4;
+    uint32_t index;
+    for (uint32_t yIndex = yBegin; yIndex < yEnd; ++yIndex)
+    {
+        index = (_width * yIndex) * 4;
+        memcpy(imageDataTemp + yIndex * bytesPerRow, fillColors + index, bytesPerRow);
+    }
+}
+
 @end
 
 NS_CC_BEGIN
@@ -808,7 +850,10 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
 
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
+    if (_canvasBufferUpdatedCB != nullptr) {
+        _canvasBufferUpdatedCB([_impl getDataRef]);
+    }
 }
 
 // transform

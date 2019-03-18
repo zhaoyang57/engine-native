@@ -64,6 +64,55 @@
 - (void) textViewDidChange:(UITextView *)textView;
 @end
 
+// MARK: NSString+Unicode
+@interface NSString (Unicode)
+- (NSUInteger)unicodeLengthOfString;
+- (NSString *)subStringWithUnicodeCount:(NSUInteger)count;
+- (NSString *)subStringWithMaxLength:(NSUInteger)length;  //防止unicode被截断
+@end
+
+@implementation NSString (Unicode)
+- (NSUInteger)unicodeLengthOfString {
+    __block NSUInteger unicodeLength = 0;
+    [self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                             options:NSStringEnumerationByComposedCharacterSequences
+                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                              unicodeLength += 1;
+                          }];
+    return unicodeLength;
+}
+
+- (NSString *)subStringWithUnicodeCount:(NSUInteger)count {
+    __block NSMutableString *targetString = [NSMutableString string];
+    __block NSUInteger unicodeLength = 0;
+    [self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                             options:NSStringEnumerationByComposedCharacterSequences
+                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                              unicodeLength += 1;
+                              [targetString appendString:substring];
+                              if (unicodeLength == count) {
+                                  *stop = YES;
+                              }
+                          }];
+    return targetString;
+}
+
+-(NSString *)subStringWithMaxLength:(NSUInteger)length {
+    __block NSMutableString *targetString = [NSMutableString string];
+    [self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                             options:NSStringEnumerationByComposedCharacterSequences
+                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                              if (targetString.length + substring.length <= length) {
+                                  [targetString appendString:substring];
+                              } else {
+                                  *stop = YES;
+                              }
+                          }];
+    return targetString;
+}
+
+@end
+
 /*************************************************************************
  Global variables and functions.
  ************************************************************************/
@@ -231,8 +280,19 @@ namespace
         g_textField.frame = rect;
         setTextFieldReturnType(g_textField, showInfo.confirmType);
         setTexFiledKeyboardType(g_textField, showInfo.inputType);
-        g_textField.text = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        [g_textFieldConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        
+        NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue subStringWithMaxLength:showInfo.maxLength];
+        }
+        g_textField.text = defaultValue;
+        NSString *title = getConfirmButtonTitle(showInfo.confirmType);
+        if (title.length == 0) {
+            g_textFieldConfirmButton.hidden = YES;
+        } else {
+            g_textFieldConfirmButton.hidden = NO;
+            [g_textFieldConfirmButton setTitle:title forState:UIControlStateNormal];
+        }
     }
     
     void initTextView(const CGRect& viewRect, const CGRect& btnRect, const cocos2d::EditBox::ShowInfo& showInfo)
@@ -249,9 +309,23 @@ namespace
             [g_textView addSubview:g_textViewConfirmButton];
         }
         
+        UIEdgeInsets containerInset = g_textView.textContainerInset;
+        containerInset.right = BUTTON_WIDTH;
+        g_textView.textContainerInset = containerInset;
         g_textView.frame = btnRect;
-        g_textView.text = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
-        [g_textViewConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        NSString *defaultValue = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
+        if (defaultValue.length > showInfo.maxLength) {
+            defaultValue = [defaultValue subStringWithMaxLength:showInfo.maxLength];
+        }
+        g_textView.text = defaultValue;
+        NSString *title = getConfirmButtonTitle(showInfo.confirmType);
+        if (title.length == 0) {
+            g_textViewConfirmButton.hidden = YES;
+        } else {
+            g_textViewConfirmButton.hidden = NO;
+            [g_textViewConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
+        }
+        
     }
     
     void addTextInput(const cocos2d::EditBox::ShowInfo& showInfo)
@@ -335,19 +409,29 @@ namespace
 @implementation TextFieldDelegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    // REFINE: check length limit before text changed
-    return YES;
+    NSUInteger originalLength = [textField.text length];
+    NSUInteger addLength = [string length];
+    NSString *replaceString = [textField.text substringWithRange:range];
+    NSUInteger lengthToReplace = [replaceString length];
+    NSUInteger targetLength = originalLength + addLength - lengthToReplace;
+    
+    if (targetLength > g_maxLength && textField.markedTextRange == nil) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (void)textFieldDidChange:(UITextField *)textField
 {
-    if (textField.markedTextRange != nil)
+    if (textField.markedTextRange != nil) {
         return;
-
-    // check length limit after text changed, a little rude
-    if (textField.text.length > g_maxLength)
-        textField.text = [textField.text substringToIndex:g_maxLength];
-
+    }
+    NSString *targetText = textField.text;
+    if (targetText.length > g_maxLength) {
+        targetText = [targetText subStringWithMaxLength:g_maxLength];
+    }
+    textField.text = targetText;
     callJSFunc("input", [textField.text UTF8String]);
     setText(textField.text);
 }
@@ -362,10 +446,11 @@ namespace
 @implementation ButtonHandler
 -(IBAction) buttonTapped:(UIButton *)button
 {
+    if (!g_confirmHold) {
+        cocos2d::EditBox::complete();
+    }
     const std::string text([getCurrentText() UTF8String]);
     callJSFunc("confirm", text);
-    if (!g_confirmHold)
-        cocos2d::EditBox::complete();
 }
 @end
 
@@ -373,19 +458,30 @@ namespace
 @implementation TextViewDelegate
 - (BOOL) textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    // REFINE: check length limit before text changed
-    return YES;
+    NSUInteger originalLength = [textView.text length];
+    NSUInteger addLength = [text length];
+    NSString *replaceString = [textView.text substringWithRange:range];
+    NSUInteger lengthToReplace = [replaceString length];
+    NSUInteger targetLength = originalLength + addLength - lengthToReplace;
+    
+    if (targetLength > g_maxLength && textView.markedTextRange == nil) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    if (textView.markedTextRange != nil)
-        return;
-
-    // check length limit after text changed, a little rude
-    if (textView.text.length > g_maxLength)
-        textView.text = [textView.text substringToIndex:g_maxLength];
-
+    if (textView.markedTextRange != nil) {
+         return;
+    }
+    
+    NSString *targetText = textView.text;
+    if (targetText.length > g_maxLength) {
+        targetText = [targetText subStringWithMaxLength:g_maxLength];
+    }
+    textView.text = targetText;
     callJSFunc("input", [textView.text UTF8String]);
     setText(textView.text);
 }
@@ -427,9 +523,9 @@ void EditBox::hide()
 
 void EditBox::complete()
 {
+    EditBox::hide();
     NSString* text = getCurrentText();
     callJSFunc("complete", [text UTF8String]);
-    EditBox::hide();
 }
 
 NS_CC_END
