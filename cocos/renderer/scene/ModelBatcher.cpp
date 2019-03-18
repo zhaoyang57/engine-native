@@ -117,7 +117,7 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
     for (uint32_t i = 0, l = handle->getMeshCount(); i < l; ++i)
     {
         Effect* effect = handle->getEffect((uint32_t)i);
-        int cullingMask = 1 << node->getGroupID();
+        int cullingMask = node->getCullingMask();
         const Mat4& worldMat = useModel ? Mat4::IDENTITY : node->getWorldMatrix();
         if (_currEffect == nullptr ||
             _currEffect->getHash() != effect->getHash() ||
@@ -139,7 +139,8 @@ void ModelBatcher::commit(NodeProxy* node, RenderHandle* handle)
         {
             buffer = getBuffer(vfmt);
         }
-        if (NodeProxy::parentOpacityDirty > 0)
+        auto dirtyFlag = handle->getDirtyFlag();
+        if (dirtyFlag & SystemHandle::OPACITY)
         {
             handle->updateOpacity(i, node->getRealOpacity());
         }
@@ -155,7 +156,7 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomRenderHandle* handle)
     {
         const Mat4& worldMat = handle->getUseModel() ? node->getWorldMatrix() : Mat4::IDENTITY;
         _currEffect = handle->getEffect((uint32_t)i);
-        _cullingMask = (1 << node->getGroupID());
+        _cullingMask = node->getCullingMask();
         _modelMat.set(worldMat);
         handle->renderIA(i, this, node);
     }
@@ -163,6 +164,11 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomRenderHandle* handle)
 
 void ModelBatcher::flushIA(InputAssembler* customIA)
 {
+    if (!_walking || _currEffect == nullptr)
+    {
+        return;
+    }
+    
     // Generate IA
     InputAssembler* ia = nullptr;
     if (_iaOffset >= _iaPool.size())

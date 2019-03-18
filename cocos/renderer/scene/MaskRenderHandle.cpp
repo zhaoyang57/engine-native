@@ -61,7 +61,7 @@ void MaskRenderHandle::fillBuffers(MeshBuffer *buffer, int index, const Mat4 &wo
     instance->pushMask(_inverted);
     instance->clear();
     _batcher->commitIA(_node, _clearSubHandle);
-    StencilManager::getInstance()->enterLevel();
+    instance->enterLevel();
     if(_imageStencil)
     {
         _batcher->setCurrentEffect(getEffect(index));
