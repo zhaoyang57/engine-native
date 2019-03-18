@@ -169,7 +169,7 @@ namespace {
     se::Class* __jsb_WebGLProgram_class = nullptr;
     se::Class* __jsb_WebGLShader_class = nullptr;
     se::Class* __jsb_WebGLActiveInfo_class = nullptr;
-//    se::Class* __jsb_WebGLUniformLocation_class = nullptr;
+    se::Class* __jsb_WebGLUniformLocation_class = nullptr;
     se::Class* __jsb_VertexArrayObjectOES_class = nullptr;
     se::Class* __jsb_OES_vertex_array_object_class = nullptr;
     se::Object* __glVAOObj = nullptr;
@@ -177,8 +177,10 @@ namespace {
     std::unordered_map<GLuint, se::Value> __shaders;
 
     class WebGLObject;
+    class WebGLUniformLocation;
 
     using WebGLObjectMap = std::unordered_map<GLuint, WebGLObject*>;
+    using WebGLUniformLocationMap = std::unordered_map<GLuint64, WebGLUniformLocation*>;
     WebGLObjectMap __webglTextureMap;
     WebGLObjectMap __webglBufferMap;
     WebGLObjectMap __webglRenderbufferMap;
@@ -186,6 +188,7 @@ namespace {
     WebGLObjectMap __webglProgramMap;
     WebGLObjectMap __webglShaderMap;
     WebGLObjectMap __webglVertexArrayObjectOESMap;
+    WebGLUniformLocationMap __webglUniformLocationMap;
 
     inline void WEBGL_framebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
     {
@@ -243,6 +246,14 @@ namespace {
                 iter->second->_id = __defaultFbo;
             else
                 iter->second->_id = 0;
+            map.erase(iter);
+        }
+    }
+
+    void safeRemoveElementFromGLUniformLocationMap(WebGLUniformLocationMap& map, GLuint64 id)
+    {
+        auto iter = map.find(id);
+        if (iter != map.end()) {
             map.erase(iter);
         }
     }
@@ -359,6 +370,31 @@ namespace {
                 safeRemoveElementFromGLObjectMap(__webglShaderMap, _id);
             }
         }
+    };
+
+    class WebGLUniformLocation final : public cocos2d::Ref
+    {
+    public:
+        WebGLUniformLocation(GLuint programId, GLuint locationId)
+        {
+            _id =  programId;
+            // Shift left 32 bit
+            GLuint *p = (GLuint*) &_id;
+            *(p + 1) = *p;
+            *p = 0x00000000;
+            *(p + 1) <<= 0;
+            
+            _id =  (_id | locationId);
+            __webglUniformLocationMap.emplace(_id, this);
+        }
+        virtual ~WebGLUniformLocation()
+        {
+            SE_LOGD("Destroy WebGLUniformLocation (%" PRIu64 ") by GC\n", _id);
+            safeRemoveElementFromGLUniformLocationMap(__webglUniformLocationMap, _id);
+        }
+
+    public:
+        GLuint64 _id;
     };
 
     class WebGLVertexArrayObjectOES final : public WebGLObject
@@ -539,6 +575,10 @@ static bool JSB_get_arraybufferview_dataptr(const se::Value& v, GLsizei *count, 
         assert(false);
     }
     return false;
+}
+
+static GLuint getUniformLocationId(GLuint64 originalId) {
+    return ((GLuint)(originalId & 0xFFFFFFFF));
 }
 
 // Arguments: GLenum
@@ -1657,8 +1697,29 @@ static bool JSB_glGetError(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glGetError)
 
-// Arguments: GLuint, char*
-// Ret value: int
+static bool JSB_glUniformLocationFinalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (WebGLUniformLocation)", s.nativeThisObject());
+    WebGLUniformLocation* cobj = (WebGLUniformLocation*) s.nativeThisObject();
+    if (se::ScriptEngine::getInstance()->isInCleanup()) {
+        cobj->release();
+    } else {
+        cobj->autorelease();
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(JSB_glUniformLocationFinalize)
+
+static bool JSB_glUniformLocation_constructor(se::State& s)
+{
+    se::ScriptEngine* se = se::ScriptEngine::getInstance();
+    se->ThrowException("Illegal constructor");
+    return false;
+}
+SE_BIND_CTOR(JSB_glUniformLocation_constructor, __jsb_WebGLUniformLocation_class, JSB_glUniformLocationFinalize)
+
+// Arguments: WebGLProgram, char*
+// Ret value: WebGLUniformLocation
 static bool JSB_glGetUniformLocation(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
@@ -1667,9 +1728,10 @@ static bool JSB_glGetUniformLocation(se::State& s) {
     WebGLProgram* arg0;
     std::string arg1;
 
+    s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_std_string(args[1], &arg1 );
-    s.rval().setNull();
     SE_PRECONDITION2(ok, false, "Error processing arguments");
     int ret_val = 0;
 
@@ -1678,7 +1740,11 @@ static bool JSB_glGetUniformLocation(se::State& s) {
     JSB_GL_CHECK_ERROR();
     if(ret_val >= 0)
     {
-        s.rval().setInt32(ret_val);
+        auto obj = se::Object::createObjectWithClass(__jsb_WebGLUniformLocation_class);
+        s.rval().setObject(obj, true);
+        auto cobj = new (std::nothrow) WebGLUniformLocation(programId, ret_val);
+        obj->setPrivateData(cobj);
+        obj->setProperty("_id", se::Value(ret_val));
     }
     return true;
 }
@@ -2396,416 +2462,435 @@ static bool JSB_glTexSubImage2D(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glTexSubImage2D)
 
-// Arguments: GLint, GLfloat
+// Arguments: WebGLUniformLocation, GLfloat
 // Ret value: void
 static bool JSB_glUniform1f(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; float arg1;
+    WebGLUniformLocation* arg0; float arg1;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_float(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform1f(arg0, arg1));
+    JSB_GL_CHECK(glUniform1f(getUniformLocationId(arg0->_id), arg1));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform1f)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform1fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 1, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform1fv((GLint)arg0 , (GLsizei)data.count() , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniform1fv(getUniformLocationId(arg0->_id) , (GLsizei)data.count() , (GLfloat*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform1fv)
 
-// Arguments: GLint, GLint
+// Arguments: WebGLUniformLocation, GLint
 // Ret value: void
 static bool JSB_glUniform1i(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; int32_t arg1;
+    WebGLUniformLocation* arg0; int32_t arg1;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_int32(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform1i((GLint)arg0 , (GLint)arg1  ));
+    JSB_GL_CHECK(glUniform1i(getUniformLocationId(arg0->_id) , (GLint)arg1  ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform1i)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform1iv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<int32_t> data;
     ok &= JSB_jsval_typedarray_to_data<int32_t>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 1, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform1iv((GLint)arg0 , (GLsizei)data.count() , (GLint*)data.data()));
+    JSB_GL_CHECK(glUniform1iv(getUniformLocationId(arg0->_id) , (GLsizei)data.count() , (GLint*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform1iv)
 
-// Arguments: GLint, GLfloat, GLfloat
+// Arguments: WebGLUniformLocation, GLfloat, GLfloat
 // Ret value: void
 static bool JSB_glUniform2f(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; float arg1; float arg2;
+    WebGLUniformLocation* arg0; float arg1; float arg2;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_float(args[1], &arg1 );
     ok &= seval_to_float(args[2], &arg2 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform2f(arg0 , arg1 , arg2));
+    JSB_GL_CHECK(glUniform2f(getUniformLocationId(arg0->_id) , arg1 , arg2));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform2f)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform2fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 2 && data.count() % 2 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform2fv((GLint)arg0 , (GLsizei)(data.count()/2) , (GLfloat*)data.data() ));
+    JSB_GL_CHECK(glUniform2fv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/2) , (GLfloat*)data.data() ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform2fv)
 
-// Arguments: GLint, GLint, GLint
+// Arguments: WebGLUniformLocation, GLint, GLint
 // Ret value: void
 static bool JSB_glUniform2i(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; int32_t arg1; int32_t arg2;
+    WebGLUniformLocation* arg0; int32_t arg1; int32_t arg2;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_int32(args[1], &arg1 );
     ok &= seval_to_int32(args[2], &arg2 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform2i((GLint)arg0 , (GLint)arg1 , (GLint)arg2  ));
+    JSB_GL_CHECK(glUniform2i(getUniformLocationId(arg0->_id) , (GLint)arg1 , (GLint)arg2  ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform2i)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform2iv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<int32_t> data;
     ok &= JSB_jsval_typedarray_to_data<int32_t>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 2 && data.count() % 2 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform2iv((GLint)arg0 , (GLsizei)(data.count()/2) , (GLint*)data.data()));
+    JSB_GL_CHECK(glUniform2iv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/2) , (GLint*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform2iv)
 
-// Arguments: GLint, GLfloat, GLfloat, GLfloat
+// Arguments: WebGLUniformLocation, GLfloat, GLfloat, GLfloat
 // Ret value: void
 static bool JSB_glUniform3f(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 4, false, "Invalid number of arguments" );
     bool ok = true;
-    GLint arg0; float arg1; float arg2; float arg3;
+    WebGLUniformLocation* arg0; float arg1; float arg2; float arg3;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_float(args[1], &arg1 );
     ok &= seval_to_float(args[2], &arg2 );
     ok &= seval_to_float(args[3], &arg3 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform3f(arg0 , arg1 , arg2 , arg3));
+    JSB_GL_CHECK(glUniform3f(getUniformLocationId(arg0->_id) , arg1 , arg2 , arg3));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform3f)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform3fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 3 && data.count() % 3 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform3fv((GLint)arg0 , (GLsizei)(data.count()/3) , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniform3fv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/3) , (GLfloat*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform3fv)
 
-// Arguments: GLint, GLint, GLint, GLint
+// Arguments: WebGLUniformLocation, GLint, GLint, GLint
 // Ret value: void
 static bool JSB_glUniform3i(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 4, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; int32_t arg1; int32_t arg2; int32_t arg3;
+    WebGLUniformLocation* arg0; int32_t arg1; int32_t arg2; int32_t arg3;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_int32(args[1], &arg1 );
     ok &= seval_to_int32(args[2], &arg2 );
     ok &= seval_to_int32(args[3], &arg3 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform3i((GLint)arg0 , (GLint)arg1 , (GLint)arg2 , (GLint)arg3  ));
+    JSB_GL_CHECK(glUniform3i(getUniformLocationId(arg0->_id) , (GLint)arg1 , (GLint)arg2 , (GLint)arg3  ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform3i)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform3iv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<int32_t> data;
     ok &= JSB_jsval_typedarray_to_data<int32_t>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 3 && data.count() % 3 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform3iv((GLint)arg0 , (GLsizei)(data.count()/3) , (GLint*)data.data()));
+    JSB_GL_CHECK(glUniform3iv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/3) , (GLint*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform3iv)
 
-// Arguments: GLint, GLfloat, GLfloat, GLfloat, GLfloat
+// Arguments: WebGLUniformLocation, GLfloat, GLfloat, GLfloat, GLfloat
 // Ret value: void
 static bool JSB_glUniform4f(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 5, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; float arg1; float arg2; float arg3; float arg4;
+    WebGLUniformLocation* arg0; float arg1; float arg2; float arg3; float arg4;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_float(args[1], &arg1 );
     ok &= seval_to_float(args[2], &arg2 );
     ok &= seval_to_float(args[3], &arg3 );
     ok &= seval_to_float(args[4], &arg4 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform4f((GLint)arg0 , (GLfloat)arg1 , (GLfloat)arg2 , (GLfloat)arg3 , (GLfloat)arg4));
+    JSB_GL_CHECK(glUniform4f(getUniformLocationId(arg0->_id) , (GLfloat)arg1 , (GLfloat)arg2 , (GLfloat)arg3 , (GLfloat)arg4));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform4f)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform4fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;;
+    WebGLUniformLocation* arg0;;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 4 && data.count() % 4 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform4fv((GLint)arg0 , (GLsizei)(data.count()/4) , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniform4fv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/4) , (GLfloat*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform4fv)
 
-// Arguments: GLint, GLint, GLint, GLint, GLint
+// Arguments: WebGLUniformLocation, GLint, GLint, GLint, GLint
 // Ret value: void
 static bool JSB_glUniform4i(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 5, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; int32_t arg1; int32_t arg2; int32_t arg3; int32_t arg4;
+    WebGLUniformLocation* arg0; int32_t arg1; int32_t arg2; int32_t arg3; int32_t arg4;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_int32(args[1], &arg1 );
     ok &= seval_to_int32(args[2], &arg2 );
     ok &= seval_to_int32(args[3], &arg3 );
     ok &= seval_to_int32(args[4], &arg4 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 
-    JSB_GL_CHECK(glUniform4i((GLint)arg0 , (GLint)arg1 , (GLint)arg2 , (GLint)arg3 , (GLint)arg4  ));
+    JSB_GL_CHECK(glUniform4i(getUniformLocationId(arg0->_id) , (GLint)arg1 , (GLint)arg2 , (GLint)arg3 , (GLint)arg4  ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform4i)
 
-// Arguments: GLint, GLsizei, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLsizei, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniform4iv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0;
+    WebGLUniformLocation* arg0;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<int32_t> data;
     ok &= JSB_jsval_typedarray_to_data<int32_t>(args[1], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(data.count() >= 4 && data.count() % 4 == 0, false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniform4iv((GLint)arg0 , (GLsizei)(data.count()/4) , (GLint*)data.data()));
+    JSB_GL_CHECK(glUniform4iv(getUniformLocationId(arg0->_id) , (GLsizei)(data.count()/4) , (GLint*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniform4iv)
 
-// Arguments: GLint, GLboolean, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLboolean, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniformMatrix2fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; uint16_t arg1;
+    WebGLUniformLocation* arg0; uint16_t arg1;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint16(args[1], &arg1 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[2], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(arg1 == GL_FALSE, false, GL_INVALID_VALUE);
 
     SE_PRECONDITION4((data.count() >= 4) && (data.count() % 4 == 0), false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniformMatrix2fv(arg0, (GLsizei)(data.count()/4), (GLboolean)arg1 , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniformMatrix2fv(getUniformLocationId(arg0->_id), (GLsizei)(data.count()/4), (GLboolean)arg1 , (GLfloat*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniformMatrix2fv)
 
-// Arguments: GLint, GLboolean, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLboolean, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniformMatrix3fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; uint16_t arg1;
+    WebGLUniformLocation* arg0; uint16_t arg1;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint16(args[1], &arg1 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[2], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(arg1 == GL_FALSE, false, GL_INVALID_VALUE);
 
     SE_PRECONDITION4((data.count() >= 9) && (data.count() % 9 == 0), false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniformMatrix3fv(arg0, (GLsizei)(data.count()/9), (GLboolean)arg1 , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniformMatrix3fv(getUniformLocationId(arg0->_id), (GLsizei)(data.count()/9), (GLboolean)arg1 , (GLfloat*)data.data()));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glUniformMatrix3fv)
 
-// Arguments: GLint, GLboolean, TypedArray/Sequence
+// Arguments: WebGLUniformLocation, GLboolean, TypedArray/Sequence
 // Ret value: void
 static bool JSB_glUniformMatrix4fv(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    int32_t arg0; uint16_t arg1;;
+    WebGLUniformLocation* arg0; uint16_t arg1;;
 
-    ok &= seval_to_int32(args[0], &arg0 );
+    ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint16(args[1], &arg1 );
     GLData<float> data;
     ok &= JSB_jsval_typedarray_to_data<float>(args[2], data);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+    SE_PRECONDITION2(arg0 != nullptr, false, "WebGLUniformLocation is null!");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(arg1 == GL_FALSE, false, GL_INVALID_VALUE);
 
     SE_PRECONDITION4((data.count() >= 16) && (data.count() % 16 == 0), false, GL_INVALID_VALUE);
 #endif
-    JSB_GL_CHECK(glUniformMatrix4fv(arg0, (GLsizei)(data.count()/16), (GLboolean)arg1 , (GLfloat*)data.data()));
+    JSB_GL_CHECK(glUniformMatrix4fv(getUniformLocationId(arg0->_id), (GLsizei)(data.count()/16), (GLboolean)arg1 , (GLfloat*)data.data()));
 
     return true;
 }
@@ -3414,7 +3499,7 @@ static bool JSB_glGetShaderParameter(se::State& s) {
     uint32_t arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0);
     ok &= seval_to_uint32(args[1], &arg1);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
@@ -3445,7 +3530,7 @@ static bool JSB_glGetProgramParameter(se::State& s) {
     uint32_t arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint32(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
@@ -3470,6 +3555,7 @@ static bool JSB_glGetProgramInfoLog(se::State& s) {
     SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments" );
 
     s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     bool ok = true;
     WebGLProgram* arg0;
     ok &= seval_to_native_ptr(args[0], &arg0 );
@@ -3505,6 +3591,7 @@ static bool JSB_glGetShaderInfoLog(se::State& s) {
     bool ok = true;
     WebGLShader* arg0;
     s.rval().setNull();
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
     GLuint shaderId = arg0 != nullptr ? arg0->_id : 0;
@@ -4045,22 +4132,24 @@ static bool JSB_glGetUniformfv(se::State& s) {
 
     bool ok = true;
     WebGLProgram* arg0;
-    uint32_t arg1;
+    WebGLUniformLocation* arg1;
 
     s.rval().setNull();
-    SE_PRECONDITION2(!args[0].isNullOrUndefined(), false, "Error processing arguments");
-    SE_PRECONDITION2(!args[1].isNullOrUndefined(), false, "Error processing arguments");
+    SE_PRECONDITION4(!args[0].isNullOrUndefined(), false, GL_INVALID_VALUE);
+    SE_PRECONDITION4(!args[1].isNullOrUndefined(), false, GL_INVALID_VALUE);
     ok &= seval_to_native_ptr(args[0], &arg0 );
-    ok &= seval_to_uint32(args[1], &arg1 );
+    ok &= seval_to_native_ptr(args[1], &arg1 );
     SE_PRECONDITION2(ok, false, "Error processing arguments");
     SE_PRECONDITION2(arg0 != nullptr, false, "WebGLProgram is null!");
+    SE_PRECONDITION2(arg1 != nullptr, false, "WebGLUniformLocation is null!");
 
-    GLuint id = arg0 != nullptr ? arg0->_id : 0;
+    GLuint programId = arg0->_id;
+    GLuint locationId = getUniformLocationId(arg1->_id);
     GLint activeUniforms;
-    JSB_GL_CHECK(glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &activeUniforms));
+    JSB_GL_CHECK(glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &activeUniforms));
 
     GLsizei length;
-    JSB_GL_CHECK(glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length));
+    JSB_GL_CHECK(glGetProgramiv(programId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length));
     GLchar* namebuffer = new (std::nothrow) GLchar[length+1];
     GLint size = -1;
     GLenum type = -1;
@@ -4068,7 +4157,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     bool isLocationFound = false;
     for (int i = 0; i  <  activeUniforms; ++i)
     {
-        JSB_GL_CHECK(glGetActiveUniform(id, i, length, NULL, &size, &type, namebuffer));
+        JSB_GL_CHECK(glGetActiveUniform(programId, i, length, NULL, &size, &type, namebuffer));
 #if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
         if (size > 1)
         {
@@ -4076,7 +4165,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
 
             for (int j = 0; j < size; j++)
             {
-                if (arg1 != j)
+                if (locationId != j)
                 {
                     continue;
                 }
@@ -4087,9 +4176,9 @@ static bool JSB_glGetUniformfv(se::State& s) {
                     continue;
                 }
                 char index[20];
-                sprintf(index, "%d", arg1);
+                sprintf(index, "%d", locationId);
                 std::string finallyName = arrayName.substr(0, begin + 1) + index + arrayName.substr(end);
-                if(arg1 == glGetUniformLocation(id, finallyName.c_str()))
+                if(locationId == glGetUniformLocation(programId, finallyName.c_str()))
                 {
                     isLocationFound = true;
                     break;
@@ -4098,7 +4187,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
         }
         else
         {
-            if(arg1 == glGetUniformLocation(id, namebuffer))
+            if(locationId == glGetUniformLocation(programId, namebuffer))
             {
                 isLocationFound = true;
                 break;
@@ -4199,7 +4288,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     if( utype == GL_BOOL_ARRAY)
     {
         std::vector<GLint> param(usize);
-        JSB_GL_CHECK(glGetUniformiv(id, arg1, param.data()));
+        JSB_GL_CHECK(glGetUniformiv(programId, locationId, param.data()));
         se::HandleObject arrayObj(se::Object::createArrayObject((size_t)usize));
         for (int i = 0; i < usize; ++i)
         {
@@ -4211,7 +4300,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     else if( utype == GL_FLOAT_ARRAY)
     {
         std::vector<GLfloat> param(usize);
-        JSB_GL_CHECK(glGetUniformfv(id, arg1, param.data()));
+        JSB_GL_CHECK(glGetUniformfv(programId, locationId, param.data()));
         se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, param.data(), usize * sizeof(GLfloat)));
         s.rval().setObject(obj);
         return true;
@@ -4219,7 +4308,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     else if(utype == GL_INT_ARRAY)
     {
         std::vector<GLint> param(usize);
-        JSB_GL_CHECK(glGetUniformiv(id, arg1, param.data()));
+        JSB_GL_CHECK(glGetUniformiv(programId, locationId, param.data()));
         se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, param.data(), usize * sizeof(GLint)));
         s.rval().setObject(obj);
         return true;
@@ -4228,7 +4317,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     if( utype == GL_FLOAT)
     {
         GLfloat param = 0;
-        JSB_GL_CHECK(glGetUniformfv(id, arg1, &param));
+        JSB_GL_CHECK(glGetUniformfv(programId, locationId, &param));
 
         s.rval().setFloat(param);
         return true;
@@ -4236,7 +4325,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     else if( utype == GL_INT )
     {
         GLint param = 0;
-        JSB_GL_CHECK(glGetUniformiv(id, arg1, &param));
+        JSB_GL_CHECK(glGetUniformiv(programId, locationId, &param));
 
         s.rval().setInt32(param);
         return true;
@@ -4244,7 +4333,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
     else if( utype == GL_BOOL )
     {
         GLint param = 0;
-        JSB_GL_CHECK(glGetUniformiv(id, arg1, &param));
+        JSB_GL_CHECK(glGetUniformiv(programId, locationId, &param));
 
         s.rval().setBoolean(param != 0);
         return true;
@@ -4312,7 +4401,10 @@ static bool JSB_glGetParameter(se::State& s)
             break;
             // Float32Array (with 0 elements)
         case GL_COMPRESSED_TEXTURE_FORMATS:
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 0), true);
+        {
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 0));
+            ret.setObject(obj, true);
+        }
             break;
 
             // Float32Array (with 2 elements)
@@ -4322,7 +4414,8 @@ static bool JSB_glGetParameter(se::State& s)
         {
             GLfloat params[2];
             JSB_GL_CHECK(glGetFloatv(pname, params));
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4348,7 +4441,8 @@ static bool JSB_glGetParameter(se::State& s)
         {
             GLfloat params[4];
             JSB_GL_CHECK(glGetFloatv(pname, params));
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, params, sizeof(params)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4358,7 +4452,8 @@ static bool JSB_glGetParameter(se::State& s)
             GLfloat params[2];
             JSB_GL_CHECK(glGetFloatv(pname, params));
             int intParams[2] = {(int)params[0], (int)params[1]};
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -4369,7 +4464,8 @@ static bool JSB_glGetParameter(se::State& s)
             GLfloat params[4];
             JSB_GL_CHECK(glGetFloatv(pname, params));
             int intParams[4] = {(int)params[0], (int)params[1], (int)params[2], (int)params[3]};
-            ret.setObject(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)), true);
+            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::INT32, intParams, sizeof(intParams)));
+            ret.setObject(obj, true);
         }
             break;
 
@@ -5382,6 +5478,10 @@ bool JSB_register_opengl(se::Object* obj)
     __jsb_WebGLActiveInfo_class = se::Class::create("WebGLActiveInfo", obj, nullptr, _SE(JSB_glActiveInfo_constructor));
     __jsb_WebGLActiveInfo_class->install();
 
+    __jsb_WebGLUniformLocation_class = se::Class::create("WebGLUniformLocation", obj, nullptr, _SE(JSB_glUniformLocation_constructor));
+    __jsb_WebGLUniformLocation_class->defineFinalizeFunction(_SE(JSB_glUniformLocationFinalize));
+    __jsb_WebGLUniformLocation_class->install();
+
     __jsb_VertexArrayObjectOES_class = se::Class::create("VertexArrayObjectOES", obj, glObjectProto, _SE(JSB_glVertexArrayObjectOES_constructor));
     __jsb_VertexArrayObjectOES_class->defineFinalizeFunction(_SE(JSB_glVertexArrayObjectOESFinalize));
     __jsb_VertexArrayObjectOES_class->install();
@@ -5536,6 +5636,13 @@ bool JSB_register_opengl(se::Object* obj)
 
     se::ScriptEngine::getInstance()->addBeforeCleanupHook([](){
         __shaders.clear();
+        __webglTextureMap.clear();
+        __webglBufferMap.clear();
+        __webglRenderbufferMap.clear();
+        __webglFramebufferMap.clear();
+        __webglProgramMap.clear();
+        __webglShaderMap.clear();
+        __webglVertexArrayObjectOESMap.clear();
         if (__glVAOObj != nullptr)
         {
             __glVAOObj->unroot();

@@ -181,6 +181,11 @@ extern "C"
         g_isStarted = true;
     }
 
+    JNIEXPORT void JNICALL JNI_RENDER(nativeRestart)(JNIEnv*  env, jobject thiz)
+    {
+        g_isStarted = false;
+    }
+
 	JNIEXPORT void JNICALL JNI_RENDER(nativeRender)(JNIEnv* env)
 	{
         if (g_isGameFinished)
@@ -338,7 +343,7 @@ extern "C"
 
     static void dispatchTouchEventWithOnePoint(JNIEnv* env, cocos2d::TouchEvent::Type type, jint id, jfloat x, jfloat y)
     {
-        if (g_isGameFinished) {
+        if (g_isGameFinished || !g_isStarted) {
             return;
         }
         cocos2d::TouchEvent touchEvent;
@@ -356,7 +361,7 @@ extern "C"
 
     static void dispatchTouchEventWithPoints(JNIEnv* env, cocos2d::TouchEvent::Type type, jintArray ids, jfloatArray xs, jfloatArray ys)
     {
-        if (g_isGameFinished) {
+        if (g_isGameFinished || !g_isStarted) {
             return;
         }
         cocos2d::TouchEvent touchEvent;

@@ -38,7 +38,7 @@ using namespace cocos2d;
 
 static std::unordered_map<std::string, std::string> _fontFamilyNameMap;
 
-const std::unordered_map<std::string, std::string>& getFontFamilyNameMap()
+std::unordered_map<std::string, std::string> &getFontFamilyNameMap()
 {
     return _fontFamilyNameMap;
 }

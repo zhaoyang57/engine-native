@@ -114,7 +114,7 @@ namespace
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_displayLink release];
     if (_debugLabel) {
-       [_debugLabel release];
+        [_debugLabel release];
     }
     [super dealloc];
 }
@@ -191,7 +191,6 @@ namespace
         _debugLabel.textColor = [UIColor redColor];
         _debugLabel.font = [UIFont systemFontOfSize:12];
         [egleView addSubview:_debugLabel];
-        [_debugLabel retain];
     }
     _isOpenDebugView = isShow;
     [_debugLabel setHidden:not isShow];

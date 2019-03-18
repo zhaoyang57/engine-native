@@ -242,6 +242,11 @@ XMLHttpRequest::~XMLHttpRequest()
 {
     Application::getInstance()->getScheduler()->unscheduleAllForTarget(this);
 
+    // _httpRequest could really be release until the callback in HttpClient::networkThreadAlone is called
+    // when callback is called, XMLHttpRequest might have been released
+    // so it should not call XMLHttpRequest::onResponse, that callback should set to nullptr
+    _httpRequest->setResponseCallback(nullptr);
+    
     CC_SAFE_RELEASE(_httpRequest);
 }
 
@@ -705,7 +710,7 @@ static bool XMLHttpRequest_constructor(se::State& s)
 }
 SE_BIND_CTOR(XMLHttpRequest_constructor, __jsb_XMLHttpRequest_class, XMLHttpRequest_finalize)
 
-static bool XMLHttpRequest_open(se::State& s)
+bool XMLHttpRequest_open(se::State& s)
 {
     const auto& args = s.args();
     int argc = (int)args.size();
