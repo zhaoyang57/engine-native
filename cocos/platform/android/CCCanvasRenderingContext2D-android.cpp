@@ -754,21 +754,29 @@ void CanvasRenderingContext2D::set__height(float height)
     recreateBufferIfNeeded();
 }
 
-void CanvasRenderingContext2D::set_lineWidth(float lineWidth)
+void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 {
-    _lineWidth = lineWidth;
+    _lineWidthInternal = lineWidth;
     _impl->setLineWidth(lineWidth);
 }
 
 void CanvasRenderingContext2D::set_lineJoin(const std::string& lineJoin)
 {
-    if(lineJoin.empty()) return ;
+    if (lineJoin != "bevel" && lineJoin != "round" &&lineJoin != "miter")
+    {
+        return;
+    }
+    this->_lineJoin = lineJoin;
     _impl->setLineJoin(lineJoin);
 }
 
 void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
 {
-    if(lineCap.empty()) return ;
+    if (lineCap != "butt" && lineCap != "round" &&lineCap != "square")
+    {
+        return;
+    }
+    this->_lineCap = lineCap;
     _impl->setLineCap(lineCap);
 }
 
@@ -779,6 +787,7 @@ void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
  * */
 void CanvasRenderingContext2D::set_font(const std::string& font)
 {
+    this->_font = font;
     std::string fontName = "sans-serif";
     std::string fontSizeStr = "30";
     std::regex re("\\s*((\\d+)([\\.]\\d+)?)px\\s+([^\\r\\n]*)");
@@ -810,6 +819,8 @@ void CanvasRenderingContext2D::set_font(const std::string& font)
 
 void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
 {
+    std::string originContent = this->_textAlign;
+    this->_textAlign = textAlign;
     // SE_LOGD("CanvasRenderingContext2D::set_textAlign: %s\n", textAlign.c_str());
     if (textAlign == "left")
     {
@@ -825,6 +836,7 @@ void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
     }
     else
     {
+        this->_textAlign = originContent;
         assert(false);
     }
 }
@@ -948,21 +960,21 @@ void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
     _impl->setShadowColor(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
 }
 
-void CanvasRenderingContext2D::set_shadowBlur(float blur)
+void CanvasRenderingContext2D::set_shadowBlurInternal(float blur)
 {
-    _shadowBlur = blur;
+    _shadowBlurInternal = blur;
     _impl->setShadowBlur(blur);
 }
 
-void CanvasRenderingContext2D::set_shadowOffsetX(float offsetX)
+void CanvasRenderingContext2D::set_shadowOffsetXInternal(float offsetX)
 {
-    _shadowOffsetX = offsetX;
+    _shadowOffsetXInternal = offsetX;
     _impl->setShadowOffsetX(offsetX);
 }
 
-void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
+void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 {
-    _shadowOffsetY = offsetY;
+    _shadowOffsetYInternal = offsetY;
     _impl->setShadowOffsetY(offsetY);
 }
 

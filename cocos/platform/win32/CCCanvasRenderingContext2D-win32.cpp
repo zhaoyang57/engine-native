@@ -766,7 +766,7 @@ void CanvasRenderingContext2D::set__height(float height)
     recreateBufferIfNeeded();
 }
 
-void CanvasRenderingContext2D::set_lineWidth(float lineWidth)
+void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 {
     //SE_LOGD("CanvasRenderingContext2D::set_lineWidth %d\n", lineWidth);
     _lineWidth = lineWidth;
@@ -860,14 +860,14 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
+void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     _impl->setFillStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
     //SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     _impl->setStrokeStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
@@ -931,6 +931,21 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 {
     //SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_shadowBlurInternal(float blur)
+{
+    //
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetXInternal(float offsetX)
+{
+    //
+}
+
+void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
+{
+    //
 }
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,

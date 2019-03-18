@@ -90,7 +90,7 @@ public:
     // functions for properties
     void set__width(float width);
     void set__height(float height);
-    void set_lineWidth(float lineWidth);
+    void set_lineWidthInternal(float lineWidth);
     void set_lineJoin(const std::string& lineJoin);
     void set_lineCap(const std::string& lineCap);
     void set_font(const std::string& font);
@@ -103,9 +103,9 @@ public:
     void set_lineDashOffsetInternal(float offset);
     void set_miterLimitInternal(float limit);
     void set_shadowColor(const std::string& shadowColor);
-    void set_shadowBlur(float blur);
-    void set_shadowOffsetX(float offsetX);
-    void set_shadowOffsetY(float offsetY);
+    void set_shadowBlurInternal(float blur);
+    void set_shadowOffsetXInternal(float offsetX);
+    void set_shadowOffsetYInternal(float offsetY);
 
     // fill image data into Context2D
     void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
@@ -131,7 +131,7 @@ public:
     float __height = 0.0f;
 
     // Line styles
-    float _lineWidth = 1.0f;
+    float _lineWidthInternal = 1.0f;
     float _lineDashOffsetInternal = 0.0f;
     float _miterLimitInternal = 10.0f;
     std::string _lineJoin = "miter";
@@ -148,9 +148,9 @@ public:
 
     //shadow
     std::string _shadowColor = "#000";
-    float _shadowBlur = 0.0f;
-    float _shadowOffsetX = 0.0f;
-    float _shadowOffsetY = 0.0f;
+    float _shadowBlurInternal = 0.0f;
+    float _shadowOffsetXInternal = 0.0f;
+    float _shadowOffsetYInternal = 0.0f;
 
     // Compositing
     std::string _globalCompositeOperation = "source-over";

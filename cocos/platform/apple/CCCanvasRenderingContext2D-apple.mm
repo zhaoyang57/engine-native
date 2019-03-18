@@ -747,7 +747,7 @@ void CanvasRenderingContext2D::set__height(float height)
     recreateBufferIfNeeded();
 }
 
-void CanvasRenderingContext2D::set_lineWidth(float lineWidth)
+void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 {
     _lineWidth = lineWidth;
     _impl.lineWidth = _lineWidth;
@@ -916,17 +916,17 @@ void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
-void CanvasRenderingContext2D::set_shadowBlur(float blur)
+void CanvasRenderingContext2D::set_shadowBlurInternal(float blur)
 {
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
-void CanvasRenderingContext2D::set_shadowOffsetX(float offsetX)
+void CanvasRenderingContext2D::set_shadowOffsetXInternal(float offsetX)
 {
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
-void CanvasRenderingContext2D::set_shadowOffsetY(float offsetY)
+void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 {
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
