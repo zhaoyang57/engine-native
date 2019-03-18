@@ -192,7 +192,14 @@ public:
      *  @brief Gets the related node proxy which provids model matrix for camera.
      */
     inline NodeProxy* getNode() const { return _node; }
-    
+    /**
+     *  @brief Sets the camera render priority.
+     */
+    void setPriority(int priority) { _priority = priority; }
+    /**
+     *  @brief Gets the camera render priority.
+     */
+    int getPriority() const { return _priority; }
 private:
     NodeProxy* _node = nullptr;
     ProjectionType _projection = ProjectionType::PERSPECTIVE;
@@ -221,6 +228,7 @@ private:
     Vec3 _worldPos;
     
     View _cachedView;
+    int _priority = 0;
 };
 
 // end of renderer group

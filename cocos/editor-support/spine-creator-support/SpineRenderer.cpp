@@ -46,6 +46,8 @@ using namespace cocos2d::renderer;
 static const std::string techStage = "transparent";
 static const std::string textureKey = "texture";
 
+static float _worldVertices[1000];
+
 SpineRenderer* SpineRenderer::create ()
 {
     SpineRenderer* skeleton = new SpineRenderer();
@@ -76,10 +78,6 @@ SpineRenderer* SpineRenderer::createWithFile (const std::string& skeletonDataFil
 
 void SpineRenderer::initialize ()
 {
-    // SpineRenderer::initalize may be invoked twice, need to check whether _worldVertics is already allocated to avoid memory leak.
-    if (_worldVertices == nullptr)
-        _worldVertices = new float[1000]; // Max number of vertices per mesh.
-    
     beginSchedule();
 }
 
@@ -134,7 +132,6 @@ SpineRenderer::~SpineRenderer ()
 	spSkeleton_dispose(_skeleton);
 	if (_atlas) spAtlas_dispose(_atlas);
 	if (_attachmentLoader) spAttachmentLoader_dispose(_attachmentLoader);
-	delete [] _worldVertices;
     
     if (_debugBuffer)
     {
