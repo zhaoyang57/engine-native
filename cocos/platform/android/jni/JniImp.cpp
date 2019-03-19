@@ -233,7 +233,8 @@ extern "C"
         static uint32_t jsbInvocationTotalCount = 0;
         static uint32_t jsbInvocationTotalFrames = 0;
         bool downsampleEnabled = g_app->isDownsampleEnabled();
-        
+        prevTime = std::chrono::steady_clock::now();
+
         if (downsampleEnabled)
             g_app->getRenderTexture()->prepare();
 
@@ -247,8 +248,6 @@ extern "C"
 
         now = std::chrono::steady_clock::now();
         dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
-
-        prevTime = std::chrono::steady_clock::now();
 
         if (__isOpenDebugView)
         {
