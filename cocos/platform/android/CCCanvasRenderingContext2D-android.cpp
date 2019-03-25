@@ -548,7 +548,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
     s_globalCompositeOperationMap["destination-out"] = true;
     s_globalCompositeOperationMap["destination-atop"] = true;
     s_globalCompositeOperationMap["xor"] = true;
-    s_globalCompositeOperationMap["multiply"] = true;
     s_globalCompositeOperationMap["screen"] = true;
     s_globalCompositeOperationMap["overlay"] = true;
     s_globalCompositeOperationMap["darken"] = true;
