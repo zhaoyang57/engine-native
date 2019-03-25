@@ -368,6 +368,8 @@
 		04B0D7F221ABA7CF0083D0E7 /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
 		04B0D7F321ABA7D20083D0E7 /* MeshBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */; };
 		04B0D7F421ABEA5D0083D0E7 /* RenderFlow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA04379121801CD4006BA60F /* RenderFlow.cpp */; };
+		0A5CCE67224880E900AF87E6 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A5CCE65224880E900AF87E6 /* zip.h */; };
+		0A5CCE68224880E900AF87E6 /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A5CCE66224880E900AF87E6 /* zip.cpp */; };
 		1A14FD912080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD922080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD932080B4E300E10ABE /* CCGLUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A14FD902080B4E300E10ABE /* CCGLUtils.h */; };
@@ -1375,6 +1377,8 @@
 		051C017021E2F85C00D4A347 /* CCModuleConfigIOS.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigIOS.release.xcconfig; sourceTree = "<group>"; };
 		051C017121E2F86900D4A347 /* CCModuleConfigMac.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.release.xcconfig; sourceTree = "<group>"; };
 		051C017221E2F86900D4A347 /* CCModuleConfigMac.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.debug.xcconfig; sourceTree = "<group>"; };
+		0A5CCE65224880E900AF87E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../external/sources/unzip/zip.h; sourceTree = "<group>"; };
+		0A5CCE66224880E900AF87E6 /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../external/sources/unzip/zip.cpp; sourceTree = "<group>"; };
 		1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1551A342158F2AB200E66CFE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCGLUtils.cpp; sourceTree = "<group>"; };
@@ -3098,6 +3102,8 @@
 		ED3057751BEC76B00083C3ED /* unzip */ = {
 			isa = PBXGroup;
 			children = (
+				0A5CCE66224880E900AF87E6 /* zip.cpp */,
+				0A5CCE65224880E900AF87E6 /* zip.h */,
 				ED3057761BEC76C90083C3ED /* crypt.h */,
 				ED3057771BEC76C90083C3ED /* ioapi_mem.cpp */,
 				ED3057781BEC76C90083C3ED /* ioapi_mem.h */,
@@ -3661,6 +3667,7 @@
 				1AAAC8F4205CB6E9005321B9 /* AudioEngine.h in Headers */,
 				046B68A921A292D300B33469 /* jsb_spine_manual.hpp in Headers */,
 				46FDDA78202ACC6A00931238 /* Light.h in Headers */,
+				0A5CCE67224880E900AF87E6 /* zip.h in Headers */,
 				1A29D7A420566CAC00168D9A /* CCCanvasRenderingContext2D.h in Headers */,
 				04355881217EAE1B00B9C056 /* Skeleton.h in Headers */,
 				046E06812185B43B00B24E2D /* IEventDispatcher.h in Headers */,
@@ -4367,6 +4374,7 @@
 				4DC57D331F7B840E005B6546 /* xxtea.cpp in Sources */,
 				1A29D77C2056667800168D9A /* csscolorparser.cpp in Sources */,
 				046E06D42185B49F00B24E2D /* SkinData.cpp in Sources */,
+				0A5CCE68224880E900AF87E6 /* zip.cpp in Sources */,
 				425D011621C6810F00DD59F4 /* GraphicsRenderHandle.cpp in Sources */,
 				46FDDA8E202ACC6A00931238 /* Config.cpp in Sources */,
 				1A29D795205666F500168D9A /* jsb_opengl_manual.cpp in Sources */,
@@ -4378,7 +4386,6 @@
 				1A28FF501F20AFAB007A1D9D /* SRDelegateController.m in Sources */,
 				46FDDAC0202ACC6A00931238 /* State.cpp in Sources */,
 				BACCED31217DE136000CDD81 /* RenderHandle.cpp in Sources */,
-				1A52DB8D2060B12600350EE3 /* jsb_platfrom_ios.mm in Sources */,
 				BA21055E21009A5700E19975 /* AssetsManagerEx.cpp in Sources */,
 				BA21055F21009A5A00E19975 /* CCEventAssetsManagerEx.cpp in Sources */,
 				BA21055D21009A5500E19975 /* Manifest.cpp in Sources */,

@@ -749,8 +749,8 @@ void CanvasRenderingContext2D::set__height(float height)
 
 void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 {
-    _lineWidth = lineWidth;
-    _impl.lineWidth = _lineWidth;
+    _lineWidthInternal = lineWidth;
+    _impl.lineWidth = _lineWidthInternal;
 }
 
 void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
