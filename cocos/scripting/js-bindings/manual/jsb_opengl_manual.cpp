@@ -3448,7 +3448,7 @@ static bool JSB_glDeleteFramebuffer(se::State& s) {
     GLuint frameBufferId = arg0 != nullptr ? arg0->_id : __defaultFbo;
     JSB_GL_CHECK(glDeleteFramebuffers(1, &frameBufferId));
     safeRemoveElementFromGLObjectMap(__webglFramebufferMap, frameBufferId);
-    arg0->_id = __defaultFbo;
+    if (arg0 != nullptr) arg0->_id = __defaultFbo;
     return true;
 }
 SE_BIND_FUNC(JSB_glDeleteFramebuffer)
@@ -5643,6 +5643,7 @@ bool JSB_register_opengl(se::Object* obj)
         __webglProgramMap.clear();
         __webglShaderMap.clear();
         __webglVertexArrayObjectOESMap.clear();
+        __webglUniformLocationMap.clear();
         if (__glVAOObj != nullptr)
         {
             __glVAOObj->unroot();
