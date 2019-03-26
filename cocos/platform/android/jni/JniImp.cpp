@@ -226,14 +226,14 @@ extern "C"
             g_isStarted = true;
         }
 
-        static std::chrono::steady_clock::time_point prevTime;
+        static std::chrono::steady_clock::time_point prevTime = std::chrono::steady_clock::now();;
         static std::chrono::steady_clock::time_point now;
         static float dt = 0.f;
         static float dtSum = 0.f;
         static uint32_t jsbInvocationTotalCount = 0;
         static uint32_t jsbInvocationTotalFrames = 0;
         bool downsampleEnabled = g_app->isDownsampleEnabled();
-        
+
         if (downsampleEnabled)
             g_app->getRenderTexture()->prepare();
 
@@ -247,9 +247,7 @@ extern "C"
 
         now = std::chrono::steady_clock::now();
         dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
-
         prevTime = std::chrono::steady_clock::now();
-
         if (__isOpenDebugView)
         {
             dtSum += dt;
