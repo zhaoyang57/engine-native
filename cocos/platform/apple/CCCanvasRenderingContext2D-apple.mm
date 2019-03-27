@@ -483,14 +483,24 @@ enum class CanvasTextBaseline {
 }
 
 -(void) beginPath {
+    if (!_path) {
+        _path = [NSBezierPath bezierPath];
+        [_path retain];
+    }
+    [_path removeAllPoints];
+}
 
+-(void) closePath {
+    [_path closePath];
 }
 
 -(void) stroke {
+    [self saveContext];
     NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
     [color setStroke];
     [_path setLineWidth: _lineWidth];
     [_path stroke];
+    [self restoreContext];
 }
 
 -(void) moveToX: (float) x y:(float) y {
@@ -563,7 +573,7 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
 //    SE_LOGD("CanvasRenderingContext2D constructor: %p, width: %f, height: %f\n", this, width, height);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
     _impl = [[CanvasRenderingContext2DImpl alloc] init];
-    [_impl recreateBufferWithWidth:width height:height];
+    recreateBufferIfNeeded();
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
@@ -670,7 +680,7 @@ void CanvasRenderingContext2D::beginPath()
 
 void CanvasRenderingContext2D::closePath()
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl closePath];
 }
 
 void CanvasRenderingContext2D::moveTo(float x, float y)
