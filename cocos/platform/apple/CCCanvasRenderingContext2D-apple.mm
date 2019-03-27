@@ -19,6 +19,13 @@
 #define NSZeroSize CGSizeZero
 #define NSPoint CGPoint
 #define NSMakePoint CGPointMake
+#define NSMakeRect CGRectMake
+#define NSButtLineCapStyle kCGLineCapButt
+#define NSRoundLineCapStyle kCGLineCapRound
+#define NSSquareLineCapStyle kCGLineCapSquare
+#define NSMiterLineJoinStyle kCGLineJoinMiter
+#define NSRoundLineJoinStyle kCGLineJoinRound
+#define NSBevelLineJoinStyle kCGLineJoinBevel
 
 #endif
 
@@ -40,6 +47,8 @@ enum class CanvasTextBaseline {
     NSFont* _font;
     NSMutableDictionary* _tokenAttributesDict;
     NSString* _fontName;
+    NSString* _lineCap;
+    NSString* _lineJoin;
     CGFloat _fontSize;
     CGFloat _width;
     CGFloat _height;
@@ -67,6 +76,8 @@ enum class CanvasTextBaseline {
 @property (nonatomic, strong) NSFont* font;
 @property (nonatomic, strong) NSMutableDictionary* tokenAttributesDict;
 @property (nonatomic, strong) NSString* fontName;
+@property (nonatomic, strong) NSString* lineCap;
+@property (nonatomic, strong) NSString* lineJoin;
 @property (nonatomic, assign) CanvasTextAlign textAlign;
 @property (nonatomic, assign) CanvasTextBaseline textBaseLine;
 @property (nonatomic, assign) float lineWidth;
@@ -90,7 +101,18 @@ enum class CanvasTextBaseline {
         _width = _height = 0;
         _context = nil;
         _colorSpace = nil;
-
+        _lineCap = @"butt";
+        _lineJoin = @"miter";
+        _lineWidth = 1.0;
+        _fillStyle.r = 0;
+        _fillStyle.g = 0;
+        _fillStyle.b = 0;
+        _fillStyle.a = 1;
+        _strokeStyle.r = 0;
+        _strokeStyle.g = 0;
+        _strokeStyle.b = 0;
+        _strokeStyle.a = 1;
+        
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
         _currentGraphicsContext = nil;
         _oldGraphicsContext = nil;
@@ -496,11 +518,43 @@ enum class CanvasTextBaseline {
 
 -(void) stroke {
     [self saveContext];
-    NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
-    [color setStroke];
-    [_path setLineWidth: _lineWidth];
+    [self _setStrokeSetting];
     [_path stroke];
     [self restoreContext];
+}
+
+-(void) fill {
+    [self saveContext];
+    NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
+    [color setFill];
+    [_path fill];
+    [self restoreContext];
+}
+
+-(void) rectWithX:(float)x y:(float)y width:(float)width height:(float)height {
+    if (!_path) {
+        [self beginPath];
+    }
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+    [_path appendBezierPathWithRect:NSMakeRect(x, y, width, height)];
+#else
+    [_path appendPath:[UIBezierPath bezierPathWithRect:NSMakeRect(x, y, width, height)]];
+#endif
+}
+
+-(void) quadraticCurveToControlPointX:(float)cpx controlPointY:(float)cpy x:(float)x y:(float)y {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    [_path addQuadCurveToPoint:NSMakePoint(x, y) controlPoint:NSMakePoint(cpx, cpy)];
+#endif
+}
+
+-(void) setLineCap:(NSString *)lineCap {
+    _lineCap = lineCap;
+}
+
+-(void) setLineJoin:(NSString *)lineJoin {
+    _lineJoin = lineJoin;
 }
 
 -(void) moveToX: (float) x y:(float) y {
@@ -558,6 +612,28 @@ enum class CanvasTextBaseline {
     {
         index = (_width * yIndex) * 4;
         memcpy(imageDataTemp + yIndex * bytesPerRow, fillColors + index, bytesPerRow);
+    }
+}
+
+-(void) _setStrokeSetting {
+    NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
+    [color setStroke];
+    [_path setLineWidth: _lineWidth];
+    // cap
+    if ([@"square" isEqualToString:_lineCap]) {
+        [_path setLineCapStyle:NSSquareLineCapStyle];
+    } else if ([@"round" isEqualToString:_lineCap]) {
+        [_path setLineCapStyle:NSRoundLineCapStyle];
+    } else {
+        [_path setLineCapStyle:NSButtLineCapStyle];
+    }
+    // join
+    if ([@"bevel" isEqualToString:_lineJoin]) {
+        [_path setLineJoinStyle:NSBevelLineJoinStyle];
+    } else if ([@"round" isEqualToString:_lineJoin]) {
+        [_path setLineJoinStyle:NSRoundLineJoinStyle];
+    } else {
+        [_path setLineJoinStyle:NSMiterLineJoinStyle];
     }
 }
 
@@ -695,7 +771,7 @@ void CanvasRenderingContext2D::lineTo(float x, float y)
 
 void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, float y2)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl quadraticCurveToControlPointX:x1 controlPointY:y1 x:x2 y:y2];
 }
 
 void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
@@ -723,12 +799,21 @@ void CanvasRenderingContext2D::stroke()
 
 void CanvasRenderingContext2D::fill()
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if (recreateBufferIfNeeded()) {
+        [_impl fill];
+        
+        if (_canvasBufferUpdatedCB != nullptr) {
+            _canvasBufferUpdatedCB([_impl getDataRef]);
+        }
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
 }
 
 void CanvasRenderingContext2D::rect(float x, float y, float w, float h)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl rectWithX:x y:y width:w height:h];
 }
 
 void CanvasRenderingContext2D::restore()
@@ -765,12 +850,20 @@ void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 
 void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if (lineCap != "butt" && lineCap != "round" &&lineCap != "square") {
+        return;
+    }
+    this->_lineCap = lineCap;
+    [_impl setLineCap:[NSString stringWithUTF8String:lineCap.c_str()]];
 }
 
 void CanvasRenderingContext2D::set_lineJoin(const std::string& lineJoin)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if (lineJoin != "bevel" && lineJoin != "round" &&lineJoin != "miter") {
+        return;
+    }
+    this->_lineJoin = lineJoin;
+    [_impl setLineJoin:[NSString stringWithUTF8String:lineJoin.c_str()]];
 }
 
 void CanvasRenderingContext2D::set_font(const std::string& font)
