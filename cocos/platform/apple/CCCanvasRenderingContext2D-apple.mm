@@ -64,6 +64,7 @@ enum class CanvasTextBaseline {
     CGColorSpaceRef _colorSpace;
     cocos2d::Data _imageData;
     NSBezierPath* _path;
+    CGAffineTransform _transform;
 
     CanvasTextAlign _textAlign;
     CanvasTextBaseline _textBaseLine;
@@ -81,6 +82,7 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CanvasTextAlign textAlign;
 @property (nonatomic, assign) CanvasTextBaseline textBaseLine;
 @property (nonatomic, assign) float lineWidth;
+@property (nonatomic, assign) CGAffineTransform transform;
 
 @end
 
@@ -92,26 +94,14 @@ enum class CanvasTextBaseline {
 @synthesize textAlign = _textAlign;
 @synthesize textBaseLine = _textBaseLine;
 @synthesize lineWidth = _lineWidth;
+@synthesize transform = _transform;
 
 -(id) init {
     if (self = [super init]) {
-        _lineWidth = 0;
-        _textAlign = CanvasTextAlign::LEFT;
-        _textBaseLine = CanvasTextBaseline::BOTTOM;
         _width = _height = 0;
         _context = nil;
         _colorSpace = nil;
-        _lineCap = @"butt";
-        _lineJoin = @"miter";
-        _lineWidth = 1.0;
-        _fillStyle.r = 0;
-        _fillStyle.g = 0;
-        _fillStyle.b = 0;
-        _fillStyle.a = 1;
-        _strokeStyle.r = 0;
-        _strokeStyle.g = 0;
-        _strokeStyle.b = 0;
-        _strokeStyle.a = 1;
+        [self _resetSetting];
         
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
         _currentGraphicsContext = nil;
@@ -281,6 +271,7 @@ enum class CanvasTextBaseline {
     //NOTE: NSString draws in UIKit referential i.e. renders upside-down compared to CGBitmapContext referential
     CGContextScaleCTM(_context, 1.0f, -1.0f);
 #endif
+    [self _resetSetting];
 }
 
 -(NSSize) measureText:(NSString*) text {
@@ -366,7 +357,7 @@ enum class CanvasTextBaseline {
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
     CGContextSetTextDrawingMode(_context, kCGTextFill);
 
-    
+    [self _applyCTM];
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
                                                                                attributes:_tokenAttributesDict] autorelease];
@@ -407,6 +398,8 @@ enum class CanvasTextBaseline {
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
 
     CGContextSetTextDrawingMode(_context, kCGTextStroke);
+    
+    [self _applyCTM];
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
                                                                                attributes:_tokenAttributesDict] autorelease];
@@ -436,6 +429,49 @@ enum class CanvasTextBaseline {
     return _imageData;
 }
 
+-(void) scaleX:(float)x y:(float)y {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformScale(_transform, x, y);
+#endif
+}
+
+-(void) rotate:(float)angle {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformRotate(_transform, angle);
+#endif
+}
+
+-(void) translateX:(float)x y:(float)y {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformTranslate(_transform, x, y);
+#endif
+}
+
+-(void) transformA:(float)a b:(float)b c:(float)c d:(float)d e:(float)e f:(float)f {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformConcat(_transform, CGAffineTransformMake(a, b, c, d, e, f));
+#endif
+}
+
+-(void) setTransformA:(float)a b:(float)b c:(float)c d:(float)d e:(float)e f:(float)f {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformIdentity;
+    _transform = CGAffineTransformConcat(_transform, CGAffineTransformMake(a, b, c, d, e, f));
+#endif
+}
+
+-(void) resetTransform {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformIdentity;
+#endif
+}
+
 -(void) clearRect:(CGRect) rect {
     if (_imageData.isNull())
         return;
@@ -458,8 +494,7 @@ enum class CanvasTextBaseline {
 -(void) fillRect:(CGRect) rect {
     [self saveContext];
 
-    NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
-    [color setFill];
+    [self _setFillSetting];
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
     CGRect tmpRect = CGRectMake(rect.origin.x, _height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
     [NSBezierPath fillRect:tmpRect];
@@ -525,8 +560,7 @@ enum class CanvasTextBaseline {
 
 -(void) fill {
     [self saveContext];
-    NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
-    [color setFill];
+    [self _setFillSetting];
     [_path fill];
     [self restoreContext];
 }
@@ -615,6 +649,13 @@ enum class CanvasTextBaseline {
     }
 }
 
+-(void) _applyCTM {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    CGContextConcatCTM(_context, _transform);
+#endif
+}
+
 -(void) _setStrokeSetting {
     NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
     [color setStroke];
@@ -635,6 +676,30 @@ enum class CanvasTextBaseline {
     } else {
         [_path setLineJoinStyle:NSMiterLineJoinStyle];
     }
+    [self _applyCTM];
+}
+
+-(void) _setFillSetting {
+    NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
+    [color setFill];
+    [self _applyCTM];
+}
+
+-(void) _resetSetting {
+    _textAlign = CanvasTextAlign::LEFT;
+    _textBaseLine = CanvasTextBaseline::BOTTOM;
+    _lineCap = @"butt";
+    _lineJoin = @"miter";
+    _lineWidth = 1.0;
+    _fillStyle.r = 0;
+    _fillStyle.g = 0;
+    _fillStyle.b = 0;
+    _fillStyle.a = 1;
+    _strokeStyle.r = 0;
+    _strokeStyle.g = 0;
+    _strokeStyle.b = 0;
+    _strokeStyle.a = 1;
+    _transform = CGAffineTransformIdentity;
 }
 
 @end
@@ -963,32 +1028,32 @@ void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float image
 
 void CanvasRenderingContext2D::translate(float x, float y)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl translateX:x y:y];
 }
 
 void CanvasRenderingContext2D::scale(float x, float y)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl scaleX:x y:y];
 }
 
 void CanvasRenderingContext2D::rotate(float angle)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl rotate:angle];
 }
 
 void CanvasRenderingContext2D::transform(float a, float b, float c, float d, float e, float f)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl transformA:a b:b c:c d:d e:e f:f];
 }
 
 void CanvasRenderingContext2D::setTransform(float a, float b, float c, float d, float e, float f)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl setTransformA:a b:b c:c d:d e:e f:f];
 }
 
 void CanvasRenderingContext2D::resetTransform()
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl resetTransform];
 }
 
 void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr) {
