@@ -42,10 +42,20 @@ public:
         OVER
     };
 
+    enum class PlayerType
+    {
+        PCM_AUDIO_PLAYER = 0,
+        URL_AUDIO_PLAYER,
+    };
+
     using PlayEventCallback = std::function<void(State)>;
+
+    using CanPlayCallback = std::function<void(int, const std::string &)>;
 
     virtual ~IAudioPlayer()
     { };
+
+    virtual PlayerType getPlayerType() const = 0;
 
     virtual int getId() const = 0;
 
@@ -84,6 +94,8 @@ public:
     // @note: STOPPED event is invoked in main thread
     //        OVER event is invoked in sub thread
     virtual void setPlayEventCallback(const PlayEventCallback &playEventCallback) = 0;
+
+    virtual void setCanPlayCallback(const CanPlayCallback &canPlayCallback) = 0;
 };
 
 } // namespace cocos2d { 

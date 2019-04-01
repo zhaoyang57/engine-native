@@ -413,21 +413,22 @@ static bool js_audioengine_AudioEngine_preload(se::State& s)
             std::string arg0;
             ok &= seval_to_std_string(args[0], &arg0);
             if (!ok) { ok = true; break; }
-            std::function<void (bool)> arg1;
+            std::function<void (bool, float)> arg1;
             do {
                 if (args[1].isObject() && args[1].toObject()->isFunction())
                 {
                     se::Value jsThis(s.thisObject());
                     se::Value jsFunc(args[1]);
                     jsFunc.toObject()->root();
-                    auto lambda = [=](bool larg0) -> void {
+                    auto lambda = [=](bool larg0, float larg1) -> void {
                         se::ScriptEngine::getInstance()->clearException();
                         se::AutoHandleScope hs;
             
                         CC_UNUSED bool ok = true;
                         se::ValueArray args;
-                        args.resize(1);
+                        args.resize(2);
                         ok &= boolean_to_seval(larg0, &args[0]);
+                        ok &= float_to_seval(larg1, &args[1]);
                         se::Value rval;
                         se::Object* thisObj = jsThis.isObject() ? jsThis.toObject() : nullptr;
                         se::Object* funcObj = jsFunc.toObject();
@@ -742,6 +743,55 @@ static bool js_audioengine_AudioEngine_getPlayingAudioCount(se::State& s)
 }
 SE_BIND_FUNC(js_audioengine_AudioEngine_getPlayingAudioCount)
 
+static bool js_audioengine_AudioEngine_setCanPlayCallback(se::State& s)
+{
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 2) {
+        int arg0 = 0;
+        std::function<void (int, const std::string&)> arg1;
+        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
+        do {
+            if (args[1].isObject() && args[1].toObject()->isFunction())
+            {
+                se::Value jsThis(s.thisObject());
+                se::Value jsFunc(args[1]);
+                jsFunc.toObject()->root();
+                auto lambda = [=](int larg0, const std::string& larg1) -> void {
+                    se::ScriptEngine::getInstance()->clearException();
+                    se::AutoHandleScope hs;
+        
+                    CC_UNUSED bool ok = true;
+                    se::ValueArray args;
+                    args.resize(2);
+                    ok &= int32_to_seval(larg0, &args[0]);
+                    ok &= std_string_to_seval(larg1, &args[1]);
+                    se::Value rval;
+                    se::Object* thisObj = jsThis.isObject() ? jsThis.toObject() : nullptr;
+                    se::Object* funcObj = jsFunc.toObject();
+                    bool succeed = funcObj->call(args, thisObj, &rval);
+                    if (!succeed) {
+                        se::ScriptEngine::getInstance()->clearException();
+                    }
+                };
+                arg1 = lambda;
+            }
+            else
+            {
+                arg1 = nullptr;
+            }
+        } while(false)
+        ;
+        SE_PRECONDITION2(ok, false, "js_audioengine_AudioEngine_setCanPlayCallback : Error processing arguments");
+        cocos2d::AudioEngine::setCanPlayCallback(arg0, arg1);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 2);
+    return false;
+}
+SE_BIND_FUNC(js_audioengine_AudioEngine_setCanPlayCallback)
+
 
 
 
@@ -777,6 +827,7 @@ bool js_register_audioengine_AudioEngine(se::Object* obj)
     cls->defineStaticFunction("setFinishCallback", _SE(js_audioengine_AudioEngine_setFinishCallback));
     cls->defineStaticFunction("getProfile", _SE(js_audioengine_AudioEngine_getProfile));
     cls->defineStaticFunction("getPlayingAudioCount", _SE(js_audioengine_AudioEngine_getPlayingAudioCount));
+    cls->defineStaticFunction("setCanPlayCallback", _SE(js_audioengine_AudioEngine_setCanPlayCallback));
     cls->install();
     JSBClassType::registerClass<cocos2d::AudioEngine>(cls);
 

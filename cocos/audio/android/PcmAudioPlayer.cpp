@@ -36,6 +36,7 @@ PcmAudioPlayer::PcmAudioPlayer(AudioMixerController * controller, ICallerThreadU
         : _id(-1)
         , _track(nullptr)
         , _playEventCallback(nullptr)
+        , _canPlayEventCallback(nullptr)
         , _controller(controller)
         , _callerThreadUtils(callerThreadUtils)
 {
@@ -155,6 +156,11 @@ bool PcmAudioPlayer::setPosition(float pos)
 void PcmAudioPlayer::setPlayEventCallback(const PlayEventCallback &playEventCallback)
 {
     _playEventCallback = playEventCallback;
+}
+
+void PcmAudioPlayer::setCanPlayCallback(
+        const cocos2d::IAudioPlayer::CanPlayCallback &canPlayCallback) {
+    _canPlayEventCallback = canPlayCallback;
 }
 
 void PcmAudioPlayer::play()

@@ -76,6 +76,8 @@ static AudioFileIndicator __audioFileIndicator[] = {
         {".mp3",    160000}
 };
 
+static std::unordered_map<std::string, float> __urlToDurationMap;
+
 AudioPlayerProvider::AudioPlayerProvider(SLEngineItf engineItf, SLObjectItf outputMixObject,
                                          int deviceSampleRate, int bufferSizeInFrames,
                                          const FdGetterCallback &fdGetterCallback,
@@ -154,7 +156,7 @@ IAudioPlayer *AudioPlayerProvider::getAudioPlayer(const std::string &audioFilePa
 
                 void* infoPtr = &info;
                 std::string url = info.url;
-                preloadEffect(info, [infoPtr, url, threadId, pcmData, isSucceed, isReturnFromCache, isPreloadFinished](bool succeed, PcmData data){
+                preloadEffect(info, [infoPtr, url, threadId, pcmData, isSucceed, isReturnFromCache, isPreloadFinished](bool succeed, float duration, PcmData data){
                     // If the callback is in the same thread as caller's, it means that we found it
                     // in the cache
                     *isReturnFromCache = std::this_thread::get_id() == threadId;
@@ -206,13 +208,64 @@ IAudioPlayer *AudioPlayerProvider::getAudioPlayer(const std::string &audioFilePa
     return player;
 }
 
-void AudioPlayerProvider::preloadEffect(const std::string &audioFilePath, const PreloadCallback& cb)
+float AudioPlayerProvider::getDurationByPcmAudioPlayer(const std::string &filePath, const PcmData &pcmData) {
+    float duration = -1;
+
+    auto&& iter = __urlToDurationMap.find(filePath);
+    if (iter != __urlToDurationMap.end()) {
+        duration = iter->second;
+        return duration;
+    }
+
+    IAudioPlayer *player = obtainPcmAudioPlayer(filePath, pcmData);
+    if (player) {
+        duration = player->getDuration();
+        __urlToDurationMap.insert(std::make_pair(filePath, duration));
+        delete player;
+    }
+    return duration;
+}
+
+void AudioPlayerProvider::getDurationByUrlAudioPlayer(const std::string &filePath, const std::function<void(bool, float)> &cb) {
+    float duration = -1;
+
+    auto&& iter = __urlToDurationMap.find(filePath);
+    if (iter != __urlToDurationMap.end()) {
+        duration = iter->second;
+        cb(true, duration);
+        return;
+    }
+
+    AudioFileInfo info = getFileInfo(filePath);
+    if (!info.isValid()){
+        cb(false, -1);
+        return;
+    }
+    IAudioPlayer *player = createUrlAudioPlayer(info);
+    player->play();
+    player->pause();
+    std::unordered_map<std::string, float> &urlToDuratoinMap = __urlToDurationMap;
+    // 此处lambda表达式捕获的urlToDuratoinMap是静态全局变量__urlToDurationMap的引用，可以安全捕获。
+    player->setCanPlayCallback([&urlToDuratoinMap, player, cb](int audioId, const std::string &filePath) {
+        float duration = player->getDuration();
+        cb(true, duration);
+        urlToDuratoinMap.insert(std::make_pair(filePath, duration));
+        player->stop();
+    });
+    return;
+}
+
+void AudioPlayerProvider::preloadEffect(const std::string &audioFilePath, const std::function<void(bool, float, PcmData)> &cb)
 {
+    AudioFileInfo info = getFileInfo(audioFilePath);
+
     // Pcm data decoding by OpenSLES API only supports in API level 17 and later.
-    if (getSystemAPILevel() < 17)
-    {
-        PcmData data;
-        cb(true, data);
+    // 大于100k的音频不使用pcm缓存
+    if (getSystemAPILevel() < 17 || !isSmallFile(info)) {
+        getDurationByUrlAudioPlayer(audioFilePath, [cb](bool isSuccess, float duration) {
+            PcmData data;
+            cb(isSuccess, duration, data);
+        });
         return;
     }
 
@@ -222,26 +275,34 @@ void AudioPlayerProvider::preloadEffect(const std::string &audioFilePath, const 
     {
         ALOGV("preload return from cache: (%s)", audioFilePath.c_str());
         _pcmCacheMutex.unlock();
-        cb(true, iter->second);
+        PcmData pcmData = iter->second;
+        float duration = getDurationByPcmAudioPlayer(audioFilePath, pcmData);
+        cb(true, duration, pcmData);
         return;
     }
     _pcmCacheMutex.unlock();
 
-    auto info = getFileInfo(audioFilePath);
-    preloadEffect(info, [this, cb, audioFilePath](bool succeed, PcmData data){
-
-        _callerThreadUtils->performFunctionInCallerThread([this, succeed, data, cb](){
-            cb(succeed, data);
+    // 此处lambda表达式通过传值捕获变量，这些被捕获的变量值与外界无关。
+    // this的_callerThreadUtils是一个全局静态变量，定义在AudioEngine-inl.cpp中，不需要担心其值被释放。
+    ICallerThreadUtils* callerThreadUtils = this->_callerThreadUtils;
+    preloadEffect(info, [cb, callerThreadUtils](bool succeed, float duration, PcmData data){
+        callerThreadUtils->performFunctionInCallerThread([succeed, data, cb, duration](){
+            cb(succeed, duration, data);
         });
-
     }, false);
 }
 
 // Used internally
-void AudioPlayerProvider::preloadEffect(const AudioFileInfo &info, const PreloadCallback& cb, bool isPreloadInPlay2d)
+void AudioPlayerProvider::preloadEffect(const AudioFileInfo &info, const PreloadCallback& orignalCb, bool isPreloadInPlay2d)
 {
-    PcmData pcmData;
+    std::string filePath = info.url;
+    // 此处的lambda表达式捕获this指针，通过分析代码可知调用cb的地方this必然存在。
+    std::function<void(bool, PcmData)> cb = [this, filePath, orignalCb](bool isSuccees, PcmData pcmData) {
+        float duration = this->getDurationByPcmAudioPlayer(filePath, pcmData);
+        orignalCb(true, duration, pcmData);
+    };
 
+    PcmData pcmData;
     if (!info.isValid())
     {
         cb(false, pcmData);
