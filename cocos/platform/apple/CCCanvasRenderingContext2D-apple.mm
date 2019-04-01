@@ -72,6 +72,9 @@ enum class CanvasTextBaseline {
     cocos2d::Color4F _strokeStyle;
     float _lineWidth;
     bool _bold;
+    std::vector<float> _lineDashPattern;
+    float _lineDashOffset;
+    float _miterLimit;
 }
 
 @property (nonatomic, strong) NSFont* font;
@@ -83,6 +86,8 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CanvasTextBaseline textBaseLine;
 @property (nonatomic, assign) float lineWidth;
 @property (nonatomic, assign) CGAffineTransform transform;
+@property (nonatomic, assign) float lineDashOffset;
+@property (nonatomic, assign) float miterLimit;
 
 @end
 
@@ -95,6 +100,8 @@ enum class CanvasTextBaseline {
 @synthesize textBaseLine = _textBaseLine;
 @synthesize lineWidth = _lineWidth;
 @synthesize transform = _transform;
+@synthesize lineDashOffset = _lineDashOffset;
+@synthesize miterLimit = _miterLimit;
 
 -(id) init {
     if (self = [super init]) {
@@ -126,6 +133,7 @@ enum class CanvasTextBaseline {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
     [_currentGraphicsContext release];
 #endif
+    _lineDashPattern.clear();
     [super dealloc];
 }
 
@@ -583,12 +591,31 @@ enum class CanvasTextBaseline {
 #endif
 }
 
+-(void) bezierCurveToX1:(float)x1 y1:(float)y1 x2:(float)x2 y2:(float)y2 x3:(float)x3 y3:(float)y3 {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    [_path addCurveToPoint:NSMakePoint(x3, y3) controlPoint1:NSMakePoint(x1, y1) controlPoint2:NSMakePoint(x2, y2)];
+#endif
+}
+
 -(void) setLineCap:(NSString *)lineCap {
     _lineCap = lineCap;
 }
 
 -(void) setLineJoin:(NSString *)lineJoin {
     _lineJoin = lineJoin;
+}
+
+-(void) setLineDash:(const std::vector<float> &)lineDash {
+    _lineDashPattern.clear();
+    _lineDashPattern.assign(lineDash.begin(), lineDash.end());
+    if (lineDash.size() % 2 > 0) {
+        _lineDashPattern.insert(_lineDashPattern.end(), lineDash.begin(), lineDash.end());
+    }
+}
+
+-(const std::vector<float> &) getLineDash {
+    return _lineDashPattern;
 }
 
 -(void) moveToX: (float) x y:(float) y {
@@ -605,6 +632,47 @@ enum class CanvasTextBaseline {
 #else
     [_path addLineToPoint: NSMakePoint(x, y)];
 #endif
+}
+
+-(void) drawImage:(const cocos2d::Data &)imageData sx:(float)sx sy:(float)sy sw:(float)sw sh:(float)sh dx:(float)dx dy:(float)dy dw:(float)dw dh:(float)dh ow:(float)ow oh:(float)oh {
+    [self saveContext];
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    // generate CGImageRef
+    CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, imageData.getBytes(), imageData.getSize(), nullptr);
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    size_t bitsPerComponent = 8;
+    size_t bitsPerPixel = bitsPerComponent * 4;
+    size_t bytesPerRow = ow * 4;
+    CGImageRef imgRef = CGImageCreate(ow,
+                                      oh,
+                                      bitsPerComponent,
+                                      bitsPerPixel,
+                                      bytesPerRow,
+                                      colorSpaceRef,
+                                      kCGImageAlphaPremultipliedLast,
+                                      provider,
+                                      nullptr,
+                                      false,
+                                      kCGRenderingIntentDefault);
+    // the transform should be applied at first
+    [self _applyCTM];
+    // image is upside-down
+    CGContextScaleCTM(_context, 1.0f, -1.0f);
+    CGContextTranslateCTM(_context, 0.0f, -_height);
+    // the area be drew
+    CGRect clip = CGRectMake(sx, sy, sw, sh);
+    CGImageRef imgClipRef = CGImageCreateWithImageInRect(imgRef, clip);
+    CGImageRelease(imgRef);
+    // the position when draw on canvas
+    // because translate the context so y shoule set to _height - dh - dy
+    CGRect rect = CGRectMake(dx, _height - dh - dy, dw, dh);
+    CGContextDrawImage(_context, rect, imgClipRef);
+    CGImageRelease(imgClipRef);
+    CGColorSpaceRelease(colorSpaceRef);
+    CGDataProviderRelease(provider);
+#endif
+    [self restoreContext];
 }
 
 -(void) _fillImageData:(const cocos2d::Data &)imageData width:(float)imageWidth height:(float)imageHeight offsetX:(float)offsetX offsetY:(float)offsetY {
@@ -676,6 +744,19 @@ enum class CanvasTextBaseline {
     } else {
         [_path setLineJoinStyle:NSMiterLineJoinStyle];
     }
+    // dash
+    NSInteger lineDashCount = _lineDashPattern.size();
+    if (lineDashCount > 0) {
+        CGFloat lineDash[lineDashCount];
+        for (int i = 0; i < lineDashCount; i++) {
+            lineDash[i] = _lineDashPattern[i];
+        }
+        [_path setLineDash:lineDash count:lineDashCount phase:_lineDashOffset];
+    } else {
+        [_path setLineDash:NULL count:0 phase:0];
+    }
+    // miterLimit
+    [_path setMiterLimit:_miterLimit];
     [self _applyCTM];
 }
 
@@ -700,6 +781,9 @@ enum class CanvasTextBaseline {
     _strokeStyle.b = 0;
     _strokeStyle.a = 1;
     _transform = CGAffineTransformIdentity;
+    _lineDashOffset = 0;
+    _lineDashPattern.clear();
+    _miterLimit = 10.f;
 }
 
 @end
@@ -767,7 +851,16 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
 
 void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if (recreateBufferIfNeeded()) {
+        [_impl rectWithX:x y:y width:width height:height];
+        [_impl stroke];
+        if (_canvasBufferUpdatedCB != nullptr) {
+            _canvasBufferUpdatedCB([_impl getDataRef]);
+        }
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
 }
 
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
@@ -841,7 +934,7 @@ void CanvasRenderingContext2D::quadraticCurveTo(float x1, float y1, float x2, fl
 
 void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float y2, float x3, float y3)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl bezierCurveToX1:x1 y1:y1 x2:x2 y2:y2 x3:x3 y3:y3];
 }
 
 void CanvasRenderingContext2D::arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise)
@@ -1057,26 +1150,37 @@ void CanvasRenderingContext2D::resetTransform()
 }
 
 void CanvasRenderingContext2D::setLineDash(std::vector<float>& arr) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl setLineDash:arr];
 }
 
 std::vector<float>& CanvasRenderingContext2D::getLineDash() {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    static std::vector<float> tmp;
+    tmp.clear();
+    std::vector<float> lineDash = [_impl getLineDash];
+    for (int i = 0; i < lineDash.size(); i++) {
+        tmp.push_back(lineDash[i]);
+    }
+    return tmp;
 }
 
 void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    this->_lineDashOffsetInternal = offset;
+    [_impl setLineDashOffset:offset];
 }
 
 void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    this->_miterLimitInternal = limit;
+    [_impl setMiterLimit:limit];
 }
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh ow:ow oh:oh];
+    if (_canvasBufferUpdatedCB != nullptr) {
+        _canvasBufferUpdatedCB([_impl getDataRef]);
+    }
 }
 
 void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
