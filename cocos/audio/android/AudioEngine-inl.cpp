@@ -427,15 +427,32 @@ void AudioEngineImpl::setFinishCallback(int audioID, const std::function<void (i
     _callbackMap[audioID] = callback;
 }
 
-void AudioEngineImpl::preload(const std::string& filePath, const std::function<void(bool)>& callback)
+void AudioEngineImpl::setCanPlayCallback(int audioID, const std::function<void(int,
+                                                                               const std::string &)> &callback) {
+    // 小于100kb的音频使用PcmAudioPlayer，可以直接播放；
+    // 大于100kb的音频使用UrlAudioPlayer，需要等回调之后才能开始播放
+    auto iter = _audioPlayers.find(audioID);
+    if (iter != _audioPlayers.end())
+    {
+        auto player = iter->second;
+        auto playType = player->getPlayerType();
+        if (playType == IAudioPlayer::PlayerType::URL_AUDIO_PLAYER) {
+            player->setCanPlayCallback(callback);
+        } else {
+            callback(audioID, player->getUrl());
+        }
+    }
+}
+
+void AudioEngineImpl::preload(const std::string& filePath, const std::function<void(bool, float)>& callback)
 {
     if (_audioPlayerProvider != nullptr)
     {
         std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
-        _audioPlayerProvider->preloadEffect(fullPath, [callback](bool succeed, PcmData data){
+        _audioPlayerProvider->preloadEffect(fullPath, [callback](bool succeed, float duration, PcmData data){
             if (callback != nullptr)
             {
-                callback(succeed);
+                callback(succeed, duration);
             }
         });
     }
@@ -443,7 +460,7 @@ void AudioEngineImpl::preload(const std::string& filePath, const std::function<v
     {
         if (callback != nullptr)
         {
-            callback(false);
+            callback(false, -1);
         }
     }
 }

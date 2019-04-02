@@ -328,4 +328,16 @@ getPlayingAudioCount : function (
     return 0;
 },
 
+/**
+ * @method setCanPlayCallback
+ * @param {int} arg0
+ * @param {function} arg1
+ */
+setCanPlayCallback : function (
+int, 
+func 
+)
+{
+},
+
 };

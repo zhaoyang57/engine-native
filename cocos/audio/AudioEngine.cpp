@@ -458,6 +458,10 @@ void AudioEngine::setFinishCallback(int audioID, const std::function<void (int, 
     }
 }
 
+void AudioEngine::setCanPlayCallback(int audioID, const std::function<void(int, const std::string &)> &callback) {
+    _audioEngineImpl->setCanPlayCallback(audioID, callback);
+}
+
 bool AudioEngine::setMaxAudioInstance(int maxInstances)
 {
     if (maxInstances > 0 && maxInstances <= MAX_AUDIOINSTANCES) {
@@ -534,11 +538,11 @@ AudioProfile* AudioEngine::getProfile(const std::string &name)
     }
 }
 
-void AudioEngine::preload(const std::string& filePath, std::function<void(bool isSuccess)> callback)
+void AudioEngine::preload(const std::string& filePath, std::function<void(bool isSuccess, float duration)> callback)
 {
     if (!isEnabled())
     {
-        callback(false);
+        callback(false, -1);
         return;
     }
     
@@ -549,7 +553,7 @@ void AudioEngine::preload(const std::string& filePath, std::function<void(bool i
         if (!FileUtils::getInstance()->isFileExist(filePath)){
             if (callback)
             {
-                callback(false);
+                callback(false, -1);
             }
             return;
         }
