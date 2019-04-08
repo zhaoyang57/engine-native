@@ -629,7 +629,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
         }
         _impl->recreateBuffer(__width, __height);
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+            _canvasBufferUpdatedCB();
     }
     return true;
 }
@@ -651,7 +651,7 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
         _impl->fillRect(x, y, width, height);
 
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+            _canvasBufferUpdatedCB();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -666,7 +666,7 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
     if (recreateBufferIfNeeded()) {
         _impl->fillText(text, x, y, maxWidth);
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+            _canvasBufferUpdatedCB();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -682,7 +682,7 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
         _impl->strokeText(text, x, y, maxWidth);
 
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+            _canvasBufferUpdatedCB();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -736,7 +736,7 @@ void CanvasRenderingContext2D::stroke()
     _impl->stroke();
 
     if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB(_impl->getDataRef());
+        _canvasBufferUpdatedCB();
 }
 
 void CanvasRenderingContext2D::restore()
@@ -976,5 +976,9 @@ void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
 //
 }
+
+const Data&  CanvasRenderingContext2D::_getData() {
+        return _impl->getDataRef();
+    }
 
 NS_CC_END

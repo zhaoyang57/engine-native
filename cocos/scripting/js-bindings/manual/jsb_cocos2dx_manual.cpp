@@ -428,21 +428,20 @@ static bool js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback(se::State
     size_t argc = args.size();
     CC_UNUSED bool ok = true;
     if (argc == 1) {
-        std::function<void (const cocos2d::Data &)> arg0;
+        std::function<void ()> arg0;
         do {
             if (args[0].isObject() && args[0].toObject()->isFunction())
             {
                 se::Value jsThis(s.thisObject());
                 se::Value jsFunc(args[0]);
                 jsThis.toObject()->attachObject(jsFunc.toObject());
-                auto lambda = [=](const cocos2d::Data & larg0) -> void {
+                auto lambda = [=]() -> void {
                     se::ScriptEngine::getInstance()->clearException();
                     se::AutoHandleScope hs;
 
                     CC_UNUSED bool ok = true;
                     se::ValueArray args;
-                    args.resize(1);
-                    ok &= Data_to_seval(larg0, &args[0]);
+                    args.resize(0);
                     se::Value rval;
                     se::Object* thisObj = jsThis.isObject() ? jsThis.toObject() : nullptr;
                     se::Object* funcObj = jsFunc.toObject();
@@ -467,6 +466,23 @@ static bool js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback(se::State
     return false;
 }
 SE_BIND_FUNC(js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback)
+
+static bool js_CanvasRenderingContext2D_getData(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_getData : Invalid Native Object");
+    std::function<void (void *buffer, int len)> arg0;
+    se::Value* pval(&s.rval());
+    auto lambda = [pval](void *buffer, int len) -> void {
+        se::Object* obj = se::Object::createArrayBufferObject(buffer, len);
+        se::HandleObject handleObject(obj);
+        pval->setObject(handleObject);
+    };
+    arg0 = lambda;
+    cobj->_getData(arg0);
+    return true;
+}
+SE_BIND_FUNC(js_CanvasRenderingContext2D_getData)
 
 static se::Object* __deviceMotionObject = nullptr;
 static bool JSB_getDeviceMotionValue(se::State& s)
@@ -536,6 +552,8 @@ static bool register_canvas_context2d(se::Object* obj)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, shadowOffsetYInternal)
 
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_setCanvasBufferUpdatedCallback", _SE(js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback));
+    __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_getData", _SE(js_CanvasRenderingContext2D_getData));
+
 
     se::ScriptEngine::getInstance()->clearException();
 

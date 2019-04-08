@@ -84,7 +84,7 @@ public:
                    float ow, float oh);
 
     // callback
-    using CanvasBufferUpdatedCallback = std::function<void(const Data&)>;
+    using CanvasBufferUpdatedCallback = std::function<void()>;
     void setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb);
 
     // functions for properties
@@ -121,9 +121,13 @@ public:
     void setLineDash(std::vector<float>& arr);
     std::vector<float>& getLineDash();
 
+    using CanvasBufferGetCallback = std::function<void(void* p, int len)>;
+    void _getData(CanvasBufferGetCallback& callback);
+
 private:
     GLint _maxTextureSize;
     bool recreateBufferIfNeeded();
+    void notifyBufferDataUpdated();
 
 public:
 
@@ -162,6 +166,7 @@ private:
     CanvasRenderingContext2DImpl* _impl = nullptr;
 
     bool _isBufferSizeDirty = true;
+    bool _isDataNeedToSendJS = false;
 };
 
 NS_CC_END
