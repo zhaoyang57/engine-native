@@ -33,6 +33,7 @@
 #include "scripting/js-bindings/event/EventDispatcher.h"
 #include "scripting/js-bindings/manual/jsb_opengl_manual.hpp"
 #include "scripting/js-bindings/jswrapper/SeApi.h"
+#include "network/HttpClient.h"
 #include "CCEAGLView-ios.h"
 #include "base/CCGLUtils.h"
 #include "audio/include/AudioEngine.h"
@@ -284,6 +285,7 @@ Application::~Application()
     AudioEngine::end();
 #endif
 
+    cocos2d::network::HttpClient::getInstance()->destroyInstance();
     EventDispatcher::destroy();
     se::ScriptEngine::destroyInstance();
     

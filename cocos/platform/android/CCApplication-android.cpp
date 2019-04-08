@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "audio/include/AudioEngine.h"
 #include "scripting/js-bindings/jswrapper/SeApi.h"
 #include "scripting/js-bindings/event/EventDispatcher.h"
+#include "network/HttpClient.h"
 
 #define  LOG_APP_TAG    "CCApplication_android Debug"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_APP_TAG,__VA_ARGS__)
@@ -77,6 +78,7 @@ Application::~Application()
     AudioEngine::end();
 #endif
 
+    cocos2d::network::HttpClient::getInstance()->destroyInstance();
     EventDispatcher::destroy();
     se::ScriptEngine::destroyInstance();
 
