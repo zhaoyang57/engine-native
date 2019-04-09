@@ -235,7 +235,12 @@ namespace se {
         }
         _beforeInitHookArray.clear();
 
-        _cx = JSGlobalContextCreate(nullptr);
+        // if use JSGlobalContextCreate to create context
+        // when use in framework
+        // it will lead memory leak
+        // use OC api resolve this question
+        _jsCx = [[JSContext alloc] init];
+        _cx = [(JSContext *)_jsCx JSGlobalContextRef];
 
         if (nullptr == _cx)
             return false;
@@ -339,7 +344,7 @@ namespace se {
         __oldConsoleError.setUndefined();
         __oldConsoleAssert.setUndefined();
 
-        JSGlobalContextRelease(_cx);
+        [(JSContext *)_jsCx release];
 
         Class::cleanup();
 
