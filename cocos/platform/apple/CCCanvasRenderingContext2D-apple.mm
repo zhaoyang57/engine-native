@@ -75,8 +75,24 @@ enum class CanvasTextBaseline {
     std::vector<float> _lineDashPattern;
     float _lineDashOffset;
     float _miterLimit;
+    cocos2d::Data _strokePatternData;
+    float _strokePatternImageWidth;
+    float _strokePatternImageHeight;
+    NSColor *_strokePattern;
+    cocos2d::Data _fillPatternData;
+    float _fillPatternImageWidth;
+    float _fillPatternImageHeight;
+    NSColor *_fillPattern;
+    CGGradientRef _fillLinearGradient;
+    CGPoint _fillLinearGradientStart;
+    CGPoint _fillLinearGradientEnd;
+    CGGradientRef _strokeLinearGradient;
+    CGPoint _strokeLinearGradientStart;
+    CGPoint _strokeLinearGradientEnd;
 }
 
+@property (nonatomic, assign) CGFloat width;
+@property (nonatomic, assign) CGFloat height;
 @property (nonatomic, strong) NSFont* font;
 @property (nonatomic, strong) NSMutableDictionary* tokenAttributesDict;
 @property (nonatomic, strong) NSString* fontName;
@@ -88,11 +104,27 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CGAffineTransform transform;
 @property (nonatomic, assign) float lineDashOffset;
 @property (nonatomic, assign) float miterLimit;
+@property (nonatomic, assign) cocos2d::Data strokePatternData;
+@property (nonatomic, assign) float strokePatternImageWidth;
+@property (nonatomic, assign) float strokePatternImageHeight;
+@property (nonatomic, strong) NSColor *strokePattern;
+@property (nonatomic, assign) cocos2d::Data fillPatternData;
+@property (nonatomic, assign) float fillPatternImageWidth;
+@property (nonatomic, assign) float fillPatternImageHeight;
+@property (nonatomic, strong) NSColor *fillPattern;
+@property (nonatomic, assign) CGGradientRef fillLinearGradient;
+@property (nonatomic, assign) CGPoint fillLinearGradientStart;
+@property (nonatomic, assign) CGPoint fillLinearGradientEnd;
+@property (nonatomic, assign) CGGradientRef strokeLinearGradient;
+@property (nonatomic, assign) CGPoint strokeLinearGradientStart;
+@property (nonatomic, assign) CGPoint strokeLinearGradientEnd;
 
 @end
 
 @implementation CanvasRenderingContext2DImpl
 
+@synthesize width = _width;
+@synthesize height = _height;
 @synthesize font = _font;
 @synthesize tokenAttributesDict = _tokenAttributesDict;
 @synthesize fontName = _fontName;
@@ -102,6 +134,20 @@ enum class CanvasTextBaseline {
 @synthesize transform = _transform;
 @synthesize lineDashOffset = _lineDashOffset;
 @synthesize miterLimit = _miterLimit;
+@synthesize strokePatternData = _strokePatternData;
+@synthesize strokePatternImageWidth = _strokePatternImageWidth;
+@synthesize strokePatternImageHeight = _strokePatternImageHeight;
+@synthesize strokePattern = _strokePattern;
+@synthesize fillPatternData = _fillPatternData;
+@synthesize fillPatternImageWidth = _fillPatternImageWidth;
+@synthesize fillPatternImageHeight = _fillPatternImageHeight;
+@synthesize fillPattern = _fillPattern;
+@synthesize fillLinearGradient = _fillLinearGradient;
+@synthesize fillLinearGradientStart = _fillLinearGradientStart;
+@synthesize fillLinearGradientEnd = _fillLinearGradientEnd;
+@synthesize strokeLinearGradient = _strokeLinearGradient;
+@synthesize strokeLinearGradientStart = _strokeLinearGradientStart;
+@synthesize strokeLinearGradientEnd = _strokeLinearGradientEnd;
 
 -(id) init {
     if (self = [super init]) {
@@ -134,6 +180,9 @@ enum class CanvasTextBaseline {
     [_currentGraphicsContext release];
 #endif
     _lineDashPattern.clear();
+    // release pattern
+    [self _clearApplyStrokeStyle];
+    [self _clearApplyFillStyle];
     [super dealloc];
 }
 
@@ -354,13 +403,20 @@ enum class CanvasTextBaseline {
     [_tokenAttributesDict removeObjectForKey:NSStrokeColorAttributeName];
 
     [_tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    [_tokenAttributesDict setObject:[NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a]
+    NSColor *textColor = [NSColor colorWithRed:_fillStyle.r
+                                         green:_fillStyle.g
+                                          blue:_fillStyle.b
+                                         alpha:_fillStyle.a];
+    if (_fillPattern) {
+        textColor = _fillPattern;
+    }
+    [_tokenAttributesDict setObject:textColor
                              forKey:NSForegroundColorAttributeName];
 
     [self saveContext];
 
     // text color
-    CGContextSetRGBFillColor(_context, _fillStyle.r, _fillStyle.g, _fillStyle.b, _fillStyle.a);
+    CGContextSetFillColorWithColor(_context, [textColor CGColor]);
     CGContextSetShouldSubpixelQuantizeFonts(_context, false);
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
     CGContextSetTextDrawingMode(_context, kCGTextFill);
@@ -392,15 +448,20 @@ enum class CanvasTextBaseline {
     [_tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
     [_tokenAttributesDict setObject:[NSNumber numberWithFloat: _lineWidth * 2]
                             forKey:NSStrokeWidthAttributeName];
-    [_tokenAttributesDict setObject:[NSColor colorWithRed:_strokeStyle.r
-                                                    green:_strokeStyle.g
-                                                     blue:_strokeStyle.b
-                                                    alpha:_strokeStyle.a] forKey:NSStrokeColorAttributeName];
+    NSColor *textColor = [NSColor colorWithRed:_fillStyle.r
+                                         green:_fillStyle.g
+                                          blue:_fillStyle.b
+                                         alpha:_fillStyle.a];
+    if (_strokePattern) {
+        textColor = _strokePattern;
+    }
+    [_tokenAttributesDict setObject:textColor
+                             forKey:NSStrokeColorAttributeName];
 
     [self saveContext];
 
     // text color
-    CGContextSetRGBFillColor(_context, _fillStyle.r, _fillStyle.g, _fillStyle.b, _fillStyle.a);
+    CGContextSetFillColorWithColor(_context, [textColor CGColor]);
 
     CGContextSetShouldSubpixelQuantizeFonts(_context, false);
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
@@ -424,6 +485,7 @@ enum class CanvasTextBaseline {
     _fillStyle.g = g;
     _fillStyle.b = b;
     _fillStyle.a = a;
+    [self _clearApplyFillStyle];
 }
 
 -(void) setStrokeStyleWithRed:(CGFloat) r green:(CGFloat) g blue:(CGFloat) b alpha:(CGFloat) a {
@@ -431,6 +493,7 @@ enum class CanvasTextBaseline {
     _strokeStyle.g = g;
     _strokeStyle.b = b;
     _strokeStyle.a = a;
+    [self _clearApplyStrokeStyle];
 }
 
 -(const cocos2d::Data&) getDataRef {
@@ -675,6 +738,219 @@ enum class CanvasTextBaseline {
     [self restoreContext];
 }
 
+static void _drawPatternTile(const cocos2d::Data & patternImageData,
+                                            float width,
+                                            float height,
+                                            CGContextRef context) {
+    
+    CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, patternImageData.getBytes(), patternImageData.getSize(), nullptr);
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    size_t bitsPerComponent = 8;
+    size_t bitsPerPixel = bitsPerComponent * 4;
+    size_t bytesPerRow = width * 4;
+    CGImageRef patternImage = CGImageCreate(width,
+                                            height,
+                                            bitsPerComponent,
+                                            bitsPerPixel,
+                                            bytesPerRow,
+                                            colorSpaceRef,
+                                            kCGImageAlphaPremultipliedLast,
+                                            provider,
+                                            nullptr,
+                                            false,
+                                            kCGRenderingIntentDefault);
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    UIImage *image = [UIImage imageWithCGImage:(CGImage *)patternImage];
+    CGRect rect = CGRectMake(0,
+                             0,
+                             image.size.width,
+                             image.size.height);
+    CGContextTranslateCTM(context, 0, image.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    CGContextDrawImage(context, rect, [image CGImage]);
+#endif
+    CGImageRelease(patternImage);
+    CGColorSpaceRelease(colorSpaceRef);
+    CGDataProviderRelease(provider);
+}
+
+static void _drawLinearGradientTile(CGGradientRef gradient, float width, float height, CGPoint startPoint, CGPoint endPoint, CGContextRef context) {
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+}
+
+static void _drawStrokePatternTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    cocos2d::Data patternImageData = impl.strokePatternData;
+    float patternImageWidth = impl.strokePatternImageWidth;
+    float patternImageHeight = impl.strokePatternImageHeight;
+    _drawPatternTile(patternImageData,
+                     patternImageWidth,
+                     patternImageHeight,
+                     context);
+
+}
+
+static void _drawFillPatternTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    cocos2d::Data patternImageData = impl.fillPatternData;
+    float patternImageWidth = impl.fillPatternImageWidth;
+    float patternImageHeight = impl.fillPatternImageHeight;
+    _drawPatternTile(patternImageData,
+                     patternImageWidth,
+                     patternImageHeight,
+                     context);
+    
+}
+
+static void _drawFillLinearGradientTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    CGGradientRef gradient = [impl fillLinearGradient];
+    CGPoint startPoint = [impl fillLinearGradientStart];
+    CGPoint endPoint = [impl fillLinearGradientEnd];
+    CGFloat width = [impl width];
+    CGFloat height = [impl height];
+    _drawLinearGradientTile(gradient, width, height, startPoint, endPoint, context);
+}
+
+static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    CGGradientRef gradient = [impl strokeLinearGradient];
+    CGPoint startPoint = [impl strokeLinearGradientStart];
+    CGPoint endPoint = [impl strokeLinearGradientEnd];
+    CGFloat width = [impl width];
+    CGFloat height = [impl height];
+    _drawLinearGradientTile(gradient, width, height, startPoint, endPoint, context);
+}
+
+-(void) applyStylePatternWithIsFillStyle:(BOOL)isFillStyle rule:(NSString *)rule image:(const cocos2d::Data &)image width:(float)imageWidth height:(float)imageHeight {
+    // handle param
+    if (isFillStyle) {
+        [self _clearApplyFillStyle];
+        _fillPatternData = image;
+        _fillPatternImageWidth = imageWidth;
+        _fillPatternImageHeight = imageHeight;
+    } else {
+        [self _clearApplyStrokeStyle];
+        _strokePatternData = image;
+        _strokePatternImageWidth = imageWidth;
+        _strokePatternImageHeight = imageHeight;
+    }
+    
+    
+    float xStep = imageWidth;
+    float yStep = imageHeight;
+    if ([@"repeat-x" isEqualToString:rule]) {
+        yStep = 0;
+    } else if ([@"repeat-y" isEqualToString:rule]) {
+        xStep = 0;
+    } else if ([@"no-repeat" isEqualToString:rule]) {
+        xStep = 0;
+        yStep = 0;
+    }
+    
+    //填充模式回调函数结构体
+    CGPatternCallbacks callback = {
+        0,
+        isFillStyle ? _drawFillPatternTile : _drawStrokePatternTile,
+        NULL
+    };
+    
+    NSColor *colorPattern = [self _generateColorWithCallBack:callback
+                                                       xStep:xStep
+                                                       yStep:yStep
+                                                       width:imageWidth
+                                                      height:imageHeight];
+    if (isFillStyle) {
+        _fillPattern = colorPattern;
+    } else {
+        _strokePattern = colorPattern;
+    }
+}
+
+-(void) applyStyleLinearGradientWithIsFillStyle:(BOOL)isFillStyle x0:(float)x0 y0:(float)y0 x1:(float)x1 y1:(float)y1 pos:(const std::vector<float> &)posVec color:(const std::vector<std::string> &)colorVec {
+    unsigned long size = posVec.size();
+    if (size < 1) {
+        return;
+    }
+    CGFloat positions[size];
+    CGFloat components[size * 4];
+    CSSColorParser::Color color;
+    for (int i = 0; i < size; i++) {
+        positions[i] = posVec[i];
+        color = CSSColorParser::parse(colorVec[i]);
+        components[i * 4] = color.r;
+        components[i * 4 + 1] = color.g;
+        components[i * 4 + 2] = color.b;
+        components[i * 4 + 3] = color.a;
+    }
+    CGColorSpaceRef myColorspace = CGColorSpaceCreateDeviceRGB();
+    CGGradientRef linearGradient = CGGradientCreateWithColorComponents(myColorspace,
+                                                                       components,
+                                                                       positions,
+                                                                       size);
+    CGColorSpaceRelease(myColorspace);
+    
+    CGPatternCallbacks callback = {
+        0,
+        isFillStyle ? _drawFillLinearGradientTile : _drawStrokeLinearGradientTile,
+        NULL
+    };
+    NSColor *colorPattern = [self _generateColorWithCallBack:callback
+                                                       xStep:0
+                                                       yStep:0
+                                                       width:_width
+                                                      height:_height];
+    CGPoint startPoint = CGPointMake(x0, y0);
+    CGPoint endPoint = CGPointMake(x1, y1);
+    if (isFillStyle) {
+        [self _clearApplyFillStyle];
+        _fillLinearGradient = linearGradient;
+        _fillLinearGradientStart = startPoint;
+        _fillLinearGradientEnd = endPoint;
+        _fillPattern = colorPattern;
+    } else {
+        [self _clearApplyStrokeStyle];
+        _strokeLinearGradient = linearGradient;
+        _strokeLinearGradientStart = startPoint;
+        _strokeLinearGradientEnd = endPoint;
+        _strokePattern = colorPattern;
+    }
+}
+
+- (NSColor *) _generateColorWithCallBack:(CGPatternCallbacks)callback xStep:(float)xStep yStep:(float)yStep width:(float)width height:(float)height {
+    CGAffineTransform trans = CGAffineTransformMakeTranslation(0, _height);
+    trans = CGAffineTransformScale(trans, 1.0, -1.0f);
+    CGPatternRef patternRef = CGPatternCreate(self,
+                                              CGRectMake(0, 0, width, height),
+                                              trans,
+                                              xStep,
+                                              yStep,
+                                              kCGPatternTilingNoDistortion,
+                                              YES,
+                                              &callback);
+    CGColorSpaceRef colorSpacePattern = CGColorSpaceCreatePattern(NULL);
+    CGFloat alpha = 1;
+    CGColorRef colorRef = CGColorCreateWithPattern(colorSpacePattern, patternRef, &alpha);
+    NSColor *colorPattern = [NSColor colorWithCGColor:colorRef];
+    CGColorRelease(colorRef);
+    CGColorSpaceRelease(colorSpacePattern);
+    CGPatternRelease(patternRef);
+    return colorPattern;
+}
+
 -(void) _fillImageData:(const cocos2d::Data &)imageData width:(float)imageWidth height:(float)imageHeight offsetX:(float)offsetX offsetY:(float)offsetY {
     // check param
     if (_width < 1.0f || _height < 1.0f) {
@@ -726,6 +1002,9 @@ enum class CanvasTextBaseline {
 
 -(void) _setStrokeSetting {
     NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
+    if (_strokePattern) {
+        color = _strokePattern;
+    }
     [color setStroke];
     [_path setLineWidth: _lineWidth];
     // cap
@@ -762,10 +1041,42 @@ enum class CanvasTextBaseline {
 
 -(void) _setFillSetting {
     NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
+    if (_fillPattern) {
+        color = _fillPattern;
+    }
     [color setFill];
     [self _applyCTM];
 }
 
+-(void) _clearApplyStrokeStyle {
+    // reset pattern
+    _strokePatternData.clear();
+    _strokePatternImageWidth = 0;
+    _strokePatternImageHeight = 0;
+    if (_strokePattern) {
+        _strokePattern = nil;
+    }
+    // reset linear gradient
+    if (_strokeLinearGradient) {
+        CGGradientRelease(_strokeLinearGradient);
+        _strokeLinearGradient = nullptr;
+    }
+}
+
+-(void) _clearApplyFillStyle {
+    // reset pattern
+    _fillPatternData.clear();
+    _fillPatternImageWidth = 0;
+    _fillPatternImageHeight = 0;
+    if (_fillPattern) {
+        _fillPattern = nil;
+    }
+    // reset linear gradient
+    if (_fillLinearGradient) {
+        CGGradientRelease(_fillLinearGradient);
+        _fillLinearGradient = nullptr;
+    }
+}
 -(void) _resetSetting {
     _textAlign = CanvasTextAlign::LEFT;
     _textBaseLine = CanvasTextBaseline::BOTTOM;
@@ -784,6 +1095,8 @@ enum class CanvasTextBaseline {
     _lineDashOffset = 0;
     _lineDashPattern.clear();
     _miterLimit = 10.f;
+    [self _clearApplyStrokeStyle];
+    [self _clearApplyFillStyle];
 }
 
 @end
@@ -1212,7 +1525,7 @@ void CanvasRenderingContext2D::clip(std::string rule) {
 }
 
 void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl applyStyleLinearGradientWithIsFillStyle:isFillStyle x0:x0 y0:y0 x1:x1 y1:y1 pos:pos color:color];
 }
 
 void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
@@ -1220,7 +1533,9 @@ void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, floa
 }
 
 void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl applyStylePatternWithIsFillStyle:isFillStyle
+                                       rule:[NSString stringWithUTF8String:rule.c_str()]
+                                      image:image width:width height:height];
 }
 
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
