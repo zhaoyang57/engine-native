@@ -286,9 +286,13 @@ Application::~Application()
 #endif
 
     cocos2d::network::HttpClient::getInstance()->destroyInstance();
+    _scheduler->removeAllFunctionsToBePerformedInCocosThread();
+    _scheduler->unscheduleAll();
+
     EventDispatcher::destroy();
     se::ScriptEngine::destroyInstance();
-    
+
+    cocos2d::PoolManager::destroyInstance();
     // stop main loop
     [(MainLoop*)_delegate stopMainLoop];
     [(MainLoop*)_delegate release];
