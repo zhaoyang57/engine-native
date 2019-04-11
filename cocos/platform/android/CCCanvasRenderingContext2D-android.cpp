@@ -426,6 +426,9 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasRenderingContext2D::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         _impl->clearRect(x, y, width, height);
+
+        if (_canvasBufferUpdatedCB != nullptr)
+            _canvasBufferUpdatedCB(_impl->getDataRef());
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
