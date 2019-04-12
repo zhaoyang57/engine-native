@@ -89,6 +89,20 @@ enum class CanvasTextBaseline {
     CGGradientRef _strokeLinearGradient;
     CGPoint _strokeLinearGradientStart;
     CGPoint _strokeLinearGradientEnd;
+    CGGradientRef _fillRadialGradient;
+    CGPoint _fillRadialGradientStart;
+    CGPoint _fillRadialGradientEnd;
+    float _fillRadialGradientStartR;
+    float _fillRadialGradientEndR;
+    CGGradientRef _strokeRadialGradient;
+    CGPoint _strokeRadialGradientStart;
+    CGPoint _strokeRadialGradientEnd;
+    float _strokeRadialGradientStratR;
+    float _strokeRadialGradientEndR;
+    NSColor *_shadowColor;
+    float _shadowBlur;
+    float _shadowOffsetX;
+    float _shadowOffsetY;
 }
 
 @property (nonatomic, assign) CGFloat width;
@@ -118,6 +132,19 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CGGradientRef strokeLinearGradient;
 @property (nonatomic, assign) CGPoint strokeLinearGradientStart;
 @property (nonatomic, assign) CGPoint strokeLinearGradientEnd;
+@property (nonatomic, assign) CGGradientRef strokeRadialGradient;
+@property (nonatomic, assign) CGPoint strokeRadialGradientStart;
+@property (nonatomic, assign) CGPoint strokeRadialGradientEnd;
+@property (nonatomic, assign) float strokeRadialGradientStartR;
+@property (nonatomic, assign) float strokeRadialGradientEndR;
+@property (nonatomic, assign) CGGradientRef fillRadialGradient;
+@property (nonatomic, assign) CGPoint fillRadialGradientStart;
+@property (nonatomic, assign) CGPoint fillRadialGradientEnd;
+@property (nonatomic, assign) float fillRadialGradientStartR;
+@property (nonatomic, assign) float fillRadialGradientEndR;
+@property (nonatomic, assign) float shadowBlur;
+@property (nonatomic, assign) float shadowOffsetX;
+@property (nonatomic, assign) float shadowOffsetY;
 
 @end
 
@@ -148,6 +175,19 @@ enum class CanvasTextBaseline {
 @synthesize strokeLinearGradient = _strokeLinearGradient;
 @synthesize strokeLinearGradientStart = _strokeLinearGradientStart;
 @synthesize strokeLinearGradientEnd = _strokeLinearGradientEnd;
+@synthesize strokeRadialGradient = _strokeRadialGradient;
+@synthesize strokeRadialGradientStart = _strokeRadialGradientStart;
+@synthesize strokeRadialGradientEnd = _strokeRadialGradientEnd;
+@synthesize strokeRadialGradientStartR = _strokeRadialGradientStratR;
+@synthesize strokeRadialGradientEndR = _strokeRadialGradientEndR;
+@synthesize fillRadialGradient = _fillRadialGradient;
+@synthesize fillRadialGradientStart = _fillRadialGradientStart;
+@synthesize fillRadialGradientEnd = _fillRadialGradientEnd;
+@synthesize fillRadialGradientStartR = _fillRadialGradientStartR;
+@synthesize fillRadialGradientEndR = _fillRadialGradientEndR;
+@synthesize shadowBlur = _shadowBlur;
+@synthesize shadowOffsetX = _shadowOffsetX;
+@synthesize shadowOffsetY = _shadowOffsetY;
 
 -(id) init {
     if (self = [super init]) {
@@ -421,6 +461,12 @@ enum class CanvasTextBaseline {
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
     CGContextSetTextDrawingMode(_context, kCGTextFill);
 
+    if (_shadowColor) {
+        CGContextSetShadowWithColor(_context,
+                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
+                                    _shadowBlur,
+                                    _shadowColor.CGColor);
+    }
     [self _applyCTM];
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
@@ -468,6 +514,12 @@ enum class CanvasTextBaseline {
 
     CGContextSetTextDrawingMode(_context, kCGTextStroke);
     
+    if (_shadowColor) {
+        CGContextSetShadowWithColor(_context,
+                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
+                                    _shadowBlur,
+                                    _shadowColor.CGColor);
+    }
     [self _applyCTM];
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
@@ -494,6 +546,13 @@ enum class CanvasTextBaseline {
     _strokeStyle.b = b;
     _strokeStyle.a = a;
     [self _clearApplyStrokeStyle];
+}
+
+-(void) setShadowColorWithR:(float)r g:(float)g b:(float)b a:(float)a {
+    _shadowColor = [NSColor colorWithRed:r
+                                   green:g
+                                    blue:b
+                                   alpha:a];
 }
 
 -(const cocos2d::Data&) getDataRef {
@@ -661,6 +720,141 @@ enum class CanvasTextBaseline {
 #endif
 }
 
+-(void) arcWithX:(float)x y:(float)y radius:(float)radius startAngle:(float)startAngle endAngle:(float)endAngle anticlockwise:(BOOL)anticlockwise {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    [_path addArcWithCenter:CGPointMake(x, y)
+                     radius:radius
+                 startAngle:startAngle
+                   endAngle:endAngle
+                  clockwise:!anticlockwise];
+#endif
+}
+
+-(void) arcToX1:(float)x1 y1:(float)y1 x2:(float)x2 y2:(float)y2 radius:(float)radius {
+    if ([_path isEmpty]) {
+        return;
+    }
+    CGPoint currentPoint = [_path currentPoint];
+    float a1 = currentPoint.y - y1;
+    float b1 = currentPoint.x - x1;
+    float a2 = y2 - y1;
+    float b2 = x2 - x1;
+    float mm = fabsf(a1 * b2 - b1 * a2);
+    if (mm < FLT_MIN || radius == 0) {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+        [_path addLineToPoint:NSMakePoint(x1, y1)];
+#endif
+        return;
+    }
+    
+    float dd = a1 * a1 + b1 * b1;
+    float cc = a2 * a2 + b2 * b2;
+    float tt = a1 * a2 + b1 * b2;
+    float k1 = (float) (radius * sqrt(dd) / mm);
+    float k2 = (float) (radius * sqrt(cc) / mm);
+    float j1 = k1 * tt / dd;
+    float j2 = k2 * tt / cc;
+    float cx = k1 * b2 + k2 * b1;
+    float cy = k1 * a2 + k2 * a1;
+    float px = b1 * (k2 + j1);
+    float py = a1 * (k2 + j1);
+    float qx = b2 * (k1 + j2);
+    float qy = a2 * (k1 + j2);
+    float startAngle = (float) atan2(py - cy, px - cx);
+    float endAngle = (float) atan2(qy - cy, qx - cx);
+    
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    [_path addArcWithCenter:CGPointMake(cx + x1, cy + y1)
+                     radius:radius
+                 startAngle:startAngle
+                   endAngle:endAngle
+                  clockwise:!(b1 * a2 > b2 * a1)];
+#endif
+}
+
+static void _readEllipsePointFromBezier(void *info, const CGPathElement *element){
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    UIBezierPath *bezierPath = (UIBezierPath *)info;
+    CGPathElementType type = element->type;
+    CGPoint *points = element->points;
+    switch (type) {
+        case kCGPathElementMoveToPoint:
+        {
+            CGPoint pos = points[0];
+            if ([bezierPath isEmpty]) {
+                [bezierPath moveToPoint:pos];
+            } else {
+                [bezierPath addLineToPoint:pos];
+            }
+        }
+            break;
+        case kCGPathElementAddLineToPoint:
+        {
+            CGPoint pos = points[0];
+            [bezierPath addLineToPoint:pos];
+        }
+            break;
+        case kCGPathElementAddQuadCurveToPoint:
+        {
+            CGPoint cp = points[0];
+            CGPoint pos = points[1];
+            [bezierPath addQuadCurveToPoint:pos controlPoint:cp];
+        }
+            break;
+        case kCGPathElementAddCurveToPoint:
+        {
+            CGPoint cp1 = points[0];
+            CGPoint cp2 = points[1];
+            CGPoint pos = points[2];
+            [bezierPath addCurveToPoint:pos controlPoint1:cp1 controlPoint2:cp2];
+        }
+            break;
+        case kCGPathElementCloseSubpath:
+        {
+            [bezierPath closePath];
+        }
+            break;
+            
+        default:
+            break;
+    }
+#endif
+}
+
+-(void) ellipseWithX:(float)x y:(float)y radiusX:(float)radiusX radiusY:(float)radiusY rotation:(float)rotation startAngle:(float)startAngle endAngle:(float)endAngle anticlockwise:(BOOL)anticlockwise {
+    if (!anticlockwise && endAngle - startAngle >= 2 * M_PI) {
+        endAngle = 2 * M_PI - startAngle;
+    } else if (anticlockwise && startAngle - endAngle >= 2 * M_PI) {
+        startAngle = 2 * M_PI - endAngle;
+    }
+    float scaleX = radiusX / radiusY;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    UIBezierPath *arcPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(x, y)
+                                                           radius:radiusY
+                                                       startAngle:startAngle
+                                                         endAngle:endAngle
+                                                        clockwise:!anticlockwise];
+    // translate
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(-x, -y);
+    [arcPath applyTransform:transform];
+    // scale
+    transform = CGAffineTransformMakeScale(scaleX, 1.0);
+    [arcPath applyTransform:transform];
+    // rotation
+    transform = CGAffineTransformMakeRotation(rotation);
+    [arcPath applyTransform:transform];
+    // translate
+    transform = CGAffineTransformMakeTranslation(x, y);
+    [arcPath applyTransform:transform];
+    CGPathApply(arcPath.CGPath, (__bridge void *)_path, _readEllipsePointFromBezier);
+#endif
+}
+
 -(void) setLineCap:(NSString *)lineCap {
     _lineCap = lineCap;
 }
@@ -779,6 +973,16 @@ static void _drawLinearGradientTile(CGGradientRef gradient, float width, float h
     CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
 }
 
+static void _drawRadialGradientTile(CGGradientRef gradient, float width, float height, CGPoint startPoint, float startR, CGPoint endPoint, float endR, CGContextRef context) {
+    CGContextDrawRadialGradient (context,
+                                 gradient,
+                                 startPoint,
+                                 startR,
+                                 endPoint,
+                                 endR,
+                                 kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+}
+
 static void _drawStrokePatternTile(void *info, CGContextRef context) {
     CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
     if (!impl) {
@@ -833,6 +1037,50 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
     CGFloat width = [impl width];
     CGFloat height = [impl height];
     _drawLinearGradientTile(gradient, width, height, startPoint, endPoint, context);
+}
+
+static void _drawFillRadialGradientTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    CGGradientRef gradient = [impl fillRadialGradient];
+    CGPoint startPoint = [impl fillRadialGradientStart];
+    float startR = [impl fillRadialGradientStartR];
+    CGPoint endPoint = [impl fillRadialGradientEnd];
+    float endR = [impl fillRadialGradientEndR];
+    CGFloat width = [impl width];
+    CGFloat height = [impl height];
+    _drawRadialGradientTile(gradient,
+                            width,
+                            height,
+                            startPoint,
+                            startR,
+                            endPoint,
+                            endR,
+                            context);
+}
+
+static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
+    CanvasRenderingContext2DImpl *impl = (CanvasRenderingContext2DImpl *)info;
+    if (!impl) {
+        return;
+    }
+    CGGradientRef gradient = [impl strokeRadialGradient];
+    CGPoint startPoint = [impl strokeRadialGradientStart];
+    float startR = [impl strokeRadialGradientStartR];
+    CGPoint endPoint = [impl strokeRadialGradientEnd];
+    float endR = [impl strokeRadialGradientEndR];
+    CGFloat width = [impl width];
+    CGFloat height = [impl height];
+    _drawRadialGradientTile(gradient,
+                            width,
+                            height,
+                            startPoint,
+                            startR,
+                            endPoint,
+                            endR,
+                            context);
 }
 
 -(void) applyStylePatternWithIsFillStyle:(BOOL)isFillStyle rule:(NSString *)rule image:(const cocos2d::Data &)image width:(float)imageWidth height:(float)imageHeight {
@@ -930,7 +1178,61 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
     }
 }
 
-- (NSColor *) _generateColorWithCallBack:(CGPatternCallbacks)callback xStep:(float)xStep yStep:(float)yStep width:(float)width height:(float)height {
+-(void) applyStyleRadialGradientWithIsFillStyle:(BOOL)isFillStyle x0:(float)x0 y0:(float)y0 r0:(float)r0 x1:(float)x1 y1:(float)y1 r1:(float)r1 pos:(const std::vector<float> &)posVec color:(const std::vector<std::string> &)colorVec {
+    unsigned long size = posVec.size();
+    if (size < 1) {
+        return;
+    }
+    CGFloat positions[size];
+    CGFloat components[size * 4];
+    CSSColorParser::Color color;
+    for (int i = 0; i < size; i++) {
+        positions[i] = posVec[i];
+        color = CSSColorParser::parse(colorVec[i]);
+        components[i * 4] = color.r;
+        components[i * 4 + 1] = color.g;
+        components[i * 4 + 2] = color.b;
+        components[i * 4 + 3] = color.a;
+    }
+    CGColorSpaceRef myColorspace = CGColorSpaceCreateDeviceRGB();
+    CGGradientRef gradient = CGGradientCreateWithColorComponents(myColorspace,
+                                                                       components,
+                                                                       positions,
+                                                                       size);
+    CGColorSpaceRelease(myColorspace);
+    
+    CGPatternCallbacks callback = {
+        0,
+        isFillStyle ? _drawFillRadialGradientTile : _drawStrokeRadialGradientTile,
+        NULL
+    };
+    NSColor *colorPattern = [self _generateColorWithCallBack:callback
+                                                       xStep:0
+                                                       yStep:0
+                                                       width:_width
+                                                      height:_height];
+    CGPoint startPoint = CGPointMake(x0, y0);
+    CGPoint endPoint = CGPointMake(x1, y1);
+    if (isFillStyle) {
+        [self _clearApplyFillStyle];
+        _fillRadialGradient = gradient;
+        _fillRadialGradientStart = startPoint;
+        _fillRadialGradientStartR = r0;
+        _fillRadialGradientEnd = endPoint;
+        _fillRadialGradientEndR = r1;
+        _fillPattern = colorPattern;
+    }else {
+        [self _clearApplyStrokeStyle];
+        _strokeRadialGradient = gradient;
+        _strokeRadialGradientStart = startPoint;
+        _strokeRadialGradientStratR = r0;
+        _strokeRadialGradientEnd = endPoint;
+        _strokeRadialGradientEndR = r1;
+        _strokePattern = colorPattern;
+    }
+}
+
+-(NSColor *) _generateColorWithCallBack:(CGPatternCallbacks)callback xStep:(float)xStep yStep:(float)yStep width:(float)width height:(float)height {
     CGAffineTransform trans = CGAffineTransformMakeTranslation(0, _height);
     trans = CGAffineTransformScale(trans, 1.0, -1.0f);
     CGPatternRef patternRef = CGPatternCreate(self,
@@ -1007,6 +1309,13 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
     }
     [color setStroke];
     [_path setLineWidth: _lineWidth];
+    // shadow
+    if (_shadowColor) {
+        CGContextSetShadowWithColor(_context,
+                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
+                                    _shadowBlur,
+                                    _shadowColor.CGColor);
+    }
     // cap
     if ([@"square" isEqualToString:_lineCap]) {
         [_path setLineCapStyle:NSSquareLineCapStyle];
@@ -1045,6 +1354,12 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
         color = _fillPattern;
     }
     [color setFill];
+    if (_shadowColor) {
+        CGContextSetShadowWithColor(_context,
+                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
+                                    _shadowBlur,
+                                    _shadowColor.CGColor);
+    }
     [self _applyCTM];
 }
 
@@ -1061,6 +1376,11 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
         CGGradientRelease(_strokeLinearGradient);
         _strokeLinearGradient = nullptr;
     }
+    // reset radial gradient
+    if (_strokeRadialGradient) {
+        CGGradientRelease(_strokeRadialGradient);
+        _strokeRadialGradient = nullptr;
+    }
 }
 
 -(void) _clearApplyFillStyle {
@@ -1075,6 +1395,11 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
     if (_fillLinearGradient) {
         CGGradientRelease(_fillLinearGradient);
         _fillLinearGradient = nullptr;
+    }
+    // reset radial gradient
+    if (_fillRadialGradient) {
+        CGGradientRelease(_fillRadialGradient);
+        _fillRadialGradient = nullptr;
     }
 }
 -(void) _resetSetting {
@@ -1252,12 +1577,21 @@ void CanvasRenderingContext2D::bezierCurveTo(float x1, float y1, float x2, float
 
 void CanvasRenderingContext2D::arc(float x1, float y1, float radius, float startAngle, float endAngle, bool anticlockwise)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl arcWithX:x1
+                  y:y1
+             radius:radius
+         startAngle:startAngle
+           endAngle:endAngle
+      anticlockwise:anticlockwise];
 }
 
 void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, float radius)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl arcToX1:x1
+                y1:y1
+                x2:x2
+                y2:y2
+            radius:radius];
 }
 
 void CanvasRenderingContext2D::stroke()
@@ -1498,26 +1832,39 @@ void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, 
 
 void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    CSSColorParser::Color color = CSSColorParser::parse(shadowColor);
+    _shadowColor = shadowColor;
+    [_impl setShadowColorWithR:color.r/255.0
+                             g:color.g/255.0
+                             b:color.b/255.0
+                             a:color.a];
 }
 
 void CanvasRenderingContext2D::set_shadowBlurInternal(float blur)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _shadowBlurInternal = blur;
+    [_impl setShadowBlur:blur*0.5];
 }
 
 void CanvasRenderingContext2D::set_shadowOffsetXInternal(float offsetX)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _shadowOffsetXInternal = offsetX;
+    [_impl setShadowOffsetX:offsetX];
 }
 
 void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    _shadowOffsetYInternal = offsetY;
+    [_impl setShadowOffsetY:-offsetY];
 }
 
 void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl ellipseWithX:x y:y radiusX:radiusX
+                radiusY:radiusY
+               rotation:rotation
+             startAngle:startAngle
+               endAngle:endAngle
+          anticlockwise:antiClockWise];
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
@@ -1525,17 +1872,33 @@ void CanvasRenderingContext2D::clip(std::string rule) {
 }
 
 void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    [_impl applyStyleLinearGradientWithIsFillStyle:isFillStyle x0:x0 y0:y0 x1:x1 y1:y1 pos:pos color:color];
+    [_impl applyStyleLinearGradientWithIsFillStyle:isFillStyle
+                                                x0:x0
+                                                y0:y0
+                                                x1:x1
+                                                y1:y1
+                                               pos:pos
+                                             color:color];
 }
 
 void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl applyStyleRadialGradientWithIsFillStyle:isFillStyle
+                                                x0:x0
+                                                y0:y0
+                                                r0:r0
+                                                x1:x1
+                                                y1:y1
+                                                r1:r1
+                                               pos:pos
+                                             color:color];
 }
 
 void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
     [_impl applyStylePatternWithIsFillStyle:isFillStyle
                                        rule:[NSString stringWithUTF8String:rule.c_str()]
-                                      image:image width:width height:height];
+                                      image:image
+                                      width:width
+                                     height:height];
 }
 
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
