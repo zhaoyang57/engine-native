@@ -59,12 +59,13 @@ enum class CanvasTextBaseline {
     NSGraphicsContext* _oldGraphicsContext;
 #else
     CGContextRef _oldContext;
+    CGAffineTransform _transform;
+    CGBlendMode _blendMode;
 #endif
     
     CGColorSpaceRef _colorSpace;
     cocos2d::Data _imageData;
     NSBezierPath* _path;
-    CGAffineTransform _transform;
 
     CanvasTextAlign _textAlign;
     CanvasTextBaseline _textBaseLine;
@@ -103,6 +104,7 @@ enum class CanvasTextBaseline {
     float _shadowBlur;
     float _shadowOffsetX;
     float _shadowOffsetY;
+    float _globalAlpha;
 }
 
 @property (nonatomic, assign) CGFloat width;
@@ -115,7 +117,6 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CanvasTextAlign textAlign;
 @property (nonatomic, assign) CanvasTextBaseline textBaseLine;
 @property (nonatomic, assign) float lineWidth;
-@property (nonatomic, assign) CGAffineTransform transform;
 @property (nonatomic, assign) float lineDashOffset;
 @property (nonatomic, assign) float miterLimit;
 @property (nonatomic, assign) cocos2d::Data strokePatternData;
@@ -145,6 +146,7 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) float shadowBlur;
 @property (nonatomic, assign) float shadowOffsetX;
 @property (nonatomic, assign) float shadowOffsetY;
+@property (nonatomic, assign) float globalAlpha;
 
 @end
 
@@ -158,7 +160,6 @@ enum class CanvasTextBaseline {
 @synthesize textAlign = _textAlign;
 @synthesize textBaseLine = _textBaseLine;
 @synthesize lineWidth = _lineWidth;
-@synthesize transform = _transform;
 @synthesize lineDashOffset = _lineDashOffset;
 @synthesize miterLimit = _miterLimit;
 @synthesize strokePatternData = _strokePatternData;
@@ -188,6 +189,7 @@ enum class CanvasTextBaseline {
 @synthesize shadowBlur = _shadowBlur;
 @synthesize shadowOffsetX = _shadowOffsetX;
 @synthesize shadowOffsetY = _shadowOffsetY;
+@synthesize globalAlpha = _globalAlpha;
 
 -(id) init {
     if (self = [super init]) {
@@ -468,6 +470,7 @@ enum class CanvasTextBaseline {
                                     _shadowColor.CGColor);
     }
     [self _applyCTM];
+    CGContextSetAlpha(_context, _globalAlpha);
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
                                                                                attributes:_tokenAttributesDict] autorelease];
@@ -494,10 +497,10 @@ enum class CanvasTextBaseline {
     [_tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
     [_tokenAttributesDict setObject:[NSNumber numberWithFloat: _lineWidth * 2]
                             forKey:NSStrokeWidthAttributeName];
-    NSColor *textColor = [NSColor colorWithRed:_fillStyle.r
-                                         green:_fillStyle.g
-                                          blue:_fillStyle.b
-                                         alpha:_fillStyle.a];
+    NSColor *textColor = [NSColor colorWithRed:_strokeStyle.r
+                                         green:_strokeStyle.g
+                                          blue:_strokeStyle.b
+                                         alpha:_strokeStyle.a];
     if (_strokePattern) {
         textColor = _strokePattern;
     }
@@ -521,6 +524,7 @@ enum class CanvasTextBaseline {
                                     _shadowColor.CGColor);
     }
     [self _applyCTM];
+    CGContextSetAlpha(_context, _globalAlpha);
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
                                                                                attributes:_tokenAttributesDict] autorelease];
@@ -616,9 +620,23 @@ enum class CanvasTextBaseline {
 
     if (rect.size.width < 1 || rect.size.height < 1)
         return;
-    //REFINE:
-    //    assert(rect.origin.x == 0 && rect.origin.y == 0);
-    memset((void*)_imageData.getBytes(), 0x00, _imageData.getSize());
+    CGContextClearRect(_context, rect);
+}
+
+-(void) clip:(NSString *)rule {
+    BOOL odd = NO;
+    if ([@"evenodd" isEqualToString:rule]) {
+        odd = YES;
+    }
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    CGContextAddPath(_context, [_path CGPath]);
+    if (odd) {
+        CGContextEOClip(_context);
+    } else {
+        CGContextClip(_context);
+    }
+#endif
 }
 
 -(void) fillRect:(CGRect) rect {
@@ -855,6 +873,39 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
 #endif
 }
 
+-(void) setGlobalCompositeOperation:(NSString *)compositeOperation {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _blendMode = kCGBlendModeNormal;
+    if ([@"xor" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeXOR;
+    } else if ([@"overlay" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeOverlay;
+    } else if ([@"darken" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDarken;
+    } else if ([@"lighten" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeLighten;
+    } else if ([@"screen" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeScreen;
+    } else if ([@"destination-over" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDestinationOver;
+    } else if ([@"destination-in" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDestinationIn;
+    } else if ([@"destination-out" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDestinationOut;
+    } else if ([@"destination-atop" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDestinationAtop;
+    } else if ([@"source-in" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeSourceIn;
+    } else if ([@"source-out" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeSourceOut;
+    } else if ([@"source-atop" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeSourceAtop;
+    }
+    CGContextSetBlendMode(_context, _blendMode);
+#endif
+}
+
 -(void) setLineCap:(NSString *)lineCap {
     _lineCap = lineCap;
 }
@@ -914,6 +965,7 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
                                       kCGRenderingIntentDefault);
     // the transform should be applied at first
     [self _applyCTM];
+    CGContextSetAlpha(_context, _globalAlpha);
     // image is upside-down
     CGContextScaleCTM(_context, 1.0f, -1.0f);
     CGContextTranslateCTM(_context, 0.0f, -_height);
@@ -1284,13 +1336,13 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     
     uint8_t *fillColors = imageData.getBytes();
     uint8_t *imageDataTemp = _imageData.getBytes();
-    uint32_t yBegin = _height - (offsetY + imageHeight);
-    uint32_t yEnd = _height - offsetY;
+    uint32_t yBegin = offsetY;
+    uint32_t yEnd = offsetY + imageHeight;
     uint32_t bytesPerRow = imageWidth * 4;
     uint32_t index;
     for (uint32_t yIndex = yBegin; yIndex < yEnd; ++yIndex)
     {
-        index = (_width * yIndex) * 4;
+        index = (_width * (yIndex - offsetY)) * 4;
         memcpy(imageDataTemp + yIndex * bytesPerRow, fillColors + index, bytesPerRow);
     }
 }
@@ -1346,6 +1398,7 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     // miterLimit
     [_path setMiterLimit:_miterLimit];
     [self _applyCTM];
+    CGContextSetAlpha(_context, _globalAlpha);
 }
 
 -(void) _setFillSetting {
@@ -1361,6 +1414,7 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
                                     _shadowColor.CGColor);
     }
     [self _applyCTM];
+    CGContextSetAlpha(_context, _globalAlpha);
 }
 
 -(void) _clearApplyStrokeStyle {
@@ -1416,18 +1470,25 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     _strokeStyle.g = 0;
     _strokeStyle.b = 0;
     _strokeStyle.a = 1;
-    _transform = CGAffineTransformIdentity;
     _lineDashOffset = 0;
     _lineDashPattern.clear();
     _miterLimit = 10.f;
     [self _clearApplyStrokeStyle];
     [self _clearApplyFillStyle];
+    _globalAlpha = 1.0f;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+    _transform = CGAffineTransformIdentity;
+    _blendMode = kCGBlendModeNormal;
+#endif
 }
 
 @end
 
 NS_CC_BEGIN
 // CanvasRenderingContext2D
+
+static std::map<std::string, bool> s_globalCompositeOperationMap;
 
 CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
 : __width(width)
@@ -1437,6 +1498,20 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
     _impl = [[CanvasRenderingContext2DImpl alloc] init];
     recreateBufferIfNeeded();
+    
+    s_globalCompositeOperationMap["source-over"] = true;
+    s_globalCompositeOperationMap["source-in"] = true;
+    s_globalCompositeOperationMap["source-out"] = true;
+    s_globalCompositeOperationMap["source-atop"] = true;
+    s_globalCompositeOperationMap["destination-over"] = true;
+    s_globalCompositeOperationMap["destination-in"] = true;
+    s_globalCompositeOperationMap["destination-out"] = true;
+    s_globalCompositeOperationMap["destination-atop"] = true;
+    s_globalCompositeOperationMap["xor"] = true;
+    s_globalCompositeOperationMap["screen"] = true;
+    s_globalCompositeOperationMap["overlay"] = true;
+    s_globalCompositeOperationMap["darken"] = true;
+    s_globalCompositeOperationMap["lighten"] = true;
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
@@ -1753,7 +1828,11 @@ void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& stroke
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if(s_globalCompositeOperationMap.find(globalCompositeOperation) == s_globalCompositeOperationMap.end()) {
+        return;
+    }
+    this->_globalCompositeOperation = globalCompositeOperation;
+    [_impl setGlobalCompositeOperation:[NSString stringWithUTF8String:globalCompositeOperation.c_str()]];
 }
 
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
@@ -1868,7 +1947,7 @@ void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float ra
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    [_impl clip:[NSString stringWithUTF8String:rule.c_str()]];
 }
 
 void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
@@ -1902,7 +1981,11 @@ void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string
 }
 
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    if(alpha < 0 || alpha > 1) {
+        return;
+    }
+    this->_globalAlphaInternal = alpha;
+    [_impl setGlobalAlpha:alpha];
 }
 
 NS_CC_END
