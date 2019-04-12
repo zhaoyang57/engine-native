@@ -901,6 +901,35 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
         _blendMode = kCGBlendModeSourceOut;
     } else if ([@"source-atop" isEqualToString:compositeOperation]) {
         _blendMode = kCGBlendModeSourceAtop;
+    } else if ([@"lighter" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModePlusLighter;
+    } else if ([@"copy" isEqualToString:compositeOperation]) {
+        // the performance is not the same as web
+        _blendMode = kCGBlendModeCopy;
+    } else if ([@"multiply" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeMultiply;
+    } else if ([@"color-dodge" isEqualToString:compositeOperation]) {
+        // the performance is not the same as web
+        _blendMode = kCGBlendModeColorDodge;
+    } else if ([@"color-burn" isEqualToString:compositeOperation]) {
+        // the performance is not the same as web
+        _blendMode = kCGBlendModeColorBurn;
+    } else if ([@"hard-light" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeHardLight;
+    } else if ([@"soft-light" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeSoftLight;
+    } else if ([@"difference" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeDifference;
+    } else if ([@"exclusion" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeExclusion;
+    } else if ([@"hue" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeHue;
+    } else if ([@"saturation" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeSaturation;
+    } else if ([@"color" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeColor;
+    } else if ([@"luminosity" isEqualToString:compositeOperation]) {
+        _blendMode = kCGBlendModeLuminosity;
     }
     CGContextSetBlendMode(_context, _blendMode);
 #endif
@@ -1507,11 +1536,24 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
     s_globalCompositeOperationMap["destination-in"] = true;
     s_globalCompositeOperationMap["destination-out"] = true;
     s_globalCompositeOperationMap["destination-atop"] = true;
+    s_globalCompositeOperationMap["lighter"] = true;
+    s_globalCompositeOperationMap["copy"] = true;
     s_globalCompositeOperationMap["xor"] = true;
+    s_globalCompositeOperationMap["multiply"] = true;
     s_globalCompositeOperationMap["screen"] = true;
     s_globalCompositeOperationMap["overlay"] = true;
     s_globalCompositeOperationMap["darken"] = true;
     s_globalCompositeOperationMap["lighten"] = true;
+    s_globalCompositeOperationMap["color-dodge"] = true;
+    s_globalCompositeOperationMap["color-burn"] = true;
+    s_globalCompositeOperationMap["hard-light"] = true;
+    s_globalCompositeOperationMap["soft-light"] = true;
+    s_globalCompositeOperationMap["difference"] = true;
+    s_globalCompositeOperationMap["exclusion"] = true;
+    s_globalCompositeOperationMap["hue"] = true;
+    s_globalCompositeOperationMap["saturation"] = true;
+    s_globalCompositeOperationMap["color"] = true;
+    s_globalCompositeOperationMap["luminosity"] = true;
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
