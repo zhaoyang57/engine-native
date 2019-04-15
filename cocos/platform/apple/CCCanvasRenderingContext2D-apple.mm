@@ -43,13 +43,217 @@ enum class CanvasTextBaseline {
     BOTTOM
 };
 
+@interface CanvasRenderingContext2DImplDrawingState : NSObject {
+@public
+    cocos2d::Color4F _fillStyle;
+    cocos2d::Color4F _strokeStyle;
+    std::vector<float> _lineDashPattern;
+    cocos2d::Data _strokePatternData;
+    cocos2d::Data _fillPatternData;
+}
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+// The current transformation matrix.
+@property (nonatomic, assign) CGAffineTransform transform;
+// filter
+@property (nonatomic, assign) CGBlendMode blendMode;
+#endif
+// stroke pattern
+@property (nonatomic, assign) float strokePatternImageWidth;
+@property (nonatomic, assign) float strokePatternImageHeight;
+@property (nonatomic, strong) NSColor *strokePattern;
+// stroke linear gradient
+@property (nonatomic, assign) CGGradientRef strokeLinearGradient;
+@property (nonatomic, assign) CGPoint strokeLinearGradientStart;
+@property (nonatomic, assign) CGPoint strokeLinearGradientEnd;
+// stroke radial gradient
+@property (nonatomic, assign) CGGradientRef strokeRadialGradient;
+@property (nonatomic, assign) CGPoint strokeRadialGradientStart;
+@property (nonatomic, assign) CGPoint strokeRadialGradientEnd;
+@property (nonatomic, assign) float strokeRadialGradientStartR;
+@property (nonatomic, assign) float strokeRadialGradientEndR;
+// fill pattern
+@property (nonatomic, assign) float fillPatternImageWidth;
+@property (nonatomic, assign) float fillPatternImageHeight;
+@property (nonatomic, strong) NSColor *fillPattern;
+// fill linear gradient
+@property (nonatomic, assign) CGGradientRef fillLinearGradient;
+@property (nonatomic, assign) CGPoint fillLinearGradientStart;
+@property (nonatomic, assign) CGPoint fillLinearGradientEnd;
+// fill raidal gradient
+@property (nonatomic, assign) CGGradientRef fillRadialGradient;
+@property (nonatomic, assign) CGPoint fillRadialGradientStart;
+@property (nonatomic, assign) CGPoint fillRadialGradientEnd;
+@property (nonatomic, assign) float fillRadialGradientStartR;
+@property (nonatomic, assign) float fillRadialGradientEndR;
+// global alpha
+@property (nonatomic, assign) float globalAlpha;
+// line width
+@property (nonatomic, assign) float lineWidth;
+// line cap
+@property (nonatomic, copy) NSString* lineCap;
+// line join
+@property (nonatomic, copy) NSString* lineJoin;
+// mitter limit
+@property (nonatomic, assign) float miterLimit;
+// line dash offset
+@property (nonatomic, assign) float lineDashOffset;
+// shadow
+@property (nonatomic, strong) NSColor *shadowColor;
+@property (nonatomic, assign) float shadowBlur;
+@property (nonatomic, assign) float shadowOffsetX;
+@property (nonatomic, assign) float shadowOffsetY;
+// font
+@property (nonatomic, strong) NSFont *font;
+@property (nonatomic, strong) NSMutableDictionary *tokenAttributesDict;
+@property (nonatomic, copy) NSString *fontName;
+@property (nonatomic, assign) CGFloat fontSize;
+@property (nonatomic, assign) bool bold;
+@property (nonatomic, assign) CanvasTextAlign textAlign;
+@property (nonatomic, assign) CanvasTextBaseline textBaseLine;
+@end
+
+@implementation CanvasRenderingContext2DImplDrawingState
+
+-(instancetype) initWithState:(CanvasRenderingContext2DImplDrawingState *)state
+{
+    self = [super init];
+    if (self) {
+        _fillStyle = state->_fillStyle;
+        _strokeStyle = state->_strokeStyle;
+        _lineDashPattern = state->_lineDashPattern;
+        _strokePatternData = state->_strokePatternData;
+        _fillPatternData = state->_fillPatternData;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#else
+        _transform = state.transform;
+        _blendMode = state.blendMode;
+#endif
+        _strokePatternImageWidth = state.strokePatternImageWidth;
+        _strokePatternImageHeight = state.strokePatternImageHeight;
+        if (state.strokePattern) {
+            _strokePattern = state.strokePattern;
+            [_strokePattern retain];
+        }
+        _strokeLinearGradient = state.strokeLinearGradient;
+        CGGradientRetain(_strokeLinearGradient);
+        _strokeLinearGradientStart = state.strokeLinearGradientStart;
+        _strokeLinearGradientEnd = state.strokeLinearGradientEnd;
+        _strokeRadialGradient = state.strokeRadialGradient;
+        CGGradientRetain(_strokeRadialGradient);
+        _strokeRadialGradientStart = state.strokeRadialGradientStart;
+        _strokeRadialGradientEnd = state.strokeRadialGradientEnd;
+        _strokeRadialGradientStartR = state.strokeRadialGradientStartR;
+        _strokeRadialGradientEndR = state.strokeRadialGradientEndR;
+        _fillPatternImageWidth = state.fillPatternImageWidth;
+        _fillPatternImageHeight = state.fillPatternImageHeight;
+        if (state.fillPattern) {
+            _fillPattern = state.fillPattern;
+            [_fillPattern retain];
+        }
+        _fillLinearGradient = state.fillLinearGradient;
+        CGGradientRetain(_fillLinearGradient);
+        _fillLinearGradientStart = state.fillLinearGradientStart;
+        _fillLinearGradientEnd = state.fillLinearGradientEnd;
+        _fillRadialGradient = state.fillRadialGradient;
+        CGGradientRetain(_fillRadialGradient);
+        _fillRadialGradientStart = state.fillRadialGradientStart;
+        _fillRadialGradientEnd = state.fillRadialGradientEnd;
+        _fillRadialGradientStartR = state.fillRadialGradientStartR;
+        _fillRadialGradientEndR = state.fillRadialGradientEndR;
+        _globalAlpha = state.globalAlpha;
+        _lineWidth = state.lineWidth;
+        _lineCap = state.lineCap;
+        _lineJoin = state.lineJoin;
+        _miterLimit = state.miterLimit;
+        _lineDashOffset = state.lineDashOffset;
+        if (state.shadowColor) {
+            _shadowColor = state.shadowColor;
+            [_shadowColor retain];
+        }
+        _shadowBlur = state.shadowBlur;
+        _shadowOffsetX = state.shadowOffsetX;
+        _shadowOffsetY = state.shadowOffsetY;
+        if (state.font) {
+            _font = state.font;
+            [_font retain];
+        }
+        if (state.tokenAttributesDict) {
+            _tokenAttributesDict = [state.tokenAttributesDict mutableCopy];
+        }
+        _fontName = state.fontName;
+        _fontSize = state.fontSize;
+        _bold = state.bold;
+        _textAlign = state.textAlign;
+        _textBaseLine = state.textBaseLine;
+    }
+    return self;
+}
+
+-(void) dealloc {
+    if (_shadowColor) {
+        [_shadowColor release];
+        _shadowColor = nil;
+    }
+    if (_font) {
+        [_font release];
+        _font = nil;
+    }
+    if (_tokenAttributesDict) {
+        [_tokenAttributesDict release];
+        _tokenAttributesDict = nil;
+    }
+    _fontName = nil;
+    _lineDashPattern.clear();
+    [self clearApplyStrokeStyle];
+    [self clearApplyFillStyle];
+    [super dealloc];
+}
+
+-(void) clearApplyStrokeStyle {
+    // reset pattern
+    _strokePatternData.clear();
+    _strokePatternImageWidth = 0;
+    _strokePatternImageHeight = 0;
+    if (_strokePattern) {
+        [_strokePattern release];
+        _strokePattern = nil;
+    }
+    // reset linear gradient
+    if (_strokeLinearGradient) {
+        CGGradientRelease(_strokeLinearGradient);
+        _strokeLinearGradient = nullptr;
+    }
+    // reset radial gradient
+    if (_strokeRadialGradient) {
+        CGGradientRelease(_strokeRadialGradient);
+        _strokeRadialGradient = nullptr;
+    }
+}
+
+-(void) clearApplyFillStyle {
+    // reset pattern
+    _fillPatternData.clear();
+    _fillPatternImageWidth = 0;
+    _fillPatternImageHeight = 0;
+    if (_fillPattern) {
+        [_fillPattern release];
+        _fillPattern = nil;
+    }
+    // reset linear gradient
+    if (_fillLinearGradient) {
+        CGGradientRelease(_fillLinearGradient);
+        _fillLinearGradient = nullptr;
+    }
+    // reset radial gradient
+    if (_fillRadialGradient) {
+        CGGradientRelease(_fillRadialGradient);
+        _fillRadialGradient = nullptr;
+    }
+}
+@end
+
 @interface CanvasRenderingContext2DImpl : NSObject {
-    NSFont* _font;
-    NSMutableDictionary* _tokenAttributesDict;
-    NSString* _fontName;
-    NSString* _lineCap;
-    NSString* _lineJoin;
-    CGFloat _fontSize;
     CGFloat _width;
     CGFloat _height;
     CGContextRef _context;
@@ -59,94 +263,17 @@ enum class CanvasTextBaseline {
     NSGraphicsContext* _oldGraphicsContext;
 #else
     CGContextRef _oldContext;
-    CGAffineTransform _transform;
-    CGBlendMode _blendMode;
 #endif
     
     CGColorSpaceRef _colorSpace;
     cocos2d::Data _imageData;
     NSBezierPath* _path;
-
-    CanvasTextAlign _textAlign;
-    CanvasTextBaseline _textBaseLine;
-    cocos2d::Color4F _fillStyle;
-    cocos2d::Color4F _strokeStyle;
-    float _lineWidth;
-    bool _bold;
-    std::vector<float> _lineDashPattern;
-    float _lineDashOffset;
-    float _miterLimit;
-    cocos2d::Data _strokePatternData;
-    float _strokePatternImageWidth;
-    float _strokePatternImageHeight;
-    NSColor *_strokePattern;
-    cocos2d::Data _fillPatternData;
-    float _fillPatternImageWidth;
-    float _fillPatternImageHeight;
-    NSColor *_fillPattern;
-    CGGradientRef _fillLinearGradient;
-    CGPoint _fillLinearGradientStart;
-    CGPoint _fillLinearGradientEnd;
-    CGGradientRef _strokeLinearGradient;
-    CGPoint _strokeLinearGradientStart;
-    CGPoint _strokeLinearGradientEnd;
-    CGGradientRef _fillRadialGradient;
-    CGPoint _fillRadialGradientStart;
-    CGPoint _fillRadialGradientEnd;
-    float _fillRadialGradientStartR;
-    float _fillRadialGradientEndR;
-    CGGradientRef _strokeRadialGradient;
-    CGPoint _strokeRadialGradientStart;
-    CGPoint _strokeRadialGradientEnd;
-    float _strokeRadialGradientStratR;
-    float _strokeRadialGradientEndR;
-    NSColor *_shadowColor;
-    float _shadowBlur;
-    float _shadowOffsetX;
-    float _shadowOffsetY;
-    float _globalAlpha;
 }
 
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
-@property (nonatomic, strong) NSFont* font;
-@property (nonatomic, strong) NSMutableDictionary* tokenAttributesDict;
-@property (nonatomic, strong) NSString* fontName;
-@property (nonatomic, strong) NSString* lineCap;
-@property (nonatomic, strong) NSString* lineJoin;
-@property (nonatomic, assign) CanvasTextAlign textAlign;
-@property (nonatomic, assign) CanvasTextBaseline textBaseLine;
-@property (nonatomic, assign) float lineWidth;
-@property (nonatomic, assign) float lineDashOffset;
-@property (nonatomic, assign) float miterLimit;
-@property (nonatomic, assign) cocos2d::Data strokePatternData;
-@property (nonatomic, assign) float strokePatternImageWidth;
-@property (nonatomic, assign) float strokePatternImageHeight;
-@property (nonatomic, strong) NSColor *strokePattern;
-@property (nonatomic, assign) cocos2d::Data fillPatternData;
-@property (nonatomic, assign) float fillPatternImageWidth;
-@property (nonatomic, assign) float fillPatternImageHeight;
-@property (nonatomic, strong) NSColor *fillPattern;
-@property (nonatomic, assign) CGGradientRef fillLinearGradient;
-@property (nonatomic, assign) CGPoint fillLinearGradientStart;
-@property (nonatomic, assign) CGPoint fillLinearGradientEnd;
-@property (nonatomic, assign) CGGradientRef strokeLinearGradient;
-@property (nonatomic, assign) CGPoint strokeLinearGradientStart;
-@property (nonatomic, assign) CGPoint strokeLinearGradientEnd;
-@property (nonatomic, assign) CGGradientRef strokeRadialGradient;
-@property (nonatomic, assign) CGPoint strokeRadialGradientStart;
-@property (nonatomic, assign) CGPoint strokeRadialGradientEnd;
-@property (nonatomic, assign) float strokeRadialGradientStartR;
-@property (nonatomic, assign) float strokeRadialGradientEndR;
-@property (nonatomic, assign) CGGradientRef fillRadialGradient;
-@property (nonatomic, assign) CGPoint fillRadialGradientStart;
-@property (nonatomic, assign) CGPoint fillRadialGradientEnd;
-@property (nonatomic, assign) float fillRadialGradientStartR;
-@property (nonatomic, assign) float fillRadialGradientEndR;
-@property (nonatomic, assign) float shadowBlur;
-@property (nonatomic, assign) float shadowOffsetX;
-@property (nonatomic, assign) float shadowOffsetY;
-@property (nonatomic, assign) float globalAlpha;
+@property (nonatomic, strong) NSMutableArray<CanvasRenderingContext2DImplDrawingState *> *drawingStateList;
+@property (nonatomic, strong) CanvasRenderingContext2DImplDrawingState *drawingState;
 
 @end
 
@@ -154,48 +281,14 @@ enum class CanvasTextBaseline {
 
 @synthesize width = _width;
 @synthesize height = _height;
-@synthesize font = _font;
-@synthesize tokenAttributesDict = _tokenAttributesDict;
-@synthesize fontName = _fontName;
-@synthesize textAlign = _textAlign;
-@synthesize textBaseLine = _textBaseLine;
-@synthesize lineWidth = _lineWidth;
-@synthesize lineDashOffset = _lineDashOffset;
-@synthesize miterLimit = _miterLimit;
-@synthesize strokePatternData = _strokePatternData;
-@synthesize strokePatternImageWidth = _strokePatternImageWidth;
-@synthesize strokePatternImageHeight = _strokePatternImageHeight;
-@synthesize strokePattern = _strokePattern;
-@synthesize fillPatternData = _fillPatternData;
-@synthesize fillPatternImageWidth = _fillPatternImageWidth;
-@synthesize fillPatternImageHeight = _fillPatternImageHeight;
-@synthesize fillPattern = _fillPattern;
-@synthesize fillLinearGradient = _fillLinearGradient;
-@synthesize fillLinearGradientStart = _fillLinearGradientStart;
-@synthesize fillLinearGradientEnd = _fillLinearGradientEnd;
-@synthesize strokeLinearGradient = _strokeLinearGradient;
-@synthesize strokeLinearGradientStart = _strokeLinearGradientStart;
-@synthesize strokeLinearGradientEnd = _strokeLinearGradientEnd;
-@synthesize strokeRadialGradient = _strokeRadialGradient;
-@synthesize strokeRadialGradientStart = _strokeRadialGradientStart;
-@synthesize strokeRadialGradientEnd = _strokeRadialGradientEnd;
-@synthesize strokeRadialGradientStartR = _strokeRadialGradientStratR;
-@synthesize strokeRadialGradientEndR = _strokeRadialGradientEndR;
-@synthesize fillRadialGradient = _fillRadialGradient;
-@synthesize fillRadialGradientStart = _fillRadialGradientStart;
-@synthesize fillRadialGradientEnd = _fillRadialGradientEnd;
-@synthesize fillRadialGradientStartR = _fillRadialGradientStartR;
-@synthesize fillRadialGradientEndR = _fillRadialGradientEndR;
-@synthesize shadowBlur = _shadowBlur;
-@synthesize shadowOffsetX = _shadowOffsetX;
-@synthesize shadowOffsetY = _shadowOffsetY;
-@synthesize globalAlpha = _globalAlpha;
 
 -(id) init {
     if (self = [super init]) {
         _width = _height = 0;
         _context = nil;
         _colorSpace = nil;
+        _drawingStateList = [[NSMutableArray alloc] init];
+        _drawingState = [[CanvasRenderingContext2DImplDrawingState alloc] init];
         [self _resetSetting];
         
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
@@ -211,9 +304,16 @@ enum class CanvasTextBaseline {
 }
 
 -(void) dealloc {
-    self.font = nil;
-    self.tokenAttributesDict = nil;
-    self.fontName = nil;
+    [_drawingStateList enumerateObjectsUsingBlock:^(CanvasRenderingContext2DImplDrawingState * _Nonnull obj,
+                                                        NSUInteger idx,
+                                                        BOOL * _Nonnull stop) {
+        [obj release];
+    }];
+    [_drawingStateList removeAllObjects];
+    [_drawingStateList release];
+    _drawingStateList = nil;
+    [_drawingState release];
+    _drawingState = nil;
     CGColorSpaceRelease(_colorSpace);
     // release the context
     CGContextRelease(_context);
@@ -221,10 +321,6 @@ enum class CanvasTextBaseline {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
     [_currentGraphicsContext release];
 #endif
-    _lineDashPattern.clear();
-    // release pattern
-    [self _clearApplyStrokeStyle];
-    [self _clearApplyFillStyle];
     [super dealloc];
 }
 
@@ -232,7 +328,7 @@ enum class CanvasTextBaseline {
 
 -(NSFont*) _createSystemFont {
     NSFontTraitMask mask = NSUnitalicFontMask;
-    if (_bold) {
+    if (_drawingState.bold) {
         mask |= NSBoldFontMask;
     }
     else {
@@ -240,20 +336,20 @@ enum class CanvasTextBaseline {
     }
 
     NSFont* font = [[NSFontManager sharedFontManager]
-                    fontWithFamily:_fontName
+                    fontWithFamily:_drawingState.fontName
                     traits:mask
                     weight:0
-                    size:_fontSize];
+                    size:_drawingState.fontSize];
 
     if (font == nil) {
         const auto& familyMap = getFontFamilyNameMap();
-        auto iter = familyMap.find([_fontName UTF8String]);
+        auto iter = familyMap.find([_drawingState.fontName UTF8String]);
         if (iter != familyMap.end()) {
             font = [[NSFontManager sharedFontManager]
                fontWithFamily: [NSString stringWithUTF8String:iter->second.c_str()]
                traits: mask
                weight: 0
-               size: _fontSize];
+               size: _drawingState.fontSize];
         }
     }
 
@@ -262,7 +358,7 @@ enum class CanvasTextBaseline {
                 fontWithFamily: @"Arial"
                 traits: mask
                 weight: 0
-                size: _fontSize];
+                size: _drawingState.fontSize];
     }
     return font;
 }
@@ -272,26 +368,26 @@ enum class CanvasTextBaseline {
 -(UIFont*) _createSystemFont {
     UIFont* font = nil;
 
-    if (_bold) {
-        font = [UIFont fontWithName:[_fontName stringByAppendingString:@"-Bold"] size:_fontSize];
+    if (_drawingState.bold) {
+        font = [UIFont fontWithName:[_drawingState.fontName stringByAppendingString:@"-Bold"] size:_drawingState.fontSize];
     }
     else {
-        font = [UIFont fontWithName:_fontName size:_fontSize];
+        font = [UIFont fontWithName:_drawingState.fontName size:_drawingState.fontSize];
     }
 
     if (font == nil) {
         const auto& familyMap = getFontFamilyNameMap();
-        auto iter = familyMap.find([_fontName UTF8String]);
+        auto iter = familyMap.find([_drawingState.fontName UTF8String]);
         if (iter != familyMap.end()) {
-            font = [UIFont fontWithName:[NSString stringWithUTF8String:iter->second.c_str()] size:_fontSize];
+            font = [UIFont fontWithName:[NSString stringWithUTF8String:iter->second.c_str()] size:_drawingState.fontSize];
         }
     }
 
     if (font == nil) {
-        if (_bold) {
-            font = [UIFont boldSystemFontOfSize:_fontSize];
+        if (_drawingState.bold) {
+            font = [UIFont boldSystemFontOfSize:_drawingState.fontSize];
         } else {
-            font = [UIFont systemFontOfSize:_fontSize];
+            font = [UIFont systemFontOfSize:_drawingState.fontSize];
         }
     }
     return font;
@@ -300,11 +396,11 @@ enum class CanvasTextBaseline {
 #endif
 
 -(void) updateFontWithName: (NSString*)fontName fontSize: (CGFloat)fontSize bold: (bool)bold{
-    _fontSize = fontSize;
-    _bold = bold;
+    _drawingState.fontSize = fontSize;
+    _drawingState.bold = bold;
 
-    self.fontName = fontName;
-    self.font = [self _createSystemFont];
+    _drawingState.fontName = fontName;
+    _drawingState.font = [self _createSystemFont];
 
     NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -317,9 +413,9 @@ enum class CanvasTextBaseline {
                                                alpha:1.0f];
 
     // attribute
-    self.tokenAttributesDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+    _drawingState.tokenAttributesDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                                 foregroundColor, NSForegroundColorAttributeName,
-                                                _font, NSFontAttributeName,
+                                                _drawingState.font, NSFontAttributeName,
                                                 paragraphStyle, NSParagraphStyleAttributeName, nil];
 }
 
@@ -376,7 +472,7 @@ enum class CanvasTextBaseline {
 -(NSSize) measureText:(NSString*) text {
 
     NSAttributedString* stringWithAttributes = [[[NSAttributedString alloc] initWithString:text
-                                                             attributes:_tokenAttributesDict] autorelease];
+                                                             attributes:_drawingState.tokenAttributesDict] autorelease];
 
     NSSize textRect = NSZeroSize;
     textRect.width = CGFLOAT_MAX;
@@ -395,39 +491,39 @@ enum class CanvasTextBaseline {
     // Need to adjust 'point' according 'text align' & 'text base line'.
     NSSize textSize = [self measureText:text];
 
-    if (_textAlign == CanvasTextAlign::CENTER)
+    if (_drawingState.textAlign == CanvasTextAlign::CENTER)
     {
         point.x -= textSize.width / 2.0f;
     }
-    else if (_textAlign == CanvasTextAlign::RIGHT)
+    else if (_drawingState.textAlign == CanvasTextAlign::RIGHT)
     {
         point.x -= textSize.width;
     }
 
-    if (_textBaseLine == CanvasTextBaseline::TOP)
+    if (_drawingState.textBaseLine == CanvasTextBaseline::TOP)
     {
-        point.y += _fontSize;
+        point.y += _drawingState.fontSize;
     }
-    else if (_textBaseLine == CanvasTextBaseline::MIDDLE)
+    else if (_drawingState.textBaseLine == CanvasTextBaseline::MIDDLE)
     {
-        point.y += _fontSize / 2.0f;
+        point.y += _drawingState.fontSize / 2.0f;
     }
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
     // We use font size to calculate text height, but 'drawPointAt' method on macOS is based on
     // the real font height and in bottom-left position, add the adjust value to make the text inside text rectangle.
-    point.y += (textSize.height - _fontSize) / 2.0f;
+    point.y += (textSize.height - _drawingState.fontSize) / 2.0f;
 
     // The origin on macOS is bottom-left by default, so we need to convert y from top-left origin to bottom-left origin.
     point.y = _height - point.y;
 #else
     // The origin of drawing text on iOS is from top-left, but now we get bottom-left,
     // So, we need to substract the font size to convert 'point' to top-left.
-    point.y -= _fontSize;
+    point.y -= _drawingState.fontSize;
 
     // We use font size to calculate text height, but 'drawPointAt' method on iOS is based on
     // the real font height and in top-left position, substract the adjust value to make text inside text rectangle.
-    point.y -= (textSize.height - _fontSize) / 2.0f;
+    point.y -= (textSize.height - _drawingState.fontSize) / 2.0f;
 #endif
     return point;
 }
@@ -441,19 +537,19 @@ enum class CanvasTextBaseline {
     NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
 
-    [_tokenAttributesDict removeObjectForKey:NSStrokeWidthAttributeName];
-    [_tokenAttributesDict removeObjectForKey:NSStrokeColorAttributeName];
+    [_drawingState.tokenAttributesDict removeObjectForKey:NSStrokeWidthAttributeName];
+    [_drawingState.tokenAttributesDict removeObjectForKey:NSStrokeColorAttributeName];
 
-    [_tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    NSColor *textColor = [NSColor colorWithRed:_fillStyle.r
-                                         green:_fillStyle.g
-                                          blue:_fillStyle.b
-                                         alpha:_fillStyle.a];
-    if (_fillPattern) {
-        textColor = _fillPattern;
+    [_drawingState.tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+    NSColor *textColor = [NSColor colorWithRed:_drawingState->_fillStyle.r
+                                         green:_drawingState->_fillStyle.g
+                                          blue:_drawingState->_fillStyle.b
+                                         alpha:_drawingState->_fillStyle.a];
+    if (_drawingState.fillPattern) {
+        textColor = _drawingState.fillPattern;
     }
-    [_tokenAttributesDict setObject:textColor
-                             forKey:NSForegroundColorAttributeName];
+    [_drawingState.tokenAttributesDict setObject:textColor
+                                          forKey:NSForegroundColorAttributeName];
 
     [self saveContext];
 
@@ -463,17 +559,17 @@ enum class CanvasTextBaseline {
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
     CGContextSetTextDrawingMode(_context, kCGTextFill);
 
-    if (_shadowColor) {
+    if (_drawingState.shadowColor) {
         CGContextSetShadowWithColor(_context,
-                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
-                                    _shadowBlur,
-                                    _shadowColor.CGColor);
+                                    CGSizeMake(_drawingState.shadowOffsetX, _drawingState.shadowOffsetY),
+                                    _drawingState.shadowBlur,
+                                    _drawingState.shadowColor.CGColor);
     }
     [self _applyCTM];
-    CGContextSetAlpha(_context, _globalAlpha);
+    CGContextSetAlpha(_context, _drawingState.globalAlpha);
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
-                                                                               attributes:_tokenAttributesDict] autorelease];
+                                                                               attributes:_drawingState.tokenAttributesDict] autorelease];
 
     [stringWithAttributes drawAtPoint:drawPoint];
 
@@ -492,19 +588,19 @@ enum class CanvasTextBaseline {
     NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
 
-    [_tokenAttributesDict removeObjectForKey:NSForegroundColorAttributeName];
+    [_drawingState.tokenAttributesDict removeObjectForKey:NSForegroundColorAttributeName];
 
-    [_tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    [_tokenAttributesDict setObject:[NSNumber numberWithFloat: _lineWidth * 2]
+    [_drawingState.tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+    [_drawingState.tokenAttributesDict setObject:[NSNumber numberWithFloat: _drawingState.lineWidth * 2]
                             forKey:NSStrokeWidthAttributeName];
-    NSColor *textColor = [NSColor colorWithRed:_strokeStyle.r
-                                         green:_strokeStyle.g
-                                          blue:_strokeStyle.b
-                                         alpha:_strokeStyle.a];
-    if (_strokePattern) {
-        textColor = _strokePattern;
+    NSColor *textColor = [NSColor colorWithRed:_drawingState->_strokeStyle.r
+                                         green:_drawingState->_strokeStyle.g
+                                          blue:_drawingState->_strokeStyle.b
+                                         alpha:_drawingState->_strokeStyle.a];
+    if (_drawingState.strokePattern) {
+        textColor = _drawingState.strokePattern;
     }
-    [_tokenAttributesDict setObject:textColor
+    [_drawingState.tokenAttributesDict setObject:textColor
                              forKey:NSStrokeColorAttributeName];
 
     [self saveContext];
@@ -517,17 +613,17 @@ enum class CanvasTextBaseline {
 
     CGContextSetTextDrawingMode(_context, kCGTextStroke);
     
-    if (_shadowColor) {
+    if (_drawingState.shadowColor) {
         CGContextSetShadowWithColor(_context,
-                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
-                                    _shadowBlur,
-                                    _shadowColor.CGColor);
+                                    CGSizeMake(_drawingState.shadowOffsetX, _drawingState.shadowOffsetY),
+                                    _drawingState.shadowBlur,
+                                    _drawingState.shadowColor.CGColor);
     }
     [self _applyCTM];
-    CGContextSetAlpha(_context, _globalAlpha);
+    CGContextSetAlpha(_context, _drawingState.globalAlpha);
 
     NSAttributedString *stringWithAttributes =[[[NSAttributedString alloc] initWithString:text
-                                                                               attributes:_tokenAttributesDict] autorelease];
+                                                                               attributes:_drawingState.tokenAttributesDict] autorelease];
 
     [stringWithAttributes drawAtPoint:drawPoint];
 
@@ -537,26 +633,26 @@ enum class CanvasTextBaseline {
 }
 
 -(void) setFillStyleWithRed:(CGFloat) r green:(CGFloat) g blue:(CGFloat) b alpha:(CGFloat) a {
-    _fillStyle.r = r;
-    _fillStyle.g = g;
-    _fillStyle.b = b;
-    _fillStyle.a = a;
-    [self _clearApplyFillStyle];
+    _drawingState->_fillStyle.r = r;
+    _drawingState->_fillStyle.g = g;
+    _drawingState->_fillStyle.b = b;
+    _drawingState->_fillStyle.a = a;
+    [self.drawingState clearApplyFillStyle];
 }
 
 -(void) setStrokeStyleWithRed:(CGFloat) r green:(CGFloat) g blue:(CGFloat) b alpha:(CGFloat) a {
-    _strokeStyle.r = r;
-    _strokeStyle.g = g;
-    _strokeStyle.b = b;
-    _strokeStyle.a = a;
-    [self _clearApplyStrokeStyle];
+    _drawingState->_strokeStyle.r = r;
+    _drawingState->_strokeStyle.g = g;
+    _drawingState->_strokeStyle.b = b;
+    _drawingState->_strokeStyle.a = a;
+    [self.drawingState clearApplyStrokeStyle];
 }
 
 -(void) setShadowColorWithR:(float)r g:(float)g b:(float)b a:(float)a {
-    _shadowColor = [NSColor colorWithRed:r
-                                   green:g
-                                    blue:b
-                                   alpha:a];
+    _drawingState.shadowColor = [NSColor colorWithRed:r
+                                                green:g
+                                                 blue:b
+                                                alpha:a];
 }
 
 -(const cocos2d::Data&) getDataRef {
@@ -566,43 +662,43 @@ enum class CanvasTextBaseline {
 -(void) scaleX:(float)x y:(float)y {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformScale(_transform, x, y);
+    _drawingState.transform = CGAffineTransformScale(_drawingState.transform, x, y);
 #endif
 }
 
 -(void) rotate:(float)angle {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformRotate(_transform, angle);
+    _drawingState.transform = CGAffineTransformRotate(_drawingState.transform, angle);
 #endif
 }
 
 -(void) translateX:(float)x y:(float)y {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformTranslate(_transform, x, y);
+    _drawingState.transform = CGAffineTransformTranslate(_drawingState.transform, x, y);
 #endif
 }
 
 -(void) transformA:(float)a b:(float)b c:(float)c d:(float)d e:(float)e f:(float)f {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformConcat(_transform, CGAffineTransformMake(a, b, c, d, e, f));
+    _drawingState.transform = CGAffineTransformConcat(_drawingState.transform, CGAffineTransformMake(a, b, c, d, e, f));
 #endif
 }
 
 -(void) setTransformA:(float)a b:(float)b c:(float)c d:(float)d e:(float)e f:(float)f {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformIdentity;
-    _transform = CGAffineTransformConcat(_transform, CGAffineTransformMake(a, b, c, d, e, f));
+    _drawingState.transform = CGAffineTransformIdentity;
+    _drawingState.transform = CGAffineTransformConcat(_drawingState.transform, CGAffineTransformMake(a, b, c, d, e, f));
 #endif
 }
 
 -(void) resetTransform {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformIdentity;
+    _drawingState.transform = CGAffineTransformIdentity;
 #endif
 }
 
@@ -685,6 +781,20 @@ enum class CanvasTextBaseline {
     UIGraphicsPopContext();
     _oldContext = nil;
 #endif
+}
+
+-(void) saveDrawingState {
+    CanvasRenderingContext2DImplDrawingState *state = [[CanvasRenderingContext2DImplDrawingState alloc] initWithState:_drawingState];
+    [_drawingStateList addObject:state];
+}
+
+-(void) restoreDrawingState {
+    if ([_drawingStateList count] <= 0) {
+        return;
+    }
+    [_drawingState release];
+    _drawingState = [_drawingStateList lastObject];
+    [_drawingStateList removeObject:_drawingState];
 }
 
 -(void) beginPath {
@@ -876,83 +986,83 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
 -(void) setGlobalCompositeOperation:(NSString *)compositeOperation {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _blendMode = kCGBlendModeNormal;
+    _drawingState.blendMode = kCGBlendModeNormal;
     if ([@"xor" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeXOR;
+        _drawingState.blendMode = kCGBlendModeXOR;
     } else if ([@"overlay" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeOverlay;
+        _drawingState.blendMode = kCGBlendModeOverlay;
     } else if ([@"darken" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDarken;
+        _drawingState.blendMode = kCGBlendModeDarken;
     } else if ([@"lighten" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeLighten;
+        _drawingState.blendMode = kCGBlendModeLighten;
     } else if ([@"screen" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeScreen;
+        _drawingState.blendMode = kCGBlendModeScreen;
     } else if ([@"destination-over" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDestinationOver;
+        _drawingState.blendMode = kCGBlendModeDestinationOver;
     } else if ([@"destination-in" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDestinationIn;
+        _drawingState.blendMode = kCGBlendModeDestinationIn;
     } else if ([@"destination-out" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDestinationOut;
+        _drawingState.blendMode = kCGBlendModeDestinationOut;
     } else if ([@"destination-atop" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDestinationAtop;
+        _drawingState.blendMode = kCGBlendModeDestinationAtop;
     } else if ([@"source-in" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeSourceIn;
+        _drawingState.blendMode = kCGBlendModeSourceIn;
     } else if ([@"source-out" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeSourceOut;
+        _drawingState.blendMode = kCGBlendModeSourceOut;
     } else if ([@"source-atop" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeSourceAtop;
+        _drawingState.blendMode = kCGBlendModeSourceAtop;
     } else if ([@"lighter" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModePlusLighter;
+        _drawingState.blendMode = kCGBlendModePlusLighter;
     } else if ([@"copy" isEqualToString:compositeOperation]) {
         // the performance is not the same as web
-        _blendMode = kCGBlendModeCopy;
+        _drawingState.blendMode = kCGBlendModeCopy;
     } else if ([@"multiply" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeMultiply;
+        _drawingState.blendMode = kCGBlendModeMultiply;
     } else if ([@"color-dodge" isEqualToString:compositeOperation]) {
         // the performance is not the same as web
-        _blendMode = kCGBlendModeColorDodge;
+        _drawingState.blendMode = kCGBlendModeColorDodge;
     } else if ([@"color-burn" isEqualToString:compositeOperation]) {
         // the performance is not the same as web
-        _blendMode = kCGBlendModeColorBurn;
+        _drawingState.blendMode = kCGBlendModeColorBurn;
     } else if ([@"hard-light" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeHardLight;
+        _drawingState.blendMode = kCGBlendModeHardLight;
     } else if ([@"soft-light" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeSoftLight;
+        _drawingState.blendMode = kCGBlendModeSoftLight;
     } else if ([@"difference" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeDifference;
+        _drawingState.blendMode = kCGBlendModeDifference;
     } else if ([@"exclusion" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeExclusion;
+        _drawingState.blendMode = kCGBlendModeExclusion;
     } else if ([@"hue" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeHue;
+        _drawingState.blendMode = kCGBlendModeHue;
     } else if ([@"saturation" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeSaturation;
+        _drawingState.blendMode = kCGBlendModeSaturation;
     } else if ([@"color" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeColor;
+        _drawingState.blendMode = kCGBlendModeColor;
     } else if ([@"luminosity" isEqualToString:compositeOperation]) {
-        _blendMode = kCGBlendModeLuminosity;
+        _drawingState.blendMode = kCGBlendModeLuminosity;
     }
-    CGContextSetBlendMode(_context, _blendMode);
+    CGContextSetBlendMode(_context, _drawingState.blendMode);
 #endif
 }
 
 -(void) setLineCap:(NSString *)lineCap {
-    _lineCap = lineCap;
+    _drawingState.lineCap = lineCap;
 }
 
 -(void) setLineJoin:(NSString *)lineJoin {
-    _lineJoin = lineJoin;
+    _drawingState.lineJoin = lineJoin;
 }
 
 -(void) setLineDash:(const std::vector<float> &)lineDash {
-    _lineDashPattern.clear();
-    _lineDashPattern.assign(lineDash.begin(), lineDash.end());
+    _drawingState->_lineDashPattern.clear();
+    _drawingState->_lineDashPattern.assign(lineDash.begin(), lineDash.end());
     if (lineDash.size() % 2 > 0) {
-        _lineDashPattern.insert(_lineDashPattern.end(), lineDash.begin(), lineDash.end());
+        _drawingState->_lineDashPattern.insert(_drawingState->_lineDashPattern.end(), lineDash.begin(), lineDash.end());
     }
 }
 
 -(const std::vector<float> &) getLineDash {
-    return _lineDashPattern;
+    return _drawingState->_lineDashPattern;
 }
 
 -(void) moveToX: (float) x y:(float) y {
@@ -994,7 +1104,7 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
                                       kCGRenderingIntentDefault);
     // the transform should be applied at first
     [self _applyCTM];
-    CGContextSetAlpha(_context, _globalAlpha);
+    CGContextSetAlpha(_context, _drawingState.globalAlpha);
     // image is upside-down
     CGContextScaleCTM(_context, 1.0f, -1.0f);
     CGContextTranslateCTM(_context, 0.0f, -_height);
@@ -1069,9 +1179,9 @@ static void _drawStrokePatternTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    cocos2d::Data patternImageData = impl.strokePatternData;
-    float patternImageWidth = impl.strokePatternImageWidth;
-    float patternImageHeight = impl.strokePatternImageHeight;
+    cocos2d::Data patternImageData = impl.drawingState->_strokePatternData;
+    float patternImageWidth = impl.drawingState.strokePatternImageWidth;
+    float patternImageHeight = impl.drawingState.strokePatternImageHeight;
     _drawPatternTile(patternImageData,
                      patternImageWidth,
                      patternImageHeight,
@@ -1084,9 +1194,9 @@ static void _drawFillPatternTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    cocos2d::Data patternImageData = impl.fillPatternData;
-    float patternImageWidth = impl.fillPatternImageWidth;
-    float patternImageHeight = impl.fillPatternImageHeight;
+    cocos2d::Data patternImageData = impl.drawingState->_fillPatternData;
+    float patternImageWidth = impl.drawingState.fillPatternImageWidth;
+    float patternImageHeight = impl.drawingState.fillPatternImageHeight;
     _drawPatternTile(patternImageData,
                      patternImageWidth,
                      patternImageHeight,
@@ -1099,9 +1209,9 @@ static void _drawFillLinearGradientTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    CGGradientRef gradient = [impl fillLinearGradient];
-    CGPoint startPoint = [impl fillLinearGradientStart];
-    CGPoint endPoint = [impl fillLinearGradientEnd];
+    CGGradientRef gradient = [impl.drawingState fillLinearGradient];
+    CGPoint startPoint = [impl.drawingState fillLinearGradientStart];
+    CGPoint endPoint = [impl.drawingState fillLinearGradientEnd];
     CGFloat width = [impl width];
     CGFloat height = [impl height];
     _drawLinearGradientTile(gradient, width, height, startPoint, endPoint, context);
@@ -1112,9 +1222,9 @@ static void _drawStrokeLinearGradientTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    CGGradientRef gradient = [impl strokeLinearGradient];
-    CGPoint startPoint = [impl strokeLinearGradientStart];
-    CGPoint endPoint = [impl strokeLinearGradientEnd];
+    CGGradientRef gradient = [impl.drawingState strokeLinearGradient];
+    CGPoint startPoint = [impl.drawingState strokeLinearGradientStart];
+    CGPoint endPoint = [impl.drawingState strokeLinearGradientEnd];
     CGFloat width = [impl width];
     CGFloat height = [impl height];
     _drawLinearGradientTile(gradient, width, height, startPoint, endPoint, context);
@@ -1125,11 +1235,11 @@ static void _drawFillRadialGradientTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    CGGradientRef gradient = [impl fillRadialGradient];
-    CGPoint startPoint = [impl fillRadialGradientStart];
-    float startR = [impl fillRadialGradientStartR];
-    CGPoint endPoint = [impl fillRadialGradientEnd];
-    float endR = [impl fillRadialGradientEndR];
+    CGGradientRef gradient = [impl.drawingState fillRadialGradient];
+    CGPoint startPoint = [impl.drawingState fillRadialGradientStart];
+    float startR = [impl.drawingState fillRadialGradientStartR];
+    CGPoint endPoint = [impl.drawingState fillRadialGradientEnd];
+    float endR = [impl.drawingState fillRadialGradientEndR];
     CGFloat width = [impl width];
     CGFloat height = [impl height];
     _drawRadialGradientTile(gradient,
@@ -1147,11 +1257,11 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     if (!impl) {
         return;
     }
-    CGGradientRef gradient = [impl strokeRadialGradient];
-    CGPoint startPoint = [impl strokeRadialGradientStart];
-    float startR = [impl strokeRadialGradientStartR];
-    CGPoint endPoint = [impl strokeRadialGradientEnd];
-    float endR = [impl strokeRadialGradientEndR];
+    CGGradientRef gradient = [impl.drawingState strokeRadialGradient];
+    CGPoint startPoint = [impl.drawingState strokeRadialGradientStart];
+    float startR = [impl.drawingState strokeRadialGradientStartR];
+    CGPoint endPoint = [impl.drawingState strokeRadialGradientEnd];
+    float endR = [impl.drawingState strokeRadialGradientEndR];
     CGFloat width = [impl width];
     CGFloat height = [impl height];
     _drawRadialGradientTile(gradient,
@@ -1167,15 +1277,15 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
 -(void) applyStylePatternWithIsFillStyle:(BOOL)isFillStyle rule:(NSString *)rule image:(const cocos2d::Data &)image width:(float)imageWidth height:(float)imageHeight {
     // handle param
     if (isFillStyle) {
-        [self _clearApplyFillStyle];
-        _fillPatternData = image;
-        _fillPatternImageWidth = imageWidth;
-        _fillPatternImageHeight = imageHeight;
+        [self.drawingState clearApplyFillStyle];
+        _drawingState->_fillPatternData = image;
+        _drawingState.fillPatternImageWidth = imageWidth;
+        _drawingState.fillPatternImageHeight = imageHeight;
     } else {
-        [self _clearApplyStrokeStyle];
-        _strokePatternData = image;
-        _strokePatternImageWidth = imageWidth;
-        _strokePatternImageHeight = imageHeight;
+        [self.drawingState clearApplyStrokeStyle];
+        _drawingState->_strokePatternData = image;
+        _drawingState.strokePatternImageWidth = imageWidth;
+        _drawingState.strokePatternImageHeight = imageHeight;
     }
     
     
@@ -1203,9 +1313,9 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
                                                        width:imageWidth
                                                       height:imageHeight];
     if (isFillStyle) {
-        _fillPattern = colorPattern;
+        _drawingState.fillPattern = colorPattern;
     } else {
-        _strokePattern = colorPattern;
+        _drawingState.strokePattern = colorPattern;
     }
 }
 
@@ -1245,17 +1355,17 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     CGPoint startPoint = CGPointMake(x0, y0);
     CGPoint endPoint = CGPointMake(x1, y1);
     if (isFillStyle) {
-        [self _clearApplyFillStyle];
-        _fillLinearGradient = linearGradient;
-        _fillLinearGradientStart = startPoint;
-        _fillLinearGradientEnd = endPoint;
-        _fillPattern = colorPattern;
+        [self.drawingState clearApplyFillStyle];
+        _drawingState.fillLinearGradient = linearGradient;
+        _drawingState.fillLinearGradientStart = startPoint;
+        _drawingState.fillLinearGradientEnd = endPoint;
+        _drawingState.fillPattern = colorPattern;
     } else {
-        [self _clearApplyStrokeStyle];
-        _strokeLinearGradient = linearGradient;
-        _strokeLinearGradientStart = startPoint;
-        _strokeLinearGradientEnd = endPoint;
-        _strokePattern = colorPattern;
+        [self.drawingState clearApplyStrokeStyle];
+        _drawingState.strokeLinearGradient = linearGradient;
+        _drawingState.strokeLinearGradientStart = startPoint;
+        _drawingState.strokeLinearGradientEnd = endPoint;
+        _drawingState.strokePattern = colorPattern;
     }
 }
 
@@ -1295,21 +1405,21 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     CGPoint startPoint = CGPointMake(x0, y0);
     CGPoint endPoint = CGPointMake(x1, y1);
     if (isFillStyle) {
-        [self _clearApplyFillStyle];
-        _fillRadialGradient = gradient;
-        _fillRadialGradientStart = startPoint;
-        _fillRadialGradientStartR = r0;
-        _fillRadialGradientEnd = endPoint;
-        _fillRadialGradientEndR = r1;
-        _fillPattern = colorPattern;
+        [self.drawingState clearApplyFillStyle];
+        _drawingState.fillRadialGradient = gradient;
+        _drawingState.fillRadialGradientStart = startPoint;
+        _drawingState.fillRadialGradientStartR = r0;
+        _drawingState.fillRadialGradientEnd = endPoint;
+        _drawingState.fillRadialGradientEndR = r1;
+        _drawingState.fillPattern = colorPattern;
     }else {
-        [self _clearApplyStrokeStyle];
-        _strokeRadialGradient = gradient;
-        _strokeRadialGradientStart = startPoint;
-        _strokeRadialGradientStratR = r0;
-        _strokeRadialGradientEnd = endPoint;
-        _strokeRadialGradientEndR = r1;
-        _strokePattern = colorPattern;
+        [self.drawingState clearApplyStrokeStyle];
+        _drawingState.strokeRadialGradient = gradient;
+        _drawingState.strokeRadialGradientStart = startPoint;
+        _drawingState.strokeRadialGradientStartR = r0;
+        _drawingState.strokeRadialGradientEnd = endPoint;
+        _drawingState.strokeRadialGradientEndR = r1;
+        _drawingState.strokePattern = colorPattern;
     }
 }
 
@@ -1379,136 +1489,103 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
 -(void) _applyCTM {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    CGContextConcatCTM(_context, _transform);
+    CGContextConcatCTM(_context, _drawingState.transform);
 #endif
 }
 
 -(void) _setStrokeSetting {
-    NSColor* color = [NSColor colorWithRed:_strokeStyle.r green:_strokeStyle.g blue:_strokeStyle.b alpha:_strokeStyle.a];
-    if (_strokePattern) {
-        color = _strokePattern;
+    NSColor* color = [NSColor colorWithRed:_drawingState->_strokeStyle.r
+                                     green:_drawingState->_strokeStyle.g
+                                      blue:_drawingState->_strokeStyle.b
+                                     alpha:_drawingState->_strokeStyle.a];
+    if (_drawingState.strokePattern) {
+        color = _drawingState.strokePattern;
     }
     [color setStroke];
-    [_path setLineWidth: _lineWidth];
+    [_path setLineWidth: _drawingState.lineWidth];
     // shadow
-    if (_shadowColor) {
+    if (_drawingState.shadowColor) {
         CGContextSetShadowWithColor(_context,
-                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
-                                    _shadowBlur,
-                                    _shadowColor.CGColor);
+                                    CGSizeMake(_drawingState.shadowOffsetX, _drawingState.shadowOffsetY),
+                                    _drawingState.shadowBlur,
+                                    _drawingState.shadowColor.CGColor);
     }
     // cap
-    if ([@"square" isEqualToString:_lineCap]) {
+    if ([@"square" isEqualToString:_drawingState.lineCap]) {
         [_path setLineCapStyle:NSSquareLineCapStyle];
-    } else if ([@"round" isEqualToString:_lineCap]) {
+    } else if ([@"round" isEqualToString:_drawingState.lineCap]) {
         [_path setLineCapStyle:NSRoundLineCapStyle];
     } else {
         [_path setLineCapStyle:NSButtLineCapStyle];
     }
     // join
-    if ([@"bevel" isEqualToString:_lineJoin]) {
+    if ([@"bevel" isEqualToString:_drawingState.lineJoin]) {
         [_path setLineJoinStyle:NSBevelLineJoinStyle];
-    } else if ([@"round" isEqualToString:_lineJoin]) {
+    } else if ([@"round" isEqualToString:_drawingState.lineJoin]) {
         [_path setLineJoinStyle:NSRoundLineJoinStyle];
     } else {
         [_path setLineJoinStyle:NSMiterLineJoinStyle];
     }
     // dash
-    NSInteger lineDashCount = _lineDashPattern.size();
+    NSInteger lineDashCount = _drawingState->_lineDashPattern.size();
     if (lineDashCount > 0) {
         CGFloat lineDash[lineDashCount];
         for (int i = 0; i < lineDashCount; i++) {
-            lineDash[i] = _lineDashPattern[i];
+            lineDash[i] = _drawingState->_lineDashPattern[i];
         }
-        [_path setLineDash:lineDash count:lineDashCount phase:_lineDashOffset];
+        [_path setLineDash:lineDash count:lineDashCount phase:_drawingState.lineDashOffset];
     } else {
         [_path setLineDash:NULL count:0 phase:0];
     }
     // miterLimit
-    [_path setMiterLimit:_miterLimit];
+    [_path setMiterLimit:_drawingState.miterLimit];
     [self _applyCTM];
-    CGContextSetAlpha(_context, _globalAlpha);
+    CGContextSetAlpha(_context, _drawingState.globalAlpha);
 }
 
 -(void) _setFillSetting {
-    NSColor* color = [NSColor colorWithRed:_fillStyle.r green:_fillStyle.g blue:_fillStyle.b alpha:_fillStyle.a];
-    if (_fillPattern) {
-        color = _fillPattern;
+    NSColor* color = [NSColor colorWithRed:_drawingState->_fillStyle.r
+                                     green:_drawingState->_fillStyle.g
+                                      blue:_drawingState->_fillStyle.b
+                                     alpha:_drawingState->_fillStyle.a];
+    if (_drawingState.fillPattern) {
+        color = _drawingState.fillPattern;
     }
     [color setFill];
-    if (_shadowColor) {
+    if (_drawingState.shadowColor) {
         CGContextSetShadowWithColor(_context,
-                                    CGSizeMake(_shadowOffsetX, _shadowOffsetY),
-                                    _shadowBlur,
-                                    _shadowColor.CGColor);
+                                    CGSizeMake(_drawingState.shadowOffsetX, _drawingState.shadowOffsetY),
+                                    _drawingState.shadowBlur,
+                                    _drawingState.shadowColor.CGColor);
     }
     [self _applyCTM];
-    CGContextSetAlpha(_context, _globalAlpha);
+    CGContextSetAlpha(_context, _drawingState.globalAlpha);
 }
 
--(void) _clearApplyStrokeStyle {
-    // reset pattern
-    _strokePatternData.clear();
-    _strokePatternImageWidth = 0;
-    _strokePatternImageHeight = 0;
-    if (_strokePattern) {
-        _strokePattern = nil;
-    }
-    // reset linear gradient
-    if (_strokeLinearGradient) {
-        CGGradientRelease(_strokeLinearGradient);
-        _strokeLinearGradient = nullptr;
-    }
-    // reset radial gradient
-    if (_strokeRadialGradient) {
-        CGGradientRelease(_strokeRadialGradient);
-        _strokeRadialGradient = nullptr;
-    }
-}
-
--(void) _clearApplyFillStyle {
-    // reset pattern
-    _fillPatternData.clear();
-    _fillPatternImageWidth = 0;
-    _fillPatternImageHeight = 0;
-    if (_fillPattern) {
-        _fillPattern = nil;
-    }
-    // reset linear gradient
-    if (_fillLinearGradient) {
-        CGGradientRelease(_fillLinearGradient);
-        _fillLinearGradient = nullptr;
-    }
-    // reset radial gradient
-    if (_fillRadialGradient) {
-        CGGradientRelease(_fillRadialGradient);
-        _fillRadialGradient = nullptr;
-    }
-}
 -(void) _resetSetting {
-    _textAlign = CanvasTextAlign::LEFT;
-    _textBaseLine = CanvasTextBaseline::BOTTOM;
-    _lineCap = @"butt";
-    _lineJoin = @"miter";
-    _lineWidth = 1.0;
-    _fillStyle.r = 0;
-    _fillStyle.g = 0;
-    _fillStyle.b = 0;
-    _fillStyle.a = 1;
-    _strokeStyle.r = 0;
-    _strokeStyle.g = 0;
-    _strokeStyle.b = 0;
-    _strokeStyle.a = 1;
-    _lineDashOffset = 0;
-    _lineDashPattern.clear();
-    _miterLimit = 10.f;
-    [self _clearApplyStrokeStyle];
-    [self _clearApplyFillStyle];
-    _globalAlpha = 1.0f;
+    _drawingState.textAlign = CanvasTextAlign::LEFT;
+    _drawingState.textBaseLine = CanvasTextBaseline::BOTTOM;
+    _drawingState.lineCap = @"butt";
+    _drawingState.lineJoin = @"miter";
+    _drawingState.lineWidth = 1.0;
+    _drawingState->_fillStyle.r = 0;
+    _drawingState->_fillStyle.g = 0;
+    _drawingState->_fillStyle.b = 0;
+    _drawingState->_fillStyle.a = 1;
+    _drawingState->_strokeStyle.r = 0;
+    _drawingState->_strokeStyle.g = 0;
+    _drawingState->_strokeStyle.b = 0;
+    _drawingState->_strokeStyle.a = 1;
+    _drawingState.lineDashOffset = 0;
+    _drawingState->_lineDashPattern.clear();
+    _drawingState.miterLimit = 10.f;
+    [_drawingState clearApplyStrokeStyle];
+    [_drawingState clearApplyFillStyle];
+    _drawingState.globalAlpha = 1.0f;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
-    _transform = CGAffineTransformIdentity;
-    _blendMode = kCGBlendModeNormal;
+    _drawingState.transform = CGAffineTransformIdentity;
+    _drawingState.blendMode = kCGBlendModeNormal;
 #endif
 }
 
@@ -1660,6 +1737,7 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 void CanvasRenderingContext2D::save()
 {
     [_impl saveContext];
+    [_impl saveDrawingState];
 }
 
 void CanvasRenderingContext2D::beginPath()
@@ -1741,6 +1819,7 @@ void CanvasRenderingContext2D::rect(float x, float y, float w, float h)
 void CanvasRenderingContext2D::restore()
 {
     [_impl restoreContext];
+    [_impl restoreDrawingState];
 }
 
 void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
@@ -1767,7 +1846,7 @@ void CanvasRenderingContext2D::set__height(float height)
 void CanvasRenderingContext2D::set_lineWidthInternal(float lineWidth)
 {
     _lineWidthInternal = lineWidth;
-    _impl.lineWidth = _lineWidthInternal;
+    _impl.drawingState.lineWidth = _lineWidthInternal;
 }
 
 void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
@@ -1776,7 +1855,7 @@ void CanvasRenderingContext2D::set_lineCap(const std::string& lineCap)
         return;
     }
     this->_lineCap = lineCap;
-    [_impl setLineCap:[NSString stringWithUTF8String:lineCap.c_str()]];
+    _impl.drawingState.lineCap = [NSString stringWithUTF8String:lineCap.c_str()];
 }
 
 void CanvasRenderingContext2D::set_lineJoin(const std::string& lineJoin)
@@ -1785,7 +1864,7 @@ void CanvasRenderingContext2D::set_lineJoin(const std::string& lineJoin)
         return;
     }
     this->_lineJoin = lineJoin;
-    [_impl setLineJoin:[NSString stringWithUTF8String:lineJoin.c_str()]];
+    _impl.drawingState.lineJoin = [NSString stringWithUTF8String:lineJoin.c_str()];
 }
 
 void CanvasRenderingContext2D::set_font(const std::string& font)
@@ -1818,15 +1897,15 @@ void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
 //    SE_LOGD("CanvasRenderingContext2D::set_textAlign: %s\n", textAlign.c_str());
     if (textAlign == "left")
     {
-        _impl.textAlign = CanvasTextAlign::LEFT;
+        _impl.drawingState.textAlign = CanvasTextAlign::LEFT;
     }
     else if (textAlign == "center" || textAlign == "middle")
     {
-        _impl.textAlign = CanvasTextAlign::CENTER;
+        _impl.drawingState.textAlign = CanvasTextAlign::CENTER;
     }
     else if (textAlign == "right")
     {
-        _impl.textAlign = CanvasTextAlign::RIGHT;
+        _impl.drawingState.textAlign = CanvasTextAlign::RIGHT;
     }
     else
     {
@@ -1839,15 +1918,15 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
 //    SE_LOGD("CanvasRenderingContext2D::set_textBaseline: %s\n", textBaseline.c_str());
     if (textBaseline == "top")
     {
-        _impl.textBaseLine = CanvasTextBaseline::TOP;
+        _impl.drawingState.textBaseLine = CanvasTextBaseline::TOP;
     }
     else if (textBaseline == "middle")
     {
-        _impl.textBaseLine = CanvasTextBaseline::MIDDLE;
+        _impl.drawingState.textBaseLine = CanvasTextBaseline::MIDDLE;
     }
     else if (textBaseline == "bottom" || textBaseline == "alphabetic") //REFINE:, how to deal with alphabetic, currently we handle it as bottom mode.
     {
-        _impl.textBaseLine = CanvasTextBaseline::BOTTOM;
+        _impl.drawingState.textBaseLine = CanvasTextBaseline::BOTTOM;
     }
     else
     {
@@ -1934,13 +2013,13 @@ std::vector<float>& CanvasRenderingContext2D::getLineDash() {
 void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 {
     this->_lineDashOffsetInternal = offset;
-    [_impl setLineDashOffset:offset];
+    _impl.drawingState.lineDashOffset = offset;
 }
 
 void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 {
     this->_miterLimitInternal = limit;
-    [_impl setMiterLimit:limit];
+    _impl.drawingState.miterLimit = limit;
 }
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
@@ -1964,19 +2043,19 @@ void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
 void CanvasRenderingContext2D::set_shadowBlurInternal(float blur)
 {
     _shadowBlurInternal = blur;
-    [_impl setShadowBlur:blur*0.5];
+    _impl.drawingState.shadowBlur = blur*0.5;
 }
 
 void CanvasRenderingContext2D::set_shadowOffsetXInternal(float offsetX)
 {
     _shadowOffsetXInternal = offsetX;
-    [_impl setShadowOffsetX:offsetX];
+    _impl.drawingState.shadowOffsetX = offsetX;
 }
 
 void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 {
     _shadowOffsetYInternal = offsetY;
-    [_impl setShadowOffsetY:-offsetY];
+    _impl.drawingState.shadowOffsetY = -offsetY;
 }
 
 void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
@@ -2027,7 +2106,7 @@ void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
         return;
     }
     this->_globalAlphaInternal = alpha;
-    [_impl setGlobalAlpha:alpha];
+    _impl.drawingState.globalAlpha = alpha;
 }
 
 NS_CC_END
