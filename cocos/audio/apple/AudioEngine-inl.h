@@ -58,10 +58,11 @@ public:
     float getCurrentTime(int audioID);
     bool setCurrentTime(int audioID, float time);
     void setFinishCallback(int audioID, const std::function<void (int, const std::string &)> &callback);
+    void setCanPlayCallback(int audioID, const std::function<void (int, const std::string &)> &callback);
 
     void uncache(const std::string& filePath);
     void uncacheAll();
-    AudioCache* preload(const std::string& filePath, std::function<void(bool)> callback);
+    AudioCache* preload(const std::string& filePath, std::function<void(bool, float)> callback);
     void update(float dt);
 
 private:
