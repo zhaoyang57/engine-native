@@ -59,7 +59,7 @@ class ModelBatcher;
  renderHandle.bind(renderComponent);
  @endcode
  */
-class RenderHandle : SystemHandle
+class RenderHandle : public SystemHandle
 {
 public:
     RenderHandle();

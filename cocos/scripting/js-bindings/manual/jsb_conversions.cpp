@@ -2695,6 +2695,7 @@ bool EffectProperty_to_seval(const cocos2d::renderer::Effect::Property& v, se::V
                 break;
             case cocos2d::renderer::Technique::Parameter::Type::FLOAT3:
                 toVec3(data, DataType::FLOAT, ret);
+                break;
             case cocos2d::renderer::Technique::Parameter::Type::FLOAT4:
                 toVec4(data, DataType::FLOAT, ret);
                 break;

@@ -55,8 +55,8 @@ public:
 
     IAudioPlayer *getAudioPlayer(const std::string &audioFilePath);
 
-    typedef std::function<void(bool/* succeed */, PcmData /* data */)> PreloadCallback;
-    void preloadEffect(const std::string &audioFilePath, const PreloadCallback& cb);
+    typedef std::function<void(bool/* succeed */, float /* duration */, PcmData /* data */)> PreloadCallback;
+    void preloadEffect(const std::string &audioFilePath, const std::function<void(bool, float, PcmData)> &cb);
 
     void clearPcmCache(const std::string &audioFilePath);
 
@@ -89,11 +89,14 @@ private:
 
     UrlAudioPlayer *createUrlAudioPlayer(const AudioFileInfo &info);
 
-    void preloadEffect(const AudioFileInfo &info, const PreloadCallback& cb, bool isPreloadInPlay2d);
+    void preloadEffect(const AudioFileInfo &info, const std::function<void(bool, float, PcmData)> &cb, bool isPreloadInPlay2d);
 
     AudioFileInfo getFileInfo(const std::string &audioFilePath);
 
     bool isSmallFile(const AudioFileInfo &info);
+
+    float getDurationByPcmAudioPlayer(const std::string &filePath, const PcmData &pcmData);
+    void getDurationByUrlAudioPlayer(const std::string &filePath, const std::function<void(bool, float)> &cb);
 
 private:
     SLEngineItf _engineItf;
@@ -108,7 +111,7 @@ private:
 
     struct PreloadCallbackParam
     {
-        PreloadCallback callback;
+        std::function<void(bool, PcmData)> callback;
         bool isPreloadInPlay2d;
     };
 

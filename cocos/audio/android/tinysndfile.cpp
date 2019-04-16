@@ -350,8 +350,8 @@ SNDFILE *sf_open_read(const char *path, SF_INFO *info, snd_callbacks* cb, void* 
     return handle;
 
 close:
-    free(handle);
     handle->callback.close(stream);
+    free(handle);
     return NULL;
 }
 
