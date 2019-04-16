@@ -189,6 +189,8 @@ static ALenum alSourceAddNotificationExt(ALuint sid, ALuint notificationID, alSo
 static id s_AudioEngineSessionHandler = nullptr;
 #endif
 
+static std::unordered_map<int, std::function<void(int, const std::string &)>> _canplayCackMap;
+
 ALvoid AudioEngineImpl::myAlSourceNotificationCallback(ALuint sid, ALuint notificationID, ALvoid* userData)
 {
     // Currently, we only care about AL_BUFFERS_PROCESSED event
@@ -224,6 +226,8 @@ AudioEngineImpl::~AudioEngineImpl()
     }
 
     if (s_ALContext) {
+        _canplayCackMap.clear();
+        
         alDeleteSources(MAX_AUDIOINSTANCES, _alSources);
 
         _audioCaches.clear();
@@ -338,7 +342,7 @@ bool AudioEngineImpl::init()
     return ret;
 }
 
-AudioCache* AudioEngineImpl::preload(const std::string& filePath, std::function<void(bool)> callback)
+AudioCache* AudioEngineImpl::preload(const std::string& filePath, std::function<void(bool, float)> callback)
 {
     AudioCache* audioCache = nullptr;
 
@@ -419,10 +423,24 @@ void AudioEngineImpl::_play2d(AudioCache *cache, int audioID)
         _threadMutex.lock();
         auto playerIt = _audioPlayers.find(audioID);
         if (playerIt != _audioPlayers.end() && playerIt->second->play2d()) {
-            _scheduler->performFunctionInCocosThread([audioID](){
+            AudioCache *audioCache = playerIt->second->_audioCache;
+            std::string fullPath = audioCache->_fileFullPath;
+            /*
+             * parame: fullPath
+             * will copy value to lambda fullPath
+             * fullPath in _play2d will release when _play2d end
+             * fullPath in lambda will release when lambda end
+             */
+            _scheduler->performFunctionInCocosThread([audioID, fullPath](){
 
                 if (AudioEngine::_audioIDInfoMap.find(audioID) != AudioEngine::_audioIDInfoMap.end()) {
                     AudioEngine::_audioIDInfoMap[audioID].state = AudioEngine::AudioState::PLAYING;
+                }
+                
+                auto iter = _canplayCackMap.find(audioID);
+                if (iter != _canplayCackMap.end()) {
+                    iter->second(audioID, fullPath);
+                    _canplayCackMap.erase(iter);
                 }
             });
         }
@@ -606,6 +624,14 @@ bool AudioEngineImpl::setCurrentTime(int audioID, float time)
 void AudioEngineImpl::setFinishCallback(int audioID, const std::function<void (int, const std::string &)> &callback)
 {
     _audioPlayers[audioID]->_finishCallbak = callback;
+}
+
+void AudioEngineImpl::setCanPlayCallback(int audioID, const std::function<void(int,
+                                                                               const std::string &)> &callback) {
+    auto it = _audioPlayers.find(audioID);
+    if (it != _audioPlayers.end()) {
+        _canplayCackMap[audioID] = callback;
+    }
 }
 
 void AudioEngineImpl::update(float dt)

@@ -1650,7 +1650,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
         }
         [_impl recreateBufferWithWidth: __width height:__height];
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB([_impl getDataRef]);
+            _canvasBufferUpdatedCB();
     }
     return true;
 }
@@ -1673,7 +1673,7 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
 
         if (_canvasBufferUpdatedCB != nullptr)
         {
-            _canvasBufferUpdatedCB([_impl getDataRef]);
+            _canvasBufferUpdatedCB();
         }
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
@@ -1704,7 +1704,7 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
     if (recreateBufferIfNeeded()) {
         [_impl fillText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB([_impl getDataRef]);
+            _canvasBufferUpdatedCB();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1720,7 +1720,7 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
         [_impl strokeText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
 
         if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB([_impl getDataRef]);
+            _canvasBufferUpdatedCB();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1794,7 +1794,7 @@ void CanvasRenderingContext2D::stroke()
     [_impl stroke];
 
     if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB([_impl getDataRef]);
+        _canvasBufferUpdatedCB();
 }
 
 void CanvasRenderingContext2D::fill()
@@ -1803,7 +1803,7 @@ void CanvasRenderingContext2D::fill()
         [_impl fill];
         
         if (_canvasBufferUpdatedCB != nullptr) {
-            _canvasBufferUpdatedCB([_impl getDataRef]);
+            _canvasBufferUpdatedCB();
         }
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
@@ -1960,7 +1960,7 @@ void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float image
 {
     [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
     if (_canvasBufferUpdatedCB != nullptr) {
-        _canvasBufferUpdatedCB([_impl getDataRef]);
+        _canvasBufferUpdatedCB();
     }
 }
 
@@ -2109,4 +2109,7 @@ void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
     _impl.drawingState.globalAlpha = alpha;
 }
 
+const Data&  CanvasRenderingContext2D::_getData() {
+    return [_impl getDataRef];
+}
 NS_CC_END

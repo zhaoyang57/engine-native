@@ -388,7 +388,7 @@ void AudioCache::invokingPlayCallbacks()
     _playCallbacks.clear();
 }
 
-void AudioCache::addLoadCallback(const std::function<void(bool)>& callback)
+void AudioCache::addLoadCallback(const std::function<void(bool, float)>& callback)
 {
     switch (_state)
     {
@@ -398,10 +398,10 @@ void AudioCache::addLoadCallback(const std::function<void(bool)>& callback)
             break;
 
         case State::READY:
-            callback(true);
+            callback(true, _duration);
             break;
         case State::FAILED:
-            callback(false);
+            callback(false, _duration);
             break;
 
         default:
@@ -429,7 +429,7 @@ void AudioCache::invokingLoadCallbacks()
 
         for (auto&& cb : _loadCallbacks)
         {
-            cb(_state == State::READY);
+            cb(_state == State::READY, _duration);
         }
 
         _loadCallbacks.clear();

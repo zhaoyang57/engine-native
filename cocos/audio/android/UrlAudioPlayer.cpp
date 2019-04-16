@@ -57,14 +57,26 @@ public:
             thiz->playEventCallback(caller, playEvent);
         }
     }
+
+    static void prefetchEventCallback(SLPrefetchStatusItf caller, void *context, SLuint32 prefetchEvent)
+    {
+        UrlAudioPlayer *thiz = (UrlAudioPlayer *) context;
+        // We must use a mutex for the whole block of the following function invocation.
+        std::lock_guard<std::mutex> lk(__playerContainerMutex);
+        auto iter = std::find(__playerContainer.begin(), __playerContainer.end(), thiz);
+        if (iter != __playerContainer.end())
+        {
+            thiz->prefetchEventCallback(caller, prefetchEvent);
+        }
+    }
 };
 
 UrlAudioPlayer::UrlAudioPlayer(SLEngineItf engineItf, SLObjectItf outputMixObject, ICallerThreadUtils* callerThreadUtils)
         : _engineItf(engineItf), _outputMixObj(outputMixObject),
           _callerThreadUtils(callerThreadUtils), _id(-1), _assetFd(nullptr),
-          _playObj(nullptr), _playItf(nullptr), _seekItf(nullptr), _volumeItf(nullptr),
+          _playObj(nullptr), _playItf(nullptr), _seekItf(nullptr), _volumeItf(nullptr), _prefetchStatusItf(nullptr),
           _volume(0.0f), _duration(0.0f), _isLoop(false), _isAudioFocus(true), _state(State::INVALID),
-          _playEventCallback(nullptr), _isDestroyed(std::make_shared<bool>(false))
+          _playEventCallback(nullptr), _canPlayEventCallback(nullptr), _isDestroyed(std::make_shared<bool>(false))
 {
     std::call_once(__onceFlag, [](){
         __playerContainer.reserve(10);
@@ -91,6 +103,26 @@ UrlAudioPlayer::~UrlAudioPlayer()
     }
 
     __playerContainerMutex.unlock();
+}
+
+void UrlAudioPlayer::prefetchEventCallback(SLPrefetchStatusItf caller, SLuint32 prefetchEvent) {
+    if (prefetchEvent == SL_PREFETCHEVENT_STATUSCHANGE) {
+        SLuint32 status;
+        (*caller)->GetPrefetchStatus(caller, &status);
+        if (status == SL_PREFETCHSTATUS_SUFFICIENTDATA && _canPlayEventCallback != nullptr) {
+            int audioId = getId();
+            std::string filePath = getUrl();
+            if (_callerThreadId == std::this_thread::get_id()) {
+                _canPlayEventCallback(audioId, filePath);
+                _canPlayEventCallback = nullptr;
+            } else {
+                _callerThreadUtils->performFunctionInCallerThread([this, audioId, filePath](){
+                    _canPlayEventCallback(audioId, filePath);
+                    _canPlayEventCallback = nullptr;
+                });
+            }
+        }
+    }
 }
 
 void UrlAudioPlayer::playEventCallback(SLPlayItf caller, SLuint32 playEvent)
@@ -148,6 +180,11 @@ void UrlAudioPlayer::playEventCallback(SLPlayItf caller, SLuint32 playEvent)
 void UrlAudioPlayer::setPlayEventCallback(const PlayEventCallback &playEventCallback)
 {
     _playEventCallback = playEventCallback;
+}
+
+void UrlAudioPlayer::setCanPlayCallback(
+        const cocos2d::IAudioPlayer::CanPlayCallback &canPlayCallback) {
+    _canPlayEventCallback = canPlayCallback;
 }
 
 void UrlAudioPlayer::stop()
@@ -370,6 +407,16 @@ bool UrlAudioPlayer::prepare(const std::string &url, SLuint32 locatorType, std::
 
     result = (*_playItf)->SetCallbackEventsMask(_playItf, SL_PLAYEVENT_HEADATEND);
     SL_RETURN_VAL_IF_FAILED(result, false, "SetCallbackEventsMask SL_PLAYEVENT_HEADATEND failed");
+
+    // get the prefetch interface
+    result = (*_playObj)->GetInterface(_playObj, SL_IID_PREFETCHSTATUS, &_prefetchStatusItf);
+    SL_RETURN_VAL_IF_FAILED(result, false, "GetInterface SL_IID_PREFETCHSTATUS failed");
+
+    result = (*_prefetchStatusItf)->SetCallbackEventsMask(_prefetchStatusItf, SL_PREFETCHEVENT_STATUSCHANGE);
+    SL_RETURN_VAL_IF_FAILED(result, false, "_prefetchStatusItf SetCallbackEventsMask failed");
+
+    result = (*_prefetchStatusItf)->RegisterCallback(_prefetchStatusItf, SLUrlAudioPlayerCallbackProxy::prefetchEventCallback, this);
+    SL_RETURN_VAL_IF_FAILED(result, false, "_prefetchStatusItf RegisterCallback failed");
 
     setState(State::INITIALIZED);
 

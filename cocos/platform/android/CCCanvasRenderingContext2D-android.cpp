@@ -8,6 +8,7 @@
 
 #include <regex>
 #include <map>
+#include <android/bitmap.h>
 
 #ifndef JCLS_CANVASIMPL
 #define JCLS_CANVASIMPL  "org/cocos2dx/lib/CanvasRenderingContext2DImpl"
@@ -43,6 +44,7 @@ public:
     ~CanvasRenderingContext2DImpl()
     {
         JniHelper::getEnv()->DeleteGlobalRef(_obj);
+        _obj = nullptr;
     }
 
     void recreateBuffer(float w, float h)
@@ -52,7 +54,6 @@ public:
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "recreateBuffer", w, h);
-        fillData();
     }
 
     void beginPath()
@@ -101,7 +102,6 @@ public:
             return;
 
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
-        fillData();
     }
 
     void fill()
@@ -110,7 +110,6 @@ public:
             return;
 
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fill");
-        fillData();
     }
 
     void saveContext()
@@ -137,7 +136,6 @@ public:
         }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
-        fillData();
     }
 
     void clearRect(float x, float y, float w, float h)
@@ -151,7 +149,6 @@ public:
         if (y + h > _bufferHeight)
             h = _bufferHeight - y;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "clearRect", x, y, w, h);
-        fillData();
     }
 
     void fillRect(float x, float y, float w, float h)
@@ -165,7 +162,6 @@ public:
         if (y + h > _bufferHeight)
             h = _bufferHeight - y;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillRect", x, y, w, h);
-        fillData();
     }
 
     void fillText(const std::string& text, float x, float y, float maxWidth)
@@ -173,7 +169,6 @@ public:
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillText", text, x, y, maxWidth);
-        fillData();
     }
 
     void strokeText(const std::string& text, float x, float y, float maxWidth)
@@ -181,7 +176,6 @@ public:
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "strokeText", text, x, y, maxWidth);
-        fillData();
     }
 
     float measureText(const std::string& text)
@@ -259,25 +253,48 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "_fillImageData", arr, imageWidth,
                                         imageHeight, offsetX, offsetY);
         JniHelper::getEnv()->DeleteLocalRef(arr);
-
-        fillData();
     }
 
-    const Data& getDataRef() const
-    {
-        return _data;
+    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback) {
+        jobject bmpObj = nullptr;
+        JniMethodInfo methodInfo;
+        if (JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "getBitmap", "()Landroid/graphics/Bitmap;")) {
+            bmpObj = methodInfo.env->CallObjectMethod(_obj, methodInfo.methodID);
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+        }
+
+        JNIEnv *env = JniHelper::getEnv();
+        do {
+            if (nullptr == bmpObj) {
+                break;
+            }
+            AndroidBitmapInfo bmpInfo;
+            AndroidBitmap_getInfo(env, bmpObj, &bmpInfo);
+            if (AndroidBitmap_getInfo(env, bmpObj, &bmpInfo) != ANDROID_BITMAP_RESULT_SUCCESS) {
+                SE_LOGE("AndroidBitmap_getInfo() failed ! error");
+                break;
+            }
+            if (bmpInfo.width < 1 || bmpInfo.height < 1) {
+                break;
+            }
+            int size = bmpInfo.width * bmpInfo.height * 4;
+
+            void *pixelData;
+            if (AndroidBitmap_lockPixels(env, bmpObj, &pixelData) != ANDROID_BITMAP_RESULT_SUCCESS) {
+                SE_LOGE("AndroidBitmap_lockPixels() failed ! error");
+                break;
+            }
+
+            if (nullptr != callback) {
+                callback(pixelData, size);
+            }
+            AndroidBitmap_unlockPixels(env, bmpObj);
+        } while (false);
+        if (bmpObj) {
+            env->DeleteLocalRef(bmpObj);
+        }
     }
 
-    void fillData()
-    {
-        jbyteArray arr = JniHelper::callObjectByteArrayMethod(_obj, JCLS_CANVASIMPL, "getDataRef");
-        if(nullptr == arr) return;
-        jsize len  = JniHelper::getEnv()->GetArrayLength(arr);
-        jbyte* jbarray = (jbyte *)malloc(len * sizeof(jbyte));
-        JniHelper::getEnv()->GetByteArrayRegion(arr,0,len,jbarray);
-        _data.fastSet((unsigned char*) jbarray, len); //IDEA: DON'T create new jbarray every time.
-        JniHelper::getEnv()->DeleteLocalRef(arr);
-    }
 
     void scale(float x, float y)
     {
@@ -386,7 +403,6 @@ public:
         JniHelper::getEnv()->SetByteArrayRegion(arr, 0, (jsize) image.getSize(), (const jbyte *) image.getBytes());
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "drawImage", arr, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
         JniHelper::getEnv()->DeleteLocalRef(arr);
-        fillData();
     }
 
     void ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {
@@ -560,6 +576,19 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D()
     delete _impl;
 }
 
+void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
+    this->_isDataNeedToSendJS = false;
+    _impl->getData(callback);
+}
+
+void CanvasRenderingContext2D::notifyBufferDataUpdated() {
+    if(this->_isDataNeedToSendJS || this->_canvasBufferUpdatedCB == nullptr) {
+        return;
+    }
+    this->_isDataNeedToSendJS = true;
+    _canvasBufferUpdatedCB();
+}
+
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 {
     if (_isBufferSizeDirty)
@@ -570,8 +599,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
             return false;
         }
         _impl->recreateBuffer(__width, __height);
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     }
     return true;
 }
@@ -587,8 +615,7 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasRenderingContext2D::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         _impl->clearRect(x, y, width, height);
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -600,8 +627,7 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
     if (recreateBufferIfNeeded()) {
         _impl->fillRect(x, y, width, height);
 
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -612,9 +638,7 @@ void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float h
 {
     if (recreateBufferIfNeeded()) {
         _impl->strokeRect(x, y, width, height);
-        if (_canvasBufferUpdatedCB != nullptr) {
-            _canvasBufferUpdatedCB(_impl->getDataRef());
-        }
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -626,8 +650,7 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 //    SE_LOGD("CanvasRenderingContext2D::fillText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
     if (recreateBufferIfNeeded()) {
         _impl->fillText(text, x, y, maxWidth);
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -640,8 +663,7 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
     if (recreateBufferIfNeeded()) {
         _impl->strokeText(text, x, y, maxWidth);
 
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -716,8 +738,7 @@ void CanvasRenderingContext2D::stroke()
     if (recreateBufferIfNeeded()) {
         _impl->stroke();
 
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D stroke width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -729,8 +750,7 @@ void CanvasRenderingContext2D::fill()
     if (recreateBufferIfNeeded()) {
         _impl->fill();
 
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB(_impl->getDataRef());
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -910,8 +930,7 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
-    if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB(_impl->getDataRef());
+    notifyBufferDataUpdated();
 }
 // transform
 //REFINE:
@@ -990,8 +1009,7 @@ void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
     _impl->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
-    if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB(_impl->getDataRef());
+    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {

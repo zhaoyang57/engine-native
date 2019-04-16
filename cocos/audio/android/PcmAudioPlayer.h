@@ -41,6 +41,8 @@ public:
     bool prepare(const std::string &url, const PcmData &decResult);
 
     // Override Functions Begin
+    virtual PlayerType getPlayerType() const override  {return PlayerType::PCM_AUDIO_PLAYER;};
+
     virtual int getId() const override { return _id; };
 
     virtual void setId(int id) override { _id = id; };
@@ -77,6 +79,8 @@ public:
 
     virtual void setPlayEventCallback(const PlayEventCallback &playEventCallback) override;
 
+    virtual void setCanPlayCallback(const CanPlayCallback &canPlayCallback) override;
+
     // Override Functions End
 
 private:
@@ -89,6 +93,7 @@ private:
     PcmData _decResult;
     Track* _track;
     PlayEventCallback _playEventCallback;
+    CanPlayCallback  _canPlayEventCallback;
     AudioMixerController * _controller;
     ICallerThreadUtils* _callerThreadUtils;
 

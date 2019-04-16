@@ -233,6 +233,14 @@ public:
      * @param callback
      */
     static void setFinishCallback(int audioID, const std::function<void(int,const std::string&)>& callback);
+
+    /**
+     * Register a callback to be invoked when an audio instance can play.
+     *
+     * @param audioID An audioID returned by the play2d function.
+     * @param callback
+     */
+    static void setCanPlayCallback(int audioID, const std::function<void(int, const std::string &)>& callback);
     
     /**
      * Gets the maximum number of simultaneous audio instance of AudioEngine.
@@ -289,7 +297,7 @@ public:
      * @param filePath The file path of an audio.
      * @param callback A callback which will be called after loading is finished.
      */
-    static void preload(const std::string& filePath, std::function<void(bool isSuccess)> callback);
+    static void preload(const std::string& filePath, std::function<void(bool isSuccess, float duration)> callback);
 
     /**
      * Gets playing audio count.
