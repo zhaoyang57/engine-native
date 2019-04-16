@@ -825,14 +825,22 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
     }
 
     auto initImageFunc = [path, callbackVal](const std::string& fullPath, unsigned char* imageData, int imageBytes){
-        Image* img = new (std::nothrow) Image();
 
+        if(!__threadPool)
+        {
+            return;
+        }
         __threadPool->pushTask([=](int tid){
             // NOTE: FileUtils::getInstance()->fullPathForFilename isn't a threadsafe method,
             // Image::initWithImageFile will call fullPathForFilename internally which may
             // cause thread race issues. Therefore, we get the full path of file before
             // going into task callback.
             // Be careful of invoking any Cocos2d-x interface in a sub-thread.
+
+            std::shared_ptr<Image> img(new Image(),[](Image* img) {
+                img->release();
+            });
+
             bool loadSucceed = false;
             if (fullPath.empty())
             {
@@ -844,11 +852,13 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
                 loadSucceed = img->initWithImageFile(fullPath);
             }
 
-            struct ImageInfo* imgInfo = nullptr;
+            struct ImageInfo* imageInfo = nullptr;
             if(loadSucceed)
             {
-                imgInfo = createImageInfo(img);
+                imageInfo = createImageInfo(img.get());
             }
+
+            std::shared_ptr<ImageInfo> imgInfo(imageInfo);
 
             Application::getInstance()->getScheduler()->performFunctionInCocosThread([=](){
                 se::AutoHandleScope hs;
@@ -888,8 +898,6 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
                     retObj->setProperty("glType", se::Value(imgInfo->type));
 
                     seArgs.push_back(se::Value(retObj));
-
-                    delete imgInfo;
                 }
                 else
                 {
@@ -897,7 +905,6 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
                 }
 
                 callbackVal.toObject()->call(seArgs, nullptr);
-                img->release();
             });
 
         });

@@ -67,10 +67,11 @@ public:
     float getCurrentTime(int audioID);
     bool setCurrentTime(int audioID, float time);
     void setFinishCallback(int audioID, const std::function<void (int, const std::string &)> &callback);
+    void setCanPlayCallback(int audioID, const std::function<void (int, const std::string &)> &callback);
 
     void uncache(const std::string& filePath);
     void uncacheAll();
-    void preload(const std::string& filePath, const std::function<void(bool)>& callback);
+    void preload(const std::string& filePath, const std::function<void(bool, float)>& callback);
 
     void setAudioFocusForAllPlayers(bool isFocus);
 private:

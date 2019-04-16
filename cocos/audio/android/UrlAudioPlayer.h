@@ -43,6 +43,8 @@ class UrlAudioPlayer : public IAudioPlayer
 public:
 
     // Override Functions Begin
+    virtual  PlayerType getPlayerType() const override  {return PlayerType::URL_AUDIO_PLAYER;};
+
     virtual int getId() const override
     { return _id; };
 
@@ -83,6 +85,8 @@ public:
 
     virtual void setPlayEventCallback(const PlayEventCallback &playEventCallback) override;
 
+    virtual void setCanPlayCallback(const CanPlayCallback &canPlayCallback) override;
+
     // Override Functions EndOv
 
 private:
@@ -99,6 +103,8 @@ private:
     { _state = state; };
 
     void playEventCallback(SLPlayItf caller, SLuint32 playEvent);
+
+    void prefetchEventCallback(SLPrefetchStatusItf caller, SLuint32 prefetchEvent);
 
     void setVolumeToSLPlayer(float volume);
 
@@ -118,6 +124,7 @@ private:
     SLPlayItf _playItf;
     SLSeekItf _seekItf;
     SLVolumeItf _volumeItf;
+    SLPrefetchStatusItf _prefetchStatusItf;
 
     float _volume;
     float _duration;
@@ -126,6 +133,7 @@ private:
     State _state;
 
     PlayEventCallback _playEventCallback;
+    CanPlayCallback  _canPlayEventCallback;
 
     std::thread::id _callerThreadId;
     std::shared_ptr<bool> _isDestroyed;

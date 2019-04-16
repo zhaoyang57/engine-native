@@ -304,6 +304,7 @@ namespace se {
         std::vector<std::function<void()>> _afterCleanupHookArray;
 
         JSGlobalContextRef _cx;
+        void *_jsCx;
 
         Object* _globalObj;
         FileOperationDelegate _fileOperationDelegate;
