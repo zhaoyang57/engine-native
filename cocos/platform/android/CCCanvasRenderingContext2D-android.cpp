@@ -134,6 +134,7 @@ public:
             return;
         }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
         fillData();
     }
 
@@ -496,6 +497,7 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasRenderingContext2D::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         _impl->clearRect(x, y, width, height);
+
         if (_canvasBufferUpdatedCB != nullptr)
             _canvasBufferUpdatedCB(_impl->getDataRef());
     } else {
@@ -615,18 +617,28 @@ void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, flo
 
 void CanvasRenderingContext2D::stroke()
 {
-    _impl->stroke();
+    if (recreateBufferIfNeeded()) {
+        _impl->stroke();
 
-    if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB(_impl->getDataRef());
+        if (_canvasBufferUpdatedCB != nullptr)
+            _canvasBufferUpdatedCB(_impl->getDataRef());
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D stroke width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
 }
 
 void CanvasRenderingContext2D::fill()
 {
-    _impl->fill();
+    if (recreateBufferIfNeeded()) {
+        _impl->fill();
 
-    if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB(_impl->getDataRef());
+        if (_canvasBufferUpdatedCB != nullptr)
+            _canvasBufferUpdatedCB(_impl->getDataRef());
+    } else {
+        SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
+                __width, __height);
+    }
 }
 
 void CanvasRenderingContext2D::restore()

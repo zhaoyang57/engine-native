@@ -183,6 +183,16 @@ str
 },
 
 /**
+ * @method setCullingMask
+ * @param {int} arg0
+ */
+setCullingMask : function (
+int 
+)
+{
+},
+
+/**
  * @method setChildrenOrderDirty
  */
 setChildrenOrderDirty : function (
@@ -251,13 +261,21 @@ str
 },
 
 /**
- * @method setGroupID
- * @param {int} arg0
+ * @method updateRealOpacity
  */
-setGroupID : function (
-int 
+updateRealOpacity : function (
 )
 {
+},
+
+/**
+ * @method getCullingMask
+ * @return {int}
+ */
+getCullingMask : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -279,21 +297,21 @@ getParent : function (
 },
 
 /**
- * @method getGroupID
- * @return {int}
- */
-getGroupID : function (
-)
-{
-    return 0;
-},
-
-/**
  * @method removeChild
  * @param {cc.renderer::NodeProxy} arg0
  */
 removeChild : function (
 nodeproxy 
+)
+{
+},
+
+/**
+ * @method set3DNode
+ * @param {bool} arg0
+ */
+set3DNode : function (
+bool 
 )
 {
 },
@@ -387,6 +405,16 @@ int
 },
 
 /**
+ * @method setPriority
+ * @param {int} arg0
+ */
+setPriority : function (
+int 
+)
+{
+},
+
+/**
  * @method getOrthoHeight
  * @return {float}
  */
@@ -424,6 +452,16 @@ setType : function (
 projectiontype 
 )
 {
+},
+
+/**
+ * @method getPriority
+ * @return {int}
+ */
+getPriority : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -1302,6 +1340,14 @@ getCameras : function (
 )
 {
     return new Array();
+},
+
+/**
+ * @method sortCameras
+ */
+sortCameras : function (
+)
+{
 },
 
 /**

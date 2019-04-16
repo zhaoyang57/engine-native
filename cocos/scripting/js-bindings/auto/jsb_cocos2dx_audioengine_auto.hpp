@@ -44,5 +44,6 @@ SE_DECLARE_FUNC(js_audioengine_AudioEngine_getDefaultProfile);
 SE_DECLARE_FUNC(js_audioengine_AudioEngine_setFinishCallback);
 SE_DECLARE_FUNC(js_audioengine_AudioEngine_getProfile);
 SE_DECLARE_FUNC(js_audioengine_AudioEngine_getPlayingAudioCount);
+SE_DECLARE_FUNC(js_audioengine_AudioEngine_setCanPlayCallback);
 
 #endif //#if (USE_AUDIO > 0) && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
