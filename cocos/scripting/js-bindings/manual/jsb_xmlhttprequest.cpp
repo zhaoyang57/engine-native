@@ -38,6 +38,8 @@
 #include <functional>
 #include <algorithm>
 #include <sstream>
+#include <codecvt>
+#include <locale>
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/network/HttpClient.h"
@@ -46,6 +48,80 @@
 
 using namespace cocos2d;
 using namespace cocos2d::network;
+
+static int _endian = 1;
+static bool _little_endian = (bool)(*(char *)&_endian == 1);
+
+static void _swap_utf16_endian(char* pData, int length) {
+    for (char* end = pData + length; pData < end; pData = pData + 2) {
+        std::swap(pData[0],pData[1]);
+    }
+}
+
+static void _swap_utf32_endian(char* pData, int length) {
+    for (char* end = pData + length; pData < end; pData = pData + 4) {
+        std::swap(pData[0],pData[3]);
+        std::swap(pData[1],pData[2]);
+    }
+}
+
+static void _text_response_entity_body_convert_utf8(std::vector<char>* pdata,std::string& outData) {
+    unsigned char arr[4]= {0x00};
+    int bomLen = std::min((int)pdata->size(), 4);
+    for (int i = 0; i < bomLen; ++i) {
+        arr[i] = (*pdata)[i];
+    }
+
+    if(arr[0] == 0x00 && arr[1] == 0x00 && arr[2] == 0xfe && arr[3] == 0xff){
+        //  UTF-32BE BOM
+        if(_little_endian) {
+            _swap_utf32_endian(&((*pdata)[4]), pdata->size() - 4);
+        }
+
+        std::u32string utf32((char32_t *)pdata->data() + 1, pdata->size() / sizeof(char32_t) - 1);
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
+        outData = convert.to_bytes(utf32);
+
+    } else if(arr[0] == 0xff && arr[1] == 0xfe && arr[2] == 0x00 && arr[3] == 0x00) {
+        // UTF-32LE BOM
+        if(!_little_endian) {
+            _swap_utf32_endian(&((*pdata)[4]), pdata->size() - 4);
+        }
+
+        std::u32string utf32((char32_t *)pdata->data() + 1, pdata->size() / sizeof(char32_t) - 1);
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
+        outData = convert.to_bytes(utf32);
+
+    } else if(arr[0] == 0xfe && arr[1] == 0xff) {
+        // UTF-16BE BOM
+        if(_little_endian) {
+            _swap_utf16_endian(&(*pdata)[2], pdata->size() - 2);
+        }
+
+        std::u16string utf16((char16_t *)pdata->data() + 1, pdata->size() / sizeof(char16_t) - 1);
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+        outData = convert.to_bytes(utf16);
+
+    } else if (arr[0] == 0xff && arr[1] == 0xfe) {
+        // UTF-16LE BOM
+        if(!_little_endian) {
+            _swap_utf16_endian(&(*pdata)[2], pdata->size() - 2);
+        }
+
+        std::u16string utf16((char16_t *)pdata->data() + 1, pdata->size() / sizeof(char16_t) - 1);
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+        outData = convert.to_bytes(utf16);
+
+    } else if(arr[0] == 0xef && arr[1] == 0xbb && arr[2] == 0xbf) {
+        //	UTF-8 BOM
+        outData.append(pdata->data() + 3, pdata->size() - 3);
+
+    } else {
+        //UTF-8
+        outData.append(pdata->data(), pdata->size());
+
+    }
+}
 
 namespace
 {
@@ -463,7 +539,7 @@ void XMLHttpRequest::onResponse(HttpClient* client, HttpResponse* response)
 
     if (_responseType == ResponseType::STRING || _responseType == ResponseType::JSON)
     {
-        _responseText.append(buffer->data(), buffer->size());
+        _text_response_entity_body_convert_utf8(buffer, _responseText);
     }
     else
     {
@@ -1057,7 +1133,7 @@ static bool XMLHttpRequest_setResponseType(se::State& s)
         SE_PRECONDITION2(ok, false, "args[0] couldn't be converted to string!");
 
         XMLHttpRequest* xhr = (XMLHttpRequest*)s.nativeThisObject();
-        if (type == "text")
+        if (type == "" || type == "text")
         {
             xhr->setResponseType(XMLHttpRequest::ResponseType::STRING);
         }
