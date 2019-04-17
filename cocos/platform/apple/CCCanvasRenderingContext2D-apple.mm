@@ -1637,6 +1637,24 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D()
 {
 //    SE_LOGD("CanvasRenderingContext2D destructor: %p\n", this);
     [_impl release];
+    _impl = nil;
+}
+
+void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
+    this->_isDataNeedToSendJS = false;
+    if (nullptr == callback) {
+        return;
+    }
+    cocos2d::Data data = [_impl getDataRef];
+    callback(data.getBytes(), (int)data.getSize());
+}
+
+void CanvasRenderingContext2D::notifyBufferDataUpdated() {
+    if(this->_isDataNeedToSendJS || this->_canvasBufferUpdatedCB == nullptr) {
+        return;
+    }
+    this->_isDataNeedToSendJS = true;
+    _canvasBufferUpdatedCB();
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
@@ -1649,8 +1667,7 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
             return false;
         }
         [_impl recreateBufferWithWidth: __width height:__height];
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB();
+        notifyBufferDataUpdated();
     }
     return true;
 }
@@ -1660,8 +1677,10 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasGradient::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         [_impl clearRect:CGRectMake(x, y, width, height)];
+        
+        notifyBufferDataUpdated();
     } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
+        SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
     }
 }
@@ -1671,12 +1690,9 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
     if (recreateBufferIfNeeded()) {
         [_impl fillRect:CGRectMake(x, y, width, height)];
 
-        if (_canvasBufferUpdatedCB != nullptr)
-        {
-            _canvasBufferUpdatedCB();
-        }
+        notifyBufferDataUpdated();
     } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
+        SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
     }
 }
@@ -1686,9 +1702,7 @@ void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float h
     if (recreateBufferIfNeeded()) {
         [_impl rectWithX:x y:y width:width height:height];
         [_impl stroke];
-        if (_canvasBufferUpdatedCB != nullptr) {
-            _canvasBufferUpdatedCB([_impl getDataRef]);
-        }
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1703,10 +1717,9 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 
     if (recreateBufferIfNeeded()) {
         [_impl fillText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB();
+        notifyBufferDataUpdated();
     } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
+        SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
     }
 }
@@ -1719,10 +1732,9 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
     if (recreateBufferIfNeeded()) {
         [_impl strokeText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
 
-        if (_canvasBufferUpdatedCB != nullptr)
-            _canvasBufferUpdatedCB();
+        notifyBufferDataUpdated();
     } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%d, height:%d is out of GL_MAX_TEXTURE_SIZE",
+        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
     }
 }
@@ -1793,8 +1805,7 @@ void CanvasRenderingContext2D::stroke()
 {
     [_impl stroke];
 
-    if (_canvasBufferUpdatedCB != nullptr)
-        _canvasBufferUpdatedCB();
+    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::fill()
@@ -1802,9 +1813,7 @@ void CanvasRenderingContext2D::fill()
     if (recreateBufferIfNeeded()) {
         [_impl fill];
         
-        if (_canvasBufferUpdatedCB != nullptr) {
-            _canvasBufferUpdatedCB();
-        }
+        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1959,9 +1968,7 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
-    if (_canvasBufferUpdatedCB != nullptr) {
-        _canvasBufferUpdatedCB();
-    }
+    notifyBufferDataUpdated();
 }
 
 // transform
@@ -2025,9 +2032,7 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
     [_impl drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh ow:ow oh:oh];
-    if (_canvasBufferUpdatedCB != nullptr) {
-        _canvasBufferUpdatedCB([_impl getDataRef]);
-    }
+    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
@@ -2107,9 +2112,5 @@ void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
     }
     this->_globalAlphaInternal = alpha;
     _impl.drawingState.globalAlpha = alpha;
-}
-
-const Data&  CanvasRenderingContext2D::_getData() {
-    return [_impl getDataRef];
 }
 NS_CC_END
