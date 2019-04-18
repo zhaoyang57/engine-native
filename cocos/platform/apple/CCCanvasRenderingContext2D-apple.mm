@@ -109,6 +109,8 @@ enum class CanvasTextBaseline {
 @property (nonatomic, copy) NSString *fontName;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, assign) bool bold;
+@property (nonatomic, assign) bool italic;
+@property (nonatomic, assign) bool oblique;
 @property (nonatomic, assign) CanvasTextAlign textAlign;
 @property (nonatomic, assign) CanvasTextBaseline textBaseLine;
 @end
@@ -184,6 +186,8 @@ enum class CanvasTextBaseline {
         _fontName = state.fontName;
         _fontSize = state.fontSize;
         _bold = state.bold;
+        _italic = state.italic;
+        _oblique = state.oblique;
         _textAlign = state.textAlign;
         _textBaseLine = state.textBaseLine;
     }
@@ -297,7 +301,11 @@ enum class CanvasTextBaseline {
 #endif
         _path = [NSBezierPath bezierPath];
         [_path retain];
-        [self updateFontWithName:@"Arial" fontSize:30 bold:false];
+        [self updateFontWithName:@"Arial"
+                        fontSize:30
+                            bold:false
+                          italic:false
+                         oblique:false];
     }
 
     return self;
@@ -366,38 +374,51 @@ enum class CanvasTextBaseline {
 #else
 
 -(UIFont*) _createSystemFont {
-    UIFont* font = nil;
-
-    if (_drawingState.bold) {
-        font = [UIFont fontWithName:[_drawingState.fontName stringByAppendingString:@"-Bold"] size:_drawingState.fontSize];
+    BOOL isBold = _drawingState.bold;
+    BOOL isItalic = _drawingState.italic | _drawingState.oblique;
+    NSString *fontParam = @"";
+    if (isItalic && isBold) {
+        fontParam = @"-BoldItalic";
+    } else if (isBold) {
+        fontParam = @"-Bold";
+    } else if (isItalic) {
+        fontParam = @"-Italic";
     }
-    else {
-        font = [UIFont fontWithName:_drawingState.fontName size:_drawingState.fontSize];
-    }
-
-    if (font == nil) {
+    
+    UIFont *font = [UIFont fontWithName:[_drawingState.fontName stringByAppendingString:fontParam]
+                                   size:_drawingState.fontSize];
+    do {
+        if (font) {
+            _drawingState.bold = false;
+            _drawingState.italic = false;
+            _drawingState.oblique = false;
+            break;
+        }
         const auto& familyMap = getFontFamilyNameMap();
         auto iter = familyMap.find([_drawingState.fontName UTF8String]);
         if (iter != familyMap.end()) {
-            font = [UIFont fontWithName:[NSString stringWithUTF8String:iter->second.c_str()] size:_drawingState.fontSize];
+            font = [UIFont fontWithName:[NSString stringWithUTF8String:iter->second.c_str()]
+                                   size:_drawingState.fontSize];
         }
-    }
-
-    if (font == nil) {
-        if (_drawingState.bold) {
+        if (font) {
+            break;
+        }
+        if (isBold) {
             font = [UIFont boldSystemFontOfSize:_drawingState.fontSize];
         } else {
             font = [UIFont systemFontOfSize:_drawingState.fontSize];
         }
-    }
+    } while(false);
     return font;
 }
 
 #endif
 
--(void) updateFontWithName: (NSString*)fontName fontSize: (CGFloat)fontSize bold: (bool)bold{
+-(void) updateFontWithName:(NSString*)fontName fontSize:(CGFloat)fontSize bold:(bool)bold italic:(bool)italic oblique:(bool)oblique {
     _drawingState.fontSize = fontSize;
     _drawingState.bold = bold;
+    _drawingState.italic = italic;
+    _drawingState.oblique = oblique;
 
     _drawingState.fontName = fontName;
     _drawingState.font = [self _createSystemFont];
@@ -411,12 +432,19 @@ enum class CanvasTextBaseline {
                                                green:1.0f
                                                 blue:1.0f
                                                alpha:1.0f];
+    
+    float obliqueValue = 0.f;
+    if (italic || oblique) {
+        // this value is equel with the value in Android
+        obliqueValue = 0.25f;
+    }
 
     // attribute
     _drawingState.tokenAttributesDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                                foregroundColor, NSForegroundColorAttributeName,
-                                                _drawingState.font, NSFontAttributeName,
-                                                paragraphStyle, NSParagraphStyleAttributeName, nil];
+                                         foregroundColor, NSForegroundColorAttributeName,
+                                         _drawingState.font, NSFontAttributeName,
+                                         paragraphStyle, NSParagraphStyleAttributeName,
+                                         @(obliqueValue), NSObliquenessAttributeName, nil];
 }
 
 -(void) recreateBufferWithWidth:(NSInteger) width height:(NSInteger) height {
@@ -537,7 +565,6 @@ enum class CanvasTextBaseline {
     NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
 
-    [_drawingState.tokenAttributesDict removeObjectForKey:NSStrokeWidthAttributeName];
     [_drawingState.tokenAttributesDict removeObjectForKey:NSStrokeColorAttributeName];
 
     [_drawingState.tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
@@ -591,8 +618,6 @@ enum class CanvasTextBaseline {
     [_drawingState.tokenAttributesDict removeObjectForKey:NSForegroundColorAttributeName];
 
     [_drawingState.tokenAttributesDict setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-    [_drawingState.tokenAttributesDict setObject:[NSNumber numberWithFloat: _drawingState.lineWidth * 2]
-                            forKey:NSStrokeWidthAttributeName];
     NSColor *textColor = [NSColor colorWithRed:_drawingState->_strokeStyle.r
                                          green:_drawingState->_strokeStyle.g
                                           blue:_drawingState->_strokeStyle.b
@@ -607,7 +632,7 @@ enum class CanvasTextBaseline {
 
     // text color
     CGContextSetFillColorWithColor(_context, [textColor CGColor]);
-
+    CGContextSetLineWidth(_context, _drawingState.lineWidth);
     CGContextSetShouldSubpixelQuantizeFonts(_context, false);
     CGContextBeginTransparencyLayerWithRect(_context, CGRectMake(0, 0, _width, _height), nullptr);
 
@@ -1886,18 +1911,32 @@ void CanvasRenderingContext2D::set_font(const std::string& font)
         std::string fontName = "Arial";
         std::string fontSizeStr = "30";
 
-        // support get font name from `60px American` or `60px "American abc-abc_abc"`
-        std::regex re("(bold)?\\s*((\\d+)([\\.]\\d+)?)px\\s+([\\w-]+|\"[\\w -]+\"$)");
+        std::regex re("\\s*((\\d+)([\\.]\\d+)?)px\\s+([^\\r\\n]*)");
         std::match_results<std::string::const_iterator> results;
-        if (std::regex_search(_font.cbegin(), _font.cend(), results, re))
+        if (std::regex_search(font.cbegin(), font.cend(), results, re))
         {
-            boldStr = results[1].str();
             fontSizeStr = results[2].str();
-            fontName = results[5].str();
+            // support get font name from `60px American` or `60px "American abc-abc_abc"`
+            // support get font name contain space,example `times new roman`
+            // if regex rule that does not conform to the rules,such as Chinese,it defaults to sans-serif
+            std::match_results<std::string::const_iterator> fontResults;
+            std::regex fontRe("([\\w\\s-]+|\"[\\w\\s-]+\"$)");
+            if(std::regex_match(results[4].str(), fontResults, fontRe))
+            {
+                fontName = results[4].str();
+            }
         }
 
         CGFloat fontSize = atof(fontSizeStr.c_str());
-        [_impl updateFontWithName:[NSString stringWithUTF8String:fontName.c_str()] fontSize:fontSize bold:!boldStr.empty()];
+        bool isBold = font.find("bold", 0) != std::string::npos;
+        bool isItalic = font.find("italic", 0) != std::string::npos;
+        bool isOblique = font.find("oblique", 0) != std::string::npos;
+        
+        [_impl updateFontWithName:[NSString stringWithUTF8String:fontName.c_str()]
+                         fontSize:fontSize
+                             bold:isBold
+                           italic:isItalic
+                          oblique:isOblique];
     }
 }
 
