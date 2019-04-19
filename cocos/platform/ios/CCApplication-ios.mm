@@ -206,7 +206,9 @@ namespace
     static uint32_t jsbInvocationTotalFrames = 0;
     static uint32_t jsbInvocationTotalCount = 0;
 
-    prevTime = std::chrono::steady_clock::now();
+    now = std::chrono::steady_clock::now();
+    dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    prevTime = now;
     
     if (_isOpenDebugView) {
         dtSum += dt;
@@ -249,9 +251,6 @@ namespace
     
     [(CCEAGLView*)(_application->getView()) swapBuffers];
     cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
-    
-    now = std::chrono::steady_clock::now();
-    dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
 }
 
 @end
