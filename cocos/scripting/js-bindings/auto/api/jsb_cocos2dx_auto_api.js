@@ -794,24 +794,6 @@ getLineDash : function (
 },
 
 /**
- * @method createPattern
- * @param {int} arg0
- * @param {int} arg1
- * @param {cc.Data} arg2
- * @param {String} arg3
- * @return {cc.CanvasPattern}
- */
-createPattern : function (
-int, 
-int, 
-data, 
-str 
-)
-{
-    return cc.CanvasPattern;
-},
-
-/**
  * @method stroke
  */
 stroke : function (
@@ -1014,28 +996,6 @@ save : function (
 },
 
 /**
- * @method createRadialGradient
- * @param {float} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
- * @param {float} arg4
- * @param {float} arg5
- * @return {cc.CanvasGradient}
- */
-createRadialGradient : function (
-float, 
-float, 
-float, 
-float, 
-float, 
-float 
-)
-{
-    return cc.CanvasGradient;
-},
-
-/**
  * @method bezierCurveTo
  * @param {float} arg0
  * @param {float} arg1
@@ -1157,24 +1117,6 @@ float,
 float 
 )
 {
-},
-
-/**
- * @method createLinearGradient
- * @param {float} arg0
- * @param {float} arg1
- * @param {float} arg2
- * @param {float} arg3
- * @return {cc.CanvasGradient}
- */
-createLinearGradient : function (
-float, 
-float, 
-float, 
-float 
-)
-{
-    return cc.CanvasGradient;
 },
 
 /**

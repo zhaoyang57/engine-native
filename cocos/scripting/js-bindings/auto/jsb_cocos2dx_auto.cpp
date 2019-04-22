@@ -1260,12 +1260,16 @@ static bool js_engine_CanvasGradient_constructor(se::State& s)
     float arg1 = 0;
     float arg2 = 0;
     float arg3 = 0;
+    float arg4 = 0;
+    float arg5 = 0;
     ok &= seval_to_float(args[0], &arg0);
     ok &= seval_to_float(args[1], &arg1);
     ok &= seval_to_float(args[2], &arg2);
     ok &= seval_to_float(args[3], &arg3);
+    ok &= seval_to_float(args[4], &arg4);
+    ok &= seval_to_float(args[5], &arg5);
     SE_PRECONDITION2(ok, false, "js_engine_CanvasGradient_constructor : Error processing arguments");
-    cocos2d::CanvasGradient* cobj = new (std::nothrow) cocos2d::CanvasGradient(arg0, arg1, arg2, arg3);
+    cocos2d::CanvasGradient* cobj = new (std::nothrow) cocos2d::CanvasGradient(arg0, arg1, arg2, arg3, arg4, arg5);
     s.thisObject()->setPrivateData(cobj);
     se::NonRefNativePtrCreatedByCtorMap::emplace(cobj);
     return true;
@@ -1516,33 +1520,6 @@ static bool js_engine_CanvasRenderingContext2D_getLineDash(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_getLineDash)
-
-static bool js_engine_CanvasRenderingContext2D_createPattern(se::State& s)
-{
-    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_createPattern : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 4) {
-        int arg0 = 0;
-        int arg1 = 0;
-        cocos2d::Data arg2;
-        std::string arg3;
-        do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
-        do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
-        ok &= seval_to_Data(args[2], &arg2);
-        ok &= seval_to_std_string(args[3], &arg3);
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createPattern : Error processing arguments");
-        cocos2d::CanvasPattern* result = cobj->createPattern(arg0, arg1, arg2, arg3);
-        ok &= native_ptr_to_seval<cocos2d::CanvasPattern>((cocos2d::CanvasPattern*)result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createPattern : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 4);
-    return false;
-}
-SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_createPattern)
 
 static bool js_engine_CanvasRenderingContext2D_stroke(se::State& s)
 {
@@ -1913,37 +1890,6 @@ static bool js_engine_CanvasRenderingContext2D_save(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_save)
 
-static bool js_engine_CanvasRenderingContext2D_createRadialGradient(se::State& s)
-{
-    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_createRadialGradient : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 6) {
-        float arg0 = 0;
-        float arg1 = 0;
-        float arg2 = 0;
-        float arg3 = 0;
-        float arg4 = 0;
-        float arg5 = 0;
-        ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_float(args[3], &arg3);
-        ok &= seval_to_float(args[4], &arg4);
-        ok &= seval_to_float(args[5], &arg5);
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createRadialGradient : Error processing arguments");
-        cocos2d::CanvasGradient* result = cobj->createRadialGradient(arg0, arg1, arg2, arg3, arg4, arg5);
-        ok &= native_ptr_to_seval<cocos2d::CanvasGradient>((cocos2d::CanvasGradient*)result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createRadialGradient : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 6);
-    return false;
-}
-SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_createRadialGradient)
-
 static bool js_engine_CanvasRenderingContext2D_bezierCurveTo(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -2145,33 +2091,6 @@ static bool js_engine_CanvasRenderingContext2D_translate(se::State& s)
 }
 SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_translate)
 
-static bool js_engine_CanvasRenderingContext2D_createLinearGradient(se::State& s)
-{
-    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_engine_CanvasRenderingContext2D_createLinearGradient : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 4) {
-        float arg0 = 0;
-        float arg1 = 0;
-        float arg2 = 0;
-        float arg3 = 0;
-        ok &= seval_to_float(args[0], &arg0);
-        ok &= seval_to_float(args[1], &arg1);
-        ok &= seval_to_float(args[2], &arg2);
-        ok &= seval_to_float(args[3], &arg3);
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createLinearGradient : Error processing arguments");
-        cocos2d::CanvasGradient* result = cobj->createLinearGradient(arg0, arg1, arg2, arg3);
-        ok &= native_ptr_to_seval<cocos2d::CanvasGradient>((cocos2d::CanvasGradient*)result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_createLinearGradient : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 4);
-    return false;
-}
-SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_createLinearGradient)
-
 static bool js_engine_CanvasRenderingContext2D_strokeRect(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -2258,7 +2177,6 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("clip", _SE(js_engine_CanvasRenderingContext2D_clip));
     cls->defineFunction("setTransform", _SE(js_engine_CanvasRenderingContext2D_setTransform));
     cls->defineFunction("getLineDash", _SE(js_engine_CanvasRenderingContext2D_getLineDash));
-    cls->defineFunction("createPattern", _SE(js_engine_CanvasRenderingContext2D_createPattern));
     cls->defineFunction("stroke", _SE(js_engine_CanvasRenderingContext2D_stroke));
     cls->defineFunction("arc", _SE(js_engine_CanvasRenderingContext2D_arc));
     cls->defineFunction("measureText", _SE(js_engine_CanvasRenderingContext2D_measureText));
@@ -2272,7 +2190,6 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("strokeText", _SE(js_engine_CanvasRenderingContext2D_strokeText));
     cls->defineFunction("setLineDash", _SE(js_engine_CanvasRenderingContext2D_setLineDash));
     cls->defineFunction("save", _SE(js_engine_CanvasRenderingContext2D_save));
-    cls->defineFunction("createRadialGradient", _SE(js_engine_CanvasRenderingContext2D_createRadialGradient));
     cls->defineFunction("bezierCurveTo", _SE(js_engine_CanvasRenderingContext2D_bezierCurveTo));
     cls->defineFunction("resetTransform", _SE(js_engine_CanvasRenderingContext2D_resetTransform));
     cls->defineFunction("arcTo", _SE(js_engine_CanvasRenderingContext2D_arcTo));
@@ -2282,7 +2199,6 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     cls->defineFunction("clearRect", _SE(js_engine_CanvasRenderingContext2D_clearRect));
     cls->defineFunction("rect", _SE(js_engine_CanvasRenderingContext2D_rect));
     cls->defineFunction("translate", _SE(js_engine_CanvasRenderingContext2D_translate));
-    cls->defineFunction("createLinearGradient", _SE(js_engine_CanvasRenderingContext2D_createLinearGradient));
     cls->defineFunction("strokeRect", _SE(js_engine_CanvasRenderingContext2D_strokeRect));
     cls->defineFunction("closePath", _SE(js_engine_CanvasRenderingContext2D_closePath));
     cls->defineFinalizeFunction(_SE(js_cocos2d_CanvasRenderingContext2D_finalize));

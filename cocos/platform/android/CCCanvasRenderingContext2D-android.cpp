@@ -1111,21 +1111,6 @@ void CanvasRenderingContext2D::clip(std::string rule) {
     _impl->clip(rule);
 }
 
-CanvasGradient* CanvasRenderingContext2D::createLinearGradient(float x0, float y0, float x1, float y1) {
-    CanvasGradient* gradient = new CanvasGradient(x0, y0, x1, y1);
-    return gradient;
-}
-
-CanvasGradient* CanvasRenderingContext2D::createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1) {
-    CanvasGradient* gradient = new CanvasGradient(x0, y0, x1, y1, r0, r1);
-    return gradient;
-}
-
-CanvasPattern* CanvasRenderingContext2D::createPattern(int width, int height, Data& pixels, std::string& rule) {
-    CanvasPattern* pattern = new CanvasPattern(width, height, pixels, rule);
-    return pattern;
-}
-
 void CanvasRenderingContext2D::resetFillStyle() {
     _gradientFillStyle = nullptr;
     _patternFillStyle = nullptr;

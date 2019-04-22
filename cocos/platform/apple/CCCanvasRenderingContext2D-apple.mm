@@ -933,17 +933,34 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
+
+void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     [_impl setFillStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
-//    SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_fillStyle(CanvasGradient* gradient) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_fillStyle(CanvasPattern* pattern) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     [_impl setStrokeStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasGradient* gradient)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasPattern* pattern) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
@@ -1039,18 +1056,6 @@ void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float ra
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
-}
-
-void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
-}
-
-void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
-}
-
-void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
     SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 

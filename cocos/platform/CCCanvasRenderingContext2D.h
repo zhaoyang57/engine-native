@@ -47,7 +47,7 @@ NS_CC_BEGIN
 
 class CC_DLL CanvasGradient {
 public:
-    CanvasGradient(float x0, float y0, float x1, float y1, float r0 = -1, float r1 = -1);
+    CanvasGradient(float x0, float y0, float x1, float y1, float r0, float r1);
 
     ~CanvasGradient();
 
@@ -86,9 +86,6 @@ public:
     void fillText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     Size measureText(const std::string& text);
-    CanvasGradient* createLinearGradient(float x0, float y0, float x1, float y1);
-    CanvasGradient* createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1);
-    CanvasPattern* createPattern(int width, int height, Data& pixels, std::string& rule);
     // Paths
     void beginPath();
     void closePath();
