@@ -639,6 +639,70 @@ char
 };
 
 /**
+ * @class CanvasGradient
+ */
+jsb.CanvasGradient = {
+
+/**
+ * @method addColorStop
+ * @param {float} arg0
+ * @param {String} arg1
+ */
+addColorStop : function (
+float, 
+str 
+)
+{
+},
+
+/**
+ * @method CanvasGradient
+ * @constructor
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ */
+CanvasGradient : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float 
+)
+{
+},
+
+};
+
+/**
+ * @class CanvasPattern
+ */
+jsb.CanvasPattern = {
+
+/**
+ * @method CanvasPattern
+ * @constructor
+ * @param {int} arg0
+ * @param {int} arg1
+ * @param {cc.Data} arg2
+ * @param {String} arg3
+ */
+CanvasPattern : function (
+int, 
+int, 
+data, 
+str 
+)
+{
+},
+
+};
+
+/**
  * @class CanvasRenderingContext2D
  */
 jsb.CanvasRenderingContext2D = {
@@ -727,6 +791,24 @@ getLineDash : function (
 )
 {
     return new Array();
+},
+
+/**
+ * @method createPattern
+ * @param {int} arg0
+ * @param {int} arg1
+ * @param {cc.Data} arg2
+ * @param {String} arg3
+ * @return {cc.CanvasPattern}
+ */
+createPattern : function (
+int, 
+int, 
+data, 
+str 
+)
+{
+    return cc.CanvasPattern;
 },
 
 /**
@@ -862,24 +944,6 @@ float
 },
 
 /**
- * @method _applyStyle_Pattern
- * @param {bool} arg0
- * @param {String} arg1
- * @param {cc.Data} arg2
- * @param {float} arg3
- * @param {float} arg4
- */
-_applyStyle_Pattern : function (
-bool, 
-str, 
-data, 
-float, 
-float 
-)
-{
-},
-
-/**
  * @method transform
  * @param {float} arg0
  * @param {float} arg1
@@ -950,29 +1014,25 @@ save : function (
 },
 
 /**
- * @method _applyStyle_RadialGradient
- * @param {bool} arg0
+ * @method createRadialGradient
+ * @param {float} arg0
  * @param {float} arg1
  * @param {float} arg2
  * @param {float} arg3
  * @param {float} arg4
  * @param {float} arg5
- * @param {float} arg6
- * @param {Array} arg7
- * @param {Array} arg8
+ * @return {cc.CanvasGradient}
  */
-_applyStyle_RadialGradient : function (
-bool, 
+createRadialGradient : function (
 float, 
 float, 
 float, 
 float, 
 float, 
-float, 
-array, 
-array 
+float 
 )
 {
+    return cc.CanvasGradient;
 },
 
 /**
@@ -1100,25 +1160,21 @@ float
 },
 
 /**
- * @method _applyStyle_LinearGradient
- * @param {bool} arg0
+ * @method createLinearGradient
+ * @param {float} arg0
  * @param {float} arg1
  * @param {float} arg2
  * @param {float} arg3
- * @param {float} arg4
- * @param {Array} arg5
- * @param {Array} arg6
+ * @return {cc.CanvasGradient}
  */
-_applyStyle_LinearGradient : function (
-bool, 
+createLinearGradient : function (
 float, 
 float, 
 float, 
-float, 
-array, 
-array 
+float 
 )
 {
+    return cc.CanvasGradient;
 },
 
 /**

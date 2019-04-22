@@ -30,6 +30,8 @@
 #include "CCGL.h"
 
 #include <string>
+#include <vector>
+
 
 #ifndef OBJC_CLASS
 #ifdef __OBJC__
@@ -42,6 +44,32 @@
 OBJC_CLASS(CanvasRenderingContext2DImpl);
 
 NS_CC_BEGIN
+
+class CC_DLL CanvasGradient {
+public:
+    CanvasGradient(float x0, float y0, float x1, float y1, float r0 = -1, float r1 = -1);
+
+    ~CanvasGradient();
+
+    void addColorStop(float offset, const std::string &color);
+
+public:
+    std::vector<float> pos;
+    std::vector<std::string> colors;
+    float x0, y0, x1, y1, radius0, radius1;
+};
+
+class CC_DLL CanvasPattern {
+public:
+    CanvasPattern(int width, int height, Data &pixels, std::string &rule);
+
+    ~CanvasPattern();
+
+public:
+    int width, height;
+    Data data;
+    std::string rule;
+};
 
 class CC_DLL CanvasRenderingContext2D
 {
@@ -58,9 +86,9 @@ public:
     void fillText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     void strokeText(const std::string& text, float x, float y, float maxWidth = -1.0f);
     Size measureText(const std::string& text);
-    void _applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color);
-    void _applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height);
-    void _applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color);
+    CanvasGradient* createLinearGradient(float x0, float y0, float x1, float y1);
+    CanvasGradient* createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1);
+    CanvasPattern* createPattern(int width, int height, Data& pixels, std::string& rule);
     // Paths
     void beginPath();
     void closePath();
@@ -96,8 +124,12 @@ public:
     void set_font(const std::string& font);
     void set_textAlign(const std::string& textAlign);
     void set_textBaseline(const std::string& textBaseline);
-    void set_fillStyleInternal(const std::string& fillStyle);
-    void set_strokeStyleInternal(const std::string& strokeStyle);
+    void set_fillStyle(const std::string& fillStyle);
+    void set_fillStyle(CanvasGradient* gradient);
+    void set_fillStyle(CanvasPattern* pattern);
+    void set_strokeStyle(const std::string& strokeStyle);
+    void set_strokeStyle(CanvasGradient* gradient);
+    void set_strokeStyle(CanvasPattern* pattern);
     void set_globalCompositeOperation(const std::string& globalCompositeOperation);
     void set_globalAlphaInternal(float alpha);
     void set_lineDashOffsetInternal(float offset);
@@ -128,6 +160,8 @@ private:
     GLint _maxTextureSize;
     bool recreateBufferIfNeeded();
     void notifyBufferDataUpdated();
+    void resetFillStyle();
+    void resetStrokeStyle();
 
 public:
 
@@ -147,8 +181,8 @@ public:
     std::string _textBaseline = "alphabetic";
 
     // Fill and stroke styles
-    std::string _fillStyleInternal = "#000";
-    std::string _strokeStyleInternal = "#000";
+    std::string _fillStyle = "#000";
+    std::string _strokeStyle = "#000";
 
     //shadow
     std::string _shadowColor = "#000";
@@ -159,6 +193,10 @@ public:
     // Compositing
     std::string _globalCompositeOperation = "source-over";
     float _globalAlphaInternal = 1.0f;
+    CanvasGradient* _gradientFillStyle = nullptr;
+    CanvasGradient* _gradientStrokeStyle = nullptr;
+    CanvasPattern* _patternFillStyle = nullptr;
+    CanvasPattern* _patternStrokeStyle = nullptr;
 
 private:
 

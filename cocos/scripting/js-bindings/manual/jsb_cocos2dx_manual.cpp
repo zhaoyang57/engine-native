@@ -406,8 +406,6 @@ BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, lineCap, std::s
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, font, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, textAlign, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, textBaseline, std::string, seval_to_std_string, setString)
-BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, fillStyleInternal, std::string, seval_to_std_string, setString)
-BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, strokeStyleInternal, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, globalCompositeOperation, std::string, seval_to_std_string, setString)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, globalAlphaInternal, float, seval_to_float, setFloat)
 BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, shadowColor, std::string, seval_to_std_string, setString)
@@ -484,6 +482,119 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
 }
 SE_BIND_FUNC(js_CanvasRenderingContext2D_getData)
 
+static bool js_CanvasRenderingContext2D_getFillStyle(se::State &s) {
+    cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_getFillStyle : Invalid Native Object");
+    if (cobj->_gradientFillStyle != nullptr) {
+        bool ok = true;
+        ok &= native_ptr_to_seval<CanvasGradient>(cobj->_gradientFillStyle, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_getFillStyle : Error processing arguments");
+    } else if (cobj->_patternFillStyle) {
+        bool ok = true;
+        ok &= native_ptr_to_seval<CanvasPattern>(cobj->_patternFillStyle, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_getFillStyle : Error processing arguments");
+    } else {
+        s.rval().setString(cobj->_fillStyle);
+    }
+
+    return true;
+}
+
+SE_BIND_PROP_GET(js_CanvasRenderingContext2D_getFillStyle)
+
+static bool js_CanvasRenderingContext2D_setFillStyle(se::State &s) {
+    cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_setFillStyle : Invalid Native Object");
+    const auto &args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        if (args[0].isString()) {
+            std::string value;
+            seval_to_std_string(args[0], &value);
+            cobj->set_fillStyle(value);
+        } else if (args[0].isObject()) {
+            se::Object *dataObj = args[0].toObject();
+            std::string clsName = "CanvasGradient";
+            if (clsName.compare(dataObj->_getClass()->getName()) == 0) {
+                CanvasGradient *gradient = nullptr;
+                ok = seval_to_native_ptr(args[0], &gradient);
+                SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_setFillStyle : Error processing arguments");
+                cobj->set_fillStyle(gradient);
+            } else {
+                CanvasPattern *pattern = nullptr;
+                ok = seval_to_native_ptr(args[0], &pattern);
+                SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_setFillStyle : Error processing arguments");
+                cobj->set_fillStyle(pattern);
+            }
+        }
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int) argc, 1);
+    return false;
+}
+
+SE_BIND_PROP_SET(js_CanvasRenderingContext2D_setFillStyle)
+
+
+static bool js_CanvasRenderingContext2D_getStrokeStyle(se::State &s) {
+    cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_getStrokeStyle : Invalid Native Object");
+    if (cobj->_gradientStrokeStyle != nullptr) {
+        bool ok = true;
+        ok &= native_ptr_to_seval<CanvasGradient>(cobj->_gradientStrokeStyle, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_getStrokeStyle : Error processing arguments");
+    } else if (cobj->_patternStrokeStyle) {
+        bool ok = true;
+        ok &= native_ptr_to_seval<CanvasPattern>(cobj->_patternStrokeStyle, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_CanvasRenderingContext2D_getStrokeStyle : Error processing arguments");
+    } else {
+        s.rval().setString(cobj->_strokeStyle);
+    }
+
+    return true;
+}
+
+SE_BIND_PROP_GET(js_CanvasRenderingContext2D_getStrokeStyle)
+
+static bool js_CanvasRenderingContext2D_setStrokeStyle(se::State &s) {
+    cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false,
+                     "js_CanvasRenderingContext2D_setStrokeStyle : Invalid Native Object");
+    const auto &args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        if (args[0].isString()) {
+            std::string value;
+            seval_to_std_string(args[0], &value);
+            cobj->set_strokeStyle(value);
+        } else if (args[0].isObject()) {
+            se::Object *dataObj = args[0].toObject();
+            std::string clsName = "CanvasGradient";
+            if (clsName.compare(dataObj->_getClass()->getName()) == 0) {
+                CanvasGradient *gradient = nullptr;
+                ok = seval_to_native_ptr(args[0], &gradient);
+                SE_PRECONDITION2(ok, false,
+                                 "js_CanvasRenderingContext2D_setStrokeStyle : Error processing arguments");
+                cobj->set_strokeStyle(gradient);
+            } else {
+                CanvasPattern *pattern = nullptr;
+                ok = seval_to_native_ptr(args[0], &pattern);
+                SE_PRECONDITION2(ok, false,
+                                 "js_CanvasRenderingContext2D_setStrokeStyle : Error processing arguments");
+                cobj->set_strokeStyle(pattern);
+            }
+        }
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int) argc, 1);
+    return false;
+}
+
+SE_BIND_PROP_SET(js_CanvasRenderingContext2D_setStrokeStyle)
+
+
 static se::Object* __deviceMotionObject = nullptr;
 static bool JSB_getDeviceMotionValue(se::State& s)
 {
@@ -540,8 +651,6 @@ static bool register_canvas_context2d(se::Object* obj)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, font)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, textAlign)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, textBaseline)
-    _SE_DEFINE_PROP(CanvasRenderingContext2D, fillStyleInternal)
-    _SE_DEFINE_PROP(CanvasRenderingContext2D, strokeStyleInternal)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, globalCompositeOperation)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, globalAlphaInternal)
     _SE_DEFINE_PROP(CanvasRenderingContext2D, lineDashOffsetInternal)
@@ -553,7 +662,8 @@ static bool register_canvas_context2d(se::Object* obj)
 
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_setCanvasBufferUpdatedCallback", _SE(js_CanvasRenderingContext2D_setCanvasBufferUpdatedCallback));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_getData", _SE(js_CanvasRenderingContext2D_getData));
-
+    __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("fillStyle", _SE(js_CanvasRenderingContext2D_getFillStyle), _SE(js_CanvasRenderingContext2D_setFillStyle));
+    __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("strokeStyle", _SE(js_CanvasRenderingContext2D_getStrokeStyle), _SE(js_CanvasRenderingContext2D_setStrokeStyle));
 
     se::ScriptEngine::getInstance()->clearException();
 

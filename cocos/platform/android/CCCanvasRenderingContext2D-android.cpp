@@ -544,6 +544,35 @@ namespace {
 
 NS_CC_BEGIN
 
+
+CanvasGradient::CanvasGradient(float x0, float y0, float x1, float y1, float r0, float r1) {
+    this->x0 = x0;
+    this->x1 = x1;
+    this->y0 = y0;
+    this->y1 = y1;
+    this->radius0 = r0;
+    this->radius1 = r1;
+}
+
+CanvasGradient::~CanvasGradient() {
+    //
+}
+
+void CanvasGradient::addColorStop(float offset, const std::string &color) {
+    pos.push_back(offset);
+    colors.push_back(color);
+}
+
+CanvasPattern::CanvasPattern(int width, int height, Data &pixels, std::string &rule) {
+    this->width = width;
+    this->height = height;
+    this->data = pixels;
+    this->rule = rule;
+}
+
+CanvasPattern::~CanvasPattern() {
+    //
+}
 // CanvasRenderingContext2D
 
 CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
@@ -600,6 +629,27 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
         }
         _impl->recreateBuffer(__width, __height);
         notifyBufferDataUpdated();
+
+        //reset to initail state
+        _lineWidthInternal = 1.0f;
+        _lineDashOffsetInternal = 0.0f;
+        _miterLimitInternal = 10.0f;
+        _lineJoin = "miter";
+        _lineCap = "butt";
+        _font = "10px sans-serif";
+        _textAlign = "start";
+        _textBaseline = "alphabetic";
+
+        _fillStyle = "#000";
+        _strokeStyle = "#000";
+
+        _shadowColor = "#000";
+        _shadowBlurInternal = 0.0f;
+        _shadowOffsetXInternal = 0.0f;
+        _shadowOffsetYInternal = 0.0f;
+
+        _globalCompositeOperation = "source-over";
+        _globalAlphaInternal = 1.0f;
     }
     return true;
 }
@@ -674,18 +724,6 @@ cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 {
 //    SE_LOGD("CanvasRenderingContext2D::measureText: %s\n", text.c_str());
     return cocos2d::Size(_impl->measureText(text), 0);
-}
-
-void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    _impl->applyStyle_Linear(isFillStyle, x0, y0, x1, y1, pos, color);
-}
-
-void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
-    _impl->_applyStyle_Pattern(isFillStyle, rule, image, width, height);
-}
-
-void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
-    _impl->_applyStyle_Radial(isFillStyle, x0, y0, r0, x1, y1, r1, pos, color);
 }
 
 void CanvasRenderingContext2D::save()
@@ -891,17 +929,70 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
+void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
 {
+    resetFillStyle();
+    _fillStyle = fillStyle;
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     _impl->setFillStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
     // SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_fillStyle(CanvasGradient* gradient) {
+    resetFillStyle();
+    _gradientFillStyle = gradient;
+    if(gradient->radius0 < 0) {
+        _impl->applyStyle_Linear(true, gradient->x0, gradient->y0, gradient->x1, gradient->y1, gradient->pos, gradient->colors);
+    } else {
+        _impl->_applyStyle_Radial(true,
+                                  gradient->x0,
+                                  gradient->y0,
+                                  gradient->radius0,
+                                  gradient->x1,
+                                  gradient->y1,
+                                  gradient->radius1,
+                                  gradient->pos,
+                                  gradient->colors);
+    }
+}
+
+void CanvasRenderingContext2D::set_fillStyle(CanvasPattern* pattern) {
+    resetFillStyle();
+    _patternFillStyle = pattern;
+    _impl->_applyStyle_Pattern(true, pattern->rule, pattern->data, pattern->width, pattern->height);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 {
+    resetStrokeStyle();
+    _strokeStyle = strokeStyle;
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     _impl->setStrokeStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasGradient* gradient)
+{
+    resetStrokeStyle();
+    _gradientStrokeStyle = gradient;
+    if(gradient->radius0 < 0) {
+        _impl->applyStyle_Linear(false, gradient->x0, gradient->y0, gradient->x1, gradient->y1, gradient->pos, gradient->colors);
+    } else {
+        _impl->_applyStyle_Radial(false,
+                                  gradient->x0,
+                                  gradient->y0,
+                                  gradient->radius0,
+                                  gradient->x1,
+                                  gradient->y1,
+                                  gradient->radius1,
+                                  gradient->pos,
+                                  gradient->colors);
+    }
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasPattern* pattern) {
+    resetStrokeStyle();
+    _patternStrokeStyle = pattern;
+    _impl->_applyStyle_Pattern(false, pattern->rule, pattern->data, pattern->width, pattern->height);
 }
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
@@ -1019,5 +1110,33 @@ void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float ra
 void CanvasRenderingContext2D::clip(std::string rule) {
     _impl->clip(rule);
 }
+
+CanvasGradient* CanvasRenderingContext2D::createLinearGradient(float x0, float y0, float x1, float y1) {
+    CanvasGradient* gradient = new CanvasGradient(x0, y0, x1, y1);
+    return gradient;
+}
+
+CanvasGradient* CanvasRenderingContext2D::createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1) {
+    CanvasGradient* gradient = new CanvasGradient(x0, y0, x1, y1, r0, r1);
+    return gradient;
+}
+
+CanvasPattern* CanvasRenderingContext2D::createPattern(int width, int height, Data& pixels, std::string& rule) {
+    CanvasPattern* pattern = new CanvasPattern(width, height, pixels, rule);
+    return pattern;
+}
+
+void CanvasRenderingContext2D::resetFillStyle() {
+    _gradientFillStyle = nullptr;
+    _patternFillStyle = nullptr;
+    _fillStyle = "#000";
+}
+
+void CanvasRenderingContext2D::resetStrokeStyle() {
+    _gradientStrokeStyle = nullptr;
+    _patternStrokeStyle = nullptr;
+    _strokeStyle = "#000";
+}
+
 
 NS_CC_END
