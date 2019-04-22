@@ -601,21 +601,12 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
 {
-    // SE_LOGD("CanvasRenderingContext2D destructor: %p\n", this);
+//     SE_LOGD("CanvasRenderingContext2D destructor: %p\n", this);
     delete _impl;
 }
 
 void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
-    this->_isDataNeedToSendJS = false;
     _impl->getData(callback);
-}
-
-void CanvasRenderingContext2D::notifyBufferDataUpdated() {
-    if(this->_isDataNeedToSendJS || this->_canvasBufferUpdatedCB == nullptr) {
-        return;
-    }
-    this->_isDataNeedToSendJS = true;
-    _canvasBufferUpdatedCB();
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
@@ -628,7 +619,6 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
             return false;
         }
         _impl->recreateBuffer(__width, __height);
-        notifyBufferDataUpdated();
 
         //reset to initail state
         _lineWidthInternal = 1.0f;
@@ -665,7 +655,6 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasRenderingContext2D::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         _impl->clearRect(x, y, width, height);
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -676,8 +665,6 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
 {
     if (recreateBufferIfNeeded()) {
         _impl->fillRect(x, y, width, height);
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -688,7 +675,6 @@ void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float h
 {
     if (recreateBufferIfNeeded()) {
         _impl->strokeRect(x, y, width, height);
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -700,7 +686,6 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 //    SE_LOGD("CanvasRenderingContext2D::fillText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
     if (recreateBufferIfNeeded()) {
         _impl->fillText(text, x, y, maxWidth);
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -712,8 +697,6 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
 //    SE_LOGD("CanvasRenderingContext2D::strokeText: %s, %f, %f, %f\n", text.c_str(), x, y, maxWidth);
     if (recreateBufferIfNeeded()) {
         _impl->strokeText(text, x, y, maxWidth);
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -775,8 +758,6 @@ void CanvasRenderingContext2D::stroke()
 {
     if (recreateBufferIfNeeded()) {
         _impl->stroke();
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D stroke width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -787,8 +768,6 @@ void CanvasRenderingContext2D::fill()
 {
     if (recreateBufferIfNeeded()) {
         _impl->fill();
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -798,11 +777,6 @@ void CanvasRenderingContext2D::fill()
 void CanvasRenderingContext2D::restore()
 {
     _impl->restoreContext();
-}
-
-void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
-{
-    _canvasBufferUpdatedCB = cb;
 }
 
 void CanvasRenderingContext2D::set__width(float width)
@@ -1021,7 +995,6 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
-    notifyBufferDataUpdated();
 }
 // transform
 //REFINE:
@@ -1100,7 +1073,6 @@ void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
     _impl->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
-    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float radiusY, float rotation, float startAngle, float endAngle, bool antiClockWise) {

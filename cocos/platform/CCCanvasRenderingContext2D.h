@@ -108,10 +108,6 @@ public:
     void drawImage(const Data& image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh,
                    float ow, float oh);
 
-    // callback
-    using CanvasBufferUpdatedCallback = std::function<void()>;
-    void setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb);
-
     // functions for properties
     void set__width(float width);
     void set__height(float height);
@@ -156,7 +152,6 @@ public:
 private:
     GLint _maxTextureSize;
     bool recreateBufferIfNeeded();
-    void notifyBufferDataUpdated();
     void resetFillStyle();
     void resetStrokeStyle();
 
@@ -196,12 +191,9 @@ public:
     CanvasPattern* _patternStrokeStyle = nullptr;
 
 private:
-
-    CanvasBufferUpdatedCallback _canvasBufferUpdatedCB = nullptr;
     CanvasRenderingContext2DImpl* _impl = nullptr;
 
     bool _isBufferSizeDirty = true;
-    bool _isDataNeedToSendJS = false;
 };
 
 NS_CC_END

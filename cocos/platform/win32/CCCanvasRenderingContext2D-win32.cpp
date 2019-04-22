@@ -745,11 +745,6 @@ void CanvasRenderingContext2D::restore()
     _impl->restoreContext();
 }
 
-void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
-{
-    _canvasBufferUpdatedCB = cb;
-}
-
 void CanvasRenderingContext2D::set__width(float width)
 {
     //SE_LOGD("CanvasRenderingContext2D::set__width: %f\n", width);
