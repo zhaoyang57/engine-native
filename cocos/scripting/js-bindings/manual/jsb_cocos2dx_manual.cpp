@@ -424,8 +424,24 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
     std::function<void (void *buffer, int len)> arg0;
     se::Value* pval(&s.rval());
     auto lambda = [pval](void *buffer, int len) -> void {
-        se::Object* obj = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, len);
-        se::HandleObject handleObject(obj);
+        se::Object* typeArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, len);
+
+        std::size_t bufferSize;
+        uint8_t *data = nullptr;
+        typeArray->getTypedArrayData(&data, &bufferSize);
+
+        int alpha = 0;
+        float preMultiplyAlpha = 1;
+        for (uint8_t *end = data + len; data < end; data = data + 4) {
+            alpha = data[3];
+            if (alpha > 0 && alpha < 255) {
+                data[0] = data[0] * 255 / alpha;
+                data[1] = data[1] * 255 / alpha;
+                data[2] = data[2] * 255 / alpha;
+            }
+        }
+
+        se::HandleObject handleObject(typeArray);
         pval->setObject(handleObject);
     };
     arg0 = lambda;
