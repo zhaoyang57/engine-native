@@ -1856,11 +1856,6 @@ void CanvasRenderingContext2D::restore()
     [_impl restoreDrawingState];
 }
 
-void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
-{
-    _canvasBufferUpdatedCB = cb;
-}
-
 void CanvasRenderingContext2D::set__width(float width)
 {
 //    SE_LOGD("CanvasRenderingContext2D::set__width: %f\n", width);
@@ -1982,17 +1977,34 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
+
+void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     [_impl setFillStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
-//    SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_fillStyle(CanvasGradient* gradient) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_fillStyle(CanvasPattern* pattern) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     [_impl setStrokeStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasGradient* gradient)
+{
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasPattern* pattern) {
+    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
 }
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
