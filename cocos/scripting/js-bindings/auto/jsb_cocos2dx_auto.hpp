@@ -75,6 +75,21 @@ bool js_register_cocos2d_SAXParser(se::Object* obj);
 bool register_all_engine(se::Object* obj);
 SE_DECLARE_FUNC(js_engine_SAXParser_init);
 
+extern se::Object* __jsb_cocos2d_CanvasGradient_proto;
+extern se::Class* __jsb_cocos2d_CanvasGradient_class;
+
+bool js_register_cocos2d_CanvasGradient(se::Object* obj);
+bool register_all_engine(se::Object* obj);
+SE_DECLARE_FUNC(js_engine_CanvasGradient_addColorStop);
+SE_DECLARE_FUNC(js_engine_CanvasGradient_CanvasGradient);
+
+extern se::Object* __jsb_cocos2d_CanvasPattern_proto;
+extern se::Class* __jsb_cocos2d_CanvasPattern_class;
+
+bool js_register_cocos2d_CanvasPattern(se::Object* obj);
+bool register_all_engine(se::Object* obj);
+SE_DECLARE_FUNC(js_engine_CanvasPattern_CanvasPattern);
+
 extern se::Object* __jsb_cocos2d_CanvasRenderingContext2D_proto;
 extern se::Class* __jsb_cocos2d_CanvasRenderingContext2D_class;
 
@@ -95,13 +110,11 @@ SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_fill);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D__fillImageData);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_scale);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_drawImage);
-SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D__applyStyle_Pattern);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_transform);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_fillText);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_strokeText);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_setLineDash);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_save);
-SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D__applyStyle_RadialGradient);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_bezierCurveTo);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_resetTransform);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_arcTo);
@@ -111,7 +124,6 @@ SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_beginPath);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_clearRect);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_rect);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_translate);
-SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D__applyStyle_LinearGradient);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_strokeRect);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_closePath);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_CanvasRenderingContext2D);

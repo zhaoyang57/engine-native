@@ -745,11 +745,6 @@ void CanvasRenderingContext2D::restore()
     _impl->restoreContext();
 }
 
-void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
-{
-    _canvasBufferUpdatedCB = cb;
-}
-
 void CanvasRenderingContext2D::set__width(float width)
 {
     //SE_LOGD("CanvasRenderingContext2D::set__width: %f\n", width);
@@ -860,17 +855,33 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
     }
 }
 
-void CanvasRenderingContext2D::set_fillStyleInternal(const std::string& fillStyle)
+void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     _impl->setFillStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
-    //SE_LOGD("CanvasRenderingContext2D::set_fillStyle: %s, (%d, %d, %d, %f)\n", fillStyle.c_str(), color.r, color.g, color.b, color.a);
 }
 
-void CanvasRenderingContext2D::set_strokeStyleInternal(const std::string& strokeStyle)
+void CanvasRenderingContext2D::set_fillStyle(CanvasGradient* gradient) {
+    //
+}
+
+void CanvasRenderingContext2D::set_fillStyle(CanvasPattern* pattern) {
+    //
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 {
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     _impl->setStrokeStyle(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a);
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasGradient* gradient)
+{
+    //
+}
+
+void CanvasRenderingContext2D::set_strokeStyle(CanvasPattern* pattern) {
+    //
 }
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
@@ -958,18 +969,6 @@ void CanvasRenderingContext2D::ellipse(float x, float y, float radiusX, float ra
 }
 
 void CanvasRenderingContext2D::clip(std::string rule) {
-    //
-}
-
-void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    //
-}
-
-void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
-    //
-}
-
-void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
     //
 }
 
