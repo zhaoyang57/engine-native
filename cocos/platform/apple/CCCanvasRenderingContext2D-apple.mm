@@ -1617,6 +1617,35 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
 @end
 
 NS_CC_BEGIN
+
+CanvasGradient::CanvasGradient(float x0, float y0, float x1, float y1, float r0, float r1) {
+    this->x0 = x0;
+    this->x1 = x1;
+    this->y0 = y0;
+    this->y1 = y1;
+    this->radius0 = r0;
+    this->radius1 = r1;
+}
+
+CanvasGradient::~CanvasGradient() {
+    //
+}
+
+void CanvasGradient::addColorStop(float offset, const std::string &color) {
+    pos.push_back(offset);
+    colors.push_back(color);
+}
+
+CanvasPattern::CanvasPattern(int width, int height, Data &pixels, std::string &rule) {
+    this->width = width;
+    this->height = height;
+    this->data = pixels;
+    this->rule = rule;
+}
+
+CanvasPattern::~CanvasPattern() {
+    //
+}
 // CanvasRenderingContext2D
 
 static std::map<std::string, bool> s_globalCompositeOperationMap;
@@ -1660,26 +1689,16 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D()
 {
-//    SE_LOGD("CanvasRenderingContext2D destructor: %p\n", this);
     [_impl release];
     _impl = nil;
 }
 
 void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
-    this->_isDataNeedToSendJS = false;
     if (nullptr == callback) {
         return;
     }
     cocos2d::Data data = [_impl getDataRef];
     callback(data.getBytes(), (int)data.getSize());
-}
-
-void CanvasRenderingContext2D::notifyBufferDataUpdated() {
-    if(this->_isDataNeedToSendJS || this->_canvasBufferUpdatedCB == nullptr) {
-        return;
-    }
-    this->_isDataNeedToSendJS = true;
-    _canvasBufferUpdatedCB();
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
@@ -1692,7 +1711,27 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
             return false;
         }
         [_impl recreateBufferWithWidth: __width height:__height];
-        notifyBufferDataUpdated();
+        
+        //reset to initail state
+        _lineWidthInternal = 1.0f;
+        _lineDashOffsetInternal = 0.0f;
+        _miterLimitInternal = 10.0f;
+        _lineJoin = "miter";
+        _lineCap = "butt";
+        _font = "10px sans-serif";
+        _textAlign = "start";
+        _textBaseline = "alphabetic";
+        
+        _fillStyle = "#000";
+        _strokeStyle = "#000";
+        
+        _shadowColor = "#000";
+        _shadowBlurInternal = 0.0f;
+        _shadowOffsetXInternal = 0.0f;
+        _shadowOffsetYInternal = 0.0f;
+        
+        _globalCompositeOperation = "source-over";
+        _globalAlphaInternal = 1.0f;
     }
     return true;
 }
@@ -1702,8 +1741,6 @@ void CanvasRenderingContext2D::clearRect(float x, float y, float width, float he
 //    SE_LOGD("CanvasGradient::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
     if (recreateBufferIfNeeded()) {
         [_impl clearRect:CGRectMake(x, y, width, height)];
-        
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1714,8 +1751,6 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
 {
     if (recreateBufferIfNeeded()) {
         [_impl fillRect:CGRectMake(x, y, width, height)];
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1727,7 +1762,6 @@ void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float h
     if (recreateBufferIfNeeded()) {
         [_impl rectWithX:x y:y width:width height:height];
         [_impl stroke];
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1742,7 +1776,6 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
 
     if (recreateBufferIfNeeded()) {
         [_impl fillText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1756,8 +1789,6 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
         return;
     if (recreateBufferIfNeeded()) {
         [_impl strokeText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
-
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1829,16 +1860,12 @@ void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, flo
 void CanvasRenderingContext2D::stroke()
 {
     [_impl stroke];
-
-    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::fill()
 {
     if (recreateBufferIfNeeded()) {
         [_impl fill];
-        
-        notifyBufferDataUpdated();
     } else {
         SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
                 __width, __height);
@@ -1980,31 +2007,87 @@ void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
 
 void CanvasRenderingContext2D::set_fillStyle(const std::string& fillStyle)
 {
+    resetFillStyle();
+    _fillStyle = fillStyle;
     CSSColorParser::Color color = CSSColorParser::parse(fillStyle);
     [_impl setFillStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
 }
 
 void CanvasRenderingContext2D::set_fillStyle(CanvasGradient* gradient) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    resetFillStyle();
+    _gradientFillStyle = gradient;
+    if(gradient->radius0 < 0) {
+        [_impl applyStyleLinearGradientWithIsFillStyle:true
+                                                    x0:gradient->x0
+                                                    y0:gradient->y0
+                                                    x1:gradient->x1
+                                                    y1:gradient->y1
+                                                   pos:gradient->pos
+                                                 color:gradient->colors];
+    } else {
+        [_impl applyStyleRadialGradientWithIsFillStyle:true
+                                                    x0:gradient->x0
+                                                    y0:gradient->y0
+                                                    r0:gradient->radius0
+                                                    x1:gradient->x1
+                                                    y1:gradient->y1
+                                                    r1:gradient->radius1
+                                                   pos:gradient->pos
+                                                 color:gradient->colors];
+    }
 }
 
 void CanvasRenderingContext2D::set_fillStyle(CanvasPattern* pattern) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    resetFillStyle();
+    _patternFillStyle = pattern;
+    [_impl applyStylePatternWithIsFillStyle:true
+                                       rule:[NSString stringWithUTF8String:pattern->rule.c_str()]
+                                      image:pattern->data
+                                      width:pattern->width
+                                     height:pattern->height];
 }
 
 void CanvasRenderingContext2D::set_strokeStyle(const std::string& strokeStyle)
 {
+    resetStrokeStyle();
+    _strokeStyle = strokeStyle;
     CSSColorParser::Color color = CSSColorParser::parse(strokeStyle);
     [_impl setStrokeStyleWithRed:color.r/255.0f green:color.g/255.0f blue:color.b/255.0f alpha:color.a];
 }
 
 void CanvasRenderingContext2D::set_strokeStyle(CanvasGradient* gradient)
 {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    resetStrokeStyle();
+    _gradientStrokeStyle = gradient;
+    if (gradient->radius0 < 0) {
+        [_impl applyStyleLinearGradientWithIsFillStyle:false
+                                                    x0:gradient->x0
+                                                    y0:gradient->y0
+                                                    x1:gradient->x1
+                                                    y1:gradient->y1
+                                                   pos:gradient->pos
+                                                 color:gradient->colors];
+    } else {
+        [_impl applyStyleRadialGradientWithIsFillStyle:false
+                                                    x0:gradient->x0
+                                                    y0:gradient->y0
+                                                    r0:gradient->radius0
+                                                    x1:gradient->x1
+                                                    y1:gradient->y1
+                                                    r1:gradient->radius1
+                                                   pos:gradient->pos
+                                                 color:gradient->colors];
+    }
 }
 
 void CanvasRenderingContext2D::set_strokeStyle(CanvasPattern* pattern) {
-    SE_LOGE("%s isn't implemented!\n", __FUNCTION__);
+    resetStrokeStyle();
+    _patternStrokeStyle = pattern;
+    [_impl applyStylePatternWithIsFillStyle:false
+                                       rule:[NSString stringWithUTF8String:pattern->rule.c_str()]
+                                      image:pattern->data
+                                      width:pattern->width
+                                     height:pattern->height];
 }
 
 void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& globalCompositeOperation)
@@ -2019,7 +2102,6 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
     [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
-    notifyBufferDataUpdated();
 }
 
 // transform
@@ -2083,7 +2165,6 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
     [_impl drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh ow:ow oh:oh];
-    notifyBufferDataUpdated();
 }
 
 void CanvasRenderingContext2D::set_shadowColor(const std::string& shadowColor)
@@ -2127,41 +2208,23 @@ void CanvasRenderingContext2D::clip(std::string rule) {
     [_impl clip:[NSString stringWithUTF8String:rule.c_str()]];
 }
 
-void CanvasRenderingContext2D::_applyStyle_LinearGradient(bool isFillStyle, float x0, float y0, float x1, float y1, std::vector<float>& pos, std::vector<std::string>& color) {
-    [_impl applyStyleLinearGradientWithIsFillStyle:isFillStyle
-                                                x0:x0
-                                                y0:y0
-                                                x1:x1
-                                                y1:y1
-                                               pos:pos
-                                             color:color];
-}
-
-void CanvasRenderingContext2D::_applyStyle_RadialGradient(bool isFillStyle, float x0, float y0, float r0, float x1, float y1, float r1, std::vector<float>& pos, std::vector<std::string>& color) {
-    [_impl applyStyleRadialGradientWithIsFillStyle:isFillStyle
-                                                x0:x0
-                                                y0:y0
-                                                r0:r0
-                                                x1:x1
-                                                y1:y1
-                                                r1:r1
-                                               pos:pos
-                                             color:color];
-}
-
-void CanvasRenderingContext2D::_applyStyle_Pattern(bool isFillStyle, std::string rule, const Data& image, float width, float height) {
-    [_impl applyStylePatternWithIsFillStyle:isFillStyle
-                                       rule:[NSString stringWithUTF8String:rule.c_str()]
-                                      image:image
-                                      width:width
-                                     height:height];
-}
-
 void CanvasRenderingContext2D::set_globalAlphaInternal(float alpha) {
     if(alpha < 0 || alpha > 1) {
         return;
     }
     this->_globalAlphaInternal = alpha;
     _impl.drawingState.globalAlpha = alpha;
+}
+
+void CanvasRenderingContext2D::resetFillStyle() {
+    _gradientFillStyle = nullptr;
+    _patternFillStyle = nullptr;
+    _fillStyle = "#000";
+}
+
+void CanvasRenderingContext2D::resetStrokeStyle() {
+    _gradientStrokeStyle = nullptr;
+    _patternStrokeStyle = nullptr;
+    _strokeStyle = "#000";
 }
 NS_CC_END
