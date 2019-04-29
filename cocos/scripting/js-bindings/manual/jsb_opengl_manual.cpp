@@ -1173,6 +1173,7 @@ SE_BIND_CTOR(JSB_glProgram_constructor, __jsb_WebGLProgram_class, JSB_glProgramF
 static bool JSB_glCreateShader(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
+    s.rval().setNull();
     SE_PRECONDITION2( argc == 1, false, "Invalid number of arguments" );
     bool ok = true;
     uint32_t arg0;
