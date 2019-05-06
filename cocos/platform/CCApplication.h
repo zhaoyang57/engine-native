@@ -44,6 +44,8 @@ class CC_DLL Application
 {
 public:
     
+    typedef void (*DrawCallback)(int);
+    
     /** Since WINDOWS and ANDROID are defined as macros, we could not just use these keywords in enumeration(Platform).
      *  Therefore, 'OS_' prefix is added to avoid conflicts with the definitions of system macros.
      */
@@ -187,6 +189,10 @@ public:
     void copyTextToClipboard(const std::string &text);
 
     std::string getSystemVersion();
+    
+    void setPreDrawCallback(DrawCallback callback);
+    
+    void setPostDrawCallback(DrawCallback callback);
     
 protected:
     virtual void onCreateView(PixelFormat& pixelformat, DepthFormat& depthFormat, int& multisamplingCount);
