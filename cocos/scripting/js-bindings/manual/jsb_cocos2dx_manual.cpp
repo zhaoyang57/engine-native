@@ -431,7 +431,6 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
         typeArray->getTypedArrayData(&data, &bufferSize);
 
         int alpha = 0;
-        float preMultiplyAlpha = 1;
         for (uint8_t *end = data + len; data < end; data = data + 4) {
             alpha = data[3];
             if (alpha > 0 && alpha < 255) {
