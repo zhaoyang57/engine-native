@@ -146,7 +146,7 @@ public:
     void setLineDash(std::vector<float>& arr);
     std::vector<float>& getLineDash();
 
-    using CanvasBufferGetCallback = std::function<void(void* p, int len)>;
+    using CanvasBufferGetCallback = std::function<void(void* p, int len, bool needPremultiply)>;
     void _getData(CanvasBufferGetCallback& callback);
 
 private:
@@ -189,6 +189,7 @@ public:
     CanvasGradient* _gradientStrokeStyle = nullptr;
     CanvasPattern* _patternFillStyle = nullptr;
     CanvasPattern* _patternStrokeStyle = nullptr;
+    static bool s_needPremultiply;
 
 private:
     CanvasRenderingContext2DImpl* _impl = nullptr;

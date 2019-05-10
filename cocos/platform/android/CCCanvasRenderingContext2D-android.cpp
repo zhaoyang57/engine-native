@@ -17,6 +17,8 @@
 using namespace cocos2d;
 using namespace CSSColorParser;
 
+bool CanvasRenderingContext2D::s_needPremultiply = false;
+
 enum class CanvasTextAlign {
     LEFT,
     CENTER,
@@ -255,7 +257,7 @@ public:
         JniHelper::getEnv()->DeleteLocalRef(arr);
     }
 
-    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback) {
+    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback, bool needPremultiply) {
         jobject bmpObj = nullptr;
         JniMethodInfo methodInfo;
         if (JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "getBitmap", "()Landroid/graphics/Bitmap;")) {
@@ -286,7 +288,7 @@ public:
             }
 
             if (nullptr != callback) {
-                callback(pixelData, size);
+                callback(pixelData, size, needPremultiply);
             }
             AndroidBitmap_unlockPixels(env, bmpObj);
         } while (false);
@@ -623,7 +625,7 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D()
 }
 
 void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
-    _impl->getData(callback);
+    _impl->getData(callback, s_needPremultiply);
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()

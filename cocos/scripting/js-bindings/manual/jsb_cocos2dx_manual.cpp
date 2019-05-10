@@ -419,27 +419,27 @@ BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, shadowOffsetYIn
 
 static bool js_CanvasRenderingContext2D_getData(se::State& s)
 {
-    cocos2d::CanvasRenderingContext2D* cobj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_getData : Invalid Native Object");
-    std::function<void (void *buffer, int len)> arg0;
-    se::Value* pval(&s.rval());
-    auto lambda = [pval](void *buffer, int len) -> void {
-        se::Object* typeArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, len);
+    std::function<void(void *buffer, int len, bool needPremultiply)> arg0;
+    se::Value *pval(&s.rval());
+    auto lambda = [pval](void *buffer, int len, bool needPremultiply) -> void {
+        se::Object *typeArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, len);
+        if (!needPremultiply) {
+            std::size_t bufferSize;
+            uint8_t *data = nullptr;
+            typeArray->getTypedArrayData(&data, &bufferSize);
 
-        std::size_t bufferSize;
-        uint8_t *data = nullptr;
-        typeArray->getTypedArrayData(&data, &bufferSize);
-
-        int alpha = 0;
-        for (uint8_t *end = data + len; data < end; data = data + 4) {
-            alpha = data[3];
-            if (alpha > 0 && alpha < 255) {
-                data[0] = data[0] * 255 / alpha;
-                data[1] = data[1] * 255 / alpha;
-                data[2] = data[2] * 255 / alpha;
+            int alpha = 0;
+            for (uint8_t *end = data + len; data < end; data = data + 4) {
+                alpha = data[3];
+                if (alpha > 0 && alpha < 255) {
+                    data[0] = data[0] * 255 / alpha;
+                    data[1] = data[1] * 255 / alpha;
+                    data[2] = data[2] * 255 / alpha;
+                }
             }
         }
-
         se::HandleObject handleObject(typeArray);
         pval->setObject(handleObject);
     };
@@ -447,6 +447,7 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
     cobj->_getData(arg0);
     return true;
 }
+
 SE_BIND_FUNC(js_CanvasRenderingContext2D_getData)
 
 static bool js_CanvasRenderingContext2D_getFillStyle(se::State &s) {
