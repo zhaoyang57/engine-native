@@ -31,6 +31,8 @@
 
 #include <regex>
 
+bool cocos2d::CanvasRenderingContext2D::s_needPremultiply = false;
+
 enum class CanvasTextAlign {
     LEFT,
     CENTER,
@@ -1698,7 +1700,7 @@ void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
         return;
     }
     cocos2d::Data data = [_impl getDataRef];
-    callback(data.getBytes(), (int)data.getSize());
+    callback(data.getBytes(), (int)data.getSize(), s_needPremultiply);
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
