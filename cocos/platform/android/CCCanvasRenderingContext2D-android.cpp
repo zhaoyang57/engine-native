@@ -17,6 +17,8 @@
 using namespace cocos2d;
 using namespace CSSColorParser;
 
+bool CanvasRenderingContext2D::s_needPremultiply = false;
+
 enum class CanvasTextAlign {
     LEFT,
     CENTER,
@@ -255,7 +257,7 @@ public:
         JniHelper::getEnv()->DeleteLocalRef(arr);
     }
 
-    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback) {
+    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback, bool needPremultiply) {
         jobject bmpObj = nullptr;
         JniMethodInfo methodInfo;
         if (JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "getBitmap", "()Landroid/graphics/Bitmap;")) {
@@ -286,7 +288,7 @@ public:
             }
 
             if (nullptr != callback) {
-                callback(pixelData, size);
+                callback(pixelData, size, needPremultiply);
             }
             AndroidBitmap_unlockPixels(env, bmpObj);
         } while (false);
@@ -400,6 +402,14 @@ public:
         if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
             return;
         jbyteArray arr = JniHelper::getEnv()->NewByteArray((jsize) image.getSize());
+        unsigned char *data = image.getBytes();
+        int alpha = 0;
+        for (uint8_t *end = data + image.getSize(); data < end; data = data + 4) {
+            alpha = data[3];
+            data[0] = data[0] * alpha / 255;
+            data[1] = data[1] * alpha / 255;
+            data[2] = data[2] * alpha / 255;
+        }
         JniHelper::getEnv()->SetByteArrayRegion(arr, 0, (jsize) image.getSize(), (const jbyte *) image.getBytes());
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "drawImage", arr, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
         JniHelper::getEnv()->DeleteLocalRef(arr);
@@ -461,6 +471,15 @@ public:
                 return;
             }
             jbyteArray jArrData = methodInfo.env->NewByteArray(size);
+            unsigned char* data = image.getBytes();
+            int alpha = 0;
+            for (uint8_t *end = data + size; data < end; data = data + 4) {
+                alpha = data[3];
+                data[0] = data[0] * alpha / 255;
+                data[1] = data[1] * alpha / 255;
+                data[2] = data[2] * alpha / 255;
+            }
+
             methodInfo.env->SetByteArrayRegion(jArrData, 0, size, (const jbyte *) image.getBytes());
             jstring jRule = cocos2d::StringUtils::newStringUTFJNI(methodInfo.env, rule);
 
@@ -606,7 +625,7 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D()
 }
 
 void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
-    _impl->getData(callback);
+    _impl->getData(callback, s_needPremultiply);
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
