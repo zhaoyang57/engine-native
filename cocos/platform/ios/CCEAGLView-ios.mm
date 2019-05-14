@@ -183,6 +183,16 @@ namespace
     [super dealloc];
 }
 
+- (void)setFrame:(CGRect)frame {
+    CGRect oldFrame = self.frame;
+    [super setFrame:frame];
+    if (!CGSizeEqualToSize(frame.size, oldFrame.size)) {
+        // if the size is equal to old frame size, no need to call onResize callback
+        float scale = [[UIScreen mainScreen] scale];
+        cocos2d::EventDispatcher::dispatchResizeEvent(frame.size.width * scale, frame.size.height * scale);
+    }
+}
+
 - (void) layoutSubviews
 {
     glBindFramebuffer(GL_FRAMEBUFFER, _defaultFramebuffer);

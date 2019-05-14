@@ -79,6 +79,8 @@ namespace
     cocos2d::Scheduler* _scheduler;
     UILabel* _debugLabel;
     bool _isOpenDebugView;
+    cocos2d::Application::DrawCallback _preDrawCallback;
+    cocos2d::Application::DrawCallback _postDrawCallback;
 }
 -(void) startMainLoop;
 -(void) stopMainLoop;
@@ -86,6 +88,8 @@ namespace
 -(void) setPreferredFPS:(int)fps;
 -(void) firstStart:(id) view;
 -(void) showDebugView:(bool)isShow;
+-(void) setPreDrawCallback:(cocos2d::Application::DrawCallback )callback;
+-(void) setPostDrawCallback:(cocos2d::Application::DrawCallback )callback;
 @end
 
 @implementation MainLoop
@@ -197,17 +201,27 @@ namespace
     [_debugLabel setHidden:not isShow];
 }
 
+-(void) setPreDrawCallback:(cocos2d::Application::DrawCallback)callback {
+    _preDrawCallback = callback;
+}
+
+-(void) setPostDrawCallback:(cocos2d::Application::DrawCallback)callback {
+    _postDrawCallback = callback;
+}
+
 -(void) doCaller: (id) sender
 {
+    if (_preDrawCallback != nullptr) {
+        _preDrawCallback(_fps);
+    }
+    
     static std::chrono::steady_clock::time_point prevTime;
-    static std::chrono::steady_clock::time_point now;
-    static float dt = 0.0f;
     static float dtSum = 0.0f;
     static uint32_t jsbInvocationTotalFrames = 0;
     static uint32_t jsbInvocationTotalCount = 0;
 
-    now = std::chrono::steady_clock::now();
-    dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    float dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
     prevTime = now;
     
     if (_isOpenDebugView) {
@@ -251,6 +265,10 @@ namespace
     
     [(CCEAGLView*)(_application->getView()) swapBuffers];
     cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
+    
+    if (_postDrawCallback != nullptr) {
+        _postDrawCallback(_fps);
+    }
 }
 
 @end
@@ -325,6 +343,18 @@ void Application::end()
     delete this;
 
     exit(0);
+}
+
+void Application::setPreDrawCallback(DrawCallback callback) {
+    if (_delegate) {
+        [(MainLoop *)_delegate setPreDrawCallback:callback];
+    }
+}
+
+void Application::setPostDrawCallback(DrawCallback callback) {
+    if (_delegate) {
+        [(MainLoop *)_delegate setPostDrawCallback:callback];
+    }
 }
 
 void Application::setPreferredFramesPerSecond(int fps)

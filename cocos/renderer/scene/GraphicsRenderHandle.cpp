@@ -25,6 +25,7 @@
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_renderer_auto.hpp"
+#include "renderer/gfx/DeviceGraphics.h"
 
 RENDERER_BEGIN
 

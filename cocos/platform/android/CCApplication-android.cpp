@@ -282,4 +282,12 @@ std::string Application::getSystemVersion()
     return getSystemVersionJNI();
 }
 
+void Application::setPreDrawCallback(cocos2d::Application::DrawCallback callback) {
+
+}
+
+void Application::setPostDrawCallback(cocos2d::Application::DrawCallback callback) {
+
+}
+
 NS_CC_END
