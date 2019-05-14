@@ -266,9 +266,10 @@ int ZipUtils::inflateGZipFile(const char *path, unsigned char **out)
     unsigned int totalBufferSize = bufferSize;
 
     *out = (unsigned char*)malloc( bufferSize );
-    if( ! out )
+    if( !(*out) )
     {
         CCLOG("ZipUtils: out of memory");
+        gzclose(inFile);
         return -1;
     }
 
@@ -279,6 +280,7 @@ int ZipUtils::inflateGZipFile(const char *path, unsigned char **out)
             CCLOG("ZipUtils: error in gzread");
             free( *out );
             *out = nullptr;
+            gzclose(inFile);
             return -1;
         }
         if (len == 0)
@@ -303,6 +305,7 @@ int ZipUtils::inflateGZipFile(const char *path, unsigned char **out)
             CCLOG("ZipUtils: out of memory");
             free( *out );
             *out = nullptr;
+            gzclose(inFile);
             return -1;
         }
 

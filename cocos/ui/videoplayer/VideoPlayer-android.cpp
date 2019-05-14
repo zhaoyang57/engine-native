@@ -80,8 +80,9 @@ VideoPlayer::VideoPlayer()
 , _keepAspectRatioEnabled(false)
 {
     _videoPlayerIndex = createVideoWidgetJNI();
-    s_allVideoPlayers[_videoPlayerIndex] = this;
-
+    if (_videoPlayerIndex != -1) {
+        s_allVideoPlayers[_videoPlayerIndex] = this;
+    }
 #if CC_VIDEOPLAYER_DEBUG_DRAW
     _debugDrawNode = DrawNode::create();
     addChild(_debugDrawNode);
@@ -90,8 +91,10 @@ VideoPlayer::VideoPlayer()
 
 VideoPlayer::~VideoPlayer()
 {
-    s_allVideoPlayers.erase(_videoPlayerIndex);
-    JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "removeVideoWidget", _videoPlayerIndex);
+    if (_videoPlayerIndex != -1) {
+        s_allVideoPlayers.erase(_videoPlayerIndex);
+        JniHelper::callStaticVoidMethod(JCLS_VIDEO_HELPER, "removeVideoWidget", _videoPlayerIndex);
+    }
 }
 
 void VideoPlayer::setURL(const std::string& videoUrl)

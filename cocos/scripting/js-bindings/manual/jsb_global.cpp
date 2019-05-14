@@ -828,6 +828,9 @@ bool jsb_global_load_image(const std::string& path, const se::Value& callbackVal
 
         if(!__threadPool)
         {
+            if (imageData != nullptr) {
+                free(imageData);
+            }
             return;
         }
         __threadPool->pushTask([=](int tid){
