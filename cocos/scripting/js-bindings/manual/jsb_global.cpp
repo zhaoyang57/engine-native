@@ -39,6 +39,10 @@
 
 #include <regex>
 
+#ifndef XXTEAKEY_DEFAULT
+#define XXTEAKEY_DEFAULT ""
+#endif
+
 using namespace cocos2d;
 
 se::Object* __jsbObj = nullptr;
@@ -49,7 +53,7 @@ static ThreadPool* __threadPool = nullptr;
 static std::shared_ptr<cocos2d::network::Downloader> _localDownloader = nullptr;
 static std::map<std::string, std::function<void(const std::string&, unsigned char*, int )>> _localDownloaderHandlers;
 static uint64_t _localDownloaderTaskId = 1000000;
-static std::string xxteaKey = "";
+static std::string xxteaKey = XXTEAKEY_DEFAULT;
 void jsb_set_xxtea_key(const std::string& key)
 {
     xxteaKey = key;
