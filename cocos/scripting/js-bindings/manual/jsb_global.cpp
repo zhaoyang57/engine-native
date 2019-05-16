@@ -44,17 +44,21 @@ using namespace cocos2d;
 se::Object* __jsbObj = nullptr;
 se::Object* __glObj = nullptr;
 
+#ifndef DEPRECATED_IMPLEMENT
 static ThreadPool* __threadPool = nullptr;
 
 static std::shared_ptr<cocos2d::network::Downloader> _localDownloader = nullptr;
 static std::map<std::string, std::function<void(const std::string&, unsigned char*, int )>> _localDownloaderHandlers;
 static uint64_t _localDownloaderTaskId = 1000000;
+#endif
+
 static std::string xxteaKey = "";
 void jsb_set_xxtea_key(const std::string& key)
 {
     xxteaKey = key;
 }
 
+#ifndef DEPRECATED_IMPLEMENT
 static cocos2d::network::Downloader *localDownloader()
 {
     if(!_localDownloader)
@@ -102,6 +106,7 @@ static void localDownloaderCreateTask(const std::string &url, std::function<void
     auto task = localDownloader()->createDownloadDataTask(url, key);
     _localDownloaderHandlers.emplace(std::make_pair(task->identifier, callback));
 }
+#endif
 
 static const char* BYTE_CODE_FILE_EXT = ".jsc";
 
@@ -701,6 +706,7 @@ static bool js_performance_now(se::State& s)
 }
 SE_BIND_FUNC(js_performance_now)
 
+#ifndef DEPRECATED_IMPLEMENT
 namespace
 {
     struct ImageInfo
@@ -970,6 +976,7 @@ static bool js_loadImage(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_loadImage)
+#endif
 
 //pixels(RGBA), width, height, fullFilePath(*.png/*.jpg)
 static bool js_saveImageData(se::State& s)
@@ -1195,7 +1202,9 @@ SE_BIND_FUNC(JSB_hideInputBox)
 
 bool jsb_register_global_variables(se::Object* global)
 {
+#ifndef DEPRECATED_IMPLEMENT
     __threadPool = ThreadPool::newFixedThreadPool(3);
+#endif
 
     global->defineFunction("require", _SE(require));
     global->defineFunction("requireModule", _SE(moduleRequire));
@@ -1212,7 +1221,9 @@ bool jsb_register_global_variables(se::Object* global)
     __jsbObj->defineFunction("garbageCollect", _SE(jsc_garbageCollect));
     __jsbObj->defineFunction("dumpNativePtrToSeObjectMap", _SE(jsc_dumpNativePtrToSeObjectMap));
 
+#ifndef DEPRECATED_IMPLEMENT
     __jsbObj->defineFunction("loadImage", _SE(js_loadImage));
+#endif
     __jsbObj->defineFunction("saveImageData", _SE(js_saveImageData));
     __jsbObj->defineFunction("setDebugViewText", _SE(js_setDebugViewText));
     __jsbObj->defineFunction("openDebugView", _SE(js_openDebugView));
@@ -1242,8 +1253,10 @@ bool jsb_register_global_variables(se::Object* global)
     se::ScriptEngine::getInstance()->clearException();
 
     se::ScriptEngine::getInstance()->addBeforeCleanupHook([](){
+#ifndef DEPRECATED_IMPLEMENT
         delete __threadPool;
         __threadPool = nullptr;
+#endif
 
         PoolManager::getInstance()->getCurrentPool()->clear();
     });

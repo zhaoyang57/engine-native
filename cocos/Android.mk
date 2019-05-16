@@ -47,8 +47,6 @@ base/csscolorparser.cpp \
 base/CCGLUtils.cpp \
 base/CCRenderTexture.cpp \
 storage/local-storage/LocalStorage-android.cpp \
-network/CCDownloader.cpp \
-network/CCDownloader-android.cpp \
 network/Uri.cpp \
 network/HttpClient-android.cpp \
 scripting/js-bindings/auto/jsb_cocos2dx_auto.cpp \
@@ -185,6 +183,11 @@ endif # USE_SOCKET
 ifneq ($(USE_MIDDLEWARE),0)
 LOCAL_STATIC_LIBRARIES += editor_support_static
 endif # USE_MIDDLEWARE
+
+ifeq ($(DEPRECATED_IMPLEMENT),0)
+LOCAL_SRC_FILES += network/CCDownloader.cpp \
+network/CCDownloader-android.cpp
+endif
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \
