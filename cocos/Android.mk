@@ -59,7 +59,6 @@ scripting/js-bindings/manual/jsb_classtype.cpp \
 scripting/js-bindings/manual/jsb_conversions.cpp \
 scripting/js-bindings/manual/jsb_cocos2dx_manual.cpp \
 scripting/js-bindings/manual/jsb_global.cpp \
-scripting/js-bindings/manual/jsb_xmlhttprequest.cpp \
 scripting/js-bindings/manual/jsb_cocos2dx_network_manual.cpp \
 scripting/js-bindings/manual/jsb_platform_android.cpp \
 scripting/js-bindings/jswrapper/config.cpp \
@@ -186,7 +185,8 @@ endif # USE_MIDDLEWARE
 
 ifeq ($(DEPRECATED_IMPLEMENT),0)
 LOCAL_SRC_FILES += network/CCDownloader.cpp \
-network/CCDownloader-android.cpp
+network/CCDownloader-android.cpp \
+scripting/js-bindings/manual/jsb_xmlhttprequest.cpp
 endif
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
