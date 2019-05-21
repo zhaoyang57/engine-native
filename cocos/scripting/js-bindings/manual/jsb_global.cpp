@@ -66,11 +66,6 @@ static cocos2d::network::Downloader *localDownloader()
         _localDownloader = std::make_shared<cocos2d::network::Downloader>();
         _localDownloader->onDataTaskSuccess = [=](const cocos2d::network::DownloadTask& task,
                                             std::vector<unsigned char>& data) {
-            if(data.empty())
-            {
-                SE_REPORT_ERROR("Getting image from (%s) failed!", task.requestURL.c_str());
-                return;
-            }
 
             auto callback = _localDownloaderHandlers.find(task.identifier);
             if(callback == _localDownloaderHandlers.end())
@@ -78,11 +73,18 @@ static cocos2d::network::Downloader *localDownloader()
                 SE_REPORT_ERROR("Getting image from (%s), callback not found!!", task.requestURL.c_str());
                 return;
             }
-            size_t imageBytes = data.size();
-            unsigned char* imageData = (unsigned char*)malloc(imageBytes);
-            memcpy(imageData, data.data(), imageBytes);
+            if(data.empty())
+            {
+                (callback->second)("", nullptr, 0);
+                SE_REPORT_ERROR("Getting image from (%s) failed!", task.requestURL.c_str());
+                return;
+            } else {
+                size_t imageBytes = data.size();
+                unsigned char* imageData = (unsigned char*)malloc(imageBytes);
+                memcpy(imageData, data.data(), imageBytes);
 
-            (callback->second)("", imageData, imageBytes);
+                (callback->second)("", imageData, imageBytes);
+            }
             //initImageFunc("", imageData, imageBytes);
             _localDownloaderHandlers.erase(callback);
         };
@@ -91,6 +93,13 @@ static cocos2d::network::Downloader *localDownloader()
                                       int errorCodeInternal,
                                       const std::string& errorStr) {
 
+            auto callback = _localDownloaderHandlers.find(task.identifier);
+            if(callback == _localDownloaderHandlers.end())
+            {
+                SE_REPORT_ERROR("Getting image from (%s), callback not found!!", task.requestURL.c_str());
+                return;
+            }
+            (callback->second)("", nullptr, 0);
             SE_REPORT_ERROR("Getting image from (%s) failed!", task.requestURL.c_str());
             _localDownloaderHandlers.erase(task.identifier);
         };
