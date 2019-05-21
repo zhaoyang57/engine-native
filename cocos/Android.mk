@@ -217,7 +217,10 @@ ifeq ($(USE_TIFF),1)
 LOCAL_STATIC_LIBRARIES += cocos_tiff_static
 endif
 
+ifneq ($(FEATURE_IMAGE_WEBP),0)
 LOCAL_STATIC_LIBRARIES += cocos_webp_static
+endif
+
 LOCAL_STATIC_LIBRARIES += cocos_zlib_static
 LOCAL_STATIC_LIBRARIES += v8_static
 LOCAL_STATIC_LIBRARIES += breakpad_client
