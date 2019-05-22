@@ -45,7 +45,7 @@
     #error "Unknown Script Engine"
 #endif
 
-#if 1
+#if (FEATURE_DEBUG_JS_DEBUGGER > 0)
 #define SE_ENABLE_INSPECTOR 1
 #define SE_DEBUG 2
 #define HAVE_INSPECTOR 1
