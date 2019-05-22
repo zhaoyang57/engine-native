@@ -1602,6 +1602,9 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
 }
 
 -(void) _resetSetting {
+    if (_path) {
+        [_path removeAllPoints];
+    }
     _drawingState.textAlign = CanvasTextAlign::LEFT;
     _drawingState.textBaseLine = CanvasTextBaseline::BOTTOM;
     _drawingState.lineCap = @"butt";
