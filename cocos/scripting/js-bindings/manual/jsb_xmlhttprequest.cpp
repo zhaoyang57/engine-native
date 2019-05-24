@@ -32,6 +32,7 @@
 //
 #include "base/ccConfig.h"
 #include "jsb_xmlhttprequest.hpp"
+#ifndef DEPRECATED_IMPLEMENT
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include <unordered_map>
 #include <string>
@@ -1203,3 +1204,4 @@ bool register_all_xmlhttprequest(se::Object* global)
     return true;
 }
 #endif //#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#endif // DEPRECATED_IMPLEMENT

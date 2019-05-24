@@ -24,6 +24,7 @@
  ****************************************************************************/
 
 #include "network/CCDownloaderImpl-apple.h"
+#ifndef DEPRECATED_IMPLEMENT
 #include <queue>
 #import <Foundation/Foundation.h>
 
@@ -710,4 +711,4 @@ namespace cocos2d { namespace network {
 }
 
 @end
-
+#endif // DEPRECATED_IMPLEMENT

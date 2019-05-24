@@ -25,7 +25,7 @@
  ****************************************************************************/
 
 #include "network/CCDownloader.h"
-
+#ifndef DEPRECATED_IMPLEMENT
 // include platform specific implement class
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 
@@ -195,4 +195,4 @@ namespace cocos2d { namespace network {
 //}
 
 }}  //  namespace cocos2d::network
-
+#endif // DEPRECATED_IMPLEMENT
