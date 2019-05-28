@@ -446,6 +446,12 @@ void FileUtilsApple::valueVectorCompact(ValueVector& valueVector)
     }
 }
 
+std::string FileUtilsApple::getDefaultResourcePath() {
+    NSBundle *bundle = pimpl_->getBundle();
+    NSString *resourcePath = [bundle resourcePath];
+    return [resourcePath UTF8String];
+}
+
 bool FileUtils::writeValueVectorToFile(const ValueVector& vecData, const std::string& fullPath)
 {
     NSString* path = [NSString stringWithUTF8String:fullPath.c_str()];

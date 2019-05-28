@@ -656,6 +656,8 @@ public:
 
     std::string normalizePath(const std::string& path) const;
     std::string getFileDir(const std::string& path) const;
+    
+    virtual std::string getDefaultResourcePath() = 0;
 
 protected:
     /**
