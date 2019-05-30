@@ -446,7 +446,7 @@ void FileUtilsApple::valueVectorCompact(ValueVector& valueVector)
     }
 }
 
-std::string FileUtilsApple::getDefaultResourcePath() {
+std::string FileUtilsApple::getApplicationResourceRoot() {
     NSBundle *bundle = pimpl_->getBundle();
     NSString *resourcePath = [bundle resourcePath];
     return [resourcePath UTF8String];

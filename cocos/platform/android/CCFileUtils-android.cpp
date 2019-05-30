@@ -243,7 +243,7 @@ bool FileUtilsAndroid::isDirectoryExistInternal(const std::string& dirPath_) con
     return false;
 }
 
-std::string FileUtilsAndroid::getDefaultResourcePath() {
+std::string FileUtilsAndroid::getApplicationResourceRoot() {
     return ASSETS_FOLDER_NAME;
 }
 

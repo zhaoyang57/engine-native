@@ -62,7 +62,7 @@ public:
 #endif
     
     virtual bool createDirectory(const std::string& path) override;
-    virtual std::string getDefaultResourcePath() override;
+    virtual std::string getApplicationResourceRoot() override;
 private:
     virtual bool isFileExistInternal(const std::string& filePath) const override;
     virtual bool removeDirectory(const std::string& dirPath) override;

@@ -71,7 +71,7 @@ public:
 
     virtual std::string getWritablePath() const override;
     virtual bool isAbsolutePath(const std::string& strPath) const override;
-    virtual std::string getDefaultResourcePath() override;
+    virtual std::string getApplicationResourceRoot() override;
 private:
     virtual bool isFileExistInternal(const std::string& strFilePath) const override;
     virtual bool isDirectoryExistInternal(const std::string& dirPath) const override;
