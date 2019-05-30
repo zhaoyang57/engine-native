@@ -243,6 +243,10 @@ bool FileUtilsAndroid::isDirectoryExistInternal(const std::string& dirPath_) con
     return false;
 }
 
+std::string FileUtilsAndroid::getApplicationResourceRoot() {
+    return ASSETS_FOLDER_NAME;
+}
+
 bool FileUtilsAndroid::isAbsolutePath(const std::string& strPath) const
 {
     // On Android, there are two situations for full path.

@@ -1501,6 +1501,18 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     }
     
     uint8_t *fillColors = imageData.getBytes();
+    // image data should be premultiplied
+    uint8_t *data = fillColors;
+    ssize_t len = imageData.getSize();
+    int alpha = 0;
+    for (uint8_t *end = data + len; data < end; data = data + 4) {
+        alpha = data[3];
+        if (alpha > 0 && alpha < 255) {
+            data[0] = data[0] * alpha / 255;
+            data[1] = data[1] * alpha / 255;
+            data[2] = data[2] * alpha / 255;
+        }
+    }
     uint8_t *imageDataTemp = _imageData.getBytes();
     uint32_t yBegin = offsetY;
     uint32_t yEnd = offsetY + imageHeight;
@@ -1590,6 +1602,9 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
 }
 
 -(void) _resetSetting {
+    if (_path) {
+        [_path removeAllPoints];
+    }
     _drawingState.textAlign = CanvasTextAlign::LEFT;
     _drawingState.textBaseLine = CanvasTextBaseline::BOTTOM;
     _drawingState.lineCap = @"butt";

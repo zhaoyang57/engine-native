@@ -508,6 +508,8 @@ void XMLHttpRequest::onResponse(HttpClient* client, HttpResponse* response)
         {
             _errorFlag = true;
             _status = 0;
+            setReadyState(ReadyState::DONE);
+
             _statusText.clear();
             if (onerror != nullptr)
             {
