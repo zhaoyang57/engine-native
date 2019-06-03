@@ -173,6 +173,7 @@ namespace {
     se::Class* __jsb_VertexArrayObjectOES_class = nullptr;
     se::Class* __jsb_OES_vertex_array_object_class = nullptr;
     se::Object* __glVAOObj = nullptr;
+    se::Object* __gl_compressed_texture_etc1_obj = nullptr;
 
     std::unordered_map<GLuint, se::Value> __shaders;
 
@@ -1046,6 +1047,14 @@ static bool JSB_glCompressedTexImage2D(se::State& s) {
     GLsizei count;
     ok &= JSB_get_arraybufferview_dataptr(args[6], &count, &arg6);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+
+#if OPENGL_PARAMETER_CHECK
+    if (arg2 == GL_ETC1_RGB8_OES) // WEBGL_compressed_texture_etc1
+    {
+        SE_PRECONDITION4(__gl_compressed_texture_etc1_obj != nullptr, false, GL_INVALID_ENUM);
+        SE_PRECONDITION4((floor((arg3 + 3) / 4) * floor((arg4 + 3) / 4) * 8) == count, false, GL_INVALID_VALUE);
+    }
+#endif
 
     JSB_GL_CHECK(glCompressedTexImage2D((GLenum)arg0 , (GLint)arg1 , (GLenum)arg2 , (GLsizei)arg3 , (GLsizei)arg4 , (GLint)arg5 , (GLsizei)count , (GLvoid*)arg6  ));
 
@@ -4002,12 +4011,15 @@ static bool JSB_glGetExtension(se::State& s) {
     SE_PRECONDITION2( argc == 1, false, "Invalid number of arguments" );
 
     bool ok = true;
-    std::string arg0;
+    std::string name;
     s.rval().setNull();
-    ok &= seval_to_std_string(args[0], &arg0);
+    ok &= seval_to_std_string(args[0], &name);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
-    std::transform(arg0.begin(), arg0.end(), arg0.begin(), ::tolower);
-    if (arg0 == "oes_vertex_array_object")
+    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+    char *extensions = (char *)glGetString(GL_EXTENSIONS);
+    if (name == "oes_vertex_array_object" &&
+            extensions != nullptr &&
+            strstr(extensions, "GL_OES_vertex_array_object"))
     {
         if (glBindVertexArray != nullptr && glDeleteVertexArrays != nullptr &&
             glGenVertexArrays != nullptr && glIsVertexArray != nullptr)
@@ -4020,6 +4032,18 @@ static bool JSB_glGetExtension(se::State& s) {
             }
             s.rval().setObject(__glVAOObj);
         }
+    }
+    else if (name == "webgl_compressed_texture_etc1" &&
+            extensions != nullptr &&
+            strstr(extensions, "GL_OES_compressed_ETC1_RGB8_texture"))
+    {
+        if (__gl_compressed_texture_etc1_obj == nullptr)
+        {
+            __gl_compressed_texture_etc1_obj = se::Object::createPlainObject();
+            __gl_compressed_texture_etc1_obj->root();
+            __gl_compressed_texture_etc1_obj->setProperty("COMPRESSED_RGB_ETC1_WEBGL", se::Value(GL_ETC1_RGB8_OES));
+        }
+        s.rval().setObject(__gl_compressed_texture_etc1_obj);
     }
     // add other extension
 
@@ -4400,10 +4424,36 @@ static bool JSB_glGetParameter(se::State& s)
 #endif
         }
             break;
-            // Float32Array (with 0 elements)
+            // Uint32Array
         case GL_COMPRESSED_TEXTURE_FORMATS:
         {
-            se::HandleObject obj(se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, nullptr, 0));
+            GLint count = 0;
+            if (__gl_compressed_texture_etc1_obj != nullptr)
+            {
+                count += 1;
+            }
+
+            se::Object *resultArray = nullptr;
+
+            if (count <= 0)
+            {
+                resultArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT32, nullptr, 0);
+            }
+            else
+            {
+                GLuint formats[count];
+                GLint index = 0;
+
+                if (__gl_compressed_texture_etc1_obj != nullptr)
+                {
+                    formats[index] = GL_ETC1_RGB8_OES;
+                    index += 1;
+                }
+
+                resultArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT32, formats, sizeof(formats));
+            }
+
+            se::HandleObject obj(resultArray);
             ret.setObject(obj, true);
         }
             break;
@@ -5650,6 +5700,12 @@ bool JSB_register_opengl(se::Object* obj)
             __glVAOObj->unroot();
             __glVAOObj->decRef();
             __glVAOObj = nullptr;
+        }
+        if (__gl_compressed_texture_etc1_obj != nullptr)
+        {
+            __gl_compressed_texture_etc1_obj->unroot();
+            __gl_compressed_texture_etc1_obj->decRef();
+            __gl_compressed_texture_etc1_obj = nullptr;
         }
     });
 

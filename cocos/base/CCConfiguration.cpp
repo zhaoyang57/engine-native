@@ -144,7 +144,7 @@ void Configuration::gatherGPUInfo()
     _supportsDiscardFramebuffer = checkForGLExtension("GL_EXT_discard_framebuffer");
     _valueDict["gl.supports_discard_framebuffer"] = Value(_supportsDiscardFramebuffer);
 
-    _supportsShareableVAO = checkForGLExtension("vertex_array_object");
+    _supportsShareableVAO = checkForGLExtension("GL_OES_vertex_array_object");
     _valueDict["gl.supports_vertex_array_object"] = Value(_supportsShareableVAO);
 
     _supportsOESMapBuffer = checkForGLExtension("GL_OES_mapbuffer");
