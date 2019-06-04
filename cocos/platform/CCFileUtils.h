@@ -656,8 +656,6 @@ public:
 
     std::string normalizePath(const std::string& path) const;
     std::string getFileDir(const std::string& path) const;
-    
-    virtual std::string getApplicationResourceRoot() = 0;
 
 protected:
     /**

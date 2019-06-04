@@ -1175,7 +1175,7 @@ static bool XMLHttpRequest_setWithCredentials(se::State& s)
     SE_LOGD("XMLHttpRequest.withCredentials isn't implemented.");
     return true;
 }
-SE_BIND_PROP_GET(XMLHttpRequest_setWithCredentials)
+SE_BIND_PROP_SET(XMLHttpRequest_setWithCredentials)
 
 bool register_all_xmlhttprequest(se::Object* global)
 {
