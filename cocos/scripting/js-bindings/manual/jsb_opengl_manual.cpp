@@ -174,6 +174,7 @@ namespace {
     se::Class* __jsb_OES_vertex_array_object_class = nullptr;
     se::Object* __glVAOObj = nullptr;
     se::Object* __gl_compressed_texture_etc1_obj = nullptr;
+    se::Object* __gl_compressed_texture_pvrtc_obj = nullptr;
 
     std::unordered_map<GLuint, se::Value> __shaders;
 
@@ -1052,7 +1053,24 @@ static bool JSB_glCompressedTexImage2D(se::State& s) {
     if (arg2 == GL_ETC1_RGB8_OES) // WEBGL_compressed_texture_etc1
     {
         SE_PRECONDITION4(__gl_compressed_texture_etc1_obj != nullptr, false, GL_INVALID_ENUM);
-        SE_PRECONDITION4((floor((arg3 + 3) / 4) * floor((arg4 + 3) / 4) * 8) == count, false, GL_INVALID_VALUE);
+        SE_PRECONDITION4((floor((arg3 + 3) / 4) * floor((arg4 + 3) / 4) * 8) == count, false,
+                         GL_INVALID_VALUE);
+    }
+    else if (arg2 == GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG ||
+             arg2 == GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG ||
+             arg2 == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG ||
+             arg2 == GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG) // WEBGL_compressed_texture_pvrtc
+    {
+        SE_PRECONDITION4(__gl_compressed_texture_pvrtc_obj != nullptr, false, GL_INVALID_ENUM);
+        SE_PRECONDITION4((arg3 % 2 == 0) && (arg4 % 2 == 0), false, GL_INVALID_VALUE);
+        if (arg2 == GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG ||
+            arg2 == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG) {
+            SE_PRECONDITION4((std::max(arg3, 8) * std::max(arg4, 8) / 2) == count, false,
+                             GL_INVALID_VALUE);
+        } else {
+            SE_PRECONDITION4((std::max(arg3, 16) * std::max(arg4, 8) / 4) == count, false,
+                             GL_INVALID_VALUE);
+        }
     }
 #endif
 
@@ -1082,6 +1100,25 @@ static bool JSB_glCompressedTexSubImage2D(se::State& s) {
     GLsizei count;
     ok &= JSB_get_arraybufferview_dataptr(args[8], &count, &arg8);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
+
+#if OPENGL_PARAMETER_CHECK
+    if (arg6 == GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG ||
+        arg6 == GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG ||
+        arg6 == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG ||
+        arg6 == GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG) // WEBGL_compressed_texture_pvrtc
+    {
+        SE_PRECONDITION4(__gl_compressed_texture_pvrtc_obj != nullptr, false, GL_INVALID_ENUM);
+        SE_PRECONDITION4((arg2 == 0) && (arg3 == 0), false, GL_INVALID_VALUE);
+        if (arg6 == GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG ||
+            arg6 == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG) {
+            SE_PRECONDITION4((std::max(arg4, 8) * std::max(arg5, 8) / 2) == count, false,
+                             GL_INVALID_VALUE);
+        } else {
+            SE_PRECONDITION4((std::max(arg4, 16) * std::max(arg5, 8) / 4) == count, false,
+                             GL_INVALID_VALUE);
+        }
+    }
+#endif
 
     JSB_GL_CHECK(glCompressedTexSubImage2D((GLenum)arg0 , (GLint)arg1 , (GLint)arg2 , (GLint)arg3 , (GLsizei)arg4 , (GLsizei)arg5 , (GLenum)arg6 , (GLsizei)arg7 , (GLvoid*)arg8  ));
 
@@ -2766,7 +2803,7 @@ static bool JSB_glUniform4fv(se::State& s) {
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 2, false, "Invalid number of arguments" );
     bool ok = true;
-    WebGLUniformLocation* arg0;;
+    WebGLUniformLocation* arg0;
 
     ok &= seval_to_native_ptr(args[0], &arg0 );
     GLData<float> data;
@@ -2887,7 +2924,7 @@ static bool JSB_glUniformMatrix4fv(se::State& s) {
     int argc = (int)args.size();
     SE_PRECONDITION2( argc == 3, false, "Invalid number of arguments" );
     bool ok = true;
-    WebGLUniformLocation* arg0; uint16_t arg1;;
+    WebGLUniformLocation* arg0; uint16_t arg1;
 
     ok &= seval_to_native_ptr(args[0], &arg0 );
     ok &= seval_to_uint16(args[1], &arg1 );
@@ -4045,6 +4082,21 @@ static bool JSB_glGetExtension(se::State& s) {
         }
         s.rval().setObject(__gl_compressed_texture_etc1_obj);
     }
+    else if (name == "webgl_compressed_texture_pvrtc" &&
+             extensions != nullptr &&
+             strstr(extensions, "GL_IMG_texture_compression_pvrtc"))
+    {
+        if (__gl_compressed_texture_pvrtc_obj == nullptr)
+        {
+            __gl_compressed_texture_pvrtc_obj = se::Object::createPlainObject();
+            __gl_compressed_texture_pvrtc_obj->root();
+            __gl_compressed_texture_pvrtc_obj->setProperty("COMPRESSED_RGB_PVRTC_4BPPV1_IMG", se::Value(GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG));
+            __gl_compressed_texture_pvrtc_obj->setProperty("COMPRESSED_RGB_PVRTC_2BPPV1_IMG", se::Value(GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG));
+            __gl_compressed_texture_pvrtc_obj->setProperty("COMPRESSED_RGBA_PVRTC_4BPPV1_IMG", se::Value(GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG));
+            __gl_compressed_texture_pvrtc_obj->setProperty("COMPRESSED_RGBA_PVRTC_2BPPV1_IMG", se::Value(GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG));
+        }
+        s.rval().setObject(__gl_compressed_texture_pvrtc_obj);
+    }
     // add other extension
 
     return true;
@@ -4432,6 +4484,10 @@ static bool JSB_glGetParameter(se::State& s)
             {
                 count += 1;
             }
+            if (__gl_compressed_texture_pvrtc_obj != nullptr)
+            {
+                count += 4;
+            }
 
             se::Object *resultArray = nullptr;
 
@@ -4447,6 +4503,17 @@ static bool JSB_glGetParameter(se::State& s)
                 if (__gl_compressed_texture_etc1_obj != nullptr)
                 {
                     formats[index] = GL_ETC1_RGB8_OES;
+                    index += 1;
+                }
+                if (__gl_compressed_texture_pvrtc_obj != nullptr)
+                {
+                    formats[index] = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+                    index += 1;
+                    formats[index] = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+                    index += 1;
+                    formats[index] = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+                    index += 1;
+                    formats[index] = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
                     index += 1;
                 }
 
@@ -5171,7 +5238,7 @@ static bool JSB_glFlushCommand(se::State& s) {
                 break;
             case GL_COMMAND_HINT:
                 LOG_GL_COMMAND("Flush: HINT\n");
-                JSB_GL_CHECK_VOID(glHint((GLenum)p[1], (GLenum)p[2]));;
+                JSB_GL_CHECK_VOID(glHint((GLenum)p[1], (GLenum)p[2]));
                 p += 3;
                 break;
             case GL_COMMAND_LINE_WIDTH:
@@ -5706,6 +5773,12 @@ bool JSB_register_opengl(se::Object* obj)
             __gl_compressed_texture_etc1_obj->unroot();
             __gl_compressed_texture_etc1_obj->decRef();
             __gl_compressed_texture_etc1_obj = nullptr;
+        }
+        if (__gl_compressed_texture_pvrtc_obj != nullptr)
+        {
+            __gl_compressed_texture_pvrtc_obj->unroot();
+            __gl_compressed_texture_pvrtc_obj->decRef();
+            __gl_compressed_texture_pvrtc_obj = nullptr;
         }
     });
 
