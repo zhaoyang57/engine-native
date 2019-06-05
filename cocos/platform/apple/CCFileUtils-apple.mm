@@ -263,10 +263,9 @@ bool FileUtilsApple::isFileExistInternal(const std::string& filePath) const
         if (pos != std::string::npos)
         {
             file = filePath.substr(pos+1);
-            path = filePath.substr(0, pos+1);
-            if (path.find(ASSET_FOLDER_NAME) == 0) {
-                path = path.substr(strlen(ASSET_PREFIX));
-            }
+            size_t assetPathFound = filePath.find(ASSET_FOLDER_NAME);
+            size_t pathStart = (assetPathFound == 0) ? strlen(ASSET_PREFIX) : 0;
+            path = filePath.substr(pathStart, pos + 1 - pathStart);
         }
         else
         {
