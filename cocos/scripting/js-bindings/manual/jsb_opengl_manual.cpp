@@ -49,6 +49,10 @@ using namespace cocos2d;
 #define OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY 1
 #endif
 
+#ifndef GL_ETC1_RGB8_OES
+#define GL_ETC1_RGB8_OES 0x8D64
+#endif
+
 namespace {
 
     const uint32_t GL_COMMAND_ACTIVE_TEXTURE = 0;
