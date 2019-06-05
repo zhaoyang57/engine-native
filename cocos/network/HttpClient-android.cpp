@@ -40,6 +40,7 @@
 #include "platform/android/jni/JniHelper.h"
 
 #include "base/ccUTF8.h"
+#include "base/CCThreadPool.h"
 
 #ifndef JCLS_HTTPCLIENT
 #define JCLS_HTTPCLIENT  "org/cocos2dx/lib/Cocos2dxHttpURLConnection"
@@ -680,215 +681,42 @@ private:
     int _contentLength;
 };
 
-// Process Response
-void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
-{
-    auto request = response->getHttpRequest();
-    HttpRequest::Type requestType = request->getRequestType();
-
-    if (HttpRequest::Type::GET != requestType &&
-        HttpRequest::Type::POST != requestType &&
-        HttpRequest::Type::PUT != requestType &&
-        HttpRequest::Type::DELETE != requestType)
-    {
-        CCASSERT(true, "CCHttpClient: unknown request type, only GET、POST、PUT、DELETE are supported");
-        return;
+class HttpContext {
+public:
+    HttpContext()
+    : _httpURLConnection(nullptr)
+    ,_response(nullptr){
     }
 
-    long responseCode = -1;
-    int  retValue = 0;
-
-    HttpURLConnection urlConnection(this);
-    if(!urlConnection.init(request))
-    {
-        response->setSucceed(false);
-        response->setErrorBuffer("HttpURLConnetcion init failed");
-        return;
-    }
-
-    switch (requestType)
-    {
-        case HttpRequest::Type::GET:
-            urlConnection.setRequestMethod("GET");
-            break;
-
-        case HttpRequest::Type::POST:
-            urlConnection.setRequestMethod("POST");
-            break;
-
-        case HttpRequest::Type::PUT:
-            urlConnection.setRequestMethod("PUT");
-            break;
-
-        case HttpRequest::Type::DELETE:
-            urlConnection.setRequestMethod("DELETE");
-            break;
-        default:
-            break;
-    }
-
-    int suc = urlConnection.connect();
-    if (0 != suc)
-    {
-        response->setSucceed(false);
-        response->setErrorBuffer("connect failed");
-        response->setResponseCode(responseCode);
-        return;
-    }
-
-    if (HttpRequest::Type::POST == requestType ||
-        HttpRequest::Type::PUT == requestType)
-    {
-        urlConnection.sendRequest(request);
-    }
-
-    responseCode = urlConnection.getResponseCode();
-
-    if (0 == responseCode)
-    {
-       response->setSucceed(false);
-       response->setErrorBuffer("connect failed");
-       response->setResponseCode(-1);
-       return;
-    }
-
-    char* headers = urlConnection.getResponseHeaders();
-    if (nullptr != headers)
-    {
-        writeHeaderData(headers, strlen(headers), response);
-    }
-    free(headers);
-
-    //get and save cookies
-    char* cookiesInfo = urlConnection.getResponseHeaderByKey("set-cookie");
-    if (nullptr != cookiesInfo)
-    {
-        urlConnection.saveResponseCookies(cookiesInfo, strlen(cookiesInfo));
-    }
-    free(cookiesInfo);
-
-    //content len
-    int contentLength = urlConnection.getResponseHeaderByKeyInt("Content-Length");
-    char* contentInfo = urlConnection.getResponseContent(response);
-    if (nullptr != contentInfo) 
-    {
-        std::vector<char> * recvBuffer = (std::vector<char>*)response->getResponseData();
-        recvBuffer->clear();
-        recvBuffer->insert(recvBuffer->begin(), (char*)contentInfo, ((char*)contentInfo) + urlConnection.getContentLength());
-    }
-    free(contentInfo);
-    
-    char *messageInfo = urlConnection.getResponseMessage();
-    if (messageInfo)
-    {
-        strcpy(responseMessage, messageInfo);
-        free(messageInfo);
-    }
-
-    urlConnection.disconnect();
-
-    // write data to HttpResponse
-    response->setResponseCode(responseCode);
-
-    if (responseCode == -1)
-    {
-        response->setSucceed(false);
-        if (responseMessage != nullptr)
-        {
-            response->setErrorBuffer(responseMessage);
+    ~HttpContext() {
+        if(_httpURLConnection) {
+            _httpURLConnection->disconnect();
         }
-        else
-        {
-            response->setErrorBuffer("response code error!");
+        if(_response) {
+            _response->release();
         }
     }
-    else
-    {
-        response->setSucceed(true);
-    }
-}
 
-// Worker thread
-void HttpClient::networkThread()
-{    
-    increaseThreadCount();
-
-    while (true) 
-    {
-        HttpRequest *request;
-
-        // step 1: send http request if the requestQueue isn't empty
-        {
-            std::lock_guard<std::mutex> lock(_requestQueueMutex);
-            while (_requestQueue.empty()) {
-                _sleepCondition.wait(_requestQueueMutex);
-            }
-            request = _requestQueue.at(0);
-            _requestQueue.erase(0);
+    void setHttpUrlConnection(HttpURLConnection* httpURLConnection) {
+        if(_httpURLConnection) {
+            _httpURLConnection->disconnect();
         }
-
-        if (request == _requestSentinel) {
-            break;
-        }
-        
-        // Create a HttpResponse object, the default setting is http access failed
-        HttpResponse *response = new (std::nothrow) HttpResponse(request);
-        processResponse(response, _responseMessage);
-        
-        // add response packet into queue
-        _responseQueueMutex.lock();
-        _responseQueue.pushBack(response);
-        _responseQueueMutex.unlock();
-
-        Scheduler* scheduler = Application::getInstance()->getScheduler();
-        _schedulerMutex.lock();
-        if (nullptr != scheduler)
-        {
-            scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
-        }
-        _schedulerMutex.unlock();
+        _httpURLConnection = httpURLConnection;
     }
-    
-    // cleanup: if worker thread received quit signal, clean up un-completed request queue
-    _requestQueueMutex.lock();
-    _requestQueue.clear();
-    _requestQueueMutex.unlock();
-    
-    _responseQueueMutex.lock();
-    _responseQueue.clear();
-    _responseQueueMutex.unlock();
 
-    decreaseThreadCountAndMayDeleteThis();    
-}
-
-// Worker thread
-void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response)
-{
-    increaseThreadCount();
-
-    char responseMessage[RESPONSE_BUFFER_SIZE] = { 0 };
-    processResponse(response, responseMessage);
-
-    Scheduler* scheduler = Application::getInstance()->getScheduler();
-    _schedulerMutex.lock();
-    if (scheduler != nullptr)
-    {
-        scheduler->performFunctionInCocosThread([this, response, request]{
-            const ccHttpRequestCallback& callback = request->getResponseCallback();
-
-            if (callback != nullptr)
-            {
-                callback(this, response);
-            }
-
-            response->release();
-            // do not release in other thread
-            request->release();
-        });
+    void setHttpResponse(HttpResponse* httpResponse) {
+        assert(_response == nullptr);
+        _response = httpResponse;
     }
-    _schedulerMutex.unlock();
-    decreaseThreadCountAndMayDeleteThis();
-}
+
+    HttpResponse* getHttpResponse() {
+        return _response;
+    }
+
+private:
+    HttpURLConnection* _httpURLConnection;
+    HttpResponse* _response;
+};
 
 // HttpClient implementation
 HttpClient* HttpClient::getInstance()
@@ -914,18 +742,21 @@ void HttpClient::destroyInstance()
     auto thiz = _httpClient;
     _httpClient = nullptr;
 
+    {
+        std::lock_guard<std::mutex> lock(thiz->_request2HttpContextMapMutex);
+        for(auto& iter : thiz->_request2HttpContextMap) {
+            iter.first->release();
+        }
+        thiz->_request2HttpContextMap.clear();
+    }
+
     Scheduler* scheduler = Application::getInstance()->getScheduler();
     if (scheduler != nullptr) {
         scheduler->unscheduleAllForTarget(thiz);
     }
 
-    {
-        std::lock_guard<std::mutex> lock(thiz->_requestQueueMutex);
-        thiz->_requestQueue.pushBack(thiz->_requestSentinel);
-    }
-    thiz->_sleepCondition.notify_one();
+    CC_SAFE_DELETE(thiz);
 
-    thiz->decreaseThreadCountAndMayDeleteThis();
     CCLOG("HttpClient::destroyInstance() finished!");
 }
 
@@ -952,129 +783,238 @@ HttpClient::HttpClient()
 : _isInited(false)
 , _timeoutForConnect(30)
 , _timeoutForRead(60)
-, _threadCount(0)
 , _cookie(nullptr)
-, _requestSentinel(new HttpRequest())
 {
     CCLOG("In the constructor of HttpClient!");
-    increaseThreadCount();
+    _threadPool = ThreadPool::newCachedThreadPool(1, 10, 5, 2, 2);
 }
 
 HttpClient::~HttpClient()
 {
     CCLOG("In the destructor of HttpClient!");
-    CC_SAFE_RELEASE(_requestSentinel);
+    CC_SAFE_DELETE(_threadPool);
 }
 
-//Lazy create semaphore & mutex & thread
-bool HttpClient::lazyInitThreadSemaphore()
-{
-    if (_isInited)
-    {
-        return true;
-    }
-    else
-    {
-        auto t = std::thread(CC_CALLBACK_0(HttpClient::networkThread, this));
-        t.detach();
-        _isInited = true;
-    }
-
-    return true;
-}
-
-//Add a get task to queue
 void HttpClient::send(HttpRequest* request)
-{    
-    if (!lazyInitThreadSemaphore()) 
-    {
-        return;
-    }
-    
-    if (nullptr == request)
-    {
-        return;
-    }
-        
-    request->retain();
-
-    _requestQueueMutex.lock();
-    _requestQueue.pushBack(request);
-    _requestQueueMutex.unlock();
-
-    // Notify thread start to work
-    _sleepCondition.notify_one();
-}
-
-void HttpClient::sendImmediate(HttpRequest* request)
 {
-    if(nullptr == request)
-    {
+    if(nullptr == request) {
         return;
     }
 
-    request->retain();
-    // Create a HttpResponse object, the default setting is http access failed
-    HttpResponse *response = new (std::nothrow) HttpResponse(request);
-
-    auto t = std::thread(&HttpClient::networkThreadAlone, this, request, response);
-    t.detach();
-}
-
-// Poll and notify main thread if responses exists in queue
-void HttpClient::dispatchResponseCallbacks()
-{
-    // log("CCHttpClient::dispatchResponseCallbacks is running");
-    //occurs when cocos thread fires but the network thread has already quited
-    HttpResponse* response = nullptr;
-    
-    _responseQueueMutex.lock();
-
-    if (!_responseQueue.empty())
     {
-        response = _responseQueue.at(0);
-        _responseQueue.erase(0);
-    }
-
-    _responseQueueMutex.unlock();
-    
-    if (response)
-    {
-        HttpRequest *request = response->getHttpRequest();
-        const ccHttpRequestCallback& callback = request->getResponseCallback();
-
-        if (callback != nullptr)
-        {
-            callback(this, response);
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        if(_request2HttpContextMap.find(request) != _request2HttpContextMap.end()) {
+            return;
         }
+        request->retain();
+        HttpContext* context = new HttpContext();
+        _request2HttpContextMap.emplace(std::make_pair(request, context));
+    }
 
-        response->release();
-        // do not release in other thread
-        request->release();
+    _threadPool->pushTask([this, request](int tid) {
+        networkThread(request);
+    });
+}
+
+void HttpClient::abort(HttpRequest *request)
+{
+    if(nullptr == request) {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+    auto iter = _request2HttpContextMap.find(request);
+    if(iter == _request2HttpContextMap.end()) {
+        return;
+    }
+    iter->first->release();
+    _request2HttpContextMap.erase(iter);
+}
+
+// Worker thread
+void HttpClient::networkThread(HttpRequest* request)
+{
+    HttpResponse* response;
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        if(_request2HttpContextMap.find(request) == _request2HttpContextMap.end()) {
+            return;
+        }
+        response = new HttpResponse(request);
+    }
+
+    processResponse(response);
+
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            response->release();
+            return;
+        }
+        iter->second->setHttpResponse(response);
+    }
+
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
+    if (scheduler != nullptr) {
+        scheduler->performFunctionInCocosThread(
+               CC_CALLBACK_0(HttpClient::dispatchRequestCallback, this, request));
     }
 }
 
-void HttpClient::increaseThreadCount()
+void HttpClient::dispatchRequestCallback(HttpRequest* request)
 {
-    _threadCountMutex.lock();
-    ++_threadCount;
-    _threadCountMutex.unlock();
+    HttpContext* context;
+    const ccHttpRequestCallback& callback = request->getResponseCallback();
+
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            return;
+        }
+        context = iter->second.release();
+        iter->first->release();
+        _request2HttpContextMap.erase(iter);
+    }
+
+    HttpResponse* response = context->getHttpResponse();
+    if(response && callback != nullptr) {
+        callback(this, response);
+    }
+
+    CC_SAFE_DELETE(context);
 }
 
-void HttpClient::decreaseThreadCountAndMayDeleteThis()
+// Process Response
+void HttpClient::processResponse(HttpResponse* response)
 {
-    bool needDeleteThis = false;
-    _threadCountMutex.lock();
-    --_threadCount;
-    if (0 == _threadCount)
-    {
-        needDeleteThis = true;
+    if(_httpClient == nullptr) {
+        return;
     }
-    
-    _threadCountMutex.unlock();
-    if (needDeleteThis)
+
+    auto request = response->getHttpRequest();
+    HttpRequest::Type requestType = request->getRequestType();
+
+    if (HttpRequest::Type::GET != requestType &&
+        HttpRequest::Type::POST != requestType &&
+        HttpRequest::Type::PUT != requestType &&
+        HttpRequest::Type::DELETE != requestType)
     {
-        delete this;
+        CCASSERT(true, "CCHttpClient: unknown request type, only GET、POST、PUT、DELETE are supported");
+        return;
+    }
+
+    long responseCode = -1;
+    int  retValue = 0;
+
+    HttpURLConnection urlConnection(this);
+    if(!urlConnection.init(request)) {
+        response->setSucceed(false);
+        response->setErrorBuffer("HttpURLConnetcion init failed");
+        return;
+    }
+
+    switch (requestType) {
+        case HttpRequest::Type::GET:
+            urlConnection.setRequestMethod("GET");
+            break;
+
+        case HttpRequest::Type::POST:
+            urlConnection.setRequestMethod("POST");
+            break;
+
+        case HttpRequest::Type::PUT:
+            urlConnection.setRequestMethod("PUT");
+            break;
+
+        case HttpRequest::Type::DELETE:
+            urlConnection.setRequestMethod("DELETE");
+            break;
+        default:
+            break;
+    }
+
+    int suc = urlConnection.connect();
+    if (0 != suc) {
+        response->setSucceed(false);
+        response->setErrorBuffer("connect failed");
+        response->setResponseCode(responseCode);
+        return;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            urlConnection.disconnect();
+            return;
+        }
+        iter->second->setHttpUrlConnection(&urlConnection);
+    }
+
+    if (HttpRequest::Type::POST == requestType ||
+        HttpRequest::Type::PUT == requestType) {
+        urlConnection.sendRequest(request);
+    }
+
+    responseCode = urlConnection.getResponseCode();
+
+    if (0 == responseCode) {
+        response->setSucceed(false);
+        response->setErrorBuffer("connect failed");
+        response->setResponseCode(-1);
+        return;
+    }
+
+    char* headers = urlConnection.getResponseHeaders();
+    if (nullptr != headers) {
+        writeHeaderData(headers, strlen(headers), response);
+        free(headers);
+    }
+
+    //get and save cookies
+    char* cookiesInfo = urlConnection.getResponseHeaderByKey("set-cookie");
+    if (nullptr != cookiesInfo) {
+        urlConnection.saveResponseCookies(cookiesInfo, strlen(cookiesInfo));
+        free(cookiesInfo);
+    }
+
+    //content len
+    int contentLength = urlConnection.getResponseHeaderByKeyInt("Content-Length");
+    char* contentInfo = urlConnection.getResponseContent(response);
+    if (nullptr != contentInfo) {
+        std::vector<char> * recvBuffer = (std::vector<char>*)response->getResponseData();
+        recvBuffer->clear();
+        recvBuffer->insert(recvBuffer->begin(), (char*)contentInfo, ((char*)contentInfo) + urlConnection.getContentLength());
+        free(contentInfo);
+    }
+    std::string responseMessage;
+    char *messageInfo = urlConnection.getResponseMessage();
+    if (messageInfo) {
+        responseMessage = messageInfo;
+        free(messageInfo);
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter != _request2HttpContextMap.end()) {
+            iter->second->setHttpUrlConnection(nullptr);
+        }
+    }
+
+    // write data to HttpResponse
+    response->setResponseCode(responseCode);
+
+    if (responseCode == -1) {
+        response->setSucceed(false);
+        if (!responseMessage.empty()) {
+            response->setErrorBuffer(responseMessage.c_str());
+        } else {
+           response->setErrorBuffer("response code error!");
+       }
+    } else {
+        response->setSucceed(true);
     }
 }
 

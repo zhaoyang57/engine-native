@@ -396,6 +396,8 @@ void XMLHttpRequest::abort()
 
     setReadyState(ReadyState::DONE);
 
+    cocos2d::network::HttpClient::getInstance()->abort(_httpRequest);
+
     if (onabort != nullptr)
     {
         onabort();
@@ -598,7 +600,7 @@ void XMLHttpRequest::sendRequest()
     setHttpRequestHeader();
 
     _httpRequest->setResponseCallback(CC_CALLBACK_2(XMLHttpRequest::onResponse, this));
-    cocos2d::network::HttpClient::getInstance()->sendImmediate(_httpRequest);
+    cocos2d::network::HttpClient::getInstance()->send(_httpRequest);
 
     if (onloadstart != nullptr)
     {

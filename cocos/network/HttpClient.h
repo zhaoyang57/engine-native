@@ -30,6 +30,7 @@
 
 #include <thread>
 #include <condition_variable>
+#include <map>
 #include "base/CCVector.h"
 #include "network/HttpRequest.h"
 #include "network/HttpResponse.h"
@@ -43,16 +44,17 @@
 
 NS_CC_BEGIN
 
+class ThreadPool;
 namespace network {
 
-
-
-/** Singleton that handles asynchronous http requests.
+ /** Singleton that handles asynchronous http requests.
  *
  * Once the request completed, a callback will issued in main thread when it provided during make request.
  *
  * @lua NA
  */
+
+class HttpContext;
 class CC_DLL HttpClient
 {
 public:
@@ -108,14 +110,12 @@ public:
                       please make sure request->_requestData is clear before calling "send" here.
      */
     void send(HttpRequest* request);
-
     /**
-     * Immediate send a request
-     *
-     * @param request a HttpRequest object, which includes url, response callback etc.
-                      please make sure request->_requestData is clear before calling "sendImmediate" here.
-     */
-    void sendImmediate(HttpRequest* request);
+    *  abort a request
+    *
+    * @param request a HttpRequest object, which includes url, response callback etc.
+    */
+    void abort(HttpRequest* request);
 
     /**
      * Set the timeout value for connecting.
@@ -159,19 +159,9 @@ private:
     virtual ~HttpClient();
     bool init();
 
-    /**
-     * Init pthread mutex, semaphore, and create new thread for http requests
-     * @return bool
-     */
-    bool lazyInitThreadSemaphore();
-    void networkThread();
-    void networkThreadAlone(HttpRequest* request, HttpResponse* response);
-    /** Poll function called from main thread to dispatch callbacks when http requests finished **/
-    void dispatchResponseCallbacks();
-
-    void processResponse(HttpResponse* response, char* responseMessage);
-    void increaseThreadCount();
-    void decreaseThreadCountAndMayDeleteThis();
+    void networkThread(HttpRequest* request);
+    void processResponse(HttpResponse* response);
+    void dispatchRequestCallback(HttpRequest* request);
 
 private:
     bool _isInited;
@@ -182,16 +172,7 @@ private:
     int _timeoutForRead;
     std::mutex _timeoutForReadMutex;
 
-    int  _threadCount;
-    std::mutex _threadCountMutex;
-
     std::mutex _schedulerMutex;
-
-    Vector<HttpRequest*>  _requestQueue;
-    std::mutex _requestQueueMutex;
-
-    Vector<HttpResponse*> _responseQueue;
-    std::mutex _responseQueueMutex;
 
     std::string _cookieFilename;
     std::mutex _cookieFileMutex;
@@ -201,11 +182,10 @@ private:
 
     HttpCookie* _cookie;
 
-    std::condition_variable_any _sleepCondition;
+    ThreadPool* _threadPool;
 
-    char _responseMessage[RESPONSE_BUFFER_SIZE];
-
-    HttpRequest* _requestSentinel;
+    std::map<HttpRequest*, std::unique_ptr<HttpContext>> _request2HttpContextMap;
+    std::mutex _request2HttpContextMapMutex;
 };
 
 } // namespace network
