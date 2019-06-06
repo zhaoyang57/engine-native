@@ -36,6 +36,9 @@ THE SOFTWARE.
 #include "platform/CCFileUtils.h"
 #include "platform/CCSAXParser.h"
 
+#define ASSET_PREFIX "@asset"
+#define ASSET_FOLDER_NAME "@asset/"
+
 NS_CC_BEGIN
 
 struct FileUtilsApple::IMPL {
@@ -260,7 +263,9 @@ bool FileUtilsApple::isFileExistInternal(const std::string& filePath) const
         if (pos != std::string::npos)
         {
             file = filePath.substr(pos+1);
-            path = filePath.substr(0, pos+1);
+            size_t assetPathFound = filePath.find(ASSET_FOLDER_NAME);
+            size_t pathStart = (assetPathFound == 0) ? strlen(ASSET_PREFIX) : 0;
+            path = filePath.substr(pathStart, pos + 1 - pathStart);
         }
         else
         {
@@ -446,12 +451,6 @@ void FileUtilsApple::valueVectorCompact(ValueVector& valueVector)
     }
 }
 
-std::string FileUtilsApple::getApplicationResourceRoot() {
-    NSBundle *bundle = pimpl_->getBundle();
-    NSString *resourcePath = [bundle resourcePath];
-    return [resourcePath UTF8String];
-}
-
 bool FileUtils::writeValueVectorToFile(const ValueVector& vecData, const std::string& fullPath)
 {
     NSString* path = [NSString stringWithUTF8String:fullPath.c_str()];
@@ -504,6 +503,24 @@ bool FileUtilsApple::createDirectory(const std::string& path)
     }
     
     return result;
+}
+
+FileUtils::Status FileUtilsApple::getContents(const std::string& filename, ResizableBuffer* buffer)
+{
+    NSString *fileName = [NSString stringWithCString:filename.c_str() encoding:[NSString defaultCStringEncoding]];
+    NSString *prefix = [pimpl_->getBundle() resourcePath];
+    fileName = [fileName stringByReplacingOccurrencesOfString:@ASSET_PREFIX withString:prefix];
+    
+    return FileUtils::getContents([fileName UTF8String], buffer);
+}
+
+bool FileUtilsApple::isAbsolutePath(const std::string& path) const
+{
+    // 将 @asset/ 开头的路径当成绝对路径处理，@asset/ 相当于包路径
+    if (path[0] == '/' || path.find("@asset/") == 0) {
+        return true;
+    }
+    return false;
 }
 
 NS_CC_END

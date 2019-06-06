@@ -1166,10 +1166,17 @@ SE_BIND_PROP_SET(XMLHttpRequest_setResponseType)
 
 static bool XMLHttpRequest_getWithCredentials(se::State& s)
 {
-    SE_LOGD("XMLHttpRequest.withCredentials isn't implemented on JSB!");
+    SE_LOGD("XMLHttpRequest.withCredentials isn't implemented.");
     return true;
 }
 SE_BIND_PROP_GET(XMLHttpRequest_getWithCredentials)
+
+static bool XMLHttpRequest_setWithCredentials(se::State& s)
+{
+    SE_LOGD("XMLHttpRequest.withCredentials isn't implemented.");
+    return true;
+}
+SE_BIND_PROP_SET(XMLHttpRequest_setWithCredentials)
 
 bool register_all_xmlhttprequest(se::Object* global)
 {
@@ -1193,7 +1200,7 @@ bool register_all_xmlhttprequest(se::Object* global)
     cls->defineProperty("response", _SE(XMLHttpRequest_getResponse), nullptr);
     cls->defineProperty("timeout", _SE(XMLHttpRequest_getTimeout), _SE(XMLHttpRequest_setTimeout));
     cls->defineProperty("responseType", _SE(XMLHttpRequest_getResponseType), _SE(XMLHttpRequest_setResponseType));
-    cls->defineProperty("withCredentials", _SE(XMLHttpRequest_getWithCredentials), nullptr);
+    cls->defineProperty("withCredentials", _SE(XMLHttpRequest_getWithCredentials), _SE(XMLHttpRequest_setWithCredentials));
 
     cls->install();
 
