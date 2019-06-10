@@ -220,6 +220,16 @@ public:
     {
         return _responseDataString.c_str();
     }
+    
+    inline void setResponseURL(std::string responseURL)
+    {
+        _responseURL = responseURL;
+    }
+    
+    inline const std::string getResponseURL() const
+    {
+        return _responseURL;
+    }
 
 protected:
     bool initWithRequest(HttpRequest* request);
@@ -232,7 +242,7 @@ protected:
     long                _responseCode;    /// the status code returned from libcurl, e.g. 200, 404
     std::string         _errorBuffer;   /// if _responseCode != 200, please read _errorBuffer to find the reason
     std::string         _responseDataString; // the returned raw data. You can also dump it as a string
-
+    std::string         _responseURL;
 };
 
 }

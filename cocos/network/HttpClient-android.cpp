@@ -382,6 +382,32 @@ public:
         
         return value;
     }
+
+    std::string getResponseURL()
+    {
+        char* value = nullptr;
+        std::string responseURL;
+
+        JniMethodInfo methodInfo;
+        if (JniHelper::getStaticMethodInfo(methodInfo,
+                                           JCLS_HTTPCLIENT,
+                                           "getResponseURL",
+                                           "(Ljava/net/HttpURLConnection;)Ljava/lang/String;"))
+        {
+            jobject jObj = methodInfo.env->CallStaticObjectMethod(methodInfo.classID, methodInfo.methodID, _httpURLConnection);
+            value = getBufferFromJString((jstring)jObj, methodInfo.env);
+            if (nullptr != jObj) {
+                methodInfo.env->DeleteLocalRef(jObj);
+            }
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+        } else {
+            CCLOGERROR("HttpClient::%s failed!", __FUNCTION__);
+        }
+
+        responseURL = value;
+        free(value);
+        return responseURL;
+    }
     
     int getResponseHeaderByKeyInt(const char* key)
     {
@@ -906,6 +932,7 @@ void HttpClient::processResponse(HttpResponse* response)
 
     long responseCode = -1;
     int  retValue = 0;
+    std::string responseURL;
 
     HttpURLConnection urlConnection(this);
     if(!urlConnection.init(request)) {
@@ -965,6 +992,9 @@ void HttpClient::processResponse(HttpResponse* response)
         response->setResponseCode(-1);
         return;
     }
+
+    responseURL = urlConnection.getResponseURL();
+    response->setResponseURL(responseURL);
 
     char* headers = urlConnection.getResponseHeaders();
     if (nullptr != headers) {

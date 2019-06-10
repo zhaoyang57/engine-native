@@ -40,6 +40,8 @@
 // The original URL to download.  Due to redirects the actual content may come from another URL
 @property (strong) NSString *srcURL;
 
+@property (strong) NSString *responseURL;
+
 @property (strong) NSString *sslFile;
 
 @property (copy) NSDictionary *responseHeader;

@@ -40,7 +40,7 @@ namespace network {
 
 static HttpClient *_httpClient = nullptr; // pointer to singleton
 
-static int processTask(HttpClient* client, HttpRequest *request, NSString *requestType, void *stream, long *errorCode, void *headerStream, char *errorBuffer);
+    static int processTask(HttpClient* client, HttpRequest *request, NSString *requestType, void *stream, long *errorCode, void *headerStream, char *errorBuffer, std::string *responseURL);
 
 // Worker thread
 void HttpClient::networkThread()
@@ -126,7 +126,7 @@ void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response
 }
 
 //Process Request
-static int processTask(HttpClient* client, HttpRequest* request, NSString* requestType, void* stream, long* responseCode, void* headerStream, char* errorBuffer)
+static int processTask(HttpClient* client, HttpRequest* request, NSString* requestType, void* stream, long* responseCode, void* headerStream, char* errorBuffer, std::string *responseURL)
 {
     if (nullptr == client)
     {
@@ -234,6 +234,7 @@ static int processTask(HttpClient* client, HttpRequest* request, NSString* reque
     }
     
     *responseCode = httpAsynConn.responseCode;
+    *responseURL = [httpAsynConn.responseURL UTF8String];
     
     //add cookie to cookies vector
     if(!cookieFilename.empty())
@@ -473,6 +474,7 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
     auto request = response->getHttpRequest();
     long responseCode = -1;
     int retValue = 0;
+    std::string responseURL;
     NSString* requestType = nil;
 
     // Process the request -> get response packet
@@ -505,10 +507,12 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
                            response->getResponseData(),
                            &responseCode,
                            response->getResponseHeader(),
-                           responseMessage);
+                           responseMessage,
+                           &responseURL);
 
     // write data to HttpResponse
     response->setResponseCode(responseCode);
+    response->setResponseURL(responseURL);
 
     if (retValue != 0)
     {

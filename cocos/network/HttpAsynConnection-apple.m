@@ -36,6 +36,7 @@
 @implementation HttpAsynConnection
 
 @synthesize srcURL = srcURL;
+@synthesize responseURL = responseURL;
 @synthesize sslFile = sslFile;
 @synthesize responseHeader = responseHeader;
 @synthesize responseData = responseData;
@@ -103,6 +104,9 @@
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     //NSLog(@"All headers = %@", [httpResponse allHeaderFields]);
     self.responseHeader = [httpResponse allHeaderFields];
+    
+    NSString *url = [[httpResponse URL] absoluteString];
+    self.responseURL = url;
 
     responseCode = httpResponse.statusCode;
     self.statusString = [NSHTTPURLResponse localizedStringForStatusCode:responseCode];
