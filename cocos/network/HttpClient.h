@@ -172,8 +172,6 @@ private:
     int _timeoutForRead;
     std::mutex _timeoutForReadMutex;
 
-    std::mutex _schedulerMutex;
-
     std::string _cookieFilename;
     std::mutex _cookieFileMutex;
 

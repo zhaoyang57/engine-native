@@ -990,6 +990,13 @@ void HttpClient::processResponse(HttpResponse* response)
         response->setSucceed(false);
         response->setErrorBuffer("connect failed");
         response->setResponseCode(-1);
+        {
+            std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+            auto iter = _request2HttpContextMap.find(request);
+            if(iter != _request2HttpContextMap.end()) {
+                iter->second->setHttpUrlConnection(nullptr);
+            }
+        }
         return;
     }
 

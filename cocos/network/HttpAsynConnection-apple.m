@@ -88,6 +88,16 @@
     [self.conn start];
 }
 
+//
+-(void) cancelRequest
+{
+    [self.conn unscheduleFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    // cancel the connection
+    [self.conn cancel];
+    
+}
+
 #pragma mark NSURLConnectionDelegate methods
 /**
  * This delegate method is called when the NSURLConnection connects to the server.  It contains the 

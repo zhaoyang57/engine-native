@@ -65,6 +65,9 @@
 // instructs the class to start the request.
 -(void) startRequest:(NSURLRequest*)request;
 
+//
+-(void) cancelRequest;
+
 @end
 
 #endif // #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
