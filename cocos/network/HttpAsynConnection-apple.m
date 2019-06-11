@@ -91,11 +91,11 @@
 //
 -(void) cancelRequest
 {
+    finish = true;
     [self.conn unscheduleFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     
     // cancel the connection
     [self.conn cancel];
-    
 }
 
 #pragma mark NSURLConnectionDelegate methods

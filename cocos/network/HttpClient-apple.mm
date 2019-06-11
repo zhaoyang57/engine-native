@@ -58,9 +58,6 @@ public:
     }
 
     void setHttpUrlConnection(HttpAsynConnection* httpURLConnection) {
-        if(_httpURLConnection) {
-            [_httpURLConnection cancelRequest];
-        }
         _httpURLConnection = httpURLConnection;
     }
 
@@ -392,6 +389,15 @@ void HttpClient::processResponse(HttpResponse* response)
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
     }
     
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            return;
+        }
+        iter->second->setHttpUrlConnection(nullptr);
+    }
+    
     //if http connection return error
     if (httpAsynConn.connError != nil)
     {
@@ -400,14 +406,6 @@ void HttpClient::processResponse(HttpResponse* response)
         response->setResponseCode(responseCode);
         response->setSucceed(false);
         response->setErrorBuffer(responseMessage.c_str());
-        
-        {
-            std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
-            auto iter = _request2HttpContextMap.find(request);
-            if(iter != _request2HttpContextMap.end()) {
-                iter->second->setHttpUrlConnection(nullptr);
-            }
-        }
         
         return;
     }
@@ -473,13 +471,6 @@ void HttpClient::processResponse(HttpResponse* response)
     long len = [httpAsynConn.responseData length];
     recvBuffer->insert(recvBuffer->end(), (char*)ptr, (char*)ptr+len);
     
-    {
-        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
-        auto iter = _request2HttpContextMap.find(request);
-        if(iter != _request2HttpContextMap.end()) {
-            iter->second->setHttpUrlConnection(nullptr);
-        }
-    }
     
     // write data to HttpResponse
     response->setResponseCode(responseCode);
