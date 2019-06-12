@@ -23,6 +23,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef DEPRECATED_IMPLEMENT
 #include "network/CCDownloader-android.h"
 
 #include "network/CCDownloader.h"
@@ -308,3 +309,4 @@ JNIEXPORT void JNICALL JNI_DOWNLOADER(nativeOnFinish)(JNIEnv *env, jclass clazz,
 }
 
 } // extern "C" {
+#endif // DEPRECATED_IMPLEMENT
