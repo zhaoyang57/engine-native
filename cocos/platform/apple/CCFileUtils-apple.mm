@@ -36,8 +36,8 @@ THE SOFTWARE.
 #include "platform/CCFileUtils.h"
 #include "platform/CCSAXParser.h"
 
-#define ASSET_PREFIX "@asset"
-#define ASSET_FOLDER_NAME "@asset/"
+#define ASSET_PREFIX "@assets"
+#define ASSET_FOLDER_NAME "@assets/"
 
 NS_CC_BEGIN
 
@@ -516,8 +516,8 @@ FileUtils::Status FileUtilsApple::getContents(const std::string& filename, Resiz
 
 bool FileUtilsApple::isAbsolutePath(const std::string& path) const
 {
-    // 将 @asset/ 开头的路径当成绝对路径处理，@asset/ 相当于包路径
-    if (path[0] == '/' || path.find("@asset/") == 0) {
+    // 将 @assets/ 开头的路径当成绝对路径处理，@assets/ 相当于包路径
+    if (path[0] == '/' || path.find("@assets/") == 0) {
         return true;
     }
     return false;
