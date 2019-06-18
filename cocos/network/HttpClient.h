@@ -162,6 +162,7 @@ private:
     void networkThread(HttpRequest* request);
     void processResponse(HttpResponse* response);
     void dispatchRequestCallback(HttpRequest* request);
+    void dispatchHttpHeaderReceivedCallback(HttpRequest* request);
 
 private:
     bool _isInited;

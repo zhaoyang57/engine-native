@@ -862,10 +862,12 @@ void HttpClient::networkThread(HttpRequest* request)
     HttpResponse* response;
     {
         std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
-        if(_request2HttpContextMap.find(request) == _request2HttpContextMap.end()) {
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
             return;
         }
         response = new HttpResponse(request);
+        iter->second->setHttpResponse(response);
     }
 
     processResponse(response);
@@ -874,16 +876,34 @@ void HttpClient::networkThread(HttpRequest* request)
         std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
         auto iter = _request2HttpContextMap.find(request);
         if(iter == _request2HttpContextMap.end()) {
-            response->release();
             return;
         }
-        iter->second->setHttpResponse(response);
     }
 
     Scheduler* scheduler = Application::getInstance()->getScheduler();
     if (scheduler != nullptr) {
         scheduler->performFunctionInCocosThread(
                CC_CALLBACK_0(HttpClient::dispatchRequestCallback, this, request));
+    }
+}
+
+void HttpClient::dispatchHttpHeaderReceivedCallback(HttpRequest *request)
+{
+    HttpContext* context;
+    const ccHttpHeaderCallback& callback = request->getHeaderReceivedCallback();
+
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            return;
+        }
+        context = iter->second.get();
+    }
+
+    HttpResponse* response = context->getHttpResponse();
+    if (response && callback != nullptr) {
+        callback(response);
     }
 }
 
@@ -1002,11 +1022,18 @@ void HttpClient::processResponse(HttpResponse* response)
 
     responseURL = urlConnection.getResponseURL();
     response->setResponseURL(responseURL);
+    response->setResponseCode(responseCode);
 
     char* headers = urlConnection.getResponseHeaders();
     if (nullptr != headers) {
         writeHeaderData(headers, strlen(headers), response);
         free(headers);
+    }
+
+    Scheduler* scheduler = Application::getInstance()->getScheduler();
+    if (scheduler != nullptr) {
+        scheduler->performFunctionInCocosThread(
+                CC_CALLBACK_0(HttpClient::dispatchHttpHeaderReceivedCallback, this, request));
     }
 
     //get and save cookies
@@ -1039,9 +1066,6 @@ void HttpClient::processResponse(HttpResponse* response)
             iter->second->setHttpUrlConnection(nullptr);
         }
     }
-
-    // write data to HttpResponse
-    response->setResponseCode(responseCode);
 
     if (responseCode == -1) {
         response->setSucceed(false);

@@ -48,6 +48,7 @@ class HttpClient;
 class HttpResponse;
 
 typedef std::function<void(HttpClient*/* client*/, HttpResponse*/* response*/)> ccHttpRequestCallback;
+typedef std::function<void(HttpResponse*/* response*/)> ccHttpHeaderCallback;
 
 /**
  * Defines the object which users must packed for HttpClient::send(HttpRequest*) method.
@@ -88,6 +89,7 @@ public:
     HttpRequest()
     : _requestType(Type::UNKNOWN)
     , _callback(nullptr)
+    , _headerCallback(nullptr)
     , _userData(nullptr)
     , _timeoutInSeconds(10.0f)
     {
@@ -254,6 +256,16 @@ public:
         return _callback;
     }
 
+    inline void setHeaderReceivedCallback(const ccHttpHeaderCallback& callback)
+    {
+        _headerCallback = callback;
+    }
+
+    inline const ccHttpHeaderCallback& getHeaderReceivedCallback(void) const
+    {
+        return _headerCallback;
+    }
+
     /**
      * Set custom-defined headers.
      *
@@ -290,9 +302,10 @@ protected:
     std::string                 _url;            /// target url that this request is sent to
     std::vector<char>           _requestData;    /// used for POST
     std::string                 _tag;            /// user defined tag, to identify different requests in response callback
-    ccHttpRequestCallback       _callback;      /// C++11 style callbacks
-    void*                       _userData;      /// You can add your customed data here
-    std::vector<std::string>    _headers;       /// custom http headers
+    ccHttpRequestCallback       _callback;       /// C++11 style callbacks
+    ccHttpHeaderCallback        _headerCallback; /// C++11 style callbacks
+    void*                       _userData;       /// You can add your customed data here
+    std::vector<std::string>    _headers;        /// custom http headers
     float _timeoutInSeconds;
 };
 

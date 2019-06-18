@@ -200,6 +200,26 @@ void HttpClient::abort(HttpRequest *request)
     iter->first->release();
     _request2HttpContextMap.erase(iter);
 }
+    
+void HttpClient::dispatchHttpHeaderReceivedCallback(HttpRequest* request)
+{
+    HttpContext* context;
+    const ccHttpHeaderCallback& callback = request->getHeaderReceivedCallback();
+    
+    {
+        std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
+            return;
+        }
+        context = iter->second.get();
+    }
+    
+    HttpResponse* response = context->getHttpResponse();
+    if (response && callback != nullptr) {
+        callback(response);
+    }
+}
 
 void HttpClient::dispatchRequestCallback(HttpRequest* request)
 {
@@ -231,10 +251,12 @@ void HttpClient::networkThread(HttpRequest* request)
     HttpResponse* response;
     {
         std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
-        if(_request2HttpContextMap.find(request) == _request2HttpContextMap.end()) {
+        auto iter = _request2HttpContextMap.find(request);
+        if(iter == _request2HttpContextMap.end()) {
             return;
         }
         response = new HttpResponse(request);
+        iter->second->setHttpResponse(response);
     }
     
     processResponse(response);
@@ -243,10 +265,8 @@ void HttpClient::networkThread(HttpRequest* request)
         std::lock_guard<std::mutex> lock(_request2HttpContextMapMutex);
         auto iter = _request2HttpContextMap.find(request);
         if(iter == _request2HttpContextMap.end()) {
-            response->release();
             return;
         }
-        iter->second->setHttpResponse(response);
     }
     
     Scheduler* scheduler = Application::getInstance()->getScheduler();
@@ -363,7 +383,33 @@ void HttpClient::processResponse(HttpResponse* response)
     HttpAsynConnection *httpAsynConn = [[HttpAsynConnection new] autorelease];
     httpAsynConn.srcURL = urlstring;
     httpAsynConn.sslFile = nil;
-    
+    httpAsynConn.onheaderReceivedCallback = ^() {
+        //handle response header
+        NSMutableString *header = [NSMutableString string];
+        [header appendFormat:@"HTTP/1.1 %ld %@\n", (long)httpAsynConn.responseCode, httpAsynConn.statusString];
+        for (id key in httpAsynConn.responseHeader) {
+            [header appendFormat:@"%@: %@\n", key, [httpAsynConn.responseHeader objectForKey:key]];
+        }
+        if (header.length > 0) {
+            NSRange range = NSMakeRange(header.length-1, 1);
+            [header deleteCharactersInRange:range];
+        }
+        NSData *headerData = [header dataUsingEncoding:NSUTF8StringEncoding];
+        std::vector<char> *headerBuffer = (std::vector<char>*)response->getResponseHeader();
+        const void* headerptr = [headerData bytes];
+        long headerlen = [headerData length];
+        headerBuffer->insert(headerBuffer->end(), (char*)headerptr, (char*)headerptr+headerlen);
+        
+        response->setResponseCode(httpAsynConn.responseCode);
+        response->setResponseURL([httpAsynConn.responseURL UTF8String]);
+        
+        Scheduler* scheduler = Application::getInstance()->getScheduler();
+        if (scheduler != nullptr) {
+            scheduler->performFunctionInCocosThread(
+                                                    CC_CALLBACK_0(HttpClient::dispatchHttpHeaderReceivedCallback, this, request));
+        }
+    };
+
     std::string sslCaFileName = getSSLVerification();
     if(!sslCaFileName.empty())
     {
@@ -417,8 +463,6 @@ void HttpClient::processResponse(HttpResponse* response)
         responseMessage = [errorString UTF8String];
     }
     
-    responseCode = httpAsynConn.responseCode;
-    responseURL = [httpAsynConn.responseURL UTF8String];
     //add cookie to cookies vector
     if(!cookieFilename.empty())
     {
@@ -447,34 +491,12 @@ void HttpClient::processResponse(HttpResponse* response)
         }
     }
     
-    //handle response header
-    NSMutableString *header = [NSMutableString string];
-    [header appendFormat:@"HTTP/1.1 %ld %@\n", (long)httpAsynConn.responseCode, httpAsynConn.statusString];
-    for (id key in httpAsynConn.responseHeader)
-    {
-        [header appendFormat:@"%@: %@\n", key, [httpAsynConn.responseHeader objectForKey:key]];
-    }
-    if (header.length > 0)
-    {
-        NSRange range = NSMakeRange(header.length-1, 1);
-        [header deleteCharactersInRange:range];
-    }
-    NSData *headerData = [header dataUsingEncoding:NSUTF8StringEncoding];
-    std::vector<char> *headerBuffer = (std::vector<char>*)response->getResponseHeader();
-    const void* headerptr = [headerData bytes];
-    long headerlen = [headerData length];
-    headerBuffer->insert(headerBuffer->end(), (char*)headerptr, (char*)headerptr+headerlen);
-    
     //handle response data
     std::vector<char> *recvBuffer = (std::vector<char>*)response->getResponseData();
     const void* ptr = [httpAsynConn.responseData bytes];
     long len = [httpAsynConn.responseData length];
     recvBuffer->insert(recvBuffer->end(), (char*)ptr, (char*)ptr+len);
     
-    
-    // write data to HttpResponse
-    response->setResponseCode(responseCode);
-    response->setResponseURL(responseURL);
     response->setSucceed(true);
 }
 

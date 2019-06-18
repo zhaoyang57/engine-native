@@ -139,6 +139,10 @@
                                         userInfo:@{NSLocalizedDescriptionKey: @"Bad HTTP Response Code"}];        
     }
     
+    if (self.onheaderReceivedCallback) {
+        self.onheaderReceivedCallback();
+    }
+    
     [responseData setLength:0];
 }
 

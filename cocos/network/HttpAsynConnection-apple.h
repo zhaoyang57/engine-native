@@ -33,6 +33,9 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 /// @cond
+
+typedef void(^OnHeaderReceived)(void);
+
 @interface HttpAsynConnection : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 {
 }
@@ -61,6 +64,8 @@
 @property bool finish;
 
 @property (strong) NSRunLoop *runLoop;
+
+@property (nonatomic, copy) OnHeaderReceived onheaderReceivedCallback;
 
 // instructs the class to start the request.
 -(void) startRequest:(NSURLRequest*)request;
