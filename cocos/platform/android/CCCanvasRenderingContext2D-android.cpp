@@ -51,11 +51,15 @@ public:
 
     void recreateBuffer(float w, float h)
     {
-        _bufferWidth = w;
-        _bufferHeight = h;
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
-        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "recreateBuffer", w, h);
+        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "recreateBuffer", w, h, _allocationWidth, _allocationHeight);
+        if (w > _allocationWidth)
+        {
+            _allocationWidth = w;
+        }
+        if (h > _allocationHeight)
+        {
+            _allocationHeight = h;
+        }
     }
 
     void beginPath()
@@ -100,17 +104,11 @@ public:
 
     void stroke()
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
-
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
     }
 
     void fill()
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
-
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fill");
     }
 
@@ -126,45 +124,32 @@ public:
 
     void rect(float x, float y, float w, float h)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
     }
 
     void strokeRect(float x, float y, float w, float h)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f) {
-            return;
-        }
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "rect", x, y, w, h);
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "stroke");
     }
 
     void clearRect(float x, float y, float w, float h)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "clearRect", x, y, w, h);
     }
 
     void fillRect(float x, float y, float w, float h)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillRect", x, y, w, h);
     }
 
     void fillText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "fillText", text, x, y, maxWidth);
     }
 
     void strokeText(const std::string& text, float x, float y, float maxWidth)
     {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "strokeText", text, x, y, maxWidth);
     }
 
@@ -234,9 +219,6 @@ public:
     }
 
     void _fillImageData(const Data &imageData, float imageWidth, float imageHeight, float offsetX, float offsetY) {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
-
         jbyteArray arr = JniHelper::getEnv()->NewByteArray(imageData.getSize());
         JniHelper::getEnv()->SetByteArrayRegion(arr, 0, imageData.getSize(),
                                                 (const jbyte *) imageData.getBytes());
@@ -245,7 +227,14 @@ public:
         JniHelper::getEnv()->DeleteLocalRef(arr);
     }
 
-    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback, bool needPremultiply) {
+    void getData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback, float width, float height, bool needPremultiply) {
+        if (width == 0 || height == 0)
+        {
+            if (nullptr != callback) {
+                callback(nullptr, width, height, _allocationWidth, _allocationHeight, needPremultiply);
+            }
+            return;
+        }
         jobject bmpObj = nullptr;
         JniMethodInfo methodInfo;
         if (JniHelper::getMethodInfo(methodInfo, JCLS_CANVASIMPL, "getBitmap", "()Landroid/graphics/Bitmap;")) {
@@ -266,7 +255,6 @@ public:
             if (bmpInfo.width < 1 || bmpInfo.height < 1) {
                 break;
             }
-            int size = bmpInfo.width * bmpInfo.height * 4;
 
             void *pixelData;
             if (AndroidBitmap_lockPixels(env, bmpObj, &pixelData) != ANDROID_BITMAP_RESULT_SUCCESS) {
@@ -275,7 +263,7 @@ public:
             }
 
             if (nullptr != callback) {
-                callback(pixelData, size, needPremultiply);
+                callback(pixelData, width, height, _allocationWidth, _allocationHeight, needPremultiply);
             }
             AndroidBitmap_unlockPixels(env, bmpObj);
         } while (false);
@@ -386,8 +374,6 @@ public:
 
     void drawImage(const Data &image, float sx, float sy, float sw, float sh,
                    float dx, float dy, float dw, float dh, float ow, float oh) {
-        if (_bufferWidth < 1.0f || _bufferHeight < 1.0f)
-            return;
         jbyteArray arr = JniHelper::getEnv()->NewByteArray((jsize) image.getSize());
         unsigned char *data = image.getBytes();
         int alpha = 0;
@@ -522,8 +508,8 @@ public:
 private:
     jobject _obj = nullptr;
     Data _data;
-    float _bufferWidth = 0.0f;
-    float _bufferHeight = 0.0f;
+    float _allocationWidth = 0.0f;
+    float _allocationHeight = 0.0f;
 };
 
 namespace {
@@ -610,7 +596,7 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D()
 }
 
 void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
-    _impl->getData(callback, s_needPremultiply);
+    _impl->getData(callback, __width, __height, s_needPremultiply);
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
@@ -651,31 +637,49 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 
 void CanvasRenderingContext2D::rect(float x, float y, float width, float height)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->rect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::clearRect(float x, float y, float width, float height)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->clearRect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::fillRect(float x, float y, float width, float height)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->fillRect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->strokeRect(x, y, width, height);
 }
 
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->fillText(text, x, y, maxWidth);
 }
 
 void CanvasRenderingContext2D::strokeText(const std::string& text, float x, float y, float maxWidth)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->strokeText(text, x, y, maxWidth);
 }
 
@@ -731,11 +735,17 @@ void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, flo
 
 void CanvasRenderingContext2D::stroke()
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->stroke();
 }
 
 void CanvasRenderingContext2D::fill()
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->fill();
 }
 
@@ -955,6 +965,9 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
 
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
 }
 // transform
@@ -1033,6 +1046,9 @@ void CanvasRenderingContext2D::set_shadowOffsetYInternal(float offsetY)
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     _impl->drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh, ow, oh);
 }
 

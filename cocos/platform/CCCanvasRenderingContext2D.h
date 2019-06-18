@@ -146,7 +146,7 @@ public:
     void setLineDash(std::vector<float>& arr);
     std::vector<float>& getLineDash();
 
-    using CanvasBufferGetCallback = std::function<void(void* p, int len, bool needPremultiply)>;
+    using CanvasBufferGetCallback = std::function<void(void* p, float width, float height, float allocationWidth, float allocationHeight, bool needPremultiply)>;
     void _getData(CanvasBufferGetCallback& callback);
 
 private:

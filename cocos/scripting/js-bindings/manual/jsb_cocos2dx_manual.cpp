@@ -421,15 +421,32 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_CanvasRenderingContext2D_getData : Invalid Native Object");
-    std::function<void(void *buffer, int len, bool needPremultiply)> arg0;
     se::Value *pval(&s.rval());
-    auto lambda = [pval](void *buffer, int len, bool needPremultiply) -> void {
-        se::Object *typeArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, len);
+    std::function<void(void *buffer, float width, float height, float allocationWidth, float allocationHeight, bool needPremultiply)> lambda =
+            [pval] (
+            void *buffer,
+            float width,
+            float height,
+            float allocationWidth,
+            float allocationHeight,
+            bool needPremultiply) -> void {
+        if (buffer == nullptr || width <= 0 || height <= 0) {
+            pval->setNull();
+            return;
+        }
+        int len = (int)(width * height * 4);
+        se::Object *typeArray = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer, (size_t) len);
+        std::size_t bufferSize;
+        uint8_t *data = nullptr;
+        typeArray->getTypedArrayData(&data, &bufferSize);
+        if (width != allocationWidth) {
+            uint8_t *srcBuffer = (uint8_t *)buffer, *dstBuffer = data;
+            int copySize = (int)(width * 4), allocationSize = (int)(allocationWidth * 4);
+            for (int i = 0; i < height; ++i, srcBuffer += allocationSize, dstBuffer += copySize) {
+                memcpy(dstBuffer, srcBuffer, (size_t)copySize);
+            }
+        }
         if (!needPremultiply) {
-            std::size_t bufferSize;
-            uint8_t *data = nullptr;
-            typeArray->getTypedArrayData(&data, &bufferSize);
-
             int alpha = 0;
             for (uint8_t *end = data + len; data < end; data = data + 4) {
                 alpha = data[3];
@@ -443,8 +460,7 @@ static bool js_CanvasRenderingContext2D_getData(se::State& s)
         se::HandleObject handleObject(typeArray);
         pval->setObject(handleObject);
     };
-    arg0 = lambda;
-    cobj->_getData(arg0);
+    cobj->_getData(lambda);
     return true;
 }
 
