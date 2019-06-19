@@ -56,7 +56,7 @@ using namespace cocos2d;
 // this function define in runtime
 extern void (*get_image_meta_info)(void *image_meta, void **pixels, int *count, int *width,
                                    int *height, uint32_t *gl_format, uint32_t *gl_type,
-                                   uint32_t *alignment, int32_t *gl_internal_format);
+                                   int32_t *gl_internal_format);
 
 namespace {
 
@@ -2306,10 +2306,10 @@ static void setUnpackAlignmentByWidthAndFormat(uint32_t width, GLenum format)
 static bool JSB_glTexImage2D(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
-    SE_PRECONDITION2( argc == 10, false, "Invalid number of arguments" );
+    SE_PRECONDITION2( argc == 9, false, "Invalid number of arguments" );
     bool ok = true;
 
-    uint32_t target; int32_t level; int32_t internalformat; int32_t width; int32_t height; int32_t border; uint32_t format; uint32_t type; void* pixels; uint32_t alignment;
+    uint32_t target; int32_t level; int32_t internalformat; int32_t width; int32_t height; int32_t border; uint32_t format; uint32_t type; void* pixels;
 
     ok &= seval_to_uint32(args[0], &target );
     ok &= seval_to_int32(args[1], &level );
@@ -2322,7 +2322,6 @@ static bool JSB_glTexImage2D(se::State& s) {
 
     GLsizei count;
     ok &= JSB_get_arraybufferview_dataptr(args[8], &count, &pixels);
-    ok &= seval_to_uint32(args[9], &alignment);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(internalformat == GL_ALPHA || internalformat == GL_RGB || internalformat == GL_RGBA || internalformat == GL_LUMINANCE ||
@@ -2400,7 +2399,6 @@ static bool JSB_glTexImage2D_image(se::State &s) {
     uint32_t format;
     uint32_t type;
     void *pixels;
-    uint32_t alignment;
 
     ok &= seval_to_uint32(args[0], &target);
     ok &= seval_to_int32(args[1], &level);
@@ -2411,8 +2409,7 @@ static bool JSB_glTexImage2D_image(se::State &s) {
     void *imageMeta = args[2].toObject()->getPrivateData();
     SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
     // this function implement in runtime client
-    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, &alignment,
-                        &internalformat);
+    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, &internalformat);
     // border always be 0 when call this function
     border = 0;
     // the logic following is the same to texImage2d
@@ -2429,7 +2426,7 @@ static bool JSB_glTexImage2D_image(se::State &s) {
                      type == GL_UNSIGNED_SHORT_4_4_4_4 || type == GL_UNSIGNED_SHORT_5_5_5_1,
                      false, GL_INVALID_ENUM);
     SE_PRECONDITION4(internalformat == format, false, GL_INVALID_OPERATION);
-    if (!args[8].isNullOrUndefined()) {
+    if (pixels != nullptr && count > 0) {
         int bytes = 1;
 
         switch (format) {
@@ -2447,7 +2444,7 @@ static bool JSB_glTexImage2D_image(se::State &s) {
     }
 #endif
 #if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
-    if (!args[8].isNullOrUndefined()) {
+    if (pixels != nullptr && count > 0) {
         int textureBinding = 0;
         JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
         if (textureBinding <= 0) {
@@ -2541,9 +2538,9 @@ SE_BIND_FUNC(JSB_glTexParameteri)
 static bool JSB_glTexSubImage2D(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
-    SE_PRECONDITION2( argc == 10, false, "Invalid number of arguments" );
+    SE_PRECONDITION2( argc == 9, false, "Invalid number of arguments" );
     bool ok = true;
-    uint32_t target; int32_t level; int32_t xoffset; int32_t yoffset; int32_t width; int32_t height; uint32_t format; uint32_t type; void* pixels; uint32_t alignment;
+    uint32_t target; int32_t level; int32_t xoffset; int32_t yoffset; int32_t width; int32_t height; uint32_t format; uint32_t type; void* pixels;
 
     ok &= seval_to_uint32(args[0], &target );
     ok &= seval_to_int32(args[1], &level );
@@ -2555,7 +2552,6 @@ static bool JSB_glTexSubImage2D(se::State& s) {
     ok &= seval_to_uint32(args[7], &type );
     GLsizei count;
     ok &= JSB_get_arraybufferview_dataptr(args[8], &count, &pixels);
-    ok &= seval_to_uint32(args[9], &alignment);
     SE_PRECONDITION2(ok, false, "Error processing arguments");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(format == GL_ALPHA || format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE || format == GL_LUMINANCE_ALPHA,
@@ -2630,7 +2626,6 @@ static bool JSB_glTexSubImage2D_image(se::State &s) {
     uint32_t format;
     uint32_t type;
     void *pixels;
-    uint32_t alignment;
 
     ok &= seval_to_uint32(args[0], &target);
     ok &= seval_to_int32(args[1], &level);
@@ -2643,8 +2638,7 @@ static bool JSB_glTexSubImage2D_image(se::State &s) {
     void *imageMeta = args[4].toObject()->getPrivateData();
     SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
     // this function implement in runtime client
-    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, &alignment,
-                        nullptr);
+    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, nullptr);
     // the logic following is the same to texSubImage2d
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(
@@ -2654,7 +2648,7 @@ static bool JSB_glTexSubImage2D_image(se::State &s) {
     SE_PRECONDITION4(type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5 ||
                      type == GL_UNSIGNED_SHORT_4_4_4_4 || type == GL_UNSIGNED_SHORT_5_5_5_1,
                      false, GL_INVALID_ENUM);
-    if (!args[8].isNullOrUndefined()) {
+    if (pixels != nullptr && count > 0) {
         int bytes = 1;
 
         switch (format) {
@@ -2672,7 +2666,7 @@ static bool JSB_glTexSubImage2D_image(se::State &s) {
     }
 #endif
 #if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
-    if (!args[8].isNullOrUndefined()) {
+    if (pixels != nullptr && count > 0) {
         int textureBinding = 0;
         JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
         if (textureBinding <= 0) {
