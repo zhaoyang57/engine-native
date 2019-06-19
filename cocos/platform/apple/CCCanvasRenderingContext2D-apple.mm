@@ -280,6 +280,8 @@ enum class CanvasTextBaseline {
 @property (nonatomic, assign) CGFloat height;
 @property (nonatomic, strong) NSMutableArray<CanvasRenderingContext2DImplDrawingState *> *drawingStateList;
 @property (nonatomic, strong) CanvasRenderingContext2DImplDrawingState *drawingState;
+@property (nonatomic, assign) CGFloat allocationWidth;
+@property (nonatomic, assign) CGFloat allocationHeight;
 
 @end
 
@@ -450,12 +452,29 @@ enum class CanvasTextBaseline {
 }
 
 -(void) recreateBufferWithWidth:(NSInteger) width height:(NSInteger) height {
-    _width = width = width > 0 ? width : 1;
-    _height = height = height > 0 ? height : 1;
-    NSUInteger textureSize = width * height * 4;
-    unsigned char* data = (unsigned char*)malloc(sizeof(unsigned char) * textureSize);
-    memset(data, 0, textureSize);
-    _imageData.fastSet(data, textureSize);
+    [self _resetSetting];
+    if (width == 0 || height == 0) {
+        return;
+    }
+    
+    _width = width;
+    _height = height;
+    // no need to recreate
+    if (!_imageData.isNull() && width <= _allocationWidth && height <= _allocationHeight) {
+        memset(_imageData.getBytes(), 0, _imageData.getSize());
+    } else {
+        NSUInteger textureSize = MAX(width, _allocationWidth) * MAX(height, _allocationHeight) * 4;
+        unsigned char* data = (unsigned char*)malloc(sizeof(unsigned char) * textureSize);
+        memset(data, 0, textureSize);
+        _imageData.fastSet(data, textureSize);
+    }
+    
+    if (width > _allocationWidth) {
+        _allocationWidth = width;
+    }
+    if (height > _allocationHeight) {
+        _allocationHeight = height;
+    }
 
     if (_context != nil)
     {
@@ -473,7 +492,7 @@ enum class CanvasTextBaseline {
 
     // draw text
     _colorSpace  = CGColorSpaceCreateDeviceRGB();
-    _context = CGBitmapContextCreate(data,
+    _context = CGBitmapContextCreate(_imageData.getBytes(),
                                      width,
                                      height,
                                      8,
@@ -496,7 +515,6 @@ enum class CanvasTextBaseline {
     //NOTE: NSString draws in UIKit referential i.e. renders upside-down compared to CGBitmapContext referential
     CGContextScaleCTM(_context, 1.0f, -1.0f);
 #endif
-    [self _resetSetting];
 }
 
 -(NSSize) measureText:(NSString*) text {
@@ -684,6 +702,17 @@ enum class CanvasTextBaseline {
 
 -(const cocos2d::Data&) getDataRef {
     return _imageData;
+}
+
+- (void)getData:(cocos2d::CanvasRenderingContext2D::CanvasBufferGetCallback &)callback width:(float)width height:(float)height needPremultiply:(bool)needPremultiply {
+    if (width == 0 || height == 0) {
+        if (nullptr != callback) {
+            callback(nullptr, width, height, _allocationWidth, _allocationHeight, needPremultiply);
+        }
+        return;
+    }
+    cocos2d::Data data = [self getDataRef];
+    callback(data.getBytes(), _width, _height, _width, _height, needPremultiply);
 }
 
 -(void) scaleX:(float)x y:(float)y {
@@ -1671,7 +1700,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(float width, float height)
 : __width(width)
 , __height(height)
 {
-//    SE_LOGD("CanvasRenderingContext2D constructor: %p, width: %f, height: %f\n", this, width, height);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &_maxTextureSize);
     _impl = [[CanvasRenderingContext2DImpl alloc] init];
     recreateBufferIfNeeded();
@@ -1714,8 +1742,7 @@ void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
     if (nullptr == callback) {
         return;
     }
-    cocos2d::Data data = [_impl getDataRef];
-    callback(data.getBytes(), (int)data.getSize(), s_needPremultiply);
+    [_impl getData:callback width:__width height:__height needPremultiply:s_needPremultiply];
 }
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
@@ -1723,7 +1750,6 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
     if (_isBufferSizeDirty)
     {
         _isBufferSizeDirty = false;
-//        SE_LOGD("CanvasRenderingContext2D::recreateBufferIfNeeded %p, w: %f, h:%f\n", this, __width, __height);
         if (__width > _maxTextureSize || __height > _maxTextureSize) {
             return false;
         }
@@ -1755,66 +1781,52 @@ bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 
 void CanvasRenderingContext2D::clearRect(float x, float y, float width, float height)
 {
-//    SE_LOGD("CanvasGradient::clearRect: %p, %f, %f, %f, %f\n", this, x, y, width, height);
-    if (recreateBufferIfNeeded()) {
-        [_impl clearRect:CGRectMake(x, y, width, height)];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D clearRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
     }
+    [_impl clearRect:CGRectMake(x, y, width, height)];
 }
 
 void CanvasRenderingContext2D::fillRect(float x, float y, float width, float height)
 {
-    if (recreateBufferIfNeeded()) {
-        [_impl fillRect:CGRectMake(x, y, width, height)];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D fillRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
     }
+    [_impl fillRect:CGRectMake(x, y, width, height)];
 }
 
 void CanvasRenderingContext2D::strokeRect(float x, float y, float width, float height)
 {
-    if (recreateBufferIfNeeded()) {
-        [_impl rectWithX:x y:y width:width height:height];
-        [_impl stroke];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeRect width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
     }
+    [_impl rectWithX:x y:y width:width height:height];
+    [_impl stroke];
 }
 
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
 {
-//    SE_LOGD("CanvasRenderingContext2D(%p)::fillText: %s, %f, %f, %f\n", this, text.c_str(), x, y, maxWidth);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     if (text.empty())
         return;
 
-    if (recreateBufferIfNeeded()) {
-        [_impl fillText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D fillText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
-    }
+    [_impl fillText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
 }
 
 void CanvasRenderingContext2D::strokeText(const std::string& text, float x, float y, float maxWidth)
 {
-//    SE_LOGD("CanvasRenderingContext2D(%p)::strokeText: %s, %f, %f, %f\n", this, text.c_str(), x, y, maxWidth);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     if (text.empty())
         return;
-    if (recreateBufferIfNeeded()) {
-        [_impl strokeText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D strokeText width:%f, height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
-    }
+    [_impl strokeText:[NSString stringWithUTF8String:text.c_str()] x:x y:y maxWidth:maxWidth];
 }
 
 cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 {
-//    SE_LOGD("CanvasRenderingContext2D::measureText: %s\n", text.c_str());
     CGSize size = [_impl measureText: [NSString stringWithUTF8String:text.c_str()]];
     return cocos2d::Size(size.width, size.height);
 }
@@ -1876,21 +1888,25 @@ void CanvasRenderingContext2D::arcTo(float x1, float y1, float x2, float y2, flo
 
 void CanvasRenderingContext2D::stroke()
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     [_impl stroke];
 }
 
 void CanvasRenderingContext2D::fill()
 {
-    if (recreateBufferIfNeeded()) {
-        [_impl fill];
-    } else {
-        SE_LOGE("[ERROR] CanvasRenderingContext2D fill width:%f height:%f is out of GL_MAX_TEXTURE_SIZE",
-                __width, __height);
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
     }
+    [_impl fill];
 }
 
 void CanvasRenderingContext2D::rect(float x, float y, float w, float h)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     [_impl rectWithX:x y:y width:w height:h];
 }
 
@@ -1902,7 +1918,6 @@ void CanvasRenderingContext2D::restore()
 
 void CanvasRenderingContext2D::set__width(float width)
 {
-//    SE_LOGD("CanvasRenderingContext2D::set__width: %f\n", width);
     __width = width;
     _isBufferSizeDirty = true;
     recreateBufferIfNeeded();
@@ -1910,7 +1925,6 @@ void CanvasRenderingContext2D::set__width(float width)
 
 void CanvasRenderingContext2D::set__height(float height)
 {
-//    SE_LOGD("CanvasRenderingContext2D::set__height: %f\n", height);
     __height = height;
     _isBufferSizeDirty = true;
     recreateBufferIfNeeded();
@@ -1981,7 +1995,6 @@ void CanvasRenderingContext2D::set_font(const std::string& font)
 
 void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
 {
-//    SE_LOGD("CanvasRenderingContext2D::set_textAlign: %s\n", textAlign.c_str());
     if (textAlign == "left")
     {
         _impl.drawingState.textAlign = CanvasTextAlign::LEFT;
@@ -2002,7 +2015,6 @@ void CanvasRenderingContext2D::set_textAlign(const std::string& textAlign)
 
 void CanvasRenderingContext2D::set_textBaseline(const std::string& textBaseline)
 {
-//    SE_LOGD("CanvasRenderingContext2D::set_textBaseline: %s\n", textBaseline.c_str());
     if (textBaseline == "top")
     {
         _impl.drawingState.textBaseLine = CanvasTextBaseline::TOP;
@@ -2118,6 +2130,9 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
 
 void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
 {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
 }
 
@@ -2181,6 +2196,9 @@ void CanvasRenderingContext2D::set_miterLimitInternal(float limit)
 
 void CanvasRenderingContext2D::drawImage(const Data &image, float sx, float sy, float sw, float sh,
                                          float dx, float dy, float dw, float dh, float ow, float oh) {
+    if (__width < 1.0f || __height < 1.0f) {
+        return;
+    }
     [_impl drawImage:image sx:sx sy:sy sw:sw sh:sh dx:dx dy:dy dw:dw dh:dh ow:ow oh:oh];
 }
 
