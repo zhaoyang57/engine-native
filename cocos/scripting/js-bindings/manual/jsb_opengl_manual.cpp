@@ -53,6 +53,11 @@ using namespace cocos2d;
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
 
+// this function define in runtime
+extern void (*get_image_meta_info)(void *image_meta, void **pixels, int *count, int *width,
+                                   int *height, uint32_t *gl_format, uint32_t *gl_type,
+                                   uint32_t *alignment, int32_t *gl_internal_format);
+
 namespace {
 
     const uint32_t GL_COMMAND_ACTIVE_TEXTURE = 0;
@@ -2378,6 +2383,102 @@ static bool JSB_glTexImage2D(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glTexImage2D)
 
+// Arguments: GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, ArrayBufferView
+// Ret value: void
+static bool JSB_glTexImage2D_image(se::State &s) {
+    const auto &args = s.args();
+    int argc = (int) args.size();
+    SE_PRECONDITION2(argc == 3, false, "Invalid number of arguments");
+    bool ok = true;
+
+    uint32_t target;
+    int32_t level;
+    int32_t internalformat;
+    int32_t width;
+    int32_t height;
+    int32_t border;
+    uint32_t format;
+    uint32_t type;
+    void *pixels;
+    uint32_t alignment;
+
+    ok &= seval_to_uint32(args[0], &target);
+    ok &= seval_to_int32(args[1], &level);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+
+    GLsizei count;
+    SE_PRECONDITION2(args[2].isObject(), false, "Error processing arguments");
+    void *imageMeta = args[2].toObject()->getPrivateData();
+    SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
+    // this function implement in runtime client
+    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, &alignment,
+                        &internalformat);
+    // border always be 0 when call this function
+    border = 0;
+    // the logic following is the same to texImage2d
+#if OPENGL_PARAMETER_CHECK
+    SE_PRECONDITION4(
+            internalformat == GL_ALPHA || internalformat == GL_RGB || internalformat == GL_RGBA ||
+            internalformat == GL_LUMINANCE ||
+            internalformat == GL_LUMINANCE_ALPHA, false, GL_INVALID_VALUE);
+    SE_PRECONDITION4(
+            format == GL_ALPHA || format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE ||
+            format == GL_LUMINANCE_ALPHA,
+            false, GL_INVALID_ENUM);
+    SE_PRECONDITION4(type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5 ||
+                     type == GL_UNSIGNED_SHORT_4_4_4_4 || type == GL_UNSIGNED_SHORT_5_5_5_1,
+                     false, GL_INVALID_ENUM);
+    SE_PRECONDITION4(internalformat == format, false, GL_INVALID_OPERATION);
+    if (!args[8].isNullOrUndefined()) {
+        int bytes = 1;
+
+        switch (format) {
+            case GL_RGB:
+                bytes = 3;
+                break;
+            case GL_RGBA:
+                bytes = 4;
+                break;
+            default:
+                break;
+        }
+        if (type != GL_UNSIGNED_BYTE) bytes = 2;
+        SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
+    }
+#endif
+#if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
+    if (!args[8].isNullOrUndefined()) {
+        int textureBinding = 0;
+        JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
+        if (textureBinding <= 0) {
+            JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &textureBinding));
+        }
+        SE_PRECONDITION4(textureBinding > 0, false, GL_INVALID_OPERATION);
+    }
+#endif
+    void *pixelCopy = pixels;
+    if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha()) {
+        if (count > 0) {
+            pixelCopy = malloc(count);
+            if (!pixelCopy) return true;
+            memcpy(pixelCopy, pixels, count);
+        }
+    }
+    ccFlipYIfNeeded(pixelCopy, count, height);
+    ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
+
+    JSB_GL_CHECK(
+            glTexImage2D((GLenum) target, (GLint) level, (GLint) internalformat, (GLsizei) width,
+                         (GLsizei) height, (GLint) border, (GLenum) format, (GLenum) type,
+                         (GLvoid *) pixelCopy));
+    if (pixelCopy != pixels)
+        free(pixelCopy);
+
+    return true;
+}
+
+SE_BIND_FUNC(JSB_glTexImage2D_image)
+
 // Arguments: GLenum, GLenum, GLfloat
 // Ret value: void
 static bool JSB_glTexParameterf(se::State& s) {
@@ -2512,6 +2613,96 @@ static bool JSB_glTexSubImage2D(se::State& s) {
     return true;
 }
 SE_BIND_FUNC(JSB_glTexSubImage2D)
+
+// Arguments: GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, ArrayBufferView
+// Ret value: void
+static bool JSB_glTexSubImage2D_image(se::State &s) {
+    const auto &args = s.args();
+    int argc = (int) args.size();
+    SE_PRECONDITION2(argc == 5, false, "Invalid number of arguments");
+    bool ok = true;
+    uint32_t target;
+    int32_t level;
+    int32_t xoffset;
+    int32_t yoffset;
+    int32_t width;
+    int32_t height;
+    uint32_t format;
+    uint32_t type;
+    void *pixels;
+    uint32_t alignment;
+
+    ok &= seval_to_uint32(args[0], &target);
+    ok &= seval_to_int32(args[1], &level);
+    ok &= seval_to_int32(args[2], &xoffset);
+    ok &= seval_to_int32(args[3], &yoffset);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+
+    GLsizei count;
+    SE_PRECONDITION2(args[4].isObject(), false, "Error processing arguments");
+    void *imageMeta = args[4].toObject()->getPrivateData();
+    SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
+    // this function implement in runtime client
+    get_image_meta_info(imageMeta, &pixels, &count, &width, &height, &format, &type, &alignment,
+                        nullptr);
+    // the logic following is the same to texSubImage2d
+#if OPENGL_PARAMETER_CHECK
+    SE_PRECONDITION4(
+            format == GL_ALPHA || format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE ||
+            format == GL_LUMINANCE_ALPHA,
+            false, GL_INVALID_ENUM);
+    SE_PRECONDITION4(type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5 ||
+                     type == GL_UNSIGNED_SHORT_4_4_4_4 || type == GL_UNSIGNED_SHORT_5_5_5_1,
+                     false, GL_INVALID_ENUM);
+    if (!args[8].isNullOrUndefined()) {
+        int bytes = 1;
+
+        switch (format) {
+            case GL_RGB:
+                bytes = 3;
+                break;
+            case GL_RGBA:
+                bytes = 4;
+                break;
+            default:
+                break;
+        }
+        if (type != GL_UNSIGNED_BYTE) bytes = 2;
+        SE_PRECONDITION4(count >= width * height * bytes, false, GL_INVALID_OPERATION);
+    }
+#endif
+#if OPENGL_PARAMETER_CHECK_PERFORMANCE_HEAVY
+    if (!args[8].isNullOrUndefined()) {
+        int textureBinding = 0;
+        JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding));
+        if (textureBinding <= 0) {
+            JSB_GL_CHECK(glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &textureBinding));
+        }
+        SE_PRECONDITION4(textureBinding > 0, false, GL_INVALID_OPERATION);
+    }
+#endif
+    void *pixelCopy = pixels;
+    if (ccIsUnpackFlipY() || ccIsPremultiplyAlpha()) {
+        if (count > 0) {
+            pixelCopy = malloc(count);
+            if (!pixelCopy) return true;
+            memcpy(pixelCopy, pixels, count);
+        }
+    }
+    ccFlipYIfNeeded(pixelCopy, count, height);
+    ccPremultiptyAlphaIfNeeded(pixelCopy, count, format, type);
+
+    JSB_GL_CHECK(glTexSubImage2D((GLenum) target, (GLint) level, (GLint) xoffset, (GLint) yoffset,
+                                 (GLsizei) width, (GLsizei) height, (GLenum) format, (GLenum) type,
+                                 (GLvoid *) pixelCopy));
+
+    if (pixelCopy != pixels)
+        free(pixelCopy);
+
+    return true;
+}
+
+SE_BIND_FUNC(JSB_glTexSubImage2D_image)
 
 // Arguments: WebGLUniformLocation, GLfloat
 // Ret value: void
@@ -5715,6 +5906,8 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("texParameterf", _SE(JSB_glTexParameterf));
     __glObj->defineFunction("texParameteri", _SE(JSB_glTexParameteri));
     __glObj->defineFunction("texSubImage2D", _SE(JSB_glTexSubImage2D));
+    __glObj->defineFunction("texImage2D_image", _SE(JSB_glTexImage2D_image));
+    __glObj->defineFunction("texSubImage2D_image", _SE(JSB_glTexSubImage2D_image));
     __glObj->defineFunction("uniform1f", _SE(JSB_glUniform1f));
     __glObj->defineFunction("uniform1fv", _SE(JSB_glUniform1fv));
     __glObj->defineFunction("uniform1i", _SE(JSB_glUniform1i));

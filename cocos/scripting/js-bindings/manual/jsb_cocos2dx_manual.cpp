@@ -28,12 +28,16 @@
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "cocos/scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "cocos/scripting/js-bindings/manual/jsb_global.h"
+#include "cocos/scripting/js-bindings/manual/jsb_opengl_manual.hpp"
 #include "cocos/scripting/js-bindings/auto/jsb_cocos2dx_auto.hpp"
 
 #include "storage/local-storage/LocalStorage.h"
 #include "cocos2d.h"
 
 using namespace cocos2d;
+
+// this function define in runtime
+extern void (*copy_image_meta_data_to_canvas)(void *image_meta, cocos2d::Data &data);
 
 static bool jsb_cocos2dx_empty_func(se::State& s)
 {
@@ -417,6 +421,52 @@ BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, shadowOffsetYIn
 #define _SE_DEFINE_PROP(cls, property) \
     __jsb_cocos2d_##cls##_proto->defineProperty(#property, _SE(js_##cls_get_##property), _SE(js_##cls_set_##property));
 
+static bool js_engine_CanvasRenderingContext2D_drawImageData(se::State& s)
+{
+    cocos2d::CanvasRenderingContext2D* context2DObj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
+    SE_PRECONDITION2(context2DObj, false, "js_engine_CanvasRenderingContext2D_drawImage : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 11) {
+        cocos2d::Data data;
+        float sx = 0;
+        float sy = 0;
+        float sw = 0;
+        float sh = 0;
+        float dx = 0;
+        float dy = 0;
+        float dw = 0;
+        float dh = 0;
+        float originalWidth = 0;
+        float originalHeight = 0;
+        if (args[0].isObject()) {
+            void *imageMeta = args[0].toObject()->getPrivateData();
+            SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
+            // this function implement in runtime client
+            copy_image_meta_data_to_canvas(imageMeta, data);
+        } else {
+            ok &= seval_to_Data(args[0], &data);
+        }
+        ok &= seval_to_float(args[1], &sx);
+        ok &= seval_to_float(args[2], &sy);
+        ok &= seval_to_float(args[3], &sw);
+        ok &= seval_to_float(args[4], &sh);
+        ok &= seval_to_float(args[5], &dx);
+        ok &= seval_to_float(args[6], &dy);
+        ok &= seval_to_float(args[7], &dw);
+        ok &= seval_to_float(args[8], &dh);
+        ok &= seval_to_float(args[9], &originalWidth);
+        ok &= seval_to_float(args[10], &originalHeight);
+        SE_PRECONDITION2(ok, false, "js_engine_CanvasRenderingContext2D_drawImage : Error processing arguments");
+        context2DObj->drawImage(data, sx, sy, sw, sh, dx, dy, dw, dh, originalWidth, originalHeight);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 11);
+    return false;
+}
+SE_BIND_FUNC(js_engine_CanvasRenderingContext2D_drawImageData)
+
 static bool js_CanvasRenderingContext2D_getData(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D *cobj = (cocos2d::CanvasRenderingContext2D *) s.nativeThisObject();
@@ -647,6 +697,7 @@ static bool register_canvas_context2d(se::Object* obj)
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("_getData", _SE(js_CanvasRenderingContext2D_getData));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("fillStyle", _SE(js_CanvasRenderingContext2D_getFillStyle), _SE(js_CanvasRenderingContext2D_setFillStyle));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("strokeStyle", _SE(js_CanvasRenderingContext2D_getStrokeStyle), _SE(js_CanvasRenderingContext2D_setStrokeStyle));
+    __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("drawImage", _SE(js_engine_CanvasRenderingContext2D_drawImageData));
 
     se::ScriptEngine::getInstance()->clearException();
 
