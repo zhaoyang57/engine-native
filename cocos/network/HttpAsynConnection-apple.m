@@ -140,7 +140,7 @@
     }
     
     if (self.onheaderReceivedCallback) {
-        self.onheaderReceivedCallback();
+        self.onheaderReceivedCallback(self);
     }
     
     [responseData setLength:0];

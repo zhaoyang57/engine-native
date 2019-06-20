@@ -383,12 +383,12 @@ void HttpClient::processResponse(HttpResponse* response)
     HttpAsynConnection *httpAsynConn = [[HttpAsynConnection new] autorelease];
     httpAsynConn.srcURL = urlstring;
     httpAsynConn.sslFile = nil;
-    httpAsynConn.onheaderReceivedCallback = ^() {
+    httpAsynConn.onheaderReceivedCallback = ^(HttpAsynConnection *connection) {
         //handle response header
         NSMutableString *header = [NSMutableString string];
-        [header appendFormat:@"HTTP/1.1 %ld %@\n", (long)httpAsynConn.responseCode, httpAsynConn.statusString];
-        for (id key in httpAsynConn.responseHeader) {
-            [header appendFormat:@"%@: %@\n", key, [httpAsynConn.responseHeader objectForKey:key]];
+        [header appendFormat:@"HTTP/1.1 %ld %@\n", (long)connection.responseCode, connection.statusString];
+        for (id key in connection.responseHeader) {
+            [header appendFormat:@"%@: %@\n", key, [connection.responseHeader objectForKey:key]];
         }
         if (header.length > 0) {
             NSRange range = NSMakeRange(header.length-1, 1);
@@ -400,8 +400,8 @@ void HttpClient::processResponse(HttpResponse* response)
         long headerlen = [headerData length];
         headerBuffer->insert(headerBuffer->end(), (char*)headerptr, (char*)headerptr+headerlen);
         
-        response->setResponseCode(httpAsynConn.responseCode);
-        response->setResponseURL([httpAsynConn.responseURL UTF8String]);
+        response->setResponseCode(connection.responseCode);
+        response->setResponseURL([connection.responseURL UTF8String]);
         
         Scheduler* scheduler = Application::getInstance()->getScheduler();
         if (scheduler != nullptr) {

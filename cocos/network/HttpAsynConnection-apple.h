@@ -34,7 +34,9 @@
 #import <Security/Security.h>
 /// @cond
 
-typedef void(^OnHeaderReceived)(void);
+@class HttpAsynConnection;
+
+typedef void(^OnHeaderReceived)(HttpAsynConnection *);
 
 @interface HttpAsynConnection : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 {
