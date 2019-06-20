@@ -679,30 +679,6 @@ float
 };
 
 /**
- * @class CanvasPattern
- */
-jsb.CanvasPattern = {
-
-/**
- * @method CanvasPattern
- * @constructor
- * @param {int} arg0
- * @param {int} arg1
- * @param {cc.Data} arg2
- * @param {String} arg3
- */
-CanvasPattern : function (
-int, 
-int, 
-data, 
-str 
-)
-{
-},
-
-};
-
-/**
  * @class CanvasRenderingContext2D
  */
 jsb.CanvasRenderingContext2D = {

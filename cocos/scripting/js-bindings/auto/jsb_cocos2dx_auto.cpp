@@ -1309,63 +1309,6 @@ bool js_register_engine_CanvasGradient(se::Object* obj)
     return true;
 }
 
-se::Object* __jsb_cocos2d_CanvasPattern_proto = nullptr;
-se::Class* __jsb_cocos2d_CanvasPattern_class = nullptr;
-
-SE_DECLARE_FINALIZE_FUNC(js_cocos2d_CanvasPattern_finalize)
-
-static bool js_engine_CanvasPattern_constructor(se::State& s)
-{
-    CC_UNUSED bool ok = true;
-    const auto& args = s.args();
-    int arg0 = 0;
-    int arg1 = 0;
-    cocos2d::Data arg2;
-    std::string arg3;
-    do { int32_t tmp = 0; ok &= seval_to_int32(args[0], &tmp); arg0 = (int)tmp; } while(false);
-    do { int32_t tmp = 0; ok &= seval_to_int32(args[1], &tmp); arg1 = (int)tmp; } while(false);
-    ok &= seval_to_Data(args[2], &arg2);
-    ok &= seval_to_std_string(args[3], &arg3);
-    SE_PRECONDITION2(ok, false, "js_engine_CanvasPattern_constructor : Error processing arguments");
-    cocos2d::CanvasPattern* cobj = new (std::nothrow) cocos2d::CanvasPattern(arg0, arg1, arg2, arg3);
-    s.thisObject()->setPrivateData(cobj);
-    se::NonRefNativePtrCreatedByCtorMap::emplace(cobj);
-    return true;
-}
-SE_BIND_CTOR(js_engine_CanvasPattern_constructor, __jsb_cocos2d_CanvasPattern_class, js_cocos2d_CanvasPattern_finalize)
-
-
-
-
-static bool js_cocos2d_CanvasPattern_finalize(se::State& s)
-{
-    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::CanvasPattern)", s.nativeThisObject());
-    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
-    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
-    {
-        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
-        cocos2d::CanvasPattern* cobj = (cocos2d::CanvasPattern*)s.nativeThisObject();
-        delete cobj;
-    }
-    return true;
-}
-SE_BIND_FINALIZE_FUNC(js_cocos2d_CanvasPattern_finalize)
-
-bool js_register_engine_CanvasPattern(se::Object* obj)
-{
-    auto cls = se::Class::create("CanvasPattern", obj, nullptr, _SE(js_engine_CanvasPattern_constructor));
-
-    cls->defineFinalizeFunction(_SE(js_cocos2d_CanvasPattern_finalize));
-    cls->install();
-    JSBClassType::registerClass<cocos2d::CanvasPattern>(cls);
-
-    __jsb_cocos2d_CanvasPattern_proto = cls->getProto();
-    __jsb_cocos2d_CanvasPattern_class = cls;
-
-    se::ScriptEngine::getInstance()->clearException();
-    return true;
-}
-
 se::Object* __jsb_cocos2d_CanvasRenderingContext2D_proto = nullptr;
 se::Class* __jsb_cocos2d_CanvasRenderingContext2D_class = nullptr;
 
@@ -2224,12 +2167,11 @@ bool register_all_engine(se::Object* obj)
     }
     se::Object* ns = nsVal.toObject();
 
+    js_register_engine_FileUtils(ns);
+    js_register_engine_Device(ns);
     js_register_engine_CanvasGradient(ns);
     js_register_engine_CanvasRenderingContext2D(ns);
-    js_register_engine_Device(ns);
     js_register_engine_SAXParser(ns);
-    js_register_engine_CanvasPattern(ns);
-    js_register_engine_FileUtils(ns);
     return true;
 }
 

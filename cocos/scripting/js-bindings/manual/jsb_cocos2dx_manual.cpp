@@ -421,6 +421,61 @@ BIND_PROP_WITH_TYPE__CONV_FUNC__RETURN(CanvasRenderingContext2D, shadowOffsetYIn
 #define _SE_DEFINE_PROP(cls, property) \
     __jsb_cocos2d_##cls##_proto->defineProperty(#property, _SE(js_##cls_get_##property), _SE(js_##cls_set_##property));
 
+se::Class* __jsb_cocos2d_CanvasPattern_class = nullptr;
+
+SE_DECLARE_FINALIZE_FUNC(js_CanvasPattern_finalize)
+
+static bool js_CanvasPattern_constructor(se::State& s)
+{
+    CC_UNUSED bool ok = true;
+    const auto& args = s.args();
+    int width = 0;
+    int height = 0;
+    cocos2d::Data data;
+    std::string repeatRule;
+    ok &= seval_to_int32(args[0], &width);
+    ok &= seval_to_int32(args[1], &height);
+    ok &= seval_to_std_string(args[3], &repeatRule);
+    SE_PRECONDITION2(ok, false, "js_engine_CanvasPattern_constructor : Error processing arguments");
+    void *imageMeta = args[2].toObject()->getPrivateData();
+    SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
+    // this function implement in runtime client
+    copy_image_meta_data_to_canvas(imageMeta, data);
+    cocos2d::CanvasPattern* context2DObj = new (std::nothrow) cocos2d::CanvasPattern(width, height, data, repeatRule);
+    s.thisObject()->setPrivateData(context2DObj);
+    se::NonRefNativePtrCreatedByCtorMap::emplace(context2DObj);
+    return true;
+}
+SE_BIND_CTOR(js_CanvasPattern_constructor, __jsb_cocos2d_CanvasPattern_class, js_CanvasPattern_finalize)
+
+static bool js_CanvasPattern_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::CanvasPattern)", s.nativeThisObject());
+    auto iter = se::NonRefNativePtrCreatedByCtorMap::find(s.nativeThisObject());
+    if (iter != se::NonRefNativePtrCreatedByCtorMap::end())
+    {
+        se::NonRefNativePtrCreatedByCtorMap::erase(iter);
+        cocos2d::CanvasPattern* cobj = (cocos2d::CanvasPattern*)s.nativeThisObject();
+        delete cobj;
+    }
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_CanvasPattern_finalize)
+
+static bool js_register_CanvasPattern(se::Object* obj)
+{
+    auto cls = se::Class::create("CanvasPattern", obj, nullptr, _SE(js_CanvasPattern_constructor));
+    
+    cls->defineFinalizeFunction(_SE(js_CanvasPattern_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::CanvasPattern>(cls);
+    
+    __jsb_cocos2d_CanvasPattern_class = cls;
+    
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
 static bool js_engine_CanvasRenderingContext2D_drawImageData(se::State& s)
 {
     cocos2d::CanvasRenderingContext2D* context2DObj = (cocos2d::CanvasRenderingContext2D*)s.nativeThisObject();
@@ -698,6 +753,16 @@ static bool register_canvas_context2d(se::Object* obj)
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("fillStyle", _SE(js_CanvasRenderingContext2D_getFillStyle), _SE(js_CanvasRenderingContext2D_setFillStyle));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("strokeStyle", _SE(js_CanvasRenderingContext2D_getStrokeStyle), _SE(js_CanvasRenderingContext2D_setStrokeStyle));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("drawImage", _SE(js_engine_CanvasRenderingContext2D_drawImageData));
+    
+    se::Value nsVal;
+    if (!obj->getProperty("jsb", &nsVal))
+    {
+        se::HandleObject jsobj(se::Object::createPlainObject());
+        nsVal.setObject(jsobj);
+        obj->setProperty("jsb", nsVal);
+    }
+    se::Object* ns = nsVal.toObject();
+    js_register_CanvasPattern(ns);
 
     se::ScriptEngine::getInstance()->clearException();
 

@@ -83,13 +83,6 @@ bool register_all_engine(se::Object* obj);
 SE_DECLARE_FUNC(js_engine_CanvasGradient_addColorStop);
 SE_DECLARE_FUNC(js_engine_CanvasGradient_CanvasGradient);
 
-extern se::Object* __jsb_cocos2d_CanvasPattern_proto;
-extern se::Class* __jsb_cocos2d_CanvasPattern_class;
-
-bool js_register_cocos2d_CanvasPattern(se::Object* obj);
-bool register_all_engine(se::Object* obj);
-SE_DECLARE_FUNC(js_engine_CanvasPattern_CanvasPattern);
-
 extern se::Object* __jsb_cocos2d_CanvasRenderingContext2D_proto;
 extern se::Class* __jsb_cocos2d_CanvasRenderingContext2D_class;
 
