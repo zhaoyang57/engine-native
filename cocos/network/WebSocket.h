@@ -33,6 +33,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm>
 
 #ifndef OBJC_CLASS
@@ -137,8 +138,9 @@ public:
          * This means that the WebSocket connection is ready to send and receive data.
          * 
          * @param ws The WebSocket object connected
+         * @param headerMap Headers of the WebSocket
          */
-        virtual void onOpen(WebSocket* ws) = 0;
+        virtual void onOpen(WebSocket* ws, const std::map<std::string,std::string>& headerMap) = 0;
         /**
          * This function to be called when data has appeared from the server for the client connection.
          *

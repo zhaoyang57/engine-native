@@ -37,7 +37,7 @@ class JSB_WebSocketDelegate : public cocos2d::Ref, public cocos2d::network::WebS
 public:
     JSB_WebSocketDelegate();
 
-    virtual void onOpen(cocos2d::network::WebSocket *ws) override;
+    virtual void onOpen(cocos2d::network::WebSocket *ws, const std::map<std::string,std::string>& headerMap) override;
 
     virtual void onMessage(cocos2d::network::WebSocket *ws,
                            const cocos2d::network::WebSocket::Data &data) override;

@@ -72,7 +72,7 @@ JSB_WebSocketDelegate::~JSB_WebSocketDelegate()
     CCLOGINFO("In the destructor of JSB_WebSocketDelegate(%p)", this);
 }
 
-void JSB_WebSocketDelegate::onOpen(WebSocket* ws)
+void JSB_WebSocketDelegate::onOpen(WebSocket* ws, const std::map<std::string,std::string>& headerMap)
 {
     se::ScriptEngine::getInstance()->clearException();
     se::AutoHandleScope hs;
@@ -92,6 +92,9 @@ void JSB_WebSocketDelegate::onOpen(WebSocket* ws)
     se::Value target;
     native_ptr_to_seval<WebSocket>(ws, &target);
     jsObj->setProperty("target", target);
+    se::Value headers;
+    std_map_string_string_to_seval(headerMap, &headers);
+    jsObj->setProperty("headers", headers);
 
     se::Value func;
     bool ok = _JSDelegate.toObject()->getProperty("onopen", &func);

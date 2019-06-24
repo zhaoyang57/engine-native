@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iterator>
+#include <map>
 #include "base/ccUTF8.h"
 #include "base/ccMacros.h"
 #include "platform/CCApplication.h"
@@ -364,7 +365,7 @@ public:
 
     static SIOClientImpl* create(const Uri& uri, const std::string& caFilePath);
 
-    virtual void onOpen(WebSocket* ws);
+    virtual void onOpen(WebSocket* ws, const std::map<std::string,std::string>& headerMap);
     virtual void onMessage(WebSocket* ws, const WebSocket::Data& data);
     virtual void onClose(WebSocket* ws);
     virtual void onError(WebSocket* ws, const WebSocket::ErrorCode& error);
@@ -737,7 +738,7 @@ void SIOClientImpl::emit(const std::string& endpoint, const std::string& eventna
     delete packet;
 }
 
-void SIOClientImpl::onOpen(WebSocket* /*ws*/)
+void SIOClientImpl::onOpen(WebSocket* /*ws*/, const std::map<std::string,std::string>& headerMap)
 {
     _connected = true;
 

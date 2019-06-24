@@ -29,6 +29,7 @@
  ****************************************************************************/
 #include "websockets/libwebsockets.h"
 #include <string>
+#include <map>
 #include <vector>
 #include <mutex>
 #include <memory>  // for std::shared_ptr
@@ -225,6 +226,7 @@ private:
     struct lws_protocols* _lwsProtocols;
     std::string _clientSupportedProtocols;
     std::string _selectedProtocol;
+    std::map<std::string,std::string> _headerMap;
 
     std::shared_ptr<std::atomic<bool>> _isDestroyed;
     cocos2d::network::WebSocket::Delegate* _delegate;
@@ -1327,7 +1329,7 @@ int WebSocketImpl::onConnectionOpened()
         }
         else
         {
-            _delegate->onOpen(_ws);
+            _delegate->onOpen(_ws, _headerMap);
         }
     });
     return 0;
@@ -1433,6 +1435,31 @@ int WebSocketImpl::onSocketCallback(struct lws *wsi, enum lws_callback_reasons r
     int ret = 0;
     switch (reason)
     {
+        // this is the last chance for the client user code to examine the http headers.
+        // http headers will be destroyed before the CLIENT_ESTABLISHED call
+        case LWS_CALLBACK_CLIENT_FILTER_PRE_ESTABLISH:
+        {
+            _headerMap.clear();
+
+            // lws_token_indexes 对外 index 小于 80，详细信息参考 enum lws_token_indexes 的定义
+            for (int i = 0; i < 80; i++) {
+                enum lws_token_indexes token = (enum lws_token_indexes)i;
+                int length = lws_hdr_total_length(_wsInstance, token);
+                if (length != 0) {
+                    char buff[length+1];
+                    lws_hdr_copy(_wsInstance, buff, length+1, token);
+
+                    std::string targetKey = reinterpret_cast<const char*>(lws_token_to_string(token));
+
+                    // lws_token_to_string 得到的字符串末尾带了一个冒号，此处将冒号删除
+                    targetKey = targetKey.substr(0, targetKey.size()-1);
+                    std::string targetValue = buff;
+                    _headerMap.insert(std::pair<std::string,std::string>(targetKey, targetValue));
+                }
+            }
+            break;
+        }
+
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
             ret = onConnectionOpened();
             break;

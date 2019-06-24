@@ -139,10 +139,18 @@ static std::vector<cocos2d::network::WebSocket*>* __websocketInstances = nullptr
 {
     if (!_isDestroyed)
     {
-        // NSLog(@"Websocket Connected");
+        NSDictionary *allHeaderFields = (__bridge NSDictionary *)CFHTTPMessageCopyAllHeaderFields(webSocket.receivedHTTPHeaders);
+        
+        std::map<std::string, std::string> headerMap;
+        for (NSString *key in allHeaderFields) {
+            std::string targetKey = [key UTF8String];
+            std::string targetValue = [allHeaderFields[key] UTF8String];
+            headerMap.insert(std::pair<std::string, std::string>(targetKey, targetValue));
+        }
+        
         if (webSocket.protocol != nil)
             _selectedProtocol = [webSocket.protocol UTF8String];
-        _delegate->onOpen(_ccws);
+        _delegate->onOpen(_ccws, headerMap);
     }
     else
     {
