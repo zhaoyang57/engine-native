@@ -496,12 +496,15 @@ static bool js_engine_CanvasRenderingContext2D_drawImageData(se::State& s)
         float originalWidth = 0;
         float originalHeight = 0;
         if (args[0].isObject()) {
-            void *imageMeta = args[0].toObject()->getPrivateData();
-            SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
-            // this function implement in runtime client
-            copy_image_meta_data_to_canvas(imageMeta, data);
-        } else {
-            ok &= seval_to_Data(args[0], &data);
+            se::Object* obj = args[0].toObject();
+            if (obj->isTypedArray()) {
+                ok &= seval_to_Data(args[0], &data);
+            } else {
+                void *imageMeta = obj->getPrivateData();
+                SE_PRECONDITION2(imageMeta != nullptr, false, "Error processing arguments");
+                // this function implement in runtime client
+                copy_image_meta_data_to_canvas(imageMeta, data);
+            }
         }
         ok &= seval_to_float(args[1], &sx);
         ok &= seval_to_float(args[2], &sy);
