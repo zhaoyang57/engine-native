@@ -149,6 +149,8 @@ public:
     using CanvasBufferGetCallback = std::function<void(void* p, float width, float height, float allocationWidth, float allocationHeight, bool needPremultiply)>;
     void _getData(CanvasBufferGetCallback& callback);
 
+    void *_getContinuousData(int32_t& dataSize, bool premultiplyAlpha);
+
 private:
     GLint _maxTextureSize;
     bool recreateBufferIfNeeded();
@@ -193,8 +195,6 @@ public:
 
 private:
     CanvasRenderingContext2DImpl* _impl = nullptr;
-
-    bool _isBufferSizeDirty = true;
 };
 
 NS_CC_END
