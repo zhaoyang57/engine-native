@@ -232,13 +232,8 @@ public:
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "setLineWidth", lineWidth);
     }
 
-    void _fillImageData(const Data &imageData, float imageWidth, float imageHeight, float offsetX, float offsetY) {
-        jbyteArray arr = JniHelper::getEnv()->NewByteArray(imageData.getSize());
-        JniHelper::getEnv()->SetByteArrayRegion(arr, 0, imageData.getSize(),
-                                                (const jbyte *) imageData.getBytes());
-        JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "_fillImageData", arr, imageWidth,
-                                        imageHeight, offsetX, offsetY);
-        JniHelper::getEnv()->DeleteLocalRef(arr);
+    void _fillImageData(CanvasRenderingContext2D::CanvasBufferGetCallback &callback, float width, float height, bool needPremultiply) {
+        getData(callback, width, height, needPremultiply);
         _updateContinuousData = true;
     }
 
@@ -1082,12 +1077,12 @@ void CanvasRenderingContext2D::set_lineDashOffsetInternal(float offset)
     _impl->setLineDashOffset(offset);
 }
 
-void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
+void CanvasRenderingContext2D::_fillImageData(CanvasBufferGetCallback &callback)
 {
     if (__width < 1.0f || __height < 1.0f) {
         return;
     }
-    _impl->_fillImageData(imageData, imageWidth, imageHeight, offsetX, offsetY);
+    _impl->_fillImageData(callback, __width, __height, s_needPremultiply);
 }
 // transform
 //REFINE:

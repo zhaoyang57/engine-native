@@ -132,9 +132,6 @@ public:
     void set_shadowOffsetXInternal(float offsetX);
     void set_shadowOffsetYInternal(float offsetY);
 
-    // fill image data into Context2D
-    void _fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY);
-
     // transform
     void translate(float x, float y);
     void scale(float x, float y);
@@ -148,6 +145,8 @@ public:
 
     using CanvasBufferGetCallback = std::function<void(void* p, float width, float height, float allocationWidth, float allocationHeight, bool needPremultiply)>;
     void _getData(CanvasBufferGetCallback& callback);
+    // fill image data into Context2D
+    void _fillImageData(CanvasBufferGetCallback &callback);
 
     void *_getContinuousData(int32_t& dataSize, bool premultiplyAlpha);
 

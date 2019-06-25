@@ -756,7 +756,6 @@ static bool register_canvas_context2d(se::Object* obj)
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("fillStyle", _SE(js_CanvasRenderingContext2D_getFillStyle), _SE(js_CanvasRenderingContext2D_setFillStyle));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineProperty("strokeStyle", _SE(js_CanvasRenderingContext2D_getStrokeStyle), _SE(js_CanvasRenderingContext2D_setStrokeStyle));
     __jsb_cocos2d_CanvasRenderingContext2D_proto->defineFunction("drawImage", _SE(js_engine_CanvasRenderingContext2D_drawImageData));
-    
     se::Value nsVal;
     if (!obj->getProperty("jsb", &nsVal))
     {
