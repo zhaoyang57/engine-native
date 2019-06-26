@@ -367,7 +367,7 @@ public:
 
     virtual void onOpen(WebSocket* ws, const std::map<std::string,std::string>& headerMap);
     virtual void onMessage(WebSocket* ws, const WebSocket::Data& data);
-    virtual void onClose(WebSocket* ws);
+    virtual void onClose(WebSocket* ws, const WebSocket::CloseCode& code);
     virtual void onError(WebSocket* ws, const WebSocket::ErrorCode& error);
 
     void connect();
@@ -467,7 +467,7 @@ void SIOClientImpl::handshakeResponse(HttpClient* /*sender*/, HttpResponse *resp
             client.second->getDelegate()->onError(client.second, response->getErrorBuffer());
         }
 
-        onClose(nullptr);
+        onClose(nullptr, WebSocket::CloseCode::ABNORMAL_CLOSURE);
         return;
     }
 
@@ -993,7 +993,7 @@ void SIOClientImpl::onMessage(WebSocket* /*ws*/, const WebSocket::Data& data)
     return;
 }
 
-void SIOClientImpl::onClose(WebSocket* /*ws*/)
+void SIOClientImpl::onClose(WebSocket* /*ws*/, const WebSocket::CloseCode &code)
 {
     if (!_clients.empty())
     {

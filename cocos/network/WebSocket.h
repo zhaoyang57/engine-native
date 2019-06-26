@@ -112,6 +112,16 @@ public:
     };
 
     /**
+     * CloseCode enum used to represent the close reason in the websocket.
+     * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+     */
+    enum class CloseCode
+    {
+        NORMAL_CLOSURE = 1000,
+        ABNORMAL_CLOSURE = 1006,
+    };
+
+    /**
      *  State enum used to represent the Websocket state.
      */
     enum class State
@@ -152,8 +162,9 @@ public:
          * When the WebSocket object connected wants to close or the protocol won't get used at all and current _readyState is State::CLOSING,this function is to be called.
          *
          * @param ws The WebSocket object connected.
+         * @param code A numeric value indicating the status code explaining why the connection is being closed.
          */
-        virtual void onClose(WebSocket* ws) = 0;
+        virtual void onClose(WebSocket* ws, const CloseCode& code) = 0;
         /**
          * This function is to be called in the following cases:
          * 1. client connection is failed.

@@ -172,7 +172,7 @@ void JSB_WebSocketDelegate::onMessage(WebSocket* ws, const WebSocket::Data& data
     }
 }
 
-void JSB_WebSocketDelegate::onClose(WebSocket* ws)
+void JSB_WebSocketDelegate::onClose(WebSocket* ws, const cocos2d::network::WebSocket::CloseCode &code)
 {
     se::ScriptEngine::getInstance()->clearException();
     se::AutoHandleScope hs;
@@ -195,6 +195,7 @@ void JSB_WebSocketDelegate::onClose(WebSocket* ws)
         se::Value target;
         native_ptr_to_seval<WebSocket>(ws, &target);
         jsObj->setProperty("target", target);
+        jsObj->setProperty("code", se::Value((int)code));
 
         se::Value func;
         bool ok = _JSDelegate.toObject()->getProperty("onclose", &func);
@@ -219,6 +220,21 @@ void JSB_WebSocketDelegate::onClose(WebSocket* ws)
     release(); // Release delegate self at last
 }
 
+std::string _getErrorMessageByCode(const WebSocket::ErrorCode& error) {
+    std::string errorMessage;
+    switch(error) {
+        case WebSocket::ErrorCode::TIME_OUT:
+            errorMessage = "TIME_OUT";
+            break;
+        case WebSocket::ErrorCode::CONNECTION_FAILURE:
+            errorMessage = "CONNECTION_FAILURE";
+            break;
+        default:
+            errorMessage = "UNKNOWN";
+    }
+    return errorMessage;
+}
+
 void JSB_WebSocketDelegate::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
 {
     se::ScriptEngine::getInstance()->clearException();
@@ -237,6 +253,8 @@ void JSB_WebSocketDelegate::onError(WebSocket* ws, const WebSocket::ErrorCode& e
     se::Value target;
     native_ptr_to_seval<WebSocket>(ws, &target);
     jsObj->setProperty("target", target);
+    std::string errorMessage = _getErrorMessageByCode(error);
+    jsObj->setProperty("errorMessage", se::Value(errorMessage));
 
     se::Value func;
     bool ok = _JSDelegate.toObject()->getProperty("onerror", &func);

@@ -42,7 +42,7 @@ public:
     virtual void onMessage(cocos2d::network::WebSocket *ws,
                            const cocos2d::network::WebSocket::Data &data) override;
 
-    virtual void onClose(cocos2d::network::WebSocket *ws) override;
+    virtual void onClose(cocos2d::network::WebSocket *ws, const cocos2d::network::WebSocket::CloseCode &code) override;
 
     virtual void onError(cocos2d::network::WebSocket *ws,
                          const cocos2d::network::WebSocket::ErrorCode &error) override;

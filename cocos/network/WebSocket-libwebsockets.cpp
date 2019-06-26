@@ -211,7 +211,7 @@ private:
     int onClientReceivedData(void* in, ssize_t len);
     int onConnectionOpened();
     int onConnectionError();
-    int onConnectionClosed();
+    int onConnectionClosed(const cocos2d::network::WebSocket::CloseCode& code);
 
     struct lws_vhost* createVhost(struct lws_protocols* protocols, int& sslConnection);
 
@@ -834,7 +834,7 @@ void WebSocketImpl::close()
             // but the callback of performInCocosThread has not been triggered. We need to invoke
             // onClose to release the websocket instance.
             _readyStateMutex.unlock();
-            _delegate->onClose(_ws);
+            _delegate->onClose(_ws, cocos2d::network::WebSocket::CloseCode::NORMAL_CLOSURE);
             return;
         }
 
@@ -850,7 +850,7 @@ void WebSocketImpl::close()
 
     // Wait 5 milliseconds for onConnectionClosed to exit!
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    _delegate->onClose(_ws);
+    _delegate->onClose(_ws, cocos2d::network::WebSocket::CloseCode::NORMAL_CLOSURE);
 }
 
 void WebSocketImpl::closeAsync(int code, const std::string &reason)
@@ -1359,12 +1359,12 @@ int WebSocketImpl::onConnectionError()
         }
     });
 
-    onConnectionClosed();
+    onConnectionClosed(cocos2d::network::WebSocket::CloseCode::ABNORMAL_CLOSURE);
 
     return 0;
 }
 
-int WebSocketImpl::onConnectionClosed()
+int WebSocketImpl::onConnectionClosed(const cocos2d::network::WebSocket::CloseCode &code)
 {
     {
         std::lock_guard<std::mutex> lk(_readyStateMutex);
@@ -1410,14 +1410,14 @@ int WebSocketImpl::onConnectionClosed()
     }
 
     std::shared_ptr<std::atomic<bool>> isDestroyed = _isDestroyed;
-    __wsHelper->sendMessageToCocosThread([this, isDestroyed](){
+    __wsHelper->sendMessageToCocosThread([this, isDestroyed, code](){
         if (*isDestroyed)
         {
             LOGD("WebSocket instance (%p) was destroyed!\n", this);
         }
         else
         {
-            _delegate->onClose(_ws);
+            _delegate->onClose(_ws, code);
         }
     });
 
@@ -1469,7 +1469,7 @@ int WebSocketImpl::onSocketCallback(struct lws *wsi, enum lws_callback_reasons r
             break;
 
         case LWS_CALLBACK_WSI_DESTROY:
-            ret = onConnectionClosed();
+            ret = onConnectionClosed(cocos2d::network::WebSocket::CloseCode::NORMAL_CLOSURE);
             break;
 
         case LWS_CALLBACK_CLIENT_RECEIVE:

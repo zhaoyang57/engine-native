@@ -87,7 +87,7 @@ static std::vector<cocos2d::network::WebSocket*>* __websocketInstances = nullptr
 {
     _isDestroyed = true;
     _ccws->retain();
-    _delegate->onClose(_ccws);
+    _delegate->onClose(_ccws, cocos2d::network::WebSocket::CloseCode::NORMAL_CLOSURE);
     [_ws close];
     _ccws->release();
 }
@@ -163,8 +163,8 @@ static std::vector<cocos2d::network::WebSocket*>* __websocketInstances = nullptr
     if (!_isDestroyed)
     {
         NSLog(@":( Websocket Failed With Error %@", error);
-        _delegate->onError(_ccws, cocos2d::network::WebSocket::ErrorCode::UNKNOWN);
-        [self webSocket:webSocket didCloseWithCode:0 reason:@"onerror" wasClean:YES];
+        _delegate->onError(_ccws, cocos2d::network::WebSocket::ErrorCode::CONNECTION_FAILURE);
+        [self webSocket:webSocket didCloseWithCode:(int)cocos2d::network::WebSocket::CloseCode::ABNORMAL_CLOSURE reason:@"onerror" wasClean:YES];
     }
     else
     {
@@ -212,10 +212,12 @@ static std::vector<cocos2d::network::WebSocket*>* __websocketInstances = nullptr
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-    if (!_isDestroyed)
-        _delegate->onClose(_ccws);
-    else
+    if (!_isDestroyed){
+        _delegate->onClose(_ccws, (cocos2d::network::WebSocket::CloseCode)code);
+    }
+    else {
         NSLog(@"WebSocketImpl didCloseWithCode was destroyed!");
+    }
 }
 
 @end
