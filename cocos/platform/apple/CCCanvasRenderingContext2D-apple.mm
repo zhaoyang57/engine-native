@@ -33,6 +33,8 @@
 
 bool cocos2d::CanvasRenderingContext2D::s_needPremultiply = false;
 
+#define DEFAULT_DATA_SIZE 65536 // 64k
+
 enum class CanvasTextAlign {
     LEFT,
     CENTER,
@@ -274,6 +276,9 @@ enum class CanvasTextBaseline {
     CGColorSpaceRef _colorSpace;
     cocos2d::Data _imageData;
     NSBezierPath* _path;
+    uint8_t *_continuousData;
+    bool _updateContinuousData;
+    bool _isPremultiplyAlpha;
 }
 
 @property (nonatomic, assign) CGFloat width;
@@ -334,6 +339,10 @@ enum class CanvasTextBaseline {
     [_currentGraphicsContext release];
 #endif
     [super dealloc];
+    if (_continuousData != nullptr) {
+        free(_continuousData);
+        _continuousData = nullptr;
+    }
 }
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
@@ -515,6 +524,7 @@ enum class CanvasTextBaseline {
     //NOTE: NSString draws in UIKit referential i.e. renders upside-down compared to CGBitmapContext referential
     CGContextScaleCTM(_context, 1.0f, -1.0f);
 #endif
+    _updateContinuousData = true;
 }
 
 -(NSSize) measureText:(NSString*) text {
@@ -624,6 +634,7 @@ enum class CanvasTextBaseline {
     CGContextEndTransparencyLayer(_context);
 
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 -(void) strokeText:(NSString*) text x:(CGFloat) x y:(CGFloat) y maxWidth:(CGFloat) maxWidth {
@@ -675,6 +686,7 @@ enum class CanvasTextBaseline {
     CGContextEndTransparencyLayer(_context);
 
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 -(void) setFillStyleWithRed:(CGFloat) r green:(CGFloat) g blue:(CGFloat) b alpha:(CGFloat) a {
@@ -700,10 +712,6 @@ enum class CanvasTextBaseline {
                                                 alpha:a];
 }
 
--(const cocos2d::Data&) getDataRef {
-    return _imageData;
-}
-
 - (void)getData:(cocos2d::CanvasRenderingContext2D::CanvasBufferGetCallback &)callback width:(float)width height:(float)height needPremultiply:(bool)needPremultiply {
     if (width == 0 || height == 0) {
         if (nullptr != callback) {
@@ -711,8 +719,70 @@ enum class CanvasTextBaseline {
         }
         return;
     }
-    cocos2d::Data data = [self getDataRef];
-    callback(data.getBytes(), _width, _height, _width, _height, needPremultiply);
+    callback(_imageData.getBytes(), _width, _height, _width, _height, needPremultiply);
+}
+
+static void _premultiplyAlpha(uint8_t *data, int32_t size) {
+    if (data == nullptr || size <= 0) {
+        return;
+    }
+    int alpha = 0;
+    for (uint8_t *end = data + size; data < end; data = data + 4) {
+        alpha = data[3];
+        if (alpha > 0 && alpha < 255) {
+            data[0] = data[0] * alpha / 255;
+            data[1] = data[1] * alpha / 255;
+            data[2] = data[2] * alpha / 255;
+        }
+    }
+}
+
+static void _unpremultiplyAlpha(uint8_t *data, int32_t size) {
+    if (data == nullptr || size <= 0) {
+        return;
+    }
+    int alpha = 0;
+    for (uint8_t *end = data + size; data < end; data = data + 4) {
+        alpha = data[3];
+        if (alpha > 0 && alpha < 255) {
+            data[0] = data[0] * 255 / alpha;
+            data[1] = data[1] * 255 / alpha;
+            data[2] = data[2] * 255 / alpha;
+        }
+    }
+}
+
+- (void *)_getContinuousData:(int32_t &)dataSize width:(float)width height:(float)height needPremultiply:(bool)needPremultiply {
+    dataSize = 0;
+    if (width == 0 || height == 0) {
+        return nullptr;
+    }
+    
+    int32_t size = (int32_t)(width * height * 4);
+    uint8_t *buffer = (uint8_t *)realloc(_continuousData, std::max(DEFAULT_DATA_SIZE, size));
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+    
+    _continuousData = buffer;
+    
+    if (_updateContinuousData) {
+        _updateContinuousData = false;
+        memcpy(buffer, _imageData.getBytes(), size);
+        _isPremultiplyAlpha = true;
+    }
+    
+    if (_isPremultiplyAlpha != needPremultiply) {
+        if (needPremultiply) {
+            _premultiplyAlpha(buffer, size);
+        } else {
+            _unpremultiplyAlpha(buffer, size);
+        }
+        _isPremultiplyAlpha = needPremultiply;
+    }
+    
+    dataSize = size;
+    return _continuousData;
 }
 
 -(void) scaleX:(float)x y:(float)y {
@@ -773,6 +843,7 @@ enum class CanvasTextBaseline {
     if (rect.size.width < 1 || rect.size.height < 1)
         return;
     CGContextClearRect(_context, rect);
+    _updateContinuousData = true;
 }
 
 -(void) clip:(NSString *)rule {
@@ -803,6 +874,7 @@ enum class CanvasTextBaseline {
     [path fill];
 #endif
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 -(void) saveContext {
@@ -870,6 +942,7 @@ enum class CanvasTextBaseline {
     [self _setStrokeSetting];
     [_path stroke];
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 -(void) fill {
@@ -877,6 +950,7 @@ enum class CanvasTextBaseline {
     [self _setFillSetting];
     [_path fill];
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 -(void) rectWithX:(float)x y:(float)y width:(float)width height:(float)height {
@@ -1177,6 +1251,7 @@ static void _readEllipsePointFromBezier(void *info, const CGPathElement *element
     CGDataProviderRelease(provider);
 #endif
     [self restoreContext];
+    _updateContinuousData = true;
 }
 
 static void _drawPatternTile(const cocos2d::Data & patternImageData,
@@ -1500,58 +1575,9 @@ static void _drawStrokeRadialGradientTile(void *info, CGContextRef context) {
     return colorPattern;
 }
 
--(void) _fillImageData:(const cocos2d::Data &)imageData width:(float)imageWidth height:(float)imageHeight offsetX:(float)offsetX offsetY:(float)offsetY {
-    // check param
-    if (_width < 1.0f || _height < 1.0f) {
-        // do nothing
-        return;
-    }
-    if (offsetX < 0) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"x must be >= 0" userInfo:nil];
-    }
-    if (offsetY < 0) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"y must be >= 0" userInfo:nil];
-    }
-    if (imageWidth == 0 || imageHeight == 0) {
-        // do nothing
-        return;
-    }
-    if (imageWidth < 0) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"width must be >= 0" userInfo:nil];
-    }
-    if (imageHeight < 0) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"height must be >= 0" userInfo:nil];
-    }
-    if (offsetX + imageWidth > _width) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"x + width must be <= total width" userInfo:nil];
-    }
-    if (offsetY + imageHeight > _height) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"y + height must be <= total height" userInfo:nil];
-    }
-    
-    uint8_t *fillColors = imageData.getBytes();
-    // image data should be premultiplied
-    uint8_t *data = fillColors;
-    ssize_t len = imageData.getSize();
-    int alpha = 0;
-    for (uint8_t *end = data + len; data < end; data = data + 4) {
-        alpha = data[3];
-        if (alpha > 0 && alpha < 255) {
-            data[0] = data[0] * alpha / 255;
-            data[1] = data[1] * alpha / 255;
-            data[2] = data[2] * alpha / 255;
-        }
-    }
-    uint8_t *imageDataTemp = _imageData.getBytes();
-    uint32_t yBegin = offsetY;
-    uint32_t yEnd = offsetY + imageHeight;
-    uint32_t bytesPerRow = imageWidth * 4;
-    uint32_t index;
-    for (uint32_t yIndex = yBegin; yIndex < yEnd; ++yIndex)
-    {
-        index = (_width * (yIndex - offsetY)) * 4;
-        memcpy(imageDataTemp + yIndex * bytesPerRow, fillColors + index, bytesPerRow);
-    }
+-(void) _fillImageData:(cocos2d::CanvasRenderingContext2D::CanvasBufferGetCallback &)callback width:(float)imageWidth height:(float)imageHeight needPreMultiply:(bool)needPremultiply {
+    [self getData:callback width:imageWidth height:imageHeight needPremultiply:needPremultiply];
+    _updateContinuousData = true;
 }
 
 -(void) _applyCTM {
@@ -1747,35 +1773,31 @@ void CanvasRenderingContext2D::_getData(CanvasBufferGetCallback& callback) {
 
 bool CanvasRenderingContext2D::recreateBufferIfNeeded()
 {
-    if (_isBufferSizeDirty)
-    {
-        _isBufferSizeDirty = false;
-        if (__width > _maxTextureSize || __height > _maxTextureSize) {
-            return false;
-        }
-        [_impl recreateBufferWithWidth: __width height:__height];
-        
-        //reset to initail state
-        _lineWidthInternal = 1.0f;
-        _lineDashOffsetInternal = 0.0f;
-        _miterLimitInternal = 10.0f;
-        _lineJoin = "miter";
-        _lineCap = "butt";
-        _font = "10px sans-serif";
-        _textAlign = "start";
-        _textBaseline = "alphabetic";
-        
-        _fillStyle = "#000";
-        _strokeStyle = "#000";
-        
-        _shadowColor = "#000";
-        _shadowBlurInternal = 0.0f;
-        _shadowOffsetXInternal = 0.0f;
-        _shadowOffsetYInternal = 0.0f;
-        
-        _globalCompositeOperation = "source-over";
-        _globalAlphaInternal = 1.0f;
+    if (__width > _maxTextureSize || __height > _maxTextureSize) {
+        return false;
     }
+    [_impl recreateBufferWithWidth: __width height:__height];
+    
+    //reset to initail state
+    _lineWidthInternal = 1.0f;
+    _lineDashOffsetInternal = 0.0f;
+    _miterLimitInternal = 10.0f;
+    _lineJoin = "miter";
+    _lineCap = "butt";
+    _font = "10px sans-serif";
+    _textAlign = "start";
+    _textBaseline = "alphabetic";
+    
+    _fillStyle = "#000";
+    _strokeStyle = "#000";
+    
+    _shadowColor = "#000";
+    _shadowBlurInternal = 0.0f;
+    _shadowOffsetXInternal = 0.0f;
+    _shadowOffsetYInternal = 0.0f;
+    
+    _globalCompositeOperation = "source-over";
+    _globalAlphaInternal = 1.0f;
     return true;
 }
 
@@ -1919,14 +1941,12 @@ void CanvasRenderingContext2D::restore()
 void CanvasRenderingContext2D::set__width(float width)
 {
     __width = width;
-    _isBufferSizeDirty = true;
     recreateBufferIfNeeded();
 }
 
 void CanvasRenderingContext2D::set__height(float height)
 {
     __height = height;
-    _isBufferSizeDirty = true;
     recreateBufferIfNeeded();
 }
 
@@ -2128,12 +2148,12 @@ void CanvasRenderingContext2D::set_globalCompositeOperation(const std::string& g
     [_impl setGlobalCompositeOperation:[NSString stringWithUTF8String:globalCompositeOperation.c_str()]];
 }
 
-void CanvasRenderingContext2D::_fillImageData(const Data& imageData, float imageWidth, float imageHeight, float offsetX, float offsetY)
+void CanvasRenderingContext2D::_fillImageData(CanvasBufferGetCallback &callback)
 {
     if (__width < 1.0f || __height < 1.0f) {
         return;
     }
-    [_impl _fillImageData:imageData width:imageWidth height:imageHeight offsetX:offsetX offsetY:offsetY];
+    [_impl _fillImageData:callback width:__width height:__height needPreMultiply:s_needPremultiply];
 }
 
 // transform
@@ -2261,5 +2281,9 @@ void CanvasRenderingContext2D::resetStrokeStyle() {
     _gradientStrokeStyle = nullptr;
     _patternStrokeStyle = nullptr;
     _strokeStyle = "#000";
+}
+
+void *CanvasRenderingContext2D::_getContinuousData(int32_t& dataSize, bool premultiplyAlpha) {
+    return [_impl _getContinuousData:dataSize width:__width height:__height needPremultiply:s_needPremultiply];
 }
 NS_CC_END
