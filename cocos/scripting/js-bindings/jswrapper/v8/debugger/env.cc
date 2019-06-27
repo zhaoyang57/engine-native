@@ -69,9 +69,10 @@ namespace node {
         
         auto process_template = FunctionTemplate::New(isolate());
         process_template->SetClassName(FIXED_ONE_BYTE_STRING(isolate(), "process"));
-        
+
+        v8::MaybeLocal<v8::Function> maybe = process_template->GetFunction(context());
         auto process_object =
-        process_template->GetFunction()->NewInstance(context()).ToLocalChecked();
+                maybe.ToLocalChecked()->NewInstance(context()).ToLocalChecked();
         set_process_object(process_object);
         
         SetupProcessObject(this, argc, argv, exec_argc, exec_argv);

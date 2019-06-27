@@ -47,6 +47,7 @@ uint32_t __jsbStackFrameLimit = 20;
 namespace se {
 
     Class* __jsb_CCPrivateData_class = nullptr;
+    v8::Platform* _platform = nullptr;
 
     namespace {
         ScriptEngine* __instance = nullptr;
@@ -55,7 +56,7 @@ namespace se {
         {
             if (info[0]->IsString())
             {
-                v8::String::Utf8Value utf8(info[0]);
+                v8::String::Utf8Value utf8(v8::Isolate::GetCurrent(), info[0]);
                 SE_LOGD("JS: %s\n", *utf8);
             }
         }
@@ -74,19 +75,19 @@ namespace se {
             char tmp[100] = {0};
             for (int i = 0, e = stack->GetFrameCount(); i < e; ++i)
             {
-                v8::Local<v8::StackFrame> frame = stack->GetFrame(i);
+                v8::Local<v8::StackFrame> frame = stack->GetFrame(v8::Isolate::GetCurrent(), i);
                 v8::Local<v8::String> script = frame->GetScriptName();
                 std::string scriptName;
                 if (!script.IsEmpty())
                 {
-                    scriptName = *v8::String::Utf8Value(script);
+                    scriptName = *v8::String::Utf8Value(v8::Isolate::GetCurrent(), script);
                 }
 
                 v8::Local<v8::String> func = frame->GetFunctionName();
                 std::string funcName;
                 if (!func.IsEmpty())
                 {
-                    funcName = *v8::String::Utf8Value(func);
+                    funcName = *v8::String::Utf8Value(v8::Isolate::GetCurrent(), func);
                 }
 
                 stackStr += "[";
@@ -328,8 +329,7 @@ namespace se {
     }
 
     ScriptEngine::ScriptEngine()
-    : _platform(nullptr)
-    , _isolate(nullptr)
+    : _isolate(nullptr)
     , _handleScope(nullptr)
     , _allocator(nullptr)
     , _globalObj(nullptr)
@@ -347,19 +347,22 @@ namespace se {
     {
         //        RETRUN_VAL_IF_FAIL(v8::V8::InitializeICUDefaultLocation(nullptr, "/Users/james/Project/v8/out.gn/x64.debug/icudtl.dat"), false);
         //        v8::V8::InitializeExternalStartupData("/Users/james/Project/v8/out.gn/x64.debug/natives_blob.bin", "/Users/james/Project/v8/out.gn/x64.debug/snapshot_blob.bin"); //REFINE
-        _platform = v8::platform::CreateDefaultPlatform();
+        if (_platform != nullptr) {
+            return;
+        }
+        _platform = v8::platform::NewDefaultPlatform().release();
         v8::V8::InitializePlatform(_platform);
         bool ok = v8::V8::Initialize();
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        std::string flags = "--jitless --no-opt";
+        v8::V8::SetFlagsFromString(flags.c_str(), (int)flags.size());
+#endif
         assert(ok);
     }
 
     ScriptEngine::~ScriptEngine()
     {
         cleanup();
-        v8::V8::Dispose();
-        v8::V8::ShutdownPlatform();
-        delete _platform;
-        _platform = nullptr;
     }
 
     bool ScriptEngine::init()
