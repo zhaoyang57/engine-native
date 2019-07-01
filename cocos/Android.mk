@@ -193,6 +193,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/platform \
                     $(LOCAL_PATH)/editor-support \
                     $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include/v8/libc++ \
                     $(LOCAL_PATH)/../external/sources \
                     $(LOCAL_PATH)/renderer \
                     $(LOCAL_PATH)/scripting/js-bindings/manual \
@@ -206,6 +207,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/base \
                     $(LOCAL_PATH)/network \
                     $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include \
+                    $(LOCAL_PATH)/../external/android/$(TARGET_ARCH_ABI)/include/v8/libc++ \
                     $(LOCAL_PATH)/../external/sources \
                     $(LOCAL_PATH)/renderer
 
@@ -226,6 +228,9 @@ LOCAL_STATIC_LIBRARIES += custom_libcxx
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos2dxandroid_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cpufeatures
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+LOCAL_WHOLE_STATIC_LIBRARIES += android_support
+endif
 
 # define the macro to compile through support/zip_support/ioapi.c
 LOCAL_CFLAGS := -DUSE_FILE32API -fexceptions
@@ -252,3 +257,6 @@ $(call import-module,platform/android)
 $(call import-module,audio/android)
 $(call import-module,extensions)
 $(call import-module,android/cpufeatures)
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+$(call import-module,android/support)
+endif

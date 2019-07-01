@@ -43,7 +43,12 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../include \
                     $(LOCAL_PATH)/../.. \
                     $(LOCAL_PATH)/../../platform/android \
                     $(LOCAL_PATH)/../../../external \
-                    $(LOCAL_PATH)/../../../external/sources
+                    $(LOCAL_PATH)/../../../external/sources \
+                    $(LOCAL_PATH)/../../../external/android/$(TARGET_ARCH_ABI)/include/v8/libc++
+
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+LOCAL_WHOLE_STATIC_LIBRARIES += android_support
+endif
 
 LOCAL_STATIC_LIBRARIES += libvorbisidec libpvmp3dec
 include $(BUILD_STATIC_LIBRARY)
