@@ -150,6 +150,28 @@ public:
 
     void *_getContinuousData(int32_t& dataSize, bool premultiplyAlpha);
 
+    /** @class  PixelGuard
+     *  @summary    锁定 Canvas 底层的像素内存，只应在局部变量中使用，不能作为成员变量，不能 new / delete
+     */
+    struct PixelGuard final {
+        void *ptr;          ///<    point to pixels memory
+        uint16_t width;     ///<    pixels per row, width * bpp <= stride
+        uint16_t height;    ///<    pixels per column
+        uint16_t stride;    ///<    bytes per row
+
+        ~PixelGuard() {
+            if (_pixelObject) {
+                _ctx._unlockPixels(&_pixelObject);
+            }
+        }
+
+        PixelGuard(CanvasRenderingContext2D &ctx)
+                : ptr(ctx._lockPixels(&_pixelObject, &width, &height, &stride)), _ctx(ctx){}
+
+    private:
+        CanvasRenderingContext2D &_ctx;
+        void *_pixelObject;
+    };
 private:
     GLint _maxTextureSize;
     bool recreateBufferIfNeeded();
@@ -194,6 +216,8 @@ public:
 
 private:
     CanvasRenderingContext2DImpl* _impl = nullptr;
+    void *_lockPixels(void* *pObj, uint16_t *pw, uint16_t *ph, uint16_t *ps);
+    bool _unlockPixels(void* *pObj);
 };
 
 NS_CC_END

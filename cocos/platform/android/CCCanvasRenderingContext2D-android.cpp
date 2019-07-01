@@ -359,6 +359,53 @@ public:
         return _continuousData;
     }
 
+    void *lockPixels(void* *pObj, uint16_t *pw, uint16_t *ph, uint16_t *ps) {
+
+        JniMethodInfo methodInfo;
+        if (JniHelper::getMethodInfo(methodInfo,
+                                     JCLS_CANVASIMPL,
+                                     "getBitmap",
+                                     "()Landroid/graphics/Bitmap;")) {
+            jobject bmpObj = methodInfo.env->CallObjectMethod(_obj, methodInfo.methodID);
+            if (bmpObj) {
+                JNIEnv *&env = methodInfo.env;
+                AndroidBitmapInfo bmpInfo;
+                if (AndroidBitmap_getInfo(env, bmpObj, &bmpInfo) ==
+                    ANDROID_BITMAP_RESULT_SUCCESS &&
+                    bmpInfo.width > 0 &&
+                    bmpInfo.height > 0 &&
+                    bmpInfo.format == ANDROID_BITMAP_FORMAT_RGBA_8888) {
+
+                    void *pixelData;
+                    if (AndroidBitmap_lockPixels(env, bmpObj, &pixelData) ==
+                        ANDROID_BITMAP_RESULT_SUCCESS) {
+                        *pObj = bmpObj;
+                        *pw = (uint16_t) bmpInfo.width;
+                        *ph = (uint16_t) bmpInfo.height;
+                        *ps = (uint16_t) bmpInfo.stride;
+                        return pixelData;
+                    }
+                }
+                env->DeleteLocalRef(bmpObj);
+            }
+            methodInfo.env->DeleteLocalRef(methodInfo.classID);
+        }
+        return nullptr;
+    }
+
+    bool unlockPixels(void* *pObj) {
+        jobject bmpObj = (jobject)*pObj;
+        if (bmpObj) {
+            JNIEnv* env = JniHelper::getEnv();
+            if (env) {
+                AndroidBitmap_unlockPixels(env, bmpObj);
+                env->DeleteLocalRef(bmpObj);
+            }
+            *pObj = nullptr;
+        }
+        return false;
+    }
+
     void scale(float x, float y)
     {
         JniHelper::callObjectVoidMethod(_obj, JCLS_CANVASIMPL, "scale", x, y);
@@ -1190,5 +1237,12 @@ void *CanvasRenderingContext2D::_getContinuousData(int32_t& dataSize, bool premu
     return _impl->_getContinuousData(dataSize, __width, __height, s_needPremultiply);
 }
 
+void *CanvasRenderingContext2D::_lockPixels(void* *pObj, uint16_t *pw, uint16_t *ph, uint16_t *ps) {
+    return _impl->lockPixels(pObj, pw, ph, ps);
+}
+
+bool CanvasRenderingContext2D::_unlockPixels(void* *pObj) {
+    return _impl->unlockPixels(pObj);
+}
 
 NS_CC_END
