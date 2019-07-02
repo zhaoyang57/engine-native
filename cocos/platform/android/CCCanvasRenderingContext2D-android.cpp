@@ -402,6 +402,7 @@ public:
                 env->DeleteLocalRef(bmpObj);
             }
             *pObj = nullptr;
+            return true;
         }
         return false;
     }

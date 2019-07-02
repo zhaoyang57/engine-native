@@ -785,6 +785,21 @@ static void _unpremultiplyAlpha(uint8_t *data, int32_t size) {
     return _continuousData;
 }
 
+- (void *)lockPixels:(void* *)pObj pw:(uint16_t *)pw ph:(uint16_t *)ph ps:(uint16_t *)ps {
+    if (_imageData.isNull())
+        return nullptr;
+    
+    *pObj = nullptr;
+    *pw = _width;
+    *ph = _height;
+    *ps = _width * 4;
+    return _imageData.getBytes();
+}
+
+- (bool)unlockPixels:(void* *)pObj {
+    return true;
+}
+
 -(void) scaleX:(float)x y:(float)y {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #else
@@ -2285,5 +2300,13 @@ void CanvasRenderingContext2D::resetStrokeStyle() {
 
 void *CanvasRenderingContext2D::_getContinuousData(int32_t& dataSize, bool premultiplyAlpha) {
     return [_impl _getContinuousData:dataSize width:__width height:__height needPremultiply:s_needPremultiply];
+}
+
+void *CanvasRenderingContext2D::_lockPixels(void* *pObj, uint16_t *pw, uint16_t *ph, uint16_t *ps) {
+    return [_impl lockPixels:pObj pw:pw ph:ph ps:ps];
+}
+
+bool CanvasRenderingContext2D::_unlockPixels(void* *pObj) {
+    return [_impl unlockPixels:pObj];
 }
 NS_CC_END
