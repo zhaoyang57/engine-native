@@ -26,6 +26,7 @@
 
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
+#include "base/ccConfig.h"
 #include "Object.hpp"
 #include "Class.hpp"
 #include "Utils.hpp"
