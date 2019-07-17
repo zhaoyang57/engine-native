@@ -74,9 +74,6 @@ JSB_WebSocketDelegate::~JSB_WebSocketDelegate()
 
 void JSB_WebSocketDelegate::onOpen(WebSocket* ws, const std::map<std::string,std::string>& headerMap)
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-
     if (cocos2d::Application::getInstance() == nullptr)
         return;
 
@@ -84,6 +81,9 @@ void JSB_WebSocketDelegate::onOpen(WebSocket* ws, const std::map<std::string,std
     if (iter == se::NativePtrToObjectMap::end())
         return;
 
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
+    
     se::Object* wsObj = iter->second;
     wsObj->setProperty("protocol", se::Value(ws->getProtocol()));
 
@@ -112,15 +112,15 @@ void JSB_WebSocketDelegate::onOpen(WebSocket* ws, const std::map<std::string,std
 
 void JSB_WebSocketDelegate::onMessage(WebSocket* ws, const WebSocket::Data& data)
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-
     if (cocos2d::Application::getInstance() == nullptr)
         return;
 
     auto iter = se::NativePtrToObjectMap::find(ws);
     if (iter == se::NativePtrToObjectMap::end())
         return;
+    
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
 
     se::Object* wsObj = iter->second;
     se::HandleObject jsObj(se::Object::createPlainObject());
@@ -174,11 +174,11 @@ void JSB_WebSocketDelegate::onMessage(WebSocket* ws, const WebSocket::Data& data
 
 void JSB_WebSocketDelegate::onClose(WebSocket* ws, const cocos2d::network::WebSocket::CloseCode &code)
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
-
     if (cocos2d::Application::getInstance() == nullptr)
         return;
+    
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
 
     auto iter = se::NativePtrToObjectMap::find(ws);
     do
@@ -237,8 +237,6 @@ std::string _getErrorMessageByCode(const WebSocket::ErrorCode& error) {
 
 void JSB_WebSocketDelegate::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
 {
-    se::ScriptEngine::getInstance()->clearException();
-    se::AutoHandleScope hs;
 
     if (cocos2d::Application::getInstance() == nullptr)
         return;
@@ -246,6 +244,9 @@ void JSB_WebSocketDelegate::onError(WebSocket* ws, const WebSocket::ErrorCode& e
     auto iter = se::NativePtrToObjectMap::find(ws);
     if (iter == se::NativePtrToObjectMap::end())
         return;
+    
+    se::ScriptEngine::getInstance()->clearException();
+    se::AutoHandleScope hs;
 
     se::Object* wsObj = iter->second;
     se::HandleObject jsObj(se::Object::createPlainObject());
