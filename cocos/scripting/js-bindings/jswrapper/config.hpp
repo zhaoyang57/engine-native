@@ -36,12 +36,7 @@
     #include <TargetConditionals.h>
     #if TARGET_OS_OSX && SCRIPT_ENGINE_V8_ON_MAC
         #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_V8
-    #elif defined (__arm64__) // V8 complie on iOS only support arm64
-        #ifndef SCRIPT_ENGINE_TYPE
-            #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_V8
-        #endif
-    #endif
-    #ifndef SCRIPT_ENGINE_TYPE
+    #else
         #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_JSC
     #endif
 #elif defined(ANDROID) || (defined(_WIN32) && defined(_WINDOWS)) // Windows and Android use V8
