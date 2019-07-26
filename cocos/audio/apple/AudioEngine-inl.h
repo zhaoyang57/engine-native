@@ -37,6 +37,7 @@
 
 NS_CC_BEGIN
 class Scheduler;
+struct CustomEvent;
 
 #define MAX_AUDIOINSTANCES 24
 
@@ -66,6 +67,9 @@ public:
     void update(float dt);
 
 private:
+    void onEnterBackground(const CustomEvent&);
+    void onEnterForeground(const CustomEvent&);
+    
     void _play2d(AudioCache *cache, int audioID);
     ALuint findValidSource();
 
@@ -82,6 +86,11 @@ private:
     //audioID,AudioInfo
     std::unordered_map<int, AudioPlayer*>  _audioPlayers;
     std::mutex _threadMutex;
+    
+    // UrlAudioPlayers which need to resumed while entering foreground
+    std::unordered_map<int, AudioPlayer*> _urlAudioPlayersNeedResume;
+    uint32_t _onPauseListenerID;
+    uint32_t _onResumeListenerID;
 
     bool _lazyInitLoop;
 

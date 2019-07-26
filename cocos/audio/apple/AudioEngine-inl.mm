@@ -38,6 +38,8 @@
 #include "platform/CCApplication.h"
 #include "base/CCScheduler.h"
 #include "base/ccUtils.h"
+#include "scripting/js-bindings/event/EventDispatcher.h"
+#include "scripting/js-bindings/event/CustomEventTypes.h"
 
 using namespace cocos2d;
 
@@ -238,6 +240,16 @@ AudioEngineImpl::~AudioEngineImpl()
     if (s_ALDevice) {
         alcCloseDevice(s_ALDevice);
     }
+    
+    if (_onPauseListenerID != 0)
+    {
+        EventDispatcher::removeCustomEventListener(EVENT_COME_TO_BACKGROUND, _onPauseListenerID);
+    }
+    
+    if (_onResumeListenerID != 0)
+    {
+        EventDispatcher::removeCustomEventListener(EVENT_COME_TO_FOREGROUND, _onResumeListenerID);
+    }
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
     [s_AudioEngineSessionHandler release];
@@ -332,6 +344,18 @@ bool AudioEngineImpl::init()
             alDeleteBuffers(1, &unusedAlBufferId);
 
             // ================ Workaround end ================ //
+            
+            auto backgroundFun = std::bind(&AudioEngineImpl::onEnterBackground,
+                                           this,
+                                           std::placeholders::_1);
+            _onPauseListenerID = EventDispatcher::addCustomEventListener(EVENT_COME_TO_BACKGROUND,
+                                                                         backgroundFun);
+            
+            auto foregroundFun = std::bind(&AudioEngineImpl::onEnterForeground,
+                                           this,
+                                           std::placeholders::_1);
+            _onResumeListenerID = EventDispatcher::addCustomEventListener(EVENT_COME_TO_FOREGROUND,
+                                                                          foregroundFun);
 
             _scheduler = Application::getInstance()->getScheduler();
             ret = true;
@@ -340,6 +364,39 @@ bool AudioEngineImpl::init()
     }while (false);
 
     return ret;
+}
+
+void AudioEngineImpl::onEnterBackground(const CustomEvent& event)
+{
+    ALint sourceState;
+    for (auto&& e : _audioPlayers)
+    {
+        auto player = e.second;
+        alGetSourcei(player->_alSource, AL_SOURCE_STATE, &sourceState);
+        if (player != nullptr && sourceState == AL_PLAYING)
+        {
+            _urlAudioPlayersNeedResume.emplace(e.first, player);
+            alSourcePause(player->_alSource);
+            auto error = alGetError();
+            if (error != AL_NO_ERROR) {
+                ALOGE("%s: audio id = %d, error = %x", __PRETTY_FUNCTION__,e.first,error);
+            }
+        }
+    }
+}
+
+void AudioEngineImpl::onEnterForeground(const CustomEvent& event)
+{
+    for (auto&& iter : _urlAudioPlayersNeedResume)
+    {
+        alSourcePlay(iter.second->_alSource);
+        
+        auto error = alGetError();
+        if (error != AL_NO_ERROR) {
+            ALOGE("%s: audio id = %d, error = %x", __PRETTY_FUNCTION__,iter.first,error);
+        }
+    }
+    _urlAudioPlayersNeedResume.clear();
 }
 
 AudioCache* AudioEngineImpl::preload(const std::string& filePath, std::function<void(bool, float)> callback)

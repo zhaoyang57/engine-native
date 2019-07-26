@@ -25,6 +25,7 @@
 
 #import "CCApplication.h"
 #import <UIKit/UIKit.h>
+#include <mach/mach_time.h>
 #include "base/CCScheduler.h"
 #include "base/CCAutoreleasePool.h"
 #include "base/CCGLUtils.h"
@@ -81,6 +82,7 @@ namespace
     bool _isOpenDebugView;
     cocos2d::Application::DrawCallback _preDrawCallback;
     cocos2d::Application::DrawCallback _postDrawCallback;
+    CFTimeInterval _prevTime;
 }
 -(void) startMainLoop;
 -(void) stopMainLoop;
@@ -126,12 +128,33 @@ namespace
 
 - (void)appDidBecomeActive
 {
+    // initialize initLastDisplayTime, or the dt will be invalid when
+    // - the app is lauched
+    // - the app resumes from background
+    [self initLastDisplayTime];
+    
     _isAppActive = YES;
 }
 
 - (void)appDidBecomeInactive
 {
     _isAppActive = NO;
+}
+
+- (void)initLastDisplayTime
+{
+    struct mach_timebase_info timeBaseInfo;
+    mach_timebase_info(&timeBaseInfo);
+    CGFloat clockFrequency = (CGFloat)timeBaseInfo.denom / (CGFloat)timeBaseInfo.numer;
+    clockFrequency *= 1000000000.0;
+    // convert absolute time to seconds and should minus one frame time interval
+    NSInteger interval;
+    if (_systemVersion >= 10.0f) {
+        interval = [(CADisplayLink *)_displayLink preferredFramesPerSecond];
+    } else {
+        interval = [(CADisplayLink *)_displayLink frameInterval];
+    }
+    _prevTime = (mach_absolute_time() / clockFrequency) - ((1.0 / 60) * interval);
 }
 
 -(void) firstStart:(id) view
@@ -180,6 +203,13 @@ namespace
     }
 }
 
+- (void)pauseMainLoop:(BOOL)isPaused {
+    if (_displayLink != nil)
+    {
+        [_displayLink setPaused:isPaused];
+    }
+}
+
 -(void) setPreferredFPS:(int)fps
 {
     _fps = fps;
@@ -211,18 +241,22 @@ namespace
 
 -(void) doCaller: (id) sender
 {
+    if (!_isAppActive) {
+        // Application is in backgroud
+        return;
+    }
+    
     if (_preDrawCallback != nullptr) {
         _preDrawCallback(_fps);
     }
     
-    static std::chrono::steady_clock::time_point prevTime;
     static float dtSum = 0.0f;
     static uint32_t jsbInvocationTotalFrames = 0;
     static uint32_t jsbInvocationTotalCount = 0;
 
-    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-    float dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
-    prevTime = now;
+    CFTimeInterval now = ((CADisplayLink *)_displayLink).timestamp;
+    float dt = now - _prevTime;
+    _prevTime = now;
     
     if (_isOpenDebugView) {
         dtSum += dt;
@@ -461,10 +495,16 @@ bool Application::applicationDidFinishLaunching()
 
 void Application::applicationDidEnterBackground()
 {
+    if (_delegate) {
+        [(MainLoop *)_delegate appDidBecomeInactive];
+    }
 }
 
 void Application::applicationWillEnterForeground()
 {
+    if (_delegate) {
+        [(MainLoop *)_delegate appDidBecomeActive];
+    }
 }
 
 void Application::setMultitouch(bool value)
