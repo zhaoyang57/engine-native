@@ -368,22 +368,8 @@
 		04B0D7F221ABA7CF0083D0E7 /* MeshBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BADF57DF219AB3A3000B259B /* MeshBuffer.hpp */; };
 		04B0D7F321ABA7D20083D0E7 /* MeshBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BADF57DE219AB3A3000B259B /* MeshBuffer.cpp */; };
 		04B0D7F421ABEA5D0083D0E7 /* RenderFlow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA04379121801CD4006BA60F /* RenderFlow.cpp */; };
-		0A12570222815D5600FE762B /* libv8_monolith.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A0D3074228140C000678952 /* libv8_monolith.a */; };
 		0A5CCE67224880E900AF87E6 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A5CCE65224880E900AF87E6 /* zip.h */; };
 		0A5CCE68224880E900AF87E6 /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A5CCE66224880E900AF87E6 /* zip.cpp */; };
-		0ABE87D622C48EF8008678CB /* Base.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB20205BCD9200350EE3 /* Base.h */; };
-		0ABE87D722C48EF8008678CB /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB19205BCD9200350EE3 /* Class.cpp */; };
-		0ABE87D822C48EF8008678CB /* Class.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DAFD205BCD9200350EE3 /* Class.hpp */; };
-		0ABE87D922C48EF8008678CB /* HelperMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DAFF205BCD9200350EE3 /* HelperMacros.h */; };
-		0ABE87DA22C48EF8008678CB /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB08205BCD9200350EE3 /* Object.cpp */; };
-		0ABE87DB22C48EF8008678CB /* Object.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB0F205BCD9200350EE3 /* Object.hpp */; };
-		0ABE87DC22C48EF8008678CB /* ObjectWrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DAFE205BCD9200350EE3 /* ObjectWrap.cpp */; };
-		0ABE87DD22C48EF8008678CB /* ObjectWrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB07205BCD9200350EE3 /* ObjectWrap.h */; };
-		0ABE87DE22C48EF8008678CB /* ScriptEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB0A205BCD9200350EE3 /* ScriptEngine.cpp */; };
-		0ABE87DF22C48EF8008678CB /* ScriptEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB13205BCD9200350EE3 /* ScriptEngine.hpp */; };
-		0ABE87E022C48EF8008678CB /* SeApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB18205BCD9200350EE3 /* SeApi.h */; };
-		0ABE87E122C48EF8008678CB /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB00205BCD9200350EE3 /* Utils.cpp */; };
-		0ABE87E222C48EF8008678CB /* Utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB1D205BCD9200350EE3 /* Utils.hpp */; };
 		1A14FD912080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD922080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD932080B4E300E10ABE /* CCGLUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A14FD902080B4E300E10ABE /* CCGLUtils.h */; };
@@ -1391,7 +1377,6 @@
 		051C017021E2F85C00D4A347 /* CCModuleConfigIOS.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigIOS.release.xcconfig; sourceTree = "<group>"; };
 		051C017121E2F86900D4A347 /* CCModuleConfigMac.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.release.xcconfig; sourceTree = "<group>"; };
 		051C017221E2F86900D4A347 /* CCModuleConfigMac.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.debug.xcconfig; sourceTree = "<group>"; };
-		0A0D3074228140C000678952 /* libv8_monolith.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_monolith.a; path = ../external/ios/libs/libv8_monolith.a; sourceTree = "<group>"; };
 		0A5CCE65224880E900AF87E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../external/sources/unzip/zip.h; sourceTree = "<group>"; };
 		0A5CCE66224880E900AF87E6 /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../external/sources/unzip/zip.cpp; sourceTree = "<group>"; };
 		1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1916,7 +1901,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A12570222815D5600FE762B /* libv8_monolith.a in Frameworks */,
 				40A346FB21F7124500E51F9B /* libfreetype.a in Frameworks */,
 				EDE5DFF81C0D6B3F0014147A /* libwebsockets.a in Frameworks */,
 				1ACF6A3C1E4AFDC80033C137 /* libcrypto.a in Frameworks */,
@@ -2246,7 +2230,6 @@
 		1551A341158F2AB200E66CFE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0A0D3074228140C000678952 /* libv8_monolith.a */,
 				40A346FA21F7124400E51F9B /* libfreetype.a */,
 				40F373D921B67A7D0083E4E7 /* libv8_snapshot.a */,
 				ED997664216C459D00A46923 /* libinspector.a */,
@@ -3499,7 +3482,6 @@
 				469303892046AE05004A3D6C /* HandleObject.hpp in Headers */,
 				503DD8EF1926736A00CD74DD /* CCPlatformDefine-ios.h in Headers */,
 				1A28FF921F20AFAB007A1D9D /* NSURLRequest+SRWebSocket.h in Headers */,
-				0ABE87E022C48EF8008678CB /* SeApi.h in Headers */,
 				046E06CC2185B49F00B24E2D /* SkinData.h in Headers */,
 				46FDDB5C202ADDCE00931238 /* CCData.h in Headers */,
 				469303832046AE05004A3D6C /* Value.hpp in Headers */,
@@ -3575,7 +3557,6 @@
 				50ABBD5B1925AB0000A911A9 /* Vec2.h in Headers */,
 				4008729720CE20C2002EB77B /* jsb_cocos2dx_network_manual.h in Headers */,
 				50ABBD411925AB0000A911A9 /* CCMath.h in Headers */,
-				0ABE87D622C48EF8008678CB /* Base.h in Headers */,
 				0435588F217EAE1B00B9C056 /* IkConstraint.h in Headers */,
 				04355819217EADF300B9C056 /* IOBuffer.h in Headers */,
 				046E06342185B41100B24E2D /* Animation.h in Headers */,
@@ -3609,7 +3590,6 @@
 				046E06422185B41100B24E2D /* BaseTimelineState.h in Headers */,
 				469303AF2046AE05004A3D6C /* Base.h in Headers */,
 				046E03F821804E6B00B24E2D /* SpineRenderer.h in Headers */,
-				0ABE87DD22C48EF8008678CB /* ObjectWrap.h in Headers */,
 				46930467204FE20F004A3D6C /* CCLog.h in Headers */,
 				1A28FF761F20AFAB007A1D9D /* SRHTTPConnectMessage.h in Headers */,
 				046E06942185B45300B24E2D /* Rectangle.h in Headers */,
@@ -3630,14 +3610,12 @@
 				46FDDAD8202ACC6A00931238 /* GFXUtils.h in Headers */,
 				46FDDB82202ADDCE00931238 /* ccTypes.h in Headers */,
 				50ABC00C1926664800A911A9 /* CCDevice.h in Headers */,
-				0ABE87E222C48EF8008678CB /* Utils.hpp in Headers */,
 				46FDDA74202ACC6A00931238 /* ProgramLib.h in Headers */,
 				46FDDAD0202ACC6A00931238 /* RenderBuffer.h in Headers */,
 				1A28FF7A1F20AFAB007A1D9D /* SRLog.h in Headers */,
 				46AE3FF42092F3A600F3A228 /* node.h in Headers */,
 				46FDDC64202D502F00931238 /* CCApplication.h in Headers */,
 				046E06D82185B49F00B24E2D /* AnimationConfig.h in Headers */,
-				0ABE87D922C48EF8008678CB /* HelperMacros.h in Headers */,
 				46FDDACC202ACC6A00931238 /* VertexFormat.h in Headers */,
 				46FDDACE202ACC6A00931238 /* GraphicsHandle.h in Headers */,
 				469303912046AE05004A3D6C /* MappingUtils.hpp in Headers */,
@@ -3667,7 +3645,6 @@
 				1A28FF721F20AFAB007A1D9D /* SRHash.h in Headers */,
 				50ABBD431925AB0000A911A9 /* CCMathBase.h in Headers */,
 				46FDDBDE202ADDCE00931238 /* TGAlib.h in Headers */,
-				0ABE87D822C48EF8008678CB /* Class.hpp in Headers */,
 				046E06DC2185B49F00B24E2D /* ConstraintData.h in Headers */,
 				04355863217EAE1B00B9C056 /* AnimationStateData.h in Headers */,
 				469303812046AE05004A3D6C /* config.hpp in Headers */,
@@ -3713,7 +3690,6 @@
 				046E069E2185B45300B24E2D /* Transform.h in Headers */,
 				046E070C218B015100B24E2D /* jsb_cocos2dx_dragonbones_auto.hpp in Headers */,
 				046E03F221804E6B00B24E2D /* SpineAnimation.h in Headers */,
-				0ABE87DF22C48EF8008678CB /* ScriptEngine.hpp in Headers */,
 				046E06152185B37100B24E2D /* CCArmatureDisplay.h in Headers */,
 				1A28FF8A1F20AFAB007A1D9D /* SRURLUtilities.h in Headers */,
 				50ABBD4B1925AB0000A911A9 /* Mat4.h in Headers */,
@@ -3737,7 +3713,6 @@
 				46FDDAAC202ACC6A00931238 /* Types.h in Headers */,
 				043558C1217EAE1B00B9C056 /* Animation.h in Headers */,
 				1AAAC876205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.hpp in Headers */,
-				0ABE87DB22C48EF8008678CB /* Object.hpp in Headers */,
 				1A52DB7B205BCDD000350EE3 /* ScriptEngine.hpp in Headers */,
 				4648882620AC2BC900CD1E4A /* CCRenderTexture.h in Headers */,
 				046E03F621804E6B00B24E2D /* spine-cocos2dx.h in Headers */,
@@ -3860,7 +3835,6 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 			);
 			mainGroup = 1551A334158F2AB200E66CFE;
@@ -4155,7 +4129,6 @@
 			files = (
 				ED30578D1BEC77550083C3ED /* unzip.cpp in Sources */,
 				46FDDA9E202ACC6A00931238 /* BaseRenderer.cpp in Sources */,
-				0ABE87DA22C48EF8008678CB /* Object.cpp in Sources */,
 				1A586C462064C90500B47573 /* EJConvertTypedArray.m in Sources */,
 				46FDDAC6202ACC6A00931238 /* RenderTarget.cpp in Sources */,
 				4617864820522469008256E1 /* CCDownloaderImpl-apple.mm in Sources */,
@@ -4187,7 +4160,6 @@
 				46AE3FF22092F3A600F3A228 /* SHA1.cpp in Sources */,
 				ED30579E1BEC77BD0083C3ED /* ConvertUTFWrapper.cpp in Sources */,
 				046E06892185B44A00B24E2D /* BaseFactory.cpp in Sources */,
-				0ABE87DE22C48EF8008678CB /* ScriptEngine.cpp in Sources */,
 				1A28FF801F20AFAB007A1D9D /* SRMutex.m in Sources */,
 				046E06FE2189999600B24E2D /* jsb_cocos2dx_editor_support_auto.cpp in Sources */,
 				46AE400C2092F3A600F3A228 /* env.cc in Sources */,
@@ -4306,14 +4278,12 @@
 				046E06752185B42500B24E2D /* DragonBones.cpp in Sources */,
 				04355897217EAE1B00B9C056 /* Skin.c in Sources */,
 				469304132046AE06004A3D6C /* jsb_classtype.cpp in Sources */,
-				0ABE87DC22C48EF8008678CB /* ObjectWrap.cpp in Sources */,
 				043558B7217EAE1B00B9C056 /* SkeletonData.c in Sources */,
 				46FDDAA4202ACC6A00931238 /* InputAssembler.cpp in Sources */,
 				0435587D217EAE1B00B9C056 /* AttachmentLoader.c in Sources */,
 				1A28FF941F20AFAB007A1D9D /* NSURLRequest+SRWebSocket.m in Sources */,
 				4693042F2046AE06004A3D6C /* jsb_helper.cpp in Sources */,
 				0435589D217EAE1B00B9C056 /* SlotData.c in Sources */,
-				0ABE87E122C48EF8008678CB /* Utils.cpp in Sources */,
 				046E065B2185B41B00B24E2D /* DeformVertices.cpp in Sources */,
 				4693043D2046AE06004A3D6C /* jsb_gfx_manual.cpp in Sources */,
 				46FDDBFE202ADDCE00931238 /* CCValue.cpp in Sources */,
@@ -4390,7 +4360,6 @@
 				46FDDA96202ACC6A00931238 /* RendererUtils.cpp in Sources */,
 				046E06232185B37100B24E2D /* CCTextureAtlasData.cpp in Sources */,
 				046E06CE2185B49F00B24E2D /* CanvasData.cpp in Sources */,
-				0ABE87D722C48EF8008678CB /* Class.cpp in Sources */,
 				469303952046AE05004A3D6C /* RefCounter.cpp in Sources */,
 				46FDDABC202ACC6A00931238 /* VertexFormat.cpp in Sources */,
 				046E061D2185B37100B24E2D /* CCFactory.cpp in Sources */,
@@ -4599,7 +4568,7 @@
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/";
 				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Debug;
@@ -4627,7 +4596,7 @@
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/";
 				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Release;

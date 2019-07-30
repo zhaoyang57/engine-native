@@ -382,8 +382,8 @@ Local<Value> ErrnoException(Isolate* isolate,
     Local<String> message = OneByteString(env->isolate(), msg);
 
     Local<String> cons =
-    String::Concat(env->isolate(), estring, FIXED_ONE_BYTE_STRING(env->isolate(), ", "));
-    cons = String::Concat(env->isolate(), cons, message);
+    String::Concat(estring, FIXED_ONE_BYTE_STRING(env->isolate(), ", "));
+    cons = String::Concat(cons, message);
 
     Local<String> path_string;
     if (path != nullptr) {
@@ -392,9 +392,9 @@ Local<Value> ErrnoException(Isolate* isolate,
     }
 
     if (path_string.IsEmpty() == false) {
-        cons = String::Concat(env->isolate(), cons, FIXED_ONE_BYTE_STRING(env->isolate(), " '"));
-        cons = String::Concat(env->isolate(), cons, path_string);
-        cons = String::Concat(env->isolate(), cons, FIXED_ONE_BYTE_STRING(env->isolate(), "'"));
+        cons = String::Concat(cons, FIXED_ONE_BYTE_STRING(env->isolate(), " '"));
+        cons = String::Concat(cons, path_string);
+        cons = String::Concat(cons, FIXED_ONE_BYTE_STRING(env->isolate(), "'"));
     }
     e = Exception::Error(cons);
 
@@ -454,25 +454,25 @@ Local<Value> UVException(Isolate* isolate,
     Local<String> js_dest;
 
     Local<String> js_msg = js_code;
-    js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, ": "));
-    js_msg = String::Concat(isolate, js_msg, OneByteString(isolate, msg));
-    js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, ", "));
-    js_msg = String::Concat(isolate, js_msg, js_syscall);
+    js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, ": "));
+    js_msg = String::Concat(js_msg, OneByteString(isolate, msg));
+    js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, ", "));
+    js_msg = String::Concat(js_msg, js_syscall);
 
     if (path != nullptr) {
         js_path = StringFromPath(isolate, path);
 
-        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, " '"));
-        js_msg = String::Concat(isolate, js_msg, js_path);
-        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
+        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, " '"));
+        js_msg = String::Concat(js_msg, js_path);
+        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
     }
 
     if (dest != nullptr) {
         js_dest = StringFromPath(isolate, dest);
         
-        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, " -> '"));
-        js_msg = String::Concat(isolate, js_msg, js_dest);
-        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
+        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, " -> '"));
+        js_msg = String::Concat(js_msg, js_dest);
+        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
     }
     
     Local<Object> e = Exception::Error(js_msg)->ToObject(isolate);

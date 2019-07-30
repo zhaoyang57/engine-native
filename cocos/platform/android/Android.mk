@@ -19,8 +19,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \
                     $(LOCAL_PATH)/../.. \
-                    $(LOCAL_PATH)/../../.. \
-                    $(LOCAL_PATH)/../../../external/android/$(TARGET_ARCH_ABI)/include/v8/libc++
+                    $(LOCAL_PATH)/../../..
 
 LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -lEGL \
@@ -28,9 +27,5 @@ LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -landroid
 
 LOCAL_STATIC_LIBRARIES := v8_static
-
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-LOCAL_WHOLE_STATIC_LIBRARIES += android_support
-endif
 
 include $(BUILD_STATIC_LIBRARY)
