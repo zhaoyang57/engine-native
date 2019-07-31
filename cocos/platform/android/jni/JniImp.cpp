@@ -172,9 +172,6 @@ extern "C"
         if (!defaultResourcePath.empty())
             FileUtils::getInstance()->setDefaultResourceRootPath(defaultResourcePath);
 
-        se::ScriptEngine* se = se::ScriptEngine::getInstance();
-        se->addRegisterCallback(setCanvasCallback);
-
         EventDispatcher::init();
 
         g_app->start();
@@ -323,7 +320,11 @@ extern "C"
 
     JNIEXPORT void JNICALL JNI_RENDER(nativeOnSurfaceChanged)(JNIEnv*  env, jobject thiz, jint w, jint h)
     {
-        EventDispatcher::dispatchResizeEvent(w, h);
+        if (g_isGameFinished) {
+            return;
+        }
+        uint8_t devicePixelRatio = Application::getInstance()->getDevicePixelRatio();
+        EventDispatcher::dispatchResizeEvent(w / devicePixelRatio, h / devicePixelRatio);
     }
 
     /***********************************************************
