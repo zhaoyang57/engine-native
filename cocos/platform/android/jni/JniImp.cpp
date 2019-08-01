@@ -172,6 +172,9 @@ extern "C"
         if (!defaultResourcePath.empty())
             FileUtils::getInstance()->setDefaultResourceRootPath(defaultResourcePath);
 
+        se::ScriptEngine* se = se::ScriptEngine::getInstance();
+        se->addRegisterCallback(setCanvasCallback);
+
         EventDispatcher::init();
 
         g_app->start();
