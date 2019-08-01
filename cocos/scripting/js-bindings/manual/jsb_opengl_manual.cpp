@@ -4444,7 +4444,7 @@ static bool JSB_glGetUniformfv(se::State& s) {
             }
         }
 #else
-        if(arg1 == glGetUniformLocation(id, namebuffer))
+        if(locationId == glGetUniformLocation(programId, namebuffer))
         {
             isLocationFound = true;
             break;
