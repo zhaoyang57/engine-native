@@ -46,16 +46,35 @@ using namespace cocos2d;
 static ALCdevice* s_ALDevice = nullptr;
 static ALCcontext* s_ALContext = nullptr;
 static AudioEngineImpl* s_instance = nullptr;
+static const char *_addNotiFunName = "alSourceAddNotification";
+static const char *_removeNotiFunName = "alSourceRemoveNotification";
 
 typedef ALvoid (*alSourceNotificationProc)(ALuint sid, ALuint notificationID, ALvoid* userData);
-typedef ALenum (*alSourceAddNotificationProcPtr)(ALuint sid, ALuint notificationID, alSourceNotificationProc notifyProc, ALvoid* userData);
-static ALenum alSourceAddNotificationExt(ALuint sid, ALuint notificationID, alSourceNotificationProc notifyProc, ALvoid* userData)
+typedef ALenum (*alSourceNotificationProcPtr)(ALuint sid, ALuint notificationID, alSourceNotificationProc notifyProc, ALvoid* userData);
+static ALenum alSourceNotificationExt(ALuint sid,
+                                      ALuint notificationID,
+                                      alSourceNotificationProc notifyProc,
+                                      ALvoid* userData,
+                                      const char *funName = _addNotiFunName)
 {
-    static alSourceAddNotificationProcPtr proc = nullptr;
+    static alSourceNotificationProcPtr addProc = nullptr;
+    static alSourceNotificationProcPtr removeProc = nullptr;
 
-    if (proc == nullptr)
+    if (addProc == nullptr)
     {
-        proc = (alSourceAddNotificationProcPtr)alcGetProcAddress(nullptr, "alSourceAddNotification");
+        addProc = (alSourceNotificationProcPtr)alcGetProcAddress(nullptr, _addNotiFunName);
+    }
+    
+    if (removeProc == nullptr)
+    {
+        removeProc = (alSourceNotificationProcPtr)alcGetProcAddress(nullptr, _removeNotiFunName);
+    }
+    
+    alSourceNotificationProcPtr proc = nullptr;
+    if (funName == _addNotiFunName) {
+        proc = addProc;
+    } else {
+        proc = removeProc;
     }
 
     if (proc)
@@ -281,7 +300,6 @@ bool AudioEngineImpl::init()
 
             for (int i = 0; i < MAX_AUDIOINSTANCES; ++i) {
                 _unusedSourcesPool.push_back(_alSources[i]);
-                alSourceAddNotificationExt(_alSources[i], AL_BUFFERS_PROCESSED, myAlSourceNotificationCallback, nullptr);
             }
 
             // fixed #16170: Random crash in alGenBuffers(AudioCache::readDataTask) at startup
@@ -521,6 +539,10 @@ ALuint AudioEngineImpl::findValidSource()
     {
         sourceId = _unusedSourcesPool.front();
         _unusedSourcesPool.pop_front();
+        alSourceNotificationExt(sourceId,
+                                AL_BUFFERS_PROCESSED,
+                                myAlSourceNotificationCallback,
+                                nullptr);
     }
 
     return sourceId;
@@ -597,6 +619,11 @@ bool AudioEngineImpl::resume(int audioID)
 void AudioEngineImpl::stop(int audioID)
 {
     auto player = _audioPlayers[audioID];
+    alSourceNotificationExt(player->_alSource,
+                            AL_BUFFERS_PROCESSED,
+                            myAlSourceNotificationCallback,
+                            nullptr,
+                            _removeNotiFunName);
     player->destroy();
 
     // Call 'update' method to cleanup immediately since the schedule may be cancelled without any notification.
@@ -607,6 +634,11 @@ void AudioEngineImpl::stopAll()
 {
     for(auto&& player : _audioPlayers)
     {
+        alSourceNotificationExt(player.second->_alSource,
+                                AL_BUFFERS_PROCESSED,
+                                myAlSourceNotificationCallback,
+                                nullptr,
+                                _removeNotiFunName);
         player.second->destroy();
     }
 
