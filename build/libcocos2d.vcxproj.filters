@@ -806,7 +806,7 @@
     <ClCompile Include="..\cocos\renderer\scene\assembler\TiledMapAssembler.cpp">
       <Filter>renderer\scene\assembler</Filter>
     </ClCompile>
-        <ClCompile Include="..\cocos\renderer\scene\assembler\MeshAssembler.cpp">
+    <ClCompile Include="..\cocos\renderer\scene\assembler\MeshAssembler.cpp">
       <Filter>renderer\scene\assembler</Filter>
     </ClCompile>
     <ClCompile Include="..\cocos\renderer\renderer\CustomProperties.cpp">
@@ -817,6 +817,27 @@
     </ClCompile>
     <ClCompile Include="..\cocos\scripting\js-bindings\auto\jsb_cocos2dx_particle_auto.cpp">
       <Filter>js-bindings\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\spine-creator-support\SkeletonCache.cpp">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\spine-creator-support\SkeletonCacheAnimation.cpp">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\spine-creator-support\SkeletonCacheMgr.cpp">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCacheMgr.cpp">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCache.cpp">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\CCArmatureCacheDisplay.cpp">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\base\etc2.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1840,6 +1861,27 @@
     </ClInclude>
     <ClInclude Include="..\cocos\scripting\js-bindings\auto\jsb_cocos2dx_particle_auto.hpp">
       <Filter>js-bindings\auto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\spine-creator-support\SkeletonCache.h">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\spine-creator-support\SkeletonCacheAnimation.h">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\spine-creator-support\SkeletonCacheMgr.h">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCacheMgr.h">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCache.h">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\CCArmatureCacheDisplay.h">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\base\etc2.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
