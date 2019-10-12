@@ -36,7 +36,7 @@
 #include "base/CCRef.h"
 #include "base/ccUtils.h"
 
-#define MAX_AUDIOINSTANCES 24
+#define MAX_AUDIOINSTANCES 13
 
 #define ERRORLOG(msg) log("fun:%s,line:%d,msg:%s",__func__,__LINE__,#msg)
 
@@ -75,10 +75,6 @@ public:
 
     void setAudioFocusForAllPlayers(bool isFocus);
 private:
-
-    void onEnterBackground(const CustomEvent&);
-    void onEnterForeground(const CustomEvent&);
-
     // engine interfaces
     SLObjectItf _engineObject;
     SLEngineItf _engineEngine;
@@ -94,8 +90,6 @@ private:
     std::unordered_map<int, IAudioPlayer*> _urlAudioPlayersNeedResume;
 
     AudioPlayerProvider* _audioPlayerProvider;
-    uint32_t _onPauseListenerID;
-    uint32_t _onResumeListenerID;
 
     int _audioIDIndex;
     
