@@ -14336,6 +14336,25 @@ bool js_register_cocos2dx_spine_SkeletonCacheMgr(se::Object* obj)
 se::Object* __jsb_spine_SkeletonCacheAnimation_proto = nullptr;
 se::Class* __jsb_spine_SkeletonCacheAnimation_class = nullptr;
 
+static bool js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint(se::State& s)
+{
+    spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint : Error processing arguments");
+        cobj->setUseTint(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint)
+
 static bool js_cocos2dx_spine_SkeletonCacheAnimation_setTimeScale(se::State& s)
 {
     spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
@@ -15026,6 +15045,7 @@ bool js_register_cocos2dx_spine_SkeletonCacheAnimation(se::Object* obj)
 {
     auto cls = se::Class::create("SkeletonCacheAnimation", obj, nullptr, _SE(js_cocos2dx_spine_SkeletonCacheAnimation_constructor));
 
+    cls->defineFunction("setUseTint", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint));
     cls->defineFunction("setTimeScale", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setTimeScale));
     cls->defineFunction("findAnimation", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_findAnimation));
     cls->defineFunction("setCompleteListener", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setCompleteListener));

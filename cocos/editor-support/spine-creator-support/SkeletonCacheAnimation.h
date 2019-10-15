@@ -85,6 +85,7 @@ namespace spine {
         void stopSchedule();
         void onEnable();
         void onDisable();
+        void setUseTint(bool enabled);
         
         void setAnimation (const std::string& name, bool loop);
         void addAnimation (const std::string& name, bool loop, float delay = 0);
@@ -120,6 +121,7 @@ namespace spine {
         int _playTimes = 0;
         bool _isAniComplete = true;
         std::string _animationName = "";
+        bool _useTint = false;
         
         struct AniQueueData {
             std::string animationName = "";
