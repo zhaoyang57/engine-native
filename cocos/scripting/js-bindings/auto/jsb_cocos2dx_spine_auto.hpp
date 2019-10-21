@@ -959,6 +959,7 @@ extern se::Class* __jsb_spine_SkeletonCacheAnimation_class;
 
 bool js_register_spine_SkeletonCacheAnimation(se::Object* obj);
 bool register_all_cocos2dx_spine(se::Object* obj);
+SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setUseTint);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setTimeScale);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_findAnimation);
 SE_DECLARE_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setCompleteListener);

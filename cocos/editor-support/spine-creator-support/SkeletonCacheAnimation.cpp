@@ -163,11 +163,24 @@ namespace spine {
         
         _nodeColor.a = _nodeProxy->getRealOpacity() / (float)255;
         
-        middleware::MeshBuffer* mb = mgr->getMeshBuffer(VF_XYUVCC);
+        auto vertexFormat = _useTint? VF_XYUVCC : VF_XYUVC;
+        middleware::MeshBuffer* mb = mgr->getMeshBuffer(vertexFormat);
         middleware::IOBuffer& vb = mb->getVB();
         middleware::IOBuffer& ib = mb->getIB();
         const auto& srcVB = frameData->vb;
         const auto& srcIB = frameData->ib;
+        
+        // vertex size int bytes with one color
+        int vbs1 = sizeof(V2F_T2F_C4B);
+        // vertex size in floats with one color
+        int vs1 = vbs1 / sizeof(float);
+        // vertex size int bytes with two color
+        int vbs2 = sizeof(V2F_T2F_C4B_C4B);
+        // vertex size in floats with two color
+        int vs2 = vbs2 / sizeof(float);
+        
+        int vs = _useTint ? vs2 : vs1;
+        int vbs = _useTint ? vbs2 : vbs1;
         
         const cocos2d::Mat4& nodeWorldMat = _nodeProxy->getWorldMatrix();
 
@@ -180,7 +193,10 @@ namespace spine {
         float tempR = 0.0f, tempG = 0.0f, tempB = 0.0f, tempA = 0.0f;
         float multiplier = 1.0f;
         int srcVertexBytesOffset = 0;
+        int srcVertexBytes = 0;
         int vertexBytes = 0;
+        int vertexFloats = 0;
+        int tintBytes = 0;
         int srcIndexBytesOffset = 0;
         int indexBytes = 0;
         GLuint textureHandle = 0;
@@ -224,20 +240,35 @@ namespace spine {
         
         for (std::size_t segIndex = 0, segLen = segments.size(); segIndex < segLen; segIndex++) {
             auto segment = segments[segIndex];
-            vertexBytes = segment->vertexFloatCount * sizeof(float);
+            srcVertexBytes = segment->vertexFloatCount * sizeof(float);
+            if (!_useTint) {
+                tintBytes = segment->vertexFloatCount / vs2 * sizeof(float);
+                vertexBytes = srcVertexBytes - tintBytes;
+                vertexFloats = vertexBytes / sizeof(float);
+            } else {
+                vertexBytes = srcVertexBytes;
+                vertexFloats = segment->vertexFloatCount;
+            }
 
             // fill vertex buffer
             vb.checkSpace(vertexBytes, true);
-            dstVertexOffset = (int)vb.getCurPos() / sizeof(V2F_T2F_C4B_C4B);
+            dstVertexOffset = (int)vb.getCurPos() / vbs;
             dstVertexBuffer = (float*)vb.getCurBuffer();
             dstColorBuffer = (unsigned int*)vb.getCurBuffer();
-            vb.writeBytes((char*)srcVB.getBuffer() + srcVertexBytesOffset, vertexBytes);
+            if (!_useTint) {
+                char* srcBuffer = (char*)srcVB.getBuffer() + srcVertexBytesOffset;
+                for (std::size_t srcBufferIdx = 0; srcBufferIdx < srcVertexBytes; srcBufferIdx += vbs2) {
+                    vb.writeBytes(srcBuffer + srcBufferIdx, vbs);
+                }
+            } else {
+                vb.writeBytes((char*)srcVB.getBuffer() + srcVertexBytesOffset, vertexBytes);
+            }
             
             // batch handle
             if (_batch) {
                 cocos2d::Vec3* point = nullptr;
                 float tempZ = 0.0f;
-                for (auto posIndex = 0; posIndex < segment->vertexFloatCount; posIndex += 6)
+                for (auto posIndex = 0; posIndex < vertexFloats; posIndex += vs)
                 {
                     point = (cocos2d::Vec3*)(dstVertexBuffer + posIndex);
                     tempZ = point->z;
@@ -249,21 +280,33 @@ namespace spine {
             
             // handle vertex color
             if (needColor) {
-                int frameFloatOffset = srcVertexBytesOffset / sizeof(float);
-                for (auto colorIndex = 0; colorIndex < segment->vertexFloatCount; colorIndex += 6, frameFloatOffset += 6)
-                {
-                    if (frameFloatOffset >= maxVFOffset) {
-                        nowColor = colors[colorOffset++];
-                        handleColor(nowColor);
-                        maxVFOffset = nowColor->vertexFloatOffset;
+                int srcVertexFloatOffset = srcVertexBytesOffset / sizeof(float);
+                if (_useTint) {
+                    for (auto colorIndex = 0; colorIndex < vertexFloats; colorIndex += vs, srcVertexFloatOffset += vs2)
+                    {
+                        if (srcVertexFloatOffset >= maxVFOffset) {
+                            nowColor = colors[colorOffset++];
+                            handleColor(nowColor);
+                            maxVFOffset = nowColor->vertexFloatOffset;
+                        }
+                        memcpy(dstColorBuffer + colorIndex + 4, &finalColor, sizeof(finalColor));
+                        memcpy(dstColorBuffer + colorIndex + 5, &darkColor, sizeof(darkColor));
                     }
-                    memcpy(dstColorBuffer + colorIndex + 4, &finalColor, sizeof(finalColor));
-                    memcpy(dstColorBuffer + colorIndex + 5, &darkColor, sizeof(darkColor));
+                } else {
+                    for (auto colorIndex = 0; colorIndex < vertexFloats; colorIndex += vs, srcVertexFloatOffset += vs2)
+                    {
+                        if (srcVertexFloatOffset >= maxVFOffset) {
+                            nowColor = colors[colorOffset++];
+                            handleColor(nowColor);
+                            maxVFOffset = nowColor->vertexFloatOffset;
+                        }
+                        memcpy(dstColorBuffer + colorIndex + 4, &finalColor, sizeof(finalColor));
+                    }
                 }
             }
             
             // move src vertex buffer offset
-            srcVertexBytesOffset += vertexBytes;
+            srcVertexBytesOffset += srcVertexBytes;
             
             // fill index buffer
             indexBytes = segment->indexCount * sizeof(unsigned short);
@@ -282,7 +325,7 @@ namespace spine {
             // handle material
             textureHandle = segment->getTexture()->getNativeTexture()->getHandle();
             blendMode = segment->blendMode;
-            effectHash = textureHandle + (blendMode << 16) + (1/*_useTint*/ << 24) + ((int)_batch << 25);
+            effectHash = textureHandle + (blendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25);
             Effect* renderEffect = assembler->getEffect(segIndex);
             Technique::Parameter* param = nullptr;
             Pass* pass = nullptr;
@@ -431,6 +474,10 @@ namespace spine {
     
     void SkeletonCacheAnimation::onDisable() {
         stopSchedule();
+    }
+    
+    void SkeletonCacheAnimation::setUseTint(bool enabled) {
+        _useTint = enabled;
     }
     
     void SkeletonCacheAnimation::setAnimation (const std::string& name, bool loop) {

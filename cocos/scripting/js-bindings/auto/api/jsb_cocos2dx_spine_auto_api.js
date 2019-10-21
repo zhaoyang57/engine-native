@@ -6840,6 +6840,16 @@ getInstance : function (
 spine.SkeletonCacheAnimation = {
 
 /**
+ * @method setUseTint
+ * @param {bool} arg0
+ */
+setUseTint : function (
+bool 
+)
+{
+},
+
+/**
  * @method setTimeScale
  * @param {float} arg0
  */
