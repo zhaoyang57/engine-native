@@ -85,6 +85,7 @@ void MaskAssembler::postHandle(NodeProxy *node, ModelBatcher *batcher, Scene *sc
     batcher->flush();
     batcher->flushIA();
     StencilManager::getInstance()->exitMask();
+    batcher->setCurrentEffect(nullptr);
 }
 
 RENDERER_END
