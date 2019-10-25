@@ -129,7 +129,7 @@ void Assembler::reset()
 
 void Assembler::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
 {
-    batcher->commit(node, this);
+    batcher->commit(node, this, node->getCullingMask());
 }
 
 void Assembler::fillBuffers(NodeProxy* node, MeshBuffer* buffer, std::size_t index)
