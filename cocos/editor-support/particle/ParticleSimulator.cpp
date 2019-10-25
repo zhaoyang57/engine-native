@@ -99,6 +99,7 @@ ParticleSimulator::~ParticleSimulator()
 void ParticleSimulator::stop()
 {
     _active = false;
+    _readyToPlay = false;
     _elapsed = duration;
     _emitCounter = 0;
 }
@@ -106,6 +107,7 @@ void ParticleSimulator::stop()
 void ParticleSimulator::reset()
 {
     _active = true;
+    _readyToPlay = true;
     _elapsed = 0;
     _emitCounter = 0;
     _finished = false;
@@ -449,7 +451,7 @@ void ParticleSimulator::render(float dt)
     assembler->updateIABuffer(0, mb->getGLVB(), mb->getGLIB());
     assembler->updateIARange(0, indexStart, indexCount);
     
-    if (_particles.size() == 0 && !_active)
+    if (_particles.size() == 0 && !_active  && !_readyToPlay)
     {
         _finished = true;
         if (_finishedCallback)
