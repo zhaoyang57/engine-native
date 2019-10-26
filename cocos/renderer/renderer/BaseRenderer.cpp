@@ -47,6 +47,7 @@ const size_t BaseRenderer::cc_pointLightColor = std::hash<std::string>{}("cc_poi
 const size_t BaseRenderer::cc_spotLightDirection = std::hash<std::string>{}("cc_spotLightDirection");
 const size_t BaseRenderer::cc_spotLightPositionAndRange = std::hash<std::string>{}("cc_spotLightPositionAndRange");
 const size_t BaseRenderer::cc_spotLightColor = std::hash<std::string>{}("cc_spotLightColor");
+const size_t BaseRenderer::cc_ambientLightColor = std::hash<std::string>{}("cc_ambientColor");
 const size_t BaseRenderer::cc_shadow_map = std::hash<std::string>{}("cc_shadow_map");
 const size_t BaseRenderer::cc_shadow_map_lightViewProjMatrix = std::hash<std::string>{}("cc_shadow_map_lightViewProjMatrix");
 const size_t BaseRenderer::cc_shadow_map_info = std::hash<std::string>{}("cc_shadow_map_info");
@@ -159,9 +160,11 @@ void BaseRenderer::render(const View& view, const Scene* scene)
     // dispatch draw items to different stage
     _stageInfos->reset();
     StageItem stageItem;
-    std::vector<StageItem> stageItems;
     for (const auto& stage : view.stages)
     {
+        StageInfo* stageInfo = _stageInfos->add();
+        stageInfo->stage = stage;
+        stageInfo->items.clear();
         for (size_t i = 0, len = _drawItems->getLength(); i < len; i++)
         {
             const DrawItem* item = _drawItems->getData(i);
@@ -177,24 +180,21 @@ void BaseRenderer::render(const View& view, const Scene* scene)
                 stageItem.uniforms = item->uniforms;
                 stageItem.definesKeyHash = item->definesKeyHash;
                 
-                stageItems.push_back(stageItem);
+                stageInfo->items.push_back(stageItem);
             }
         }
-        StageInfo* stageInfo = _stageInfos->add();
-        stageInfo->stage = stage;
-        stageInfo->items = &stageItems;
     }
     
     // render stages
     std::unordered_map<std::string, const StageCallback>::iterator foundIter;
     for (size_t i = 0, len = _stageInfos->getLength(); i < len; i++)
     {
-        const StageInfo* stageInfo = _stageInfos->getData(i);
+        StageInfo* stageInfo = _stageInfos->getData(i);
         foundIter = _stage2fn.find(stageInfo->stage);
         if (_stage2fn.end() != foundIter)
         {
             auto& fn = foundIter->second;
-            fn(view, *stageInfo->items);
+            fn(view, stageInfo->items);
         }
     }
 }

@@ -118,7 +118,7 @@ void ModelBatcher::changeCommitState(CommitState state)
     _commitState = state;
 }
 
-void ModelBatcher::commit(NodeProxy* node, Assembler* assembler)
+void ModelBatcher::commit(NodeProxy* node, Assembler* assembler, int cullingMask)
 {
     changeCommitState(CommitState::Common);
     
@@ -132,7 +132,6 @@ void ModelBatcher::commit(NodeProxy* node, Assembler* assembler)
     bool ignoreWorldMatrix = assembler->isIgnoreWorldMatrix();
     const Mat4& nodeWorldMat = node->getWorldMatrix();
     const Mat4& worldMat = useModel && !ignoreWorldMatrix ? nodeWorldMat : Mat4::IDENTITY;
-    int cullingMask = node->getCullingMask();
     
     auto asmDirty = assembler->isDirty(AssemblerBase::VERTICES_OPACITY_CHANGED);
     auto nodeDirty = node->isDirty(RenderFlow::NODE_OPACITY_CHANGED);
@@ -175,7 +174,7 @@ void ModelBatcher::commit(NodeProxy* node, Assembler* assembler)
     }
 }
 
-void ModelBatcher::commitIA(NodeProxy* node, CustomAssembler* assembler)
+void ModelBatcher::commitIA(NodeProxy* node, CustomAssembler* assembler, int cullingMask)
 {
     changeCommitState(CommitState::Custom);
 
@@ -186,7 +185,6 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomAssembler* assembler)
     if (!customIA) return;
     
     std::size_t iaCount = assembler->getIACount();
-    int cullingMask = node->getCullingMask();
     bool useModel = assembler->getUseModel();
     const Mat4& worldMat = useModel ? node->getWorldMatrix() : Mat4::IDENTITY;
     

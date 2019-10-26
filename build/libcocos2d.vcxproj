@@ -109,6 +109,7 @@
     <ClCompile Include="..\cocos\editor-support\spine\ClippingAttachment.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine\ColorTimeline.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine\Constraint.cpp" />
+    <ClCompile Include="..\cocos\editor-support\spine\ConstraintData.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine\CurveTimeline.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine\DeformTimeline.cpp" />
     <ClCompile Include="..\cocos\editor-support\spine\DrawOrderTimeline.cpp" />
@@ -414,6 +415,7 @@
     <ClInclude Include="..\cocos\editor-support\spine\Color.h" />
     <ClInclude Include="..\cocos\editor-support\spine\ColorTimeline.h" />
     <ClInclude Include="..\cocos\editor-support\spine\Constraint.h" />
+    <ClInclude Include="..\cocos\editor-support\spine\ConstraintData.h" />
     <ClInclude Include="..\cocos\editor-support\spine\ContainerUtil.h" />
     <ClInclude Include="..\cocos\editor-support\spine\CurveTimeline.h" />
     <ClInclude Include="..\cocos\editor-support\spine\Debug.h" />

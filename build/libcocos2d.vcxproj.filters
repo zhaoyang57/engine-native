@@ -845,6 +845,9 @@
     <ClCompile Include="..\cocos\base\etc2.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\spine\ConstraintData.cpp">
+      <Filter>editor-support\spine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cocos\base\base64.h">
@@ -1894,6 +1897,9 @@
     </ClInclude>
     <ClInclude Include="..\cocos\base\etc2.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\spine\ConstraintData.h">
+      <Filter>editor-support\spine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

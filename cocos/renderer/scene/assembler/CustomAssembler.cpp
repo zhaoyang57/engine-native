@@ -46,7 +46,7 @@ CustomAssembler::~CustomAssembler()
 
 void CustomAssembler::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
 {
-    batcher->commitIA(node, this);
+    batcher->commitIA(node, this, node->getCullingMask());
 }
 
 void CustomAssembler::reset()

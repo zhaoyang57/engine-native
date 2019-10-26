@@ -27,42 +27,36 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifndef Spine_PathConstraintMixTimeline_h
-#define Spine_PathConstraintMixTimeline_h
+#ifdef SPINE_UE4
+#include "SpinePluginPrivatePCH.h"
+#endif
 
-#include <spine/CurveTimeline.h>
+#include <spine/ConstraintData.h>
 
-namespace spine {
-#define SP_PATHCONSTRAINTMIXTIMELINE_ENTRIES 5
+using namespace spine;
 
-	class SP_API PathConstraintMixTimeline : public CurveTimeline {
-		friend class SkeletonBinary;
-		friend class SkeletonJson;
-
-		RTTI_DECL
-
-	public:
-		static const int ENTRIES;
-
-		explicit PathConstraintMixTimeline(int frameCount);
-
-		virtual void apply(Skeleton& skeleton, float lastTime, float time, Vector<Event*>* pEvents, float alpha, MixBlend blend, MixDirection direction);
-
-		virtual int getPropertyId();
-
-	private:
-		static const int PREV_TIME;
-		static const int PREV_ROTATE;
-		static const int PREV_TRANSLATE;
-		static const int ROTATE;
-		static const int TRANSLATE;
-
-		Vector<float> _frames;
-		int _pathConstraintIndex;
-
-		/// Sets the time and mixes of the specified keyframe.
-		void setFrame(int frameIndex, float time, float rotateMix, float translateMix);
-	};
+ConstraintData::ConstraintData(const String& name): _name(name), _order(0), _skinRequired(false) {
 }
 
-#endif /* Spine_PathConstraintMixTimeline_h */
+ConstraintData::~ConstraintData() {
+}
+
+const String& ConstraintData::getName() {
+	return _name;
+}
+
+size_t ConstraintData::getOrder() {
+	return _order;
+}
+
+void ConstraintData::setOrder(size_t inValue) {
+	_order = inValue;
+}
+
+bool ConstraintData::isSkinRequired() {
+	return _skinRequired;
+}
+
+void ConstraintData::setSkinRequired(bool inValue) {
+	_skinRequired = inValue;
+}
