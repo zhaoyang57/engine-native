@@ -39,6 +39,7 @@ spine/BoundingBoxAttachment.cpp \
 spine/ClippingAttachment.cpp \
 spine/ColorTimeline.cpp \
 spine/Constraint.cpp \
+spine/ConstraintData.cpp \
 spine/CurveTimeline.cpp \
 spine/DeformTimeline.cpp \
 spine/DrawOrderTimeline.cpp \

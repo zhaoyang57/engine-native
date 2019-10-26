@@ -27,42 +27,37 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifndef Spine_PathConstraintMixTimeline_h
-#define Spine_PathConstraintMixTimeline_h
+#ifndef Spine_Constraint_h
+#define Spine_Constraint_h
 
-#include <spine/CurveTimeline.h>
+#include <spine/Updatable.h>
+#include <spine/SpineString.h>
 
 namespace spine {
-#define SP_PATHCONSTRAINTMIXTIMELINE_ENTRIES 5
+/// The interface for all constraints.
+class SP_API ConstraintData : public SpineObject {
 
-	class SP_API PathConstraintMixTimeline : public CurveTimeline {
-		friend class SkeletonBinary;
-		friend class SkeletonJson;
+public:
+	ConstraintData(const String& name);
 
-		RTTI_DECL
+	virtual ~ConstraintData();
 
-	public:
-		static const int ENTRIES;
+	/// The IK constraint's name, which is unique within the skeleton.
+	const String& getName();
 
-		explicit PathConstraintMixTimeline(int frameCount);
+	/// The ordinal for the order a skeleton's constraints will be applied.
+	size_t getOrder();
+	void setOrder(size_t inValue);
 
-		virtual void apply(Skeleton& skeleton, float lastTime, float time, Vector<Event*>* pEvents, float alpha, MixBlend blend, MixDirection direction);
+	/// Whether the constraint is only active for a specific skin.
+	bool isSkinRequired();
+	void setSkinRequired(bool inValue);
 
-		virtual int getPropertyId();
-
-	private:
-		static const int PREV_TIME;
-		static const int PREV_ROTATE;
-		static const int PREV_TRANSLATE;
-		static const int ROTATE;
-		static const int TRANSLATE;
-
-		Vector<float> _frames;
-		int _pathConstraintIndex;
-
-		/// Sets the time and mixes of the specified keyframe.
-		void setFrame(int frameIndex, float time, float rotateMix, float translateMix);
-	};
+private:
+	const String _name;
+	size_t _order;
+	bool _skinRequired;
+};
 }
 
-#endif /* Spine_PathConstraintMixTimeline_h */
+#endif /* Spine_Constraint_h */

@@ -35,6 +35,7 @@ namespace spine {
     
     AttachmentVertices::AttachmentVertices (middleware::Texture2D* texture, int verticesCount, unsigned short* triangles, int trianglesCount) {
         _texture = texture;
+        if (_texture) _texture->retain();
         
         _triangles = new middleware::Triangles();
         _triangles->verts = new middleware::V2F_T2F_C4B[verticesCount];
@@ -46,6 +47,7 @@ namespace spine {
     AttachmentVertices::~AttachmentVertices () {
         delete [] _triangles->verts;
         delete _triangles;
+        if (_texture) _texture->release();
     }
     
 }
