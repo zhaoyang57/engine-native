@@ -75,13 +75,13 @@ public:
      *  @param[in] node The node which owns the render handle
      *  @param[in] handle The render handle contains render datas
      */
-    void commit(NodeProxy* node, Assembler* handle);
+    void commit(NodeProxy* node, Assembler* handle, int cullingMask);
     /**
      *  @brief Commit a custom render handle to the model batcher
      *  @param[in] node The node which owns the render handle
      *  @param[in] handle The custom render handle contains render datas
      */
-    void commitIA(NodeProxy* node, CustomAssembler* handle);
+    void commitIA(NodeProxy* node, CustomAssembler* handle, int cullingMask);
     
     /**
      *  @brief This method should be invoked before commit any render handles each frame.

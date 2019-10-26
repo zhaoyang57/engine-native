@@ -63,13 +63,13 @@ void MaskAssembler::handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene)
     StencilManager* instance = StencilManager::getInstance();
     instance->pushMask(_inverted);
     instance->clear();
-    batcher->commit(node, _clearSubHandle);
+    batcher->commit(node, _clearSubHandle, node->getCullingMask());
     batcher->flush();
     instance->enterLevel();
 
     if (_imageStencil)
     {
-        batcher->commit(node, this);
+        batcher->commit(node, this, node->getCullingMask());
     }
     else if (_renderSubHandle)
     {
@@ -84,6 +84,7 @@ void MaskAssembler::postHandle(NodeProxy *node, ModelBatcher *batcher, Scene *sc
 {
     batcher->flush();
     batcher->flushIA();
+    batcher->setCurrentEffect(getEffect(0));
     StencilManager::getInstance()->exitMask();
 }
 

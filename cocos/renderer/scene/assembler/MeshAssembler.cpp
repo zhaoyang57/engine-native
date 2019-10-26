@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #include "MeshAssembler.hpp"
+#include "../ModelBatcher.hpp"
 
 RENDERER_BEGIN
 
@@ -40,11 +41,11 @@ void MeshAssembler::handle(NodeProxy *node, ModelBatcher *batcher, Scene *scene)
 {
     if (_renderNode != nullptr)
     {
-        Assembler::handle(_renderNode, batcher, scene);
+        batcher->commit(_renderNode, this, node->getCullingMask());
     }
     else
     {
-        Assembler::handle(node, batcher, scene);
+        batcher->commit(node, this, node->getCullingMask());
     }
 }
 
