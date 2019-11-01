@@ -37,13 +37,15 @@ NS_CC_BEGIN
 
 // global particle pool
 static ParticlePool _pool;
+// particleSystem max step delta time
+static const float _maxParticleDeltaTime = 0.0333f;  
 
 void Particle::reset()
 {
     pos = cocos2d::Vec3::ZERO;
     startPos = cocos2d::Vec3::ZERO;
     color = cocos2d::Color4B::BLACK;
-    deltaColor = cocos2d::Color4B::BLACK;
+    deltaColor = cocos2d::Color4F::BLACK;
     size = 0;
     deltaSize = 0;
     rotation = 0;
@@ -140,10 +142,10 @@ void ParticleSimulator::emitParticle(cocos2d::Vec3 &pos)
     particle.color.g = sg = clampf(_startColor.g + _startColorVar.g * random(-1.0f, 1.0f), 0, 255);
     particle.color.b = sb = clampf(_startColor.b + _startColorVar.b * random(-1.0f, 1.0f), 0, 255);
     particle.color.a = sa = clampf(_startColor.a + _startColorVar.a * random(-1.0f, 1.0f), 0, 255);
-    particle.deltaColor.r = (clampf(_endColor.r + _endColorVar.r * random(-1.0f, 1.0f), 0, 255) - sr) / timeToLive;
-    particle.deltaColor.g = (clampf(_endColor.g + _endColorVar.g * random(-1.0f, 1.0f), 0, 255) - sg) / timeToLive;
-    particle.deltaColor.b = (clampf(_endColor.b + _endColorVar.b * random(-1.0f, 1.0f), 0, 255) - sb) / timeToLive;
-    particle.deltaColor.a = (clampf(_endColor.a + _endColorVar.a * random(-1.0f, 1.0f), 0, 255) - sa) / timeToLive;
+    particle.deltaColor.r = (clampf(_endColor.r + _endColorVar.r * random(-1.0f, 1.0f), -255, 255) - sr) / timeToLive;
+    particle.deltaColor.g = (clampf(_endColor.g + _endColorVar.g * random(-1.0f, 1.0f), -255, 255) - sg) / timeToLive;
+    particle.deltaColor.b = (clampf(_endColor.b + _endColorVar.b * random(-1.0f, 1.0f), -255, 255) - sb) / timeToLive;
+    particle.deltaColor.a = (clampf(_endColor.a + _endColorVar.a * random(-1.0f, 1.0f), -255, 255) - sa) / timeToLive;
     
     // size
     float startS = startSize + startSizeVar * random(-1.0f, 1.0f);
@@ -215,6 +217,7 @@ void ParticleSimulator::onDisable()
 
 void ParticleSimulator::render(float dt)
 {
+    dt = dt > _maxParticleDeltaTime ? _maxParticleDeltaTime : dt;
     if (_finished || _nodeProxy == nullptr || _effect == nullptr)
     {
         return;
