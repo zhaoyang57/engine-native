@@ -352,10 +352,11 @@ void ParticleSimulator::render(float dt)
             
             // color
             auto& color = particle.color;
-            color.r = clampf(color.r + particle.deltaColor.r * dt, 0, 255);
-            color.g = clampf(color.g + particle.deltaColor.g * dt, 0, 255);
-            color.b = clampf(color.b + particle.deltaColor.b * dt, 0, 255);
-            color.a = clampf(color.a + particle.deltaColor.a * dt, 0, 255);
+            auto& deltaColor = particle.deltaColor;
+            color.r = clampf(color.r + deltaColor.r * dt, 0, 255);
+            color.g = clampf(color.g + deltaColor.g * dt, 0, 255);
+            color.b = clampf(color.b + deltaColor.b * dt, 0, 255);
+            color.a = clampf(color.a + deltaColor.a * dt, 0, 255);
             
             // size
             particle.size += particle.deltaSize * dt;
