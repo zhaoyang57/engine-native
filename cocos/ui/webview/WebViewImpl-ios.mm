@@ -220,14 +220,15 @@
 
 #pragma mark - WKNavigationDelegate
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    NSString *url = [webView.URL absoluteString];
-    if ([[webView.URL scheme] isEqualToString:self.jsScheme]) {
-        self.onJsCallback([url UTF8String]);
+    NSString *url = [[navigationAction request].URL.absoluteString stringByRemovingPercentEncoding];
+    NSString* scheme = [navigationAction request].URL.scheme;
+    if ([scheme isEqualToString:self.jsScheme]) {
+        self.onJsCallback(url.UTF8String);
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
     if (self.shouldStartLoading && url) {
-        if (self.shouldStartLoading([url UTF8String]) )
+        if (self.shouldStartLoading(url.UTF8String) )
             decisionHandler(WKNavigationActionPolicyAllow);
         else
             decisionHandler(WKNavigationActionPolicyCancel);
