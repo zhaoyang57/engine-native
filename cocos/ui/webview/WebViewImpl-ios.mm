@@ -81,7 +81,7 @@
 
 
 @interface UIWebViewWrapper () <WKUIDelegate, WKNavigationDelegate>
-@property(nonatomic, retain) WKWebView *uiWebView;
+@property(nonatomic, assign) WKWebView *uiWebView;
 @property(nonatomic, copy) NSString *jsScheme;
 @end
 
@@ -107,14 +107,14 @@
 - (void)dealloc {
     self.uiWebView.UIDelegate = nil;
     [self.uiWebView removeFromSuperview];
-    self.uiWebView = nil;
+    [self.uiWebView release];
     self.jsScheme = nil;
     [super dealloc];
 }
 
 - (void)setupWebView {
     if (!self.uiWebView) {
-        self.uiWebView = [[[WKWebView alloc] init] autorelease];
+        self.uiWebView = [[WKWebView alloc] init];
         self.uiWebView.UIDelegate = self;
         self.uiWebView.navigationDelegate = self;
     }
