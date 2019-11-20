@@ -90,7 +90,7 @@
 }
 
 + (instancetype)webViewWrapper {
-    return [[self alloc] init];
+    return [[[self alloc] init] autorelease];
 }
 
 - (instancetype)init {
@@ -114,7 +114,7 @@
 
 - (void)setupWebView {
     if (!self.uiWebView) {
-        self.uiWebView = [[[WKWebView alloc] init] autorelease];
+        self.uiWebView = [[WKWebView alloc] init];
         self.uiWebView.UIDelegate = self;
         self.uiWebView.navigationDelegate = self;
     }
