@@ -38,6 +38,7 @@
 #include "renderer/scene/assembler/CustomAssembler.hpp"
 #include "SkeletonDataMgr.h"
 #include "renderer/gfx/Texture.h"
+#include "spine-creator-support/AttachUtil.h"
 
 USING_NS_CC;
 USING_NS_MW;
@@ -158,6 +159,7 @@ SkeletonRenderer::~SkeletonRenderer () {
         _debugBuffer = nullptr;
     }
     
+    CC_SAFE_RELEASE(_attachUtil);
     CC_SAFE_RELEASE(_nodeProxy);
     CC_SAFE_RELEASE(_effect);
     stopSchedule();
@@ -878,6 +880,12 @@ void SkeletonRenderer::render (float deltaTime) {
         }
         _debugBuffer->writeFloat32(DebugType::None);
     }
+    
+    // Synchronize attach node transform
+    if (_attachUtil)
+    {
+        _attachUtil->syncAttachedNode(_nodeProxy, _skeleton);
+    }
 }
 
 cocos2d::Rect SkeletonRenderer::getBoundingBox () const {
@@ -1048,4 +1056,33 @@ void SkeletonRenderer::setOpacityModifyRGB (bool value) {
 
 bool SkeletonRenderer::isOpacityModifyRGB () const {
     return _premultipliedAlpha;
+}
+
+se_object_ptr SkeletonRenderer::getDebugData() const {
+    if (_debugBuffer) {
+        return _debugBuffer->getTypeArray();
+    }
+    return nullptr;
+}
+
+void SkeletonRenderer::bindNodeProxy(cocos2d::renderer::NodeProxy* node) {
+    if (node == _nodeProxy) return;
+    CC_SAFE_RELEASE(_nodeProxy);
+    _nodeProxy = node;
+    CC_SAFE_RETAIN(_nodeProxy);
+}
+
+void SkeletonRenderer::setEffect(cocos2d::renderer::EffectVariant* effect) {
+    if (effect == _effect) return;
+    CC_SAFE_RELEASE(_effect);
+    _effect = effect;
+    CC_SAFE_RETAIN(_effect);
+}
+
+void SkeletonRenderer::setAttachUtil(RealTimeAttachUtil* attachUtil)
+{
+    if (attachUtil == _attachUtil) return;
+    CC_SAFE_RELEASE(_attachUtil);
+    _attachUtil = attachUtil;
+    CC_SAFE_RETAIN(_attachUtil);
 }

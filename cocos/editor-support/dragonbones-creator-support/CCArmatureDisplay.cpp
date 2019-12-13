@@ -26,6 +26,7 @@
 #include "renderer/renderer/Pass.h"
 #include "renderer/renderer/Technique.h"
 #include "renderer/gfx/Texture.h"
+#include "dragonbones-creator-support/AttachUtil.h"
 
 USING_NS_CC;
 USING_NS_MW;
@@ -64,7 +65,8 @@ CCArmatureDisplay::~CCArmatureDisplay()
         delete _debugBuffer;
         _debugBuffer = nullptr;
     }
-    
+ 
+    CC_SAFE_RELEASE(_attachUtil);
     CC_SAFE_RELEASE(_nodeProxy);
     CC_SAFE_RELEASE(_effect);
 }
@@ -126,6 +128,12 @@ void CCArmatureDisplay::dbRender()
     if (_preISegWritePos != -1)
     {
 		_assembler->updateIARange(_materialLen - 1, _preISegWritePos, _curISegLen);
+    }
+    
+    // Synchronize attach node transform
+    if (_attachUtil)
+    {
+        _attachUtil->syncAttachedNode(_nodeProxy);
     }
     
     if (_debugDraw)
@@ -422,6 +430,47 @@ void CCArmatureDisplay::removeDBEventListener(const std::string& type, const std
     {
         _listenerIDMap.erase(it);
     }
+}
+
+se_object_ptr CCArmatureDisplay::getDebugData() const
+{
+    if (_debugBuffer)
+    {
+        return _debugBuffer->getTypeArray();
+    }
+    return nullptr;
+}
+
+void CCArmatureDisplay::bindNodeProxy(cocos2d::renderer::NodeProxy* node)
+{
+    if (node == _nodeProxy) return;
+    CC_SAFE_RELEASE(_nodeProxy);
+    _nodeProxy = node;
+    CC_SAFE_RETAIN(_nodeProxy);
+}
+
+void CCArmatureDisplay::setEffect(cocos2d::renderer::EffectVariant* effect)
+{
+    if (effect == _effect) return;
+    CC_SAFE_RELEASE(_effect);
+    _effect = effect;
+    CC_SAFE_RETAIN(_effect);
+}
+
+void CCArmatureDisplay::setAttachUtil(RealTimeAttachUtil* attachUtil)
+{
+    if (attachUtil == _attachUtil) return;
+    CC_SAFE_RELEASE(_attachUtil);
+    _attachUtil = attachUtil;
+    CC_SAFE_RETAIN(_attachUtil);
+}
+
+void CCArmatureDisplay::setColor(cocos2d::Color4B& color)
+{
+    _nodeColor.r = color.r / 255.0f;
+    _nodeColor.g = color.g / 255.0f;
+    _nodeColor.b = color.b / 255.0f;
+    _nodeColor.a = color.a / 255.0f;
 }
 
 DRAGONBONES_NAMESPACE_END

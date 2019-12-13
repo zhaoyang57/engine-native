@@ -428,6 +428,9 @@
     <ClCompile Include="..\cocos\editor-support\spine-creator-support\AttachmentVertices.cpp">
       <Filter>editor-support\spine-creator-support</Filter>
     </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\spine-creator-support\AttachUtil.cpp">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClCompile>
     <ClCompile Include="..\cocos\editor-support\spine-creator-support\SkeletonAnimation.cpp">
       <Filter>editor-support\spine-creator-support</Filter>
     </ClCompile>
@@ -840,6 +843,9 @@
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClCompile>
     <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCache.cpp">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\AttachUtil.cpp">
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClCompile>
     <ClCompile Include="..\cocos\editor-support\dragonbones-creator-support\CCArmatureCacheDisplay.cpp">
@@ -1393,6 +1399,9 @@
     <ClInclude Include="..\cocos\editor-support\spine-creator-support\AttachmentVertices.h">
       <Filter>editor-support\spine-creator-support</Filter>
     </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\spine-creator-support\AttachUtil.h">
+      <Filter>editor-support\spine-creator-support</Filter>
+    </ClInclude>
     <ClInclude Include="..\cocos\editor-support\spine-creator-support\SkeletonAnimation.h">
       <Filter>editor-support\spine-creator-support</Filter>
     </ClInclude>
@@ -1901,6 +1910,9 @@
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClInclude>
     <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\ArmatureCache.h">
+      <Filter>editor-support\dragonbones-creator-support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\AttachUtil.h">
       <Filter>editor-support\dragonbones-creator-support</Filter>
     </ClInclude>
     <ClInclude Include="..\cocos\editor-support\dragonbones-creator-support\CCArmatureCacheDisplay.h">

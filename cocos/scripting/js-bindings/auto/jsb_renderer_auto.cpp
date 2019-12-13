@@ -1168,20 +1168,60 @@ static bool js_renderer_NodeProxy_destroyImmediately(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_NodeProxy_destroyImmediately)
 
+static bool js_renderer_NodeProxy_isValid(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_isValid : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        bool result = cobj->isValid();
+        ok &= boolean_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_isValid : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_isValid)
+
 static bool js_renderer_NodeProxy_enableVisit(se::State& s)
 {
     cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
     SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_enableVisit : Invalid Native Object");
     const auto& args = s.args();
     size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        bool arg0;
+        ok &= seval_to_boolean(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_enableVisit : Error processing arguments");
+        cobj->enableVisit(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_NodeProxy_enableVisit)
+
+static bool js_renderer_NodeProxy_getLocalMatrix(se::State& s)
+{
+    cocos2d::renderer::NodeProxy* cobj = (cocos2d::renderer::NodeProxy*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_NodeProxy_getLocalMatrix : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
     if (argc == 0) {
-        cobj->enableVisit();
+        const cocos2d::Mat4& result = cobj->getLocalMatrix();
+        ok &= Mat4_to_seval(result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_renderer_NodeProxy_getLocalMatrix : Error processing arguments");
         return true;
     }
     SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
     return false;
 }
-SE_BIND_FUNC(js_renderer_NodeProxy_enableVisit)
+SE_BIND_FUNC(js_renderer_NodeProxy_getLocalMatrix)
 
 static bool js_renderer_NodeProxy_setName(se::State& s)
 {
@@ -1292,7 +1332,9 @@ bool js_register_renderer_NodeProxy(se::Object* obj)
     cls->defineFunction("switchTraverseToRender", _SE(js_renderer_NodeProxy_switchTraverseToRender));
     cls->defineFunction("notifyUpdateParent", _SE(js_renderer_NodeProxy_notifyUpdateParent));
     cls->defineFunction("destroyImmediately", _SE(js_renderer_NodeProxy_destroyImmediately));
+    cls->defineFunction("isValid", _SE(js_renderer_NodeProxy_isValid));
     cls->defineFunction("enableVisit", _SE(js_renderer_NodeProxy_enableVisit));
+    cls->defineFunction("getLocalMatrix", _SE(js_renderer_NodeProxy_getLocalMatrix));
     cls->defineFunction("setName", _SE(js_renderer_NodeProxy_setName));
     cls->defineFunction("clearAssembler", _SE(js_renderer_NodeProxy_clearAssembler));
     cls->defineFunction("switchTraverseToVisit", _SE(js_renderer_NodeProxy_switchTraverseToVisit));

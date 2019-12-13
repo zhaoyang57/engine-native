@@ -6404,6 +6404,16 @@ str
 },
 
 /**
+ * @method setAttachUtil
+ * @param {sp.RealTimeAttachUtil} arg0
+ */
+setAttachUtil : function (
+realtimeattachutil 
+)
+{
+},
+
+/**
  * @method setOpacityModifyRGB
  * @param {bool} arg0
  */
@@ -7167,11 +7177,11 @@ str
 },
 
 /**
- * @method setCompleteListener
- * @param {function} arg0
+ * @method setAttachUtil
+ * @param {sp.CacheModeAttachUtil} arg0
  */
-setCompleteListener : function (
-func 
+setAttachUtil : function (
+cachemodeattachutil 
 )
 {
 },
@@ -7325,6 +7335,16 @@ str
 },
 
 /**
+ * @method setCompleteListener
+ * @param {function} arg0
+ */
+setCompleteListener : function (
+func 
+)
+{
+},
+
+/**
  * @method updateAnimationCache
  * @param {String} arg0
  */
@@ -7443,6 +7463,57 @@ stopSchedule : function (
 SkeletonCacheAnimation : function (
 str, 
 bool 
+)
+{
+},
+
+};
+
+/**
+ * @class AttachUtilBase
+ */
+spine.AttachUtilBase = {
+
+/**
+ * @method associateAttachedNode
+ * @param {sp.Skeleton} arg0
+ * @param {cc.renderer::NodeProxy} arg1
+ */
+associateAttachedNode : function (
+skeleton, 
+nodeproxy 
+)
+{
+},
+
+};
+
+/**
+ * @class RealTimeAttachUtil
+ */
+spine.RealTimeAttachUtil = {
+
+/**
+ * @method RealTimeAttachUtil
+ * @constructor
+ */
+RealTimeAttachUtil : function (
+)
+{
+},
+
+};
+
+/**
+ * @class CacheModeAttachUtil
+ */
+spine.CacheModeAttachUtil = {
+
+/**
+ * @method CacheModeAttachUtil
+ * @constructor
+ */
+CacheModeAttachUtil : function (
 )
 {
 },

@@ -34,6 +34,7 @@
 #include "renderer/renderer/Technique.h"
 #include "renderer/scene/assembler/CustomAssembler.hpp"
 #include "renderer/gfx/Texture.h"
+#include "spine-creator-support/AttachUtil.h"
 
 USING_NS_CC;
 USING_NS_MW;
@@ -66,6 +67,7 @@ namespace spine {
             _animationQueue.pop();
             delete ani;
         }
+        CC_SAFE_RELEASE_NULL(_attachUtil);
         CC_SAFE_RELEASE(_nodeProxy);
         CC_SAFE_RELEASE(_effect);
         stopSchedule();
@@ -374,6 +376,11 @@ namespace spine {
             
             renderEffect->updateHash(effectHash);
         }
+        
+        if (_attachUtil)
+        {
+            _attachUtil->syncAttachedNode(_nodeProxy, frameData);
+        }
     }
     
     Skeleton* SkeletonCacheAnimation::getSkeleton() const {
@@ -507,5 +514,26 @@ namespace spine {
     
     void SkeletonCacheAnimation::updateAllAnimationCache () {
         _skeletonCache->resetAllAnimationData();
+    }
+    
+    void SkeletonCacheAnimation::setAttachUtil(CacheModeAttachUtil* attachUtil) {
+        if (attachUtil == _attachUtil) return;
+        CC_SAFE_RELEASE(_attachUtil);
+        _attachUtil = attachUtil;
+        CC_SAFE_RETAIN(_attachUtil);
+    }
+    
+    void SkeletonCacheAnimation::bindNodeProxy(cocos2d::renderer::NodeProxy* node) {
+        if (node == _nodeProxy) return;
+        CC_SAFE_RELEASE(_nodeProxy);
+        _nodeProxy = node;
+        CC_SAFE_RETAIN(_nodeProxy);
+    }
+    
+    void SkeletonCacheAnimation::setEffect(cocos2d::renderer::EffectVariant* effect) {
+        if (effect == _effect) return;
+        CC_SAFE_RELEASE(_effect);
+        _effect = effect;
+        CC_SAFE_RETAIN(_effect);
     }
 }

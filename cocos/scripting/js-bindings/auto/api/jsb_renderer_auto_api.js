@@ -392,11 +392,33 @@ destroyImmediately : function (
 },
 
 /**
- * @method enableVisit
+ * @method isValid
+ * @return {bool}
  */
-enableVisit : function (
+isValid : function (
 )
 {
+    return false;
+},
+
+/**
+ * @method enableVisit
+ * @param {bool} arg0
+ */
+enableVisit : function (
+bool 
+)
+{
+},
+
+/**
+ * @method getLocalMatrix
+ * @return {mat4_object}
+ */
+getLocalMatrix : function (
+)
+{
+    return cc.Mat4;
 },
 
 /**
