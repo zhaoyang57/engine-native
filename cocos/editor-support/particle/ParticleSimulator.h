@@ -277,6 +277,7 @@ public:
     float               endRadiusVar        = 0.0f;
     float               rotatePerS          = 0.0f;
     float               rotatePerSVar       = 0.0f;
+    float               aspectRatio         = 1.0f;
 };
 
 NS_CC_END
