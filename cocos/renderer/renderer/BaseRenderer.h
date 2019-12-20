@@ -143,7 +143,7 @@ protected:
     static const size_t cc_spotLightPositionAndRange;
     static const size_t cc_spotLightColor;
     static const size_t cc_ambientLightColor;
-    static const size_t cc_shadow_map;
+    static const size_t cc_shadow_map[4];
     static const size_t cc_shadow_map_lightViewProjMatrix;
     static const size_t cc_shadow_map_info;
     static const size_t cc_shadow_map_bias;
