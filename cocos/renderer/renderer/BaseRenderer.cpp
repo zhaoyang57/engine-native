@@ -48,7 +48,6 @@ const size_t BaseRenderer::cc_spotLightDirection = std::hash<std::string>{}("cc_
 const size_t BaseRenderer::cc_spotLightPositionAndRange = std::hash<std::string>{}("cc_spotLightPositionAndRange");
 const size_t BaseRenderer::cc_spotLightColor = std::hash<std::string>{}("cc_spotLightColor");
 const size_t BaseRenderer::cc_ambientLightColor = std::hash<std::string>{}("cc_ambientColor");
-const size_t BaseRenderer::cc_shadow_map = std::hash<std::string>{}("cc_shadow_map");
 const size_t BaseRenderer::cc_shadow_map_lightViewProjMatrix = std::hash<std::string>{}("cc_shadow_map_lightViewProjMatrix");
 const size_t BaseRenderer::cc_shadow_map_info = std::hash<std::string>{}("cc_shadow_map_info");
 const size_t BaseRenderer::cc_shadow_map_bias = std::hash<std::string>{}("cc_shadow_map_bias");
@@ -60,6 +59,13 @@ const size_t BaseRenderer::cc_matWorldIT = std::hash<std::string>{}("cc_matWorld
 const size_t BaseRenderer::cc_matpProj = std::hash<std::string>{}("cc_matpProj");
 const size_t BaseRenderer::cc_matViewProj = std::hash<std::string>{}("cc_matViewProj");
 const size_t BaseRenderer::cc_cameraPos = std::hash<std::string>{}("cc_cameraPos");
+
+const size_t BaseRenderer::cc_shadow_map[4] = {
+    std::hash<std::string>{}("cc_shadow_map_0"),
+    std::hash<std::string>{}("cc_shadow_map_1"),
+    std::hash<std::string>{}("cc_shadow_map_2"),
+    std::hash<std::string>{}("cc_shadow_map_3"),
+};
 
 BaseRenderer::BaseRenderer()
 {

@@ -375,20 +375,13 @@ void ForwardRenderer::drawItems(const std::vector<StageItem>& items)
     }
     else
     {
-        std::vector<Texture*> shadowMaps;
-        shadowMaps.reserve(count);
-        std::vector<int> slots;
-        slots.reserve(count);
         for (const auto& item : items)
         {
-            shadowMaps.clear();
             for(int i = 0; i < count; i++)
             {
                 Light* light = _shadowLights.at(i);
-                shadowMaps.push_back(light->getShadowMap());
-                slots.push_back(allocTextureUnit());
+                _device->setTexture(cc_shadow_map[i], light->getShadowMap(), allocTextureUnit());
             }
-            _device->setTextureArray(cc_shadow_map, shadowMaps, slots);
             draw(item);
         }
     }
