@@ -95,7 +95,7 @@ void CCArmatureDisplay::dbUpdate() {}
 
 void CCArmatureDisplay::dbRender()
 {
-    if (_nodeProxy == nullptr)
+    if (!_nodeProxy || !_effect)
     {
         return;
     }
@@ -160,9 +160,9 @@ void CCArmatureDisplay::dbRender()
             }
             
             float bx = bone->globalTransformMatrix.tx;
-            float by = -bone->globalTransformMatrix.ty;
+            float by = bone->globalTransformMatrix.ty;
             float endx = bx + bone->globalTransformMatrix.a * boneLen;
-            float endy = by - bone->globalTransformMatrix.b * boneLen;
+            float endy = by + bone->globalTransformMatrix.b * boneLen;
             
             _debugBuffer->writeFloat32(bx);
             _debugBuffer->writeFloat32(by);
@@ -259,7 +259,7 @@ void CCArmatureDisplay::traverseArmature(Armature* armature, float parentOpacity
                 break;
         }
         
-        double curHash = _curTextureIndex + ((uint8_t)slot->_blendMode << 16) + ((uint8_t)_batch << 24);
+        double curHash = _curTextureIndex + ((uint8_t)slot->_blendMode << 16) + ((uint8_t)_batch << 24) + ((uint32_t)_effect->getHash() << 25);
         
         EffectVariant* renderEffect = _assembler->getEffect(_materialLen);
         bool needUpdate = false;
@@ -273,12 +273,6 @@ void CCArmatureDisplay::traverseArmature(Armature* armature, float parentOpacity
         }
         else
         {
-            if (_effect == nullptr)
-            {
-                cocos2d::log("ArmatureDisplay:update get effect failed");
-                _assembler->reset();
-                return;
-            }
             auto effect = new cocos2d::renderer::EffectVariant();
             effect->autorelease();
             effect->copy(_effect);

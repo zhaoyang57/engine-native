@@ -256,23 +256,37 @@ void Pass::setProperty(size_t hashName, const Technique::Parameter& property)
 {
     _properties[hashName] = property;
 }
+
 void Pass::setProperty(size_t hashName, void* value)
 {
-    if (_properties.end() == _properties.find(hashName)) {
-        return;
+    Technique::Parameter* prop = nullptr;
+    const auto& iter = _properties.find(hashName);
+    if (_properties.end() == iter)
+    {
+        if (!_parent) return;
+        auto parentProp = _parent->getProperty(hashName);
+        if (!parentProp) return;
+        prop = &_properties[hashName];
+        *prop = *parentProp;
+    }
+    else
+    {
+        prop = &iter->second;
     }
     
-    auto& prop = _properties[hashName];
-    prop.setValue(value);
+    prop->setValue(value);
 }
+
 void Pass::setProperty(const std::string& name, const Technique::Parameter& property)
 {
     setProperty(std::hash<std::string>{}(name), property);
 }
+
 void Pass::setProperty(const std::string& name, void* value)
 {
     setProperty(std::hash<std::string>{}(name), value);
 }
+
 void Pass::define(const std::string& name, const Value& value)
 {
     if (_defines[name] == value)

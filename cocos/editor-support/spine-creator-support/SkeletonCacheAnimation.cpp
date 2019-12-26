@@ -141,7 +141,7 @@ namespace spine {
     
     void SkeletonCacheAnimation::render(float dt) {
         
-        if (_nodeProxy == nullptr) {
+        if (!_nodeProxy || !_effect) {
             return;
         }
         
@@ -327,7 +327,7 @@ namespace spine {
             // handle material
             textureHandle = segment->getTexture()->getNativeTexture()->getHandle();
             blendMode = segment->blendMode;
-            effectHash = textureHandle + (blendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25);
+            effectHash = textureHandle + (blendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25) + ((int)_effect->getHash() << 26);
             EffectVariant* renderEffect = assembler->getEffect(segIndex);
             bool needUpdate = false;
             if (renderEffect) {
@@ -337,11 +337,6 @@ namespace spine {
                 }
             }
             else {
-                if (_effect == nullptr) {
-                    cocos2d::log("SkeletonCacheAnimation:update get effect failed");
-                    assembler->reset();
-                    return;
-                }
                 auto effect = new cocos2d::renderer::EffectVariant();
                 effect->autorelease();
                 effect->copy(_effect);

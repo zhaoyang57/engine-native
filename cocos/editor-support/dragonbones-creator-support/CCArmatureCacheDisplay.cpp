@@ -134,7 +134,7 @@ void CCArmatureCacheDisplay::update(float dt)
 
 void CCArmatureCacheDisplay::render(float dt) 
 {
-    if (_nodeProxy == nullptr)
+    if (!_nodeProxy || !_effect)
     {
         return;
     }
@@ -279,7 +279,7 @@ void CCArmatureCacheDisplay::render(float dt)
         textureHandle = segment->getTexture()->getNativeTexture()->getHandle();
         blendMode = (BlendMode)segment->blendMode;
 
-        effectHash = textureHandle + ((uint8_t)blendMode << 16) + ((uint8_t)_batch << 24);
+        effectHash = textureHandle + ((uint8_t)blendMode << 16) + ((uint8_t)_batch << 24) + ((uint32_t)_effect->getHash() << 25);
         EffectVariant* renderEffect = assembler->getEffect(segIndex);
 
         bool needUpdate = false;
@@ -293,12 +293,6 @@ void CCArmatureCacheDisplay::render(float dt)
         }
         else
         {
-            if (_effect == nullptr)
-            {
-                cocos2d::log("ArmatureCacheAnimation:update get effect failed");
-                assembler->reset();
-                return;
-            }
             auto effect = new cocos2d::renderer::EffectVariant();
             effect->autorelease();
             effect->copy(_effect);

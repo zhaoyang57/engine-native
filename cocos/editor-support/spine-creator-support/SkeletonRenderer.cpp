@@ -258,7 +258,7 @@ void SkeletonRenderer::initWithBinaryFile (const std::string& skeletonDataFile, 
 
 void SkeletonRenderer::render (float deltaTime) {
     
-    if (_nodeProxy == nullptr) {
+    if (!_nodeProxy || !_effect) {
         return;
     }
     
@@ -354,7 +354,7 @@ void SkeletonRenderer::render (float deltaTime) {
                 curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
         }
         
-		double curHash = curTextureIndex + (curBlendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25);
+        double curHash = curTextureIndex + (curBlendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25) + ((int)_effect->getHash() << 26);
         EffectVariant* renderEffect = assembler->getEffect(materialLen);
         bool needUpdate = false;
         if (renderEffect) {
@@ -364,11 +364,6 @@ void SkeletonRenderer::render (float deltaTime) {
             }
         }
         else {
-            if (_effect == nullptr) {
-                cocos2d::log("SkeletonRenderer:update get effect failed");
-                assembler->reset();
-                return;
-            }
             auto effect = new cocos2d::renderer::EffectVariant();
             effect->autorelease();
             effect->copy(_effect);
