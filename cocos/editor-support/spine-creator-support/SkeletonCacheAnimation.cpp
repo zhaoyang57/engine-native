@@ -404,13 +404,11 @@ namespace spine {
     
     void SkeletonCacheAnimation::setSkin (const std::string& skinName) {
         _skeletonCache->setSkin(skinName);
-        _skeletonCache->setToSetupPose();
         _skeletonCache->resetAllAnimationData();
     }
 
     void SkeletonCacheAnimation::setSkin (const char* skinName) {
         _skeletonCache->setSkin(skinName);
-        _skeletonCache->setToSetupPose();
         _skeletonCache->resetAllAnimationData();
     }
     
@@ -532,9 +530,26 @@ namespace spine {
         CC_SAFE_RETAIN(_effect);
     }
     
-    uint32_t SkeletonCacheAnimation::getRenderOrder() const
-    {
+    uint32_t SkeletonCacheAnimation::getRenderOrder() const {
         if (!_nodeProxy) return 0;
         return _nodeProxy->getRenderOrder();
+    }
+    
+    void SkeletonCacheAnimation::setToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setToSetupPose();
+        }
+    }
+    
+    void SkeletonCacheAnimation::setBonesToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setBonesToSetupPose();
+        }
+    }
+    
+    void SkeletonCacheAnimation::setSlotsToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setSlotsToSetupPose();
+        }
     }
 }

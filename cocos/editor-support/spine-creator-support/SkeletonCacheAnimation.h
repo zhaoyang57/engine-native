@@ -89,6 +89,10 @@ namespace spine {
         void setCompleteListener (const CacheFrameEvent& listener);
         void updateAnimationCache (const std::string& animationName);
         void updateAllAnimationCache ();
+        
+        void setToSetupPose ();
+        void setBonesToSetupPose ();
+        void setSlotsToSetupPose ();
     private:
         float _timeScale = 1;
         bool _paused = false;

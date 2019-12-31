@@ -15404,6 +15404,21 @@ static bool js_cocos2dx_spine_SkeletonCacheAnimation_setAnimation(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setAnimation)
 
+static bool js_cocos2dx_spine_SkeletonCacheAnimation_setBonesToSetupPose(se::State& s)
+{
+    spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_spine_SkeletonCacheAnimation_setBonesToSetupPose : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setBonesToSetupPose();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setBonesToSetupPose)
+
 static bool js_cocos2dx_spine_SkeletonCacheAnimation_onEnable(se::State& s)
 {
     spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
@@ -15504,6 +15519,21 @@ static bool js_cocos2dx_spine_SkeletonCacheAnimation_isOpacityModifyRGB(se::Stat
 }
 SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_isOpacityModifyRGB)
 
+static bool js_cocos2dx_spine_SkeletonCacheAnimation_setToSetupPose(se::State& s)
+{
+    spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_spine_SkeletonCacheAnimation_setToSetupPose : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setToSetupPose();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setToSetupPose)
+
 static bool js_cocos2dx_spine_SkeletonCacheAnimation_setOpacityModifyRGB(se::State& s)
 {
     spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
@@ -15522,6 +15552,21 @@ static bool js_cocos2dx_spine_SkeletonCacheAnimation_setOpacityModifyRGB(se::Sta
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setOpacityModifyRGB)
+
+static bool js_cocos2dx_spine_SkeletonCacheAnimation_setSlotsToSetupPose(se::State& s)
+{
+    spine::SkeletonCacheAnimation* cobj = (spine::SkeletonCacheAnimation*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_spine_SkeletonCacheAnimation_setSlotsToSetupPose : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->setSlotsToSetupPose();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_spine_SkeletonCacheAnimation_setSlotsToSetupPose)
 
 static bool js_cocos2dx_spine_SkeletonCacheAnimation_setEndListener(se::State& s)
 {
@@ -15979,11 +16024,14 @@ bool js_register_cocos2dx_spine_SkeletonCacheAnimation(se::Object* obj)
     cls->defineFunction("paused", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_paused));
     cls->defineFunction("setAttachment", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setAttachment));
     cls->defineFunction("setAnimation", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setAnimation));
+    cls->defineFunction("setBonesToSetupPose", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setBonesToSetupPose));
     cls->defineFunction("onEnable", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_onEnable));
     cls->defineFunction("setStartListener", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setStartListener));
     cls->defineFunction("setEffect", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setEffect));
     cls->defineFunction("isOpacityModifyRGB", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_isOpacityModifyRGB));
+    cls->defineFunction("setToSetupPose", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setToSetupPose));
     cls->defineFunction("setOpacityModifyRGB", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setOpacityModifyRGB));
+    cls->defineFunction("setSlotsToSetupPose", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setSlotsToSetupPose));
     cls->defineFunction("setEndListener", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_setEndListener));
     cls->defineFunction("beginSchedule", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_beginSchedule));
     cls->defineFunction("updateAllAnimationCache", _SE(js_cocos2dx_spine_SkeletonCacheAnimation_updateAllAnimationCache));

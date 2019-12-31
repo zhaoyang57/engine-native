@@ -7295,6 +7295,14 @@ bool
 },
 
 /**
+ * @method setBonesToSetupPose
+ */
+setBonesToSetupPose : function (
+)
+{
+},
+
+/**
  * @method onEnable
  */
 onEnable : function (
@@ -7333,11 +7341,27 @@ isOpacityModifyRGB : function (
 },
 
 /**
+ * @method setToSetupPose
+ */
+setToSetupPose : function (
+)
+{
+},
+
+/**
  * @method setOpacityModifyRGB
  * @param {bool} arg0
  */
 setOpacityModifyRGB : function (
 bool 
+)
+{
+},
+
+/**
+ * @method setSlotsToSetupPose
+ */
+setSlotsToSetupPose : function (
 )
 {
 },
