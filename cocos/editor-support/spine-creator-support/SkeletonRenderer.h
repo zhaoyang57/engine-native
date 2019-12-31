@@ -61,6 +61,7 @@ namespace spine {
         virtual void update (float deltaTime) override {}
         virtual void render (float deltaTime) override;
         virtual cocos2d::Rect getBoundingBox () const;
+        virtual uint32_t getRenderOrder() const override;
         
         Skeleton* getSkeleton() const;
 

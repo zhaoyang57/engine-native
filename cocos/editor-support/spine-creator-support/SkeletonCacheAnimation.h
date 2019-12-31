@@ -46,6 +46,7 @@ namespace spine {
         
         virtual void update(float dt) override;
         virtual void render(float dt) override;
+        virtual uint32_t getRenderOrder() const override;
         
         Skeleton* getSkeleton() const;
         

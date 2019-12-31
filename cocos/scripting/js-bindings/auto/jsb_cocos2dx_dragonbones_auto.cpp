@@ -2734,24 +2734,6 @@ static bool js_cocos2dx_dragonbones_Armature_setFlipX(se::State& s)
 }
 SE_BIND_FUNC(js_cocos2dx_dragonbones_Armature_setFlipX)
 
-static bool js_cocos2dx_dragonbones_Armature_getArmatureData(se::State& s)
-{
-    dragonBones::Armature* cobj = (dragonBones::Armature*)s.nativeThisObject();
-    SE_PRECONDITION2(cobj, false, "js_cocos2dx_dragonbones_Armature_getArmatureData : Invalid Native Object");
-    const auto& args = s.args();
-    size_t argc = args.size();
-    CC_UNUSED bool ok = true;
-    if (argc == 0) {
-        const dragonBones::ArmatureData* result = cobj->getArmatureData();
-        ok &= native_ptr_to_rooted_seval<dragonBones::ArmatureData>((dragonBones::ArmatureData*)result, &s.rval());
-        SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Armature_getArmatureData : Error processing arguments");
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
-    return false;
-}
-SE_BIND_FUNC(js_cocos2dx_dragonbones_Armature_getArmatureData)
-
 static bool js_cocos2dx_dragonbones_Armature__addSlot(se::State& s)
 {
     dragonBones::Armature* cobj = (dragonBones::Armature*)s.nativeThisObject();
@@ -2825,6 +2807,24 @@ static bool js_cocos2dx_dragonbones_Armature_getParent(se::State& s)
     return false;
 }
 SE_BIND_FUNC(js_cocos2dx_dragonbones_Armature_getParent)
+
+static bool js_cocos2dx_dragonbones_Armature_getArmatureData(se::State& s)
+{
+    dragonBones::Armature* cobj = (dragonBones::Armature*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_cocos2dx_dragonbones_Armature_getArmatureData : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        const dragonBones::ArmatureData* result = cobj->getArmatureData();
+        ok &= native_ptr_to_rooted_seval<dragonBones::ArmatureData>((dragonBones::ArmatureData*)result, &s.rval());
+        SE_PRECONDITION2(ok, false, "js_cocos2dx_dragonbones_Armature_getArmatureData : Error processing arguments");
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_cocos2dx_dragonbones_Armature_getArmatureData)
 
 static bool js_cocos2dx_dragonbones_Armature_getEventDispatcher(se::State& s)
 {
@@ -2912,11 +2912,11 @@ bool js_register_cocos2dx_dragonbones_Armature(se::Object* obj)
     cls->defineFunction("_addConstraint", _SE(js_cocos2dx_dragonbones_Armature__addConstraint));
     cls->defineFunction("setFlipY", _SE(js_cocos2dx_dragonbones_Armature_setFlipY));
     cls->defineFunction("setFlipX", _SE(js_cocos2dx_dragonbones_Armature_setFlipX));
-    cls->defineFunction("getArmatureData", _SE(js_cocos2dx_dragonbones_Armature_getArmatureData));
     cls->defineFunction("_addSlot", _SE(js_cocos2dx_dragonbones_Armature__addSlot));
     cls->defineFunction("advanceTime", _SE(js_cocos2dx_dragonbones_Armature_advanceTime));
     cls->defineFunction("getAnimation", _SE(js_cocos2dx_dragonbones_Armature_getAnimation));
     cls->defineFunction("getParent", _SE(js_cocos2dx_dragonbones_Armature_getParent));
+    cls->defineFunction("getArmatureData", _SE(js_cocos2dx_dragonbones_Armature_getArmatureData));
     cls->defineFunction("getEventDispatcher", _SE(js_cocos2dx_dragonbones_Armature_getEventDispatcher));
     cls->defineFunction("containsPoint", _SE(js_cocos2dx_dragonbones_Armature_containsPoint));
     cls->defineFunction("getProxy", _SE(js_cocos2dx_dragonbones_Armature_getProxy));

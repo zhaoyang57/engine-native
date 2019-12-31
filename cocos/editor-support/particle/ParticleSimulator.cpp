@@ -478,4 +478,10 @@ void ParticleSimulator::render(float dt)
     }
 }
 
+uint32_t ParticleSimulator::getRenderOrder() const
+{
+    if (!_nodeProxy) return 0;
+    return _nodeProxy->getRenderOrder();
+}
+
 NS_CC_END

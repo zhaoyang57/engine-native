@@ -982,16 +982,6 @@ bool
 },
 
 /**
- * @method getArmatureData
- * @return {dragonBones::ArmatureData}
- */
-getArmatureData : function (
-)
-{
-    return dragonBones::ArmatureData;
-},
-
-/**
  * @method _addSlot
  * @param {dragonBones::Slot} arg0
  */
@@ -1029,6 +1019,16 @@ getParent : function (
 )
 {
     return dragonBones::Slot;
+},
+
+/**
+ * @method getArmatureData
+ * @return {dragonBones::ArmatureData}
+ */
+getArmatureData : function (
+)
+{
+    return dragonBones::ArmatureData;
 },
 
 /**

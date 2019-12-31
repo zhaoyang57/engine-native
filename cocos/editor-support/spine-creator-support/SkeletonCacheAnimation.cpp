@@ -531,4 +531,10 @@ namespace spine {
         _effect = effect;
         CC_SAFE_RETAIN(_effect);
     }
+    
+    uint32_t SkeletonCacheAnimation::getRenderOrder() const
+    {
+        if (!_nodeProxy) return 0;
+        return _nodeProxy->getRenderOrder();
+    }
 }

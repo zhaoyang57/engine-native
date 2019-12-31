@@ -39,6 +39,8 @@
 
 RENDERER_BEGIN
 
+uint32_t NodeProxy::_globalRenderOrder = 0;
+
 NodeProxy::NodeProxy(std::size_t unitID, std::size_t index, const std::string& id, const std::string& name)
 {
     traverseHandle = render;
@@ -503,6 +505,8 @@ void NodeProxy::updateLocalMatrix()
 
 void NodeProxy::render(NodeProxy* node, ModelBatcher* batcher, Scene* scene)
 {
+    node->_renderOrder = _globalRenderOrder++;
+    
     if (!node->_needVisit || node->_realOpacity == 0) return;
 
     bool needRender = *node->_dirty & RenderFlow::RENDER;
@@ -529,6 +533,8 @@ void NodeProxy::render(NodeProxy* node, ModelBatcher* batcher, Scene* scene)
 
 void NodeProxy::visit(NodeProxy* node, ModelBatcher* batcher, Scene* scene)
 {
+    node->_renderOrder = _globalRenderOrder++;
+    
     if (!node->_needVisit) return;
 
     node->updateRealOpacity();

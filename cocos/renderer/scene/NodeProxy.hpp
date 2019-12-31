@@ -77,6 +77,10 @@ public:
      *  @brief Visit the node as a ordinary node but not a root node.
      */
     static void visit(NodeProxy* node, ModelBatcher* batcher, Scene* scene);
+    /*
+     *  @brief Reset global render order.
+     */
+    static void resetGlobalRenderOrder() { _globalRenderOrder = 0; }
     
     /*
      * @brief The default constructor.
@@ -298,6 +302,11 @@ public:
     bool isDirty(uint32_t flag) const { return *_dirty & flag; }
     
     /*
+     *  @brief Gets render order
+     */
+    uint32_t getRenderOrder () { return _renderOrder; }
+    
+    /*
      *  @brief switch traverse interface to visit
      */
     void switchTraverseToVisit() { traverseHandle = visit; }
@@ -344,6 +353,9 @@ private:
     cocos2d::Vector<NodeProxy*> _children;        ///< array of children nodes
 
     AssemblerBase* _assembler = nullptr;
+    
+    uint32_t _renderOrder = 0;
+    static uint32_t _globalRenderOrder;
 };
 
 // end of scene group

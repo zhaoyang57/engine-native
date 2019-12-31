@@ -123,11 +123,14 @@ class ParticleSimulator : public cocos2d::middleware::IMiddleware, public cocos2
 public:
     ParticleSimulator();
     ~ParticleSimulator();
+    
+    virtual void update(float dt) override {}
+    virtual void render(float dt) override;
+    virtual uint32_t getRenderOrder() const override;
+    
     void stop();
     void reset();
     void emitParticle(cocos2d::Vec3& pos);
-    void update(float dt) override {}
-    void render(float dt) override;
     void onEnable();
     void onDisable();
     

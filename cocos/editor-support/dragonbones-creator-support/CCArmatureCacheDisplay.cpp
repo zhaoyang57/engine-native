@@ -451,4 +451,10 @@ void CCArmatureCacheDisplay::setColor(cocos2d::Color4B& color)
     _nodeColor.a = color.a / 255.0f;
 }
 
+uint32_t CCArmatureCacheDisplay::getRenderOrder() const
+{
+    if (!_nodeProxy) return 0;
+    return _nodeProxy->getRenderOrder();
+}
+
 DRAGONBONES_NAMESPACE_END

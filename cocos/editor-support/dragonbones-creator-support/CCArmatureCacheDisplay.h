@@ -43,7 +43,8 @@ public:
 
     virtual void update(float dt) override;
     virtual void render(float dt) override;
-
+    virtual uint32_t getRenderOrder() const override;
+    
     void setTimeScale(float scale)
     {
         _timeScale = scale;
