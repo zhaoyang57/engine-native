@@ -139,7 +139,7 @@ void Particle3DAssembler::fillBuffers(NodeProxy *node, ModelBatcher *batcher, st
         return;
     }
     
-    MeshBuffer* buffer = batcher->getBuffer(_vfmt);
+    MeshBuffer* buffer = batcher->getBuffer(vfmt);
     
     const IARenderData& ia = _iaDatas[index];
     std::size_t meshIndex = ia.meshIndex >= 0 ? ia.meshIndex : index;
