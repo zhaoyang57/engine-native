@@ -1946,6 +1946,8 @@ bool seval_to_TechniqueParameter(const se::Value& v, cocos2d::renderer::Techniqu
             if (tmp.isNumber())
             {
                 number = tmp.toNumber();
+                size = 1;
+                len = 4;
             }
             else if (tmp.isObject())
             {
