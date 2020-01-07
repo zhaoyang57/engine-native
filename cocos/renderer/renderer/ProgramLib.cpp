@@ -215,51 +215,12 @@ void ProgramLib::define(const std::string& name, const std::string& vert, const 
     std::string newFrag = frag;
     
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-    std::string::size_type pos = 0;
-    pos = newVert.find(_precisionVert);
-    if (pos != std::string::npos)
-    {
-        newVert.replace(pos, strlen(_precisionVert), "");
-    }
-    
-    pos = newFrag.find(_precisionFrag);
-    if (pos != std::string::npos)
-    {
-        newFrag.replace(pos, strlen(_precisionFrag), "");
-    }
-    
-    while((pos = newVert.find(_mediump)) != std::string::npos)
-    {
-        newVert.replace(pos, strlen(_mediump), "");
-    }
-    
-    while((pos = newFrag.find(_mediump)) != std::string::npos)
-    {
-        newFrag.replace(pos, strlen(_mediump), "");
-    }
-    
-    while((pos = newVert.find(_lowp)) != std::string::npos)
-    {
-        newVert.replace(pos, strlen(_lowp), "");
-    }
-    
-    while((pos = newFrag.find(_lowp)) != std::string::npos)
-    {
-        newFrag.replace(pos, strlen(_lowp), "");
-    }
-#else
-    std::string::size_type pos = 0;
-    pos = newVert.find(_precisionVert);
-    if (pos == std::string::npos)
-    {
-        newVert = _precisionVertReplace + vert;
-    }
-    
-    pos = newVert.find(_precisionFrag);
-    if (pos == std::string::npos)
-    {
-        newFrag = _precisionFragReplace + frag;
-    }
+    static const std::regex precision("precision\\s+(lowp|mediump|highp).*?;");
+    static const std::regex accuracy("(lowp|mediump|highp)\\s");
+    newVert = std::regex_replace(newVert, precision, "");
+    newVert = std::regex_replace(newVert, accuracy, "");
+    newFrag = std::regex_replace(newFrag, precision, "");
+    newFrag = std::regex_replace(newFrag, accuracy, "");
 #endif
     
     // store it
