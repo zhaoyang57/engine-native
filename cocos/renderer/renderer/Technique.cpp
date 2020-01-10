@@ -202,14 +202,12 @@ Technique::Parameter::Parameter(const std::string& name, Type type, float* value
     }
 }
 
-Technique::Parameter::Parameter(const std::string& name, Type type, se::Object* jsValue)
+Technique::Parameter::Parameter(const std::string& name, Type type, se::Object* jsValue, uint8_t count)
 :_name(name)
-,_count(1)
+,_count(count)
 ,_type(type)
 {
     _hashName = std::hash<std::string>{}(name);
-    
-    assert(_type == Type::FLOAT4);
     
     se::ScriptEngine::getInstance()->clearException();
     se::AutoHandleScope hs;
