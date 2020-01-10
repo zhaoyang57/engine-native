@@ -98,7 +98,7 @@ android {
 
 android.featureVariants.all { variant ->
     // delete previous files first
-    delete "${buildDir}/intermediates/merged_assets/${variant.dirName}"
+    delete "${buildDir}/intermediates/merged_assets/"
 
     variant.mergeAssets.doLast {
         def sourceDir = "${buildDir}/../../../../.."
