@@ -73,13 +73,16 @@ void Particle3DAssembler::fillBuffer(NodeProxy *node, MeshBuffer *buffer, const 
     float* ptrPos = worldVerts + _posOffset;
     auto& worldMat = node->getWorldMatrix();
     
-    // Vertex is X Y Z Format
-    for (uint32_t i = 0; i < vertexCount; ++i)
+    if (_particleSpace == Space::WORLD)
     {
-        ((cocos2d::Vec3*)ptrPos)->transformMat4(*((cocos2d::Vec3*)ptrPos), worldMat);
-        ptrPos += dataPerVertex;
+        // Vertex is X Y Z Format
+        for (uint32_t i = 0; i < vertexCount; ++i)
+        {
+            ((cocos2d::Vec3*)ptrPos)->transformMat4(*((cocos2d::Vec3*)ptrPos), worldMat);
+            ptrPos += dataPerVertex;
+        }
     }
-    
+
     // Copy index buffer with vertex offset
     uint16_t* indices = (uint16_t*)data->getIndices();
     uint16_t* dst = buffer->iData;
@@ -105,21 +108,6 @@ void Particle3DAssembler::fillTrailBuffer(NodeProxy *node, MeshBuffer *buffer, c
 
     float* worldVerts = buffer->vData + vBufferOffset;
     memcpy(worldVerts, data->getVertices() + vertexStart * _trailVertexBytes, vertexCount * _trailVertexBytes);
-    
-    // Calculate vertices world positions
-    if (_trailSpace == Space::WORLD && _particleSpace == Space::LOCAL)
-    {
-        size_t dataPerVertex = _trailVertexBytes / sizeof(float);
-        float* ptrPos = worldVerts + _trailPosOffset;
-        auto& worldMat = node->getWorldMatrix();
-        
-        // Vertex is X Y Z Format
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            ((cocos2d::Vec3*)ptrPos)->transformMat4(*((cocos2d::Vec3*)ptrPos), worldMat);
-            ptrPos += dataPerVertex;
-        }
-    }
     
     // Copy index buffer with vertex offset
     uint16_t* indices = (uint16_t*)data->getIndices();
