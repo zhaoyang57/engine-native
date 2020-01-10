@@ -487,12 +487,11 @@ namespace
     cocos2d::TouchInfo createTouchInfo(int index, UITouch* touch, float contentScaleFactor)
     {
         uint8_t deviceRatio = cocos2d::Application::getInstance()->getDevicePixelRatio();
-        // TouchInfo should located in UI coordinate system, not GL pixels
-        // It will be converted to display position later in View.convertToLocationInView
         cocos2d::TouchInfo touchInfo;
         touchInfo.index = index;
-        touchInfo.x = [touch locationInView: [touch view]].x / deviceRatio;
-        touchInfo.y = [touch locationInView: [touch view]].y / deviceRatio;
+        touchInfo.x = [touch locationInView: [touch view]].x * contentScaleFactor / deviceRatio;
+        touchInfo.y = [touch locationInView: [touch view]].y * contentScaleFactor / deviceRatio;
+        
         return touchInfo;
     }
     
