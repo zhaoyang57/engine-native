@@ -246,6 +246,11 @@ namespace
     _needToPreventTouch = flag;
 }
 
+-(EAGLContext*) getContext
+{
+    return _context;
+}
+
 - (void) setupGLContext
 {
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
