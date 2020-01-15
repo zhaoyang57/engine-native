@@ -168,23 +168,33 @@ namespace
     static std::chrono::steady_clock::time_point now;
     static float dt = 0.f;
 
-    prevTime = std::chrono::steady_clock::now();
-    
-    bool downsampleEnabled = _application->isDownsampleEnabled();
-    if (downsampleEnabled)
-        _application->getRenderTexture()->prepare();
-    
-    _scheduler->update(dt);
-    cocos2d::EventDispatcher::dispatchTickEvent(dt);
-    
-    if (downsampleEnabled)
-        _application->getRenderTexture()->draw();
-    
-    [(CCEAGLView*)(_application->getView()) swapBuffers];
-    cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
-    
-    now = std::chrono::steady_clock::now();
-    dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    if (_isAppActive)
+    {
+        EAGLContext* context = [(CCEAGLView*)(_application->getView()) getContext];
+        if (context != [EAGLContext currentContext])
+        {
+            glFlush();
+        }
+        [EAGLContext setCurrentContext: context];
+        
+        prevTime = std::chrono::steady_clock::now();
+        
+        bool downsampleEnabled = _application->isDownsampleEnabled();
+        if (downsampleEnabled)
+            _application->getRenderTexture()->prepare();
+        
+        _scheduler->update(dt);
+        cocos2d::EventDispatcher::dispatchTickEvent(dt);
+        
+        if (downsampleEnabled)
+            _application->getRenderTexture()->draw();
+        
+        [(CCEAGLView*)(_application->getView()) swapBuffers];
+        cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
+        
+        now = std::chrono::steady_clock::now();
+        dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    }
 }
 
 @end
