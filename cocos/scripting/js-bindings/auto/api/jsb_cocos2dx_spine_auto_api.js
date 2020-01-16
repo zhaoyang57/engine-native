@@ -4919,10 +4919,10 @@ str
 },
 
 /**
- * @method getWidth
+ * @method getX
  * @return {float}
  */
-getWidth : function (
+getX : function (
 )
 {
     return 0;
@@ -5167,6 +5167,26 @@ getVersion : function (
 },
 
 /**
+ * @method setX
+ * @param {float} arg0
+ */
+setX : function (
+float 
+)
+{
+},
+
+/**
+ * @method setY
+ * @param {float} arg0
+ */
+setY : function (
+float 
+)
+{
+},
+
+/**
  * @method setHeight
  * @param {float} arg0
  */
@@ -5174,6 +5194,16 @@ setHeight : function (
 float 
 )
 {
+},
+
+/**
+ * @method getWidth
+ * @return {float}
+ */
+getWidth : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -5196,6 +5226,16 @@ str
 )
 {
     return sp.Skin;
+},
+
+/**
+ * @method getY
+ * @return {float}
+ */
+getY : function (
+)
+{
+    return 0;
 },
 
 /**
