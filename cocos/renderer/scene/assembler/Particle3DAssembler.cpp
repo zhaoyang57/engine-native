@@ -68,21 +68,6 @@ void Particle3DAssembler::fillBuffer(NodeProxy *node, MeshBuffer *buffer, const 
     float* worldVerts = buffer->vData + vBufferOffset;
     memcpy(worldVerts, data->getVertices() + vertexStart * _bytesPerVertex, vertexCount * _bytesPerVertex);
     
-    // Calculate vertices world positions
-    size_t dataPerVertex = _bytesPerVertex / sizeof(float);
-    float* ptrPos = worldVerts + _posOffset;
-    auto& worldMat = node->getWorldMatrix();
-    
-    if (_particleSpace == Space::WORLD)
-    {
-        // Vertex is X Y Z Format
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            ((cocos2d::Vec3*)ptrPos)->transformMat4(*((cocos2d::Vec3*)ptrPos), worldMat);
-            ptrPos += dataPerVertex;
-        }
-    }
-
     // Copy index buffer with vertex offset
     uint16_t* indices = (uint16_t*)data->getIndices();
     uint16_t* dst = buffer->iData;
