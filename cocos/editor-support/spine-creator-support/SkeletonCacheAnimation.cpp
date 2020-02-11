@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated May 1, 2019. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2019, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -15,16 +15,16 @@
  * Spine Editor license and redistribution of the Products in any form must
  * include this license and copyright notice.
  *
- * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
- * NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, BUSINESS
- * INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
+ * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
 #include "SkeletonCacheAnimation.h"
@@ -34,6 +34,7 @@
 #include "renderer/renderer/Technique.h"
 #include "renderer/scene/assembler/CustomAssembler.hpp"
 #include "renderer/gfx/Texture.h"
+#include "spine-creator-support/AttachUtil.h"
 
 USING_NS_CC;
 USING_NS_MW;
@@ -66,6 +67,7 @@ namespace spine {
             _animationQueue.pop();
             delete ani;
         }
+        CC_SAFE_RELEASE_NULL(_attachUtil);
         CC_SAFE_RELEASE(_nodeProxy);
         CC_SAFE_RELEASE(_effect);
         stopSchedule();
@@ -139,7 +141,7 @@ namespace spine {
     
     void SkeletonCacheAnimation::render(float dt) {
         
-        if (_nodeProxy == nullptr) {
+        if (!_nodeProxy || !_effect) {
             return;
         }
         
@@ -325,67 +327,54 @@ namespace spine {
             // handle material
             textureHandle = segment->getTexture()->getNativeTexture()->getHandle();
             blendMode = segment->blendMode;
-            effectHash = textureHandle + (blendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25);
-            Effect* renderEffect = assembler->getEffect(segIndex);
-            Technique::Parameter* param = nullptr;
-            Pass* pass = nullptr;
-            
+            effectHash = textureHandle + (blendMode << 16) + ((int)_useTint << 24) + ((int)_batch << 25) + ((int)_effect->getHash() << 26);
+            EffectVariant* renderEffect = assembler->getEffect(segIndex);
+            bool needUpdate = false;
             if (renderEffect) {
                 double renderHash = renderEffect->getHash();
                 if (abs(renderHash - effectHash) >= 0.01) {
-                    param = (Technique::Parameter*)&(renderEffect->getProperty(textureKey));
-                    Technique* tech = renderEffect->getTechnique(techStage);
-                    cocos2d::Vector<Pass*>& passes = (cocos2d::Vector<Pass*>&)tech->getPasses();
-                    pass = *(passes.begin());
+                    needUpdate = true;
                 }
             }
             else {
-                if (_effect == nullptr) {
-                    cocos2d::log("SkeletonCacheAnimation:update get effect failed");
-                    assembler->reset();
-                    return;
-                }
-                auto effect = new cocos2d::renderer::Effect();
+                auto effect = new cocos2d::renderer::EffectVariant();
                 effect->autorelease();
                 effect->copy(_effect);
                 
-                Technique* tech = effect->getTechnique(techStage);
-                cocos2d::Vector<Pass*>& passes = (cocos2d::Vector<Pass*>&)tech->getPasses();
-                pass = *(passes.begin());
-                
                 assembler->updateEffect(segIndex, effect);
                 renderEffect = effect;
-                param = (Technique::Parameter*)&(renderEffect->getProperty(textureKey));
+                needUpdate = true;
             }
-            
-            if (param) {
-                param->setTexture(segment->getTexture()->getNativeTexture());
-            }
-            
-            switch (blendMode) {
-                case BlendMode_Additive:
-                    curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
-                    curBlendDst = BlendFactor::ONE;
-                    break;
-                case BlendMode_Multiply:
-                    curBlendSrc = BlendFactor::DST_COLOR;
-                    curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
-                    break;
-                case BlendMode_Screen:
-                    curBlendSrc = BlendFactor::ONE;
-                    curBlendDst = BlendFactor::ONE_MINUS_SRC_COLOR;
-                    break;
-                default:
-                    curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
-                    curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
-            }
-            
-            if (pass) {
-                pass->setBlend(BlendOp::ADD, curBlendSrc, curBlendDst,
+
+            if (needUpdate) {
+                renderEffect->setProperty(textureKey, segment->getTexture()->getNativeTexture());
+                switch (blendMode) {
+                    case BlendMode_Additive:
+                        curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                        curBlendDst = BlendFactor::ONE;
+                        break;
+                    case BlendMode_Multiply:
+                        curBlendSrc = BlendFactor::DST_COLOR;
+                        curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
+                        break;
+                    case BlendMode_Screen:
+                        curBlendSrc = BlendFactor::ONE;
+                        curBlendDst = BlendFactor::ONE_MINUS_SRC_COLOR;
+                        break;
+                    default:
+                        curBlendSrc = _premultipliedAlpha ? BlendFactor::ONE : BlendFactor::SRC_ALPHA;
+                        curBlendDst = BlendFactor::ONE_MINUS_SRC_ALPHA;
+                }
+                renderEffect->setBlend(true, BlendOp::ADD, curBlendSrc, curBlendDst,
                                BlendOp::ADD, curBlendSrc, curBlendDst);
             }
             
             renderEffect->updateHash(effectHash);
+        }
+        
+        if (_attachUtil)
+        {
+            _attachUtil->syncAttachedNode(_nodeProxy, frameData);
         }
     }
     
@@ -415,13 +404,11 @@ namespace spine {
     
     void SkeletonCacheAnimation::setSkin (const std::string& skinName) {
         _skeletonCache->setSkin(skinName);
-        _skeletonCache->setToSetupPose();
         _skeletonCache->resetAllAnimationData();
     }
 
     void SkeletonCacheAnimation::setSkin (const char* skinName) {
         _skeletonCache->setSkin(skinName);
-        _skeletonCache->setToSetupPose();
         _skeletonCache->resetAllAnimationData();
     }
     
@@ -520,5 +507,49 @@ namespace spine {
     
     void SkeletonCacheAnimation::updateAllAnimationCache () {
         _skeletonCache->resetAllAnimationData();
+    }
+    
+    void SkeletonCacheAnimation::setAttachUtil(CacheModeAttachUtil* attachUtil) {
+        if (attachUtil == _attachUtil) return;
+        CC_SAFE_RELEASE(_attachUtil);
+        _attachUtil = attachUtil;
+        CC_SAFE_RETAIN(_attachUtil);
+    }
+    
+    void SkeletonCacheAnimation::bindNodeProxy(cocos2d::renderer::NodeProxy* node) {
+        if (node == _nodeProxy) return;
+        CC_SAFE_RELEASE(_nodeProxy);
+        _nodeProxy = node;
+        CC_SAFE_RETAIN(_nodeProxy);
+    }
+    
+    void SkeletonCacheAnimation::setEffect(cocos2d::renderer::EffectVariant* effect) {
+        if (effect == _effect) return;
+        CC_SAFE_RELEASE(_effect);
+        _effect = effect;
+        CC_SAFE_RETAIN(_effect);
+    }
+    
+    uint32_t SkeletonCacheAnimation::getRenderOrder() const {
+        if (!_nodeProxy) return 0;
+        return _nodeProxy->getRenderOrder();
+    }
+    
+    void SkeletonCacheAnimation::setToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setToSetupPose();
+        }
+    }
+    
+    void SkeletonCacheAnimation::setBonesToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setBonesToSetupPose();
+        }
+    }
+    
+    void SkeletonCacheAnimation::setSlotsToSetupPose () {
+        if (_skeletonCache) {
+            _skeletonCache->setSlotsToSetupPose();
+        }
     }
 }

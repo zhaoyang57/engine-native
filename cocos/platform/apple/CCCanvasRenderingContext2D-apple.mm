@@ -271,9 +271,6 @@ enum class CanvasTextBaseline {
 
     NSSize dim = [stringWithAttributes boundingRectWithSize:textRect options:(NSStringDrawingOptions)(NSStringDrawingUsesLineFragmentOrigin) context:nil].size;
 
-    dim.width = ceilf(dim.width);
-    dim.height = ceilf(dim.height);
-
     return dim;
 }
 
@@ -613,8 +610,12 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
 
 cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
 {
+    auto cStr = [NSString stringWithUTF8String:text.c_str()];
+    if (!cStr) {
+        return cocos2d::Size::ZERO;
+    }
 //    SE_LOGD("CanvasRenderingContext2D::measureText: %s\n", text.c_str());
-    CGSize size = [_impl measureText: [NSString stringWithUTF8String:text.c_str()]];
+    CGSize size = [_impl measureText: cStr];
     return cocos2d::Size(size.width, size.height);
 }
 
