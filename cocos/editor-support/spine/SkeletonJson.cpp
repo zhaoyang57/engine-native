@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated May 1, 2019. Replaces all prior versions.
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2019, Esoteric Software LLC
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -15,16 +15,16 @@
  * Spine Editor license and redistribution of the Products in any form must
  * include this license and copyright notice.
  *
- * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
- * NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, BUSINESS
- * INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
+ * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
 #ifdef SPINE_UE4
@@ -507,9 +507,10 @@ SkeletonData *SkeletonJson::readSkeletonData(const char *json) {
 						case AttachmentType_Region: {
 							attachment = _attachmentLoader->newRegionAttachment(*skin, attachmentName, attachmentPath);
 							if (!attachment) {
-								delete skeletonData;
-								setError(root, "Error reading attachment: ", skinAttachmentName);
-								return NULL;
+								// delete skeletonData;
+								// setError(root, "Error reading attachment: ", skinAttachmentName);
+								// return NULL;
+								continue;
 							}
 
 							RegionAttachment *region = static_cast<RegionAttachment *>(attachment);
@@ -540,9 +541,10 @@ SkeletonData *SkeletonJson::readSkeletonData(const char *json) {
 							attachment = _attachmentLoader->newMeshAttachment(*skin, attachmentName, attachmentPath);
 
 							if (!attachment) {
-								delete skeletonData;
-								setError(root, "Error reading attachment: ", skinAttachmentName);
-								return NULL;
+								// delete skeletonData;
+								// setError(root, "Error reading attachment: ", skinAttachmentName);
+								// return NULL;
+								continue;
 							}
 
 							MeshAttachment *mesh = static_cast<MeshAttachment *>(attachment);
@@ -666,15 +668,17 @@ SkeletonData *SkeletonJson::readSkeletonData(const char *json) {
 		LinkedMesh *linkedMesh = _linkedMeshes[i];
 		Skin *skin = linkedMesh->_skin.length() == 0 ? skeletonData->getDefaultSkin() : skeletonData->findSkin(linkedMesh->_skin);
 		if (skin == NULL) {
-			delete skeletonData;
-			setError(root, "Skin not found: ", linkedMesh->_skin.buffer());
-			return NULL;
+			// delete skeletonData;
+			// setError(root, "Skin not found: ", linkedMesh->_skin.buffer());
+			// return NULL;
+			continue;
 		}
 		Attachment *parent = skin->getAttachment(linkedMesh->_slotIndex, linkedMesh->_parent);
 		if (parent == NULL) {
-			delete skeletonData;
-			setError(root, "Parent mesh not found: ", linkedMesh->_parent.buffer());
-			return NULL;
+			// delete skeletonData;
+			// setError(root, "Parent mesh not found: ", linkedMesh->_parent.buffer());
+			// return NULL;
+			continue;
 		}
 		linkedMesh->_mesh->_deformAttachment = linkedMesh->_inheritDeform ? static_cast<VertexAttachment*>(parent) : linkedMesh->_mesh;
 		linkedMesh->_mesh->setParentMesh(static_cast<MeshAttachment *>(parent));
@@ -717,9 +721,10 @@ SkeletonData *SkeletonJson::readSkeletonData(const char *json) {
 		for (animationMap = animations->_child; animationMap; animationMap = animationMap->_next) {
 			Animation *animation = readAnimation(animationMap, skeletonData);
 			if (!animation) {
-				delete skeletonData;
-				delete root;
-				return NULL;
+				// delete skeletonData;
+				// delete root;
+				// return NULL;
+				continue;
 			}
 			skeletonData->_animations[animationsIndex++] = animation;
 		}
@@ -1049,8 +1054,9 @@ Animation *SkeletonJson::readAnimation(Json *root, SkeletonData *skeletonData) {
 
 				if (!baseAttachment) {
 					ContainerUtil::cleanUpVectorOfPointers(timelines);
-					setError(NULL, "Attachment not found: ", timelineMap->_name);
-					return NULL;
+					// setError(NULL, "Attachment not found: ", timelineMap->_name);
+					// return NULL;
+					continue;
 				}
 
 				VertexAttachment *attachment = static_cast<VertexAttachment *>(baseAttachment);

@@ -4919,10 +4919,10 @@ str
 },
 
 /**
- * @method getWidth
+ * @method getX
  * @return {float}
  */
-getWidth : function (
+getX : function (
 )
 {
     return 0;
@@ -5167,6 +5167,26 @@ getVersion : function (
 },
 
 /**
+ * @method setX
+ * @param {float} arg0
+ */
+setX : function (
+float 
+)
+{
+},
+
+/**
+ * @method setY
+ * @param {float} arg0
+ */
+setY : function (
+float 
+)
+{
+},
+
+/**
  * @method setHeight
  * @param {float} arg0
  */
@@ -5174,6 +5194,16 @@ setHeight : function (
 float 
 )
 {
+},
+
+/**
+ * @method getWidth
+ * @return {float}
+ */
+getWidth : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -5196,6 +5226,16 @@ str
 )
 {
     return sp.Skin;
+},
+
+/**
+ * @method getY
+ * @return {float}
+ */
+getY : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -6404,6 +6444,16 @@ str
 },
 
 /**
+ * @method setAttachUtil
+ * @param {sp.RealTimeAttachUtil} arg0
+ */
+setAttachUtil : function (
+realtimeattachutil 
+)
+{
+},
+
+/**
  * @method setOpacityModifyRGB
  * @param {bool} arg0
  */
@@ -6455,10 +6505,10 @@ onEnable : function (
 
 /**
  * @method setEffect
- * @param {cc.renderer::Effect} arg0
+ * @param {cc.renderer::EffectVariant} arg0
  */
 setEffect : function (
-effect 
+effectvariant 
 )
 {
 },
@@ -6806,6 +6856,18 @@ str
 },
 
 /**
+ * @method setTrackEventListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackEventListener : function (
+trackentry, 
+func 
+)
+{
+},
+
+/**
  * @method setMix
  * @param {String} arg0
  * @param {String} arg1
@@ -6815,6 +6877,18 @@ setMix : function (
 str, 
 str, 
 float 
+)
+{
+},
+
+/**
+ * @method setTrackStartListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackStartListener : function (
+trackentry, 
+func 
 )
 {
 },
@@ -6840,6 +6914,30 @@ float
  * @param {function} arg0
  */
 setDisposeListener : function (
+func 
+)
+{
+},
+
+/**
+ * @method setTrackInterruptListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackInterruptListener : function (
+trackentry, 
+func 
+)
+{
+},
+
+/**
+ * @method setTrackCompleteListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackCompleteListener : function (
+trackentry, 
 func 
 )
 {
@@ -6880,6 +6978,18 @@ getState : function (
  * @param {function} arg0
  */
 setCompleteListener : function (
+func 
+)
+{
+},
+
+/**
+ * @method setTrackDisposeListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackDisposeListener : function (
+trackentry, 
 func 
 )
 {
@@ -6969,6 +7079,18 @@ float
  * @method clearTracks
  */
 clearTracks : function (
+)
+{
+},
+
+/**
+ * @method setTrackEndListener
+ * @param {sp.TrackEntry} arg0
+ * @param {function} arg1
+ */
+setTrackEndListener : function (
+trackentry, 
+func 
 )
 {
 },
@@ -7167,11 +7289,11 @@ str
 },
 
 /**
- * @method setCompleteListener
- * @param {function} arg0
+ * @method setAttachUtil
+ * @param {sp.CacheModeAttachUtil} arg0
  */
-setCompleteListener : function (
-func 
+setAttachUtil : function (
+cachemodeattachutil 
 )
 {
 },
@@ -7213,6 +7335,14 @@ bool
 },
 
 /**
+ * @method setBonesToSetupPose
+ */
+setBonesToSetupPose : function (
+)
+{
+},
+
+/**
  * @method onEnable
  */
 onEnable : function (
@@ -7232,10 +7362,10 @@ func
 
 /**
  * @method setEffect
- * @param {cc.renderer::Effect} arg0
+ * @param {cc.renderer::EffectVariant} arg0
  */
 setEffect : function (
-effect 
+effectvariant 
 )
 {
 },
@@ -7251,11 +7381,27 @@ isOpacityModifyRGB : function (
 },
 
 /**
+ * @method setToSetupPose
+ */
+setToSetupPose : function (
+)
+{
+},
+
+/**
  * @method setOpacityModifyRGB
  * @param {bool} arg0
  */
 setOpacityModifyRGB : function (
 bool 
+)
+{
+},
+
+/**
+ * @method setSlotsToSetupPose
+ */
+setSlotsToSetupPose : function (
 )
 {
 },
@@ -7322,6 +7468,16 @@ str
 )
 {
     return sp.Attachment;
+},
+
+/**
+ * @method setCompleteListener
+ * @param {function} arg0
+ */
+setCompleteListener : function (
+func 
+)
+{
 },
 
 /**
@@ -7443,6 +7599,57 @@ stopSchedule : function (
 SkeletonCacheAnimation : function (
 str, 
 bool 
+)
+{
+},
+
+};
+
+/**
+ * @class AttachUtilBase
+ */
+spine.AttachUtilBase = {
+
+/**
+ * @method associateAttachedNode
+ * @param {sp.Skeleton} arg0
+ * @param {cc.renderer::NodeProxy} arg1
+ */
+associateAttachedNode : function (
+skeleton, 
+nodeproxy 
+)
+{
+},
+
+};
+
+/**
+ * @class RealTimeAttachUtil
+ */
+spine.RealTimeAttachUtil = {
+
+/**
+ * @method RealTimeAttachUtil
+ * @constructor
+ */
+RealTimeAttachUtil : function (
+)
+{
+},
+
+};
+
+/**
+ * @class CacheModeAttachUtil
+ */
+spine.CacheModeAttachUtil = {
+
+/**
+ * @method CacheModeAttachUtil
+ * @constructor
+ */
+CacheModeAttachUtil : function (
 )
 {
 },
