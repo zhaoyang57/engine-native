@@ -57,6 +57,11 @@ void Application::updateViewSize(int width, int height)
 {
     _viewSize.x = width;
     _viewSize.y = height;
+    
+    // handle resize event
+    Application::getInstance()->getScheduler()->performFunctionInCocosThread([=]() {
+        EventDispatcher::dispatchResizeEvent(width, height);
+    });
 }
 
 extern "C" {
