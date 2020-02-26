@@ -112,8 +112,11 @@ static bool js_register_spine_initSkeletonData (se::State& s)
     
     spine::AttachmentLoader* attachmentLoader = new (__FILE__, __LINE__) spine::Cocos2dAtlasAttachmentLoader(atlas);
     spine::SkeletonData* skeletonData = nullptr;
-    
-    const auto binPos = skeletonDataFile.find(".skel");
+
+    std::size_t length = skeletonDataFile.length();
+    auto binPos = skeletonDataFile.find(".skel", length - 5);
+    if (binPos == std::string::npos) binPos = skeletonDataFile.find(".bin", length - 4);
+
     if (binPos != std::string::npos) {
         auto fileUtils = cocos2d::FileUtils::getInstance();
         if (fileUtils->isFileExist(skeletonDataFile))
