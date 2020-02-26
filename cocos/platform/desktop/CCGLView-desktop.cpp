@@ -444,8 +444,9 @@ void GLView::onGLFWWindowIconifyCallback(GLFWwindow* /*window*/, int iconified)
 
 void GLView::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
 {
-    Application::getInstance()->updateViewSize(width * _scale, height * _scale);
-    EventDispatcher::dispatchResizeEvent(width, height);
+    int targetWidth = width * _scale, targetHeight = height * _scale;
+    Application::getInstance()->updateViewSize(targetWidth, targetHeight);
+    EventDispatcher::dispatchResizeEvent(targetWidth, targetHeight);
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
