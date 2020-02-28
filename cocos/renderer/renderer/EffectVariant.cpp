@@ -46,7 +46,9 @@ void EffectVariant::setEffect(Effect *effect)
     _passes.clear();
     for (size_t i = 0, l = passes.size(); i < l; i++) {
         Pass* pass = passes.at(i);
-        _passes.pushBack(new Pass(pass->getProgramName(), pass));
+        Pass* newPass = new Pass(pass->getProgramName(), pass);
+        newPass->autorelease();
+        _passes.pushBack(newPass);
     }
 }
 
@@ -59,6 +61,7 @@ void EffectVariant::copy(const EffectVariant* effect)
     _passes.clear();
     for (size_t i = 0, l = passes.size(); i < l; i++) {
         Pass* pass = new Pass();
+        pass->autorelease();
         pass->copy(*passes.at(i));
         _passes.pushBack(pass);
     }
