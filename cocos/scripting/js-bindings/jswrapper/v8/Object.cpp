@@ -310,7 +310,6 @@ namespace se {
     bool Object::getProperty(const char *name, Value *data)
     {
         assert(data != nullptr);
-        data->setUndefined();
 
         v8::HandleScope handle_scope(__isolate);
 
