@@ -1669,6 +1669,7 @@ bool seval_to_EffectTechnique(const se::Value& v, cocos2d::renderer::Technique**
     if (obj->getProperty("_passes", &value) && value.isObject()) {
         ccvaluevector_to_EffectPass(value.toObject(), &passes);
         *ret = new (std::nothrow) cocos2d::renderer::Technique(name, passes);
+        (*ret)->autorelease();
         return true;
     }
     
