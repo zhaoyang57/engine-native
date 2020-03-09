@@ -74,6 +74,7 @@ public:
     
     // matrix
     Mat4 matView;
+    Mat4 matViewInv;
     Mat4 matProj;
     Mat4 matViewProj;
     Mat4 matInvViewProj;
