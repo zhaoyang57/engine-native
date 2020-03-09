@@ -150,6 +150,7 @@ protected:
     static const size_t cc_shadow_lightViewProjMatrix;
     static const size_t cc_shadow_info;
     static const size_t cc_matView;
+    static const size_t cc_matViewInv;
     static const size_t cc_matWorld;
     static const size_t cc_matWorldIT;
     static const size_t cc_matpProj;

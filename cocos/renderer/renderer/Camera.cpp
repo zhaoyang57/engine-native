@@ -144,6 +144,7 @@ void Camera::extractView(View& out, int width, int height)
 
     calcMatrices(width, height);
     out.matView.set(_matView);
+    out.matViewInv.set(_worldRTInv);
     out.matProj.set(_matProj);
     out.matViewProj.set(_matViewProj);
     out.matInvViewProj.set(_matInvViewProj);
