@@ -54,6 +54,7 @@ const size_t BaseRenderer::cc_shadow_map_bias = std::hash<std::string>{}("cc_sha
 const size_t BaseRenderer::cc_shadow_lightViewProjMatrix = std::hash<std::string>{}("cc_shadow_lightViewProjMatrix");
 const size_t BaseRenderer::cc_shadow_info = std::hash<std::string>{}("cc_shadow_info");
 const size_t BaseRenderer::cc_matView = std::hash<std::string>{}("cc_matView");
+const size_t BaseRenderer::cc_matViewInv = std::hash<std::string>{}("cc_matViewInv");
 const size_t BaseRenderer::cc_matWorld = std::hash<std::string>{}("cc_matWorld");
 const size_t BaseRenderer::cc_matWorldIT = std::hash<std::string>{}("cc_matWorldIT");
 const size_t BaseRenderer::cc_matpProj = std::hash<std::string>{}("cc_matpProj");
