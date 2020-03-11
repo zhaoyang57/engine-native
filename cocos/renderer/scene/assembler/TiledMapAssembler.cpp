@@ -81,6 +81,7 @@ void TiledMapAssembler::beforeFillBuffers(std::size_t index)
             }
         }
     }
+    _batcher->changeCommitState(ModelBatcher::Common);
 }
 
 void TiledMapAssembler::fillBuffers(NodeProxy* node, ModelBatcher* batcher, std::size_t index)

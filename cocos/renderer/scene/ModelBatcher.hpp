@@ -129,7 +129,6 @@ public:
     void setCullingMask(int cullingMask) { _cullingMask = cullingMask; }
     void setCurrentEffect(EffectVariant* effect);
     void setUseModel(bool useModel) { _useModel = useModel; }
-private:
     void changeCommitState(CommitState state);
 private:
     int _modelOffset = 0;
