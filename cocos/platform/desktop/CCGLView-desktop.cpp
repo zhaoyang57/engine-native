@@ -159,6 +159,7 @@ GLView::GLView(Application* application, const std::string& name, int x, int y, 
     glfwSetKeyCallback(_mainWindow, GLFWEventHandler::onGLFWKeyCallback);
     glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
     glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
+    glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWFramebufferSizeFunCallback);
 
     // check OpenGL version at first
     const GLubyte* glVersion = glGetString(GL_VERSION);
@@ -177,13 +178,14 @@ GLView::GLView(Application* application, const std::string& name, int x, int y, 
 
     // Enable point size by default.
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    
+
     if(multisamplingCount > 0)
         glEnable(GL_MULTISAMPLE);
-    
+
     computeScale();
-    
+
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &_mainFBO);
+    Application::getInstance()->updateViewSize(width * _scale, height * _scale);
 }
 
 GLView::~GLView()
@@ -443,7 +445,15 @@ void GLView::onGLFWWindowIconifyCallback(GLFWwindow* /*window*/, int iconified)
 
 void GLView::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
 {
+    Application::getInstance()->updateViewSize(width * _scale, height * _scale);
     EventDispatcher::dispatchResizeEvent(width, height);
+}
+
+void GLView::onGLFWFramebufferSizeFunCallback(GLFWwindow *window, int width, int height)
+{
+    computeScale();
+    Application::getInstance()->updateViewSize(width , height);
+    EventDispatcher::dispatchResizeEvent(width/_scale, height/_scale);
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)

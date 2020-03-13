@@ -52,6 +52,12 @@ PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOESEXT = 0;
 
 NS_CC_BEGIN
 
+void Application::updateViewSize(int width, int height)
+{
+    _viewSize.x = width;
+    _viewSize.y = height;
+}
+
 Application* Application::_instance = nullptr;
 std::shared_ptr<Scheduler> Application::_scheduler = nullptr;
 
@@ -67,6 +73,7 @@ Application::Application(const std::string& name, int width, int height)
     PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOESEXT = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress("glDeleteVertexArraysOES");
 
     _renderTexture = new RenderTexture(width, height);
+    updateViewSize(width, height);
 }
 
 Application::~Application()
@@ -270,6 +277,11 @@ void Application::copyTextToClipboard(const std::string &text)
 std::string Application::getSystemVersion()
 {
     return getSystemVersionJNI();
+}
+
+const cocos2d::Vec2& Application::getViewSize() const
+{
+    return _viewSize;
 }
 
 NS_CC_END
