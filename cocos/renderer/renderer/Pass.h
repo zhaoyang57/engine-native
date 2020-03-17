@@ -176,7 +176,7 @@ private:
     
     std::unordered_map<size_t, Technique::Parameter> _properties;
     ValueMap _defines;
-    size_t _definesHash;
+    size_t _definesHash = 0;
     
     static const int PASS_VALUE_LENGTH = 27;
     
