@@ -147,6 +147,11 @@ namespace {
     const uint32_t GL_COMMAND_VERTEX_ATTRIB_4FV = 95;
     const uint32_t GL_COMMAND_VERTEX_ATTRIB_POINTER = 96;
     const uint32_t GL_COMMAND_VIEW_PORT = 97;
+    const uint32_t GL_COMMAND_BIND_VERTEX_ARRAY = 98;
+    const uint32_t GL_COMMAND_VERTEX_ATTRIB_DIVISOR = 99;
+    const uint32_t GL_COMMAND_DRAW_ARRAYS_INSTANCED = 100;
+    const uint32_t GL_COMMAND_DRAW_ELEMENTS_INSTANCED = 101;
+    const uint32_t GL_COMMAND_DELETE_VERTEX_ARRAY = 102;
 
     const uint32_t GL_FLOAT_ARRAY = 1;
     const uint32_t GL_INT_ARRAY = 2;
@@ -159,6 +164,7 @@ namespace {
 
     se::Class* __jsb_WebGLObject_class = nullptr;
     se::Class* __jsb_WebGLTexture_class = nullptr;
+    se::Class* __jsb_WebGLVertexArray_class = nullptr;
     se::Class* __jsb_WebGLBuffer_class = nullptr;
     se::Class* __jsb_WebGLRenderbuffer_class = nullptr;
     se::Class* __jsb_WebGLFramebuffer_class = nullptr;
@@ -173,6 +179,7 @@ namespace {
 
     using WebGLObjectMap = std::unordered_map<GLuint, WebGLObject*>;
     WebGLObjectMap __webglTextureMap;
+    WebGLObjectMap __webglVertexArrayMap;
     WebGLObjectMap __webglBufferMap;
     WebGLObjectMap __webglRenderbufferMap;
     WebGLObjectMap __webglFramebufferMap;
@@ -204,6 +211,7 @@ namespace {
     {
     public:
         enum class Type {
+            VERTEX_ARRAY,
             TEXTURE,
             BUFFER,
             RENDER_BUFFER,
@@ -253,6 +261,25 @@ namespace {
                 SE_LOGD("Destroy WebGLTexture (%u) by GC\n", _id);
                 JSB_GL_CHECK_VOID(glDeleteTextures(1, &_id));
                 safeRemoveElementFromGLObjectMap(__webglTextureMap, _id);
+            }
+        }
+    };
+
+    class WebGLVertexArrayObject final : public WebGLObject
+    {
+    public:
+        WebGLVertexArrayObject(GLuint id)
+            : WebGLObject(Type::VERTEX_ARRAY, id)
+        {
+            __webglVertexArrayMap.emplace(id, this);
+        }
+        virtual ~WebGLVertexArrayObject()
+        {
+            if (_id != 0)
+            {
+                SE_LOGD("Destroy WebGLVertexArrayObject (%u) by GC\n", _id);
+                JSB_GL_CHECK_VOID(glDeleteVertexArrays(1, &_id));
+                safeRemoveElementFromGLObjectMap(__webglVertexArrayMap, _id);
             }
         }
     };
@@ -550,6 +577,22 @@ static bool JSB_glAttachShader(se::State& s) {
     return true;
 }
 SE_BIND_FUNC(JSB_glAttachShader)
+
+// Arguments: GLuint
+// Ret value: void
+static bool JSB_glBindVertexArray(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments");
+    bool ok = true;
+    WebGLVertexArrayObject* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLuint vaoId = arg0 != nullptr ? arg0->_id : 0;
+    JSB_GL_CHECK(ccBindVertexArray((GLuint)arg0));
+    return true;
+}
+SE_BIND_FUNC(JSB_glBindVertexArray)
 
 // Arguments: GLuint, GLuint, char*
 // Ret value: void
@@ -1343,6 +1386,40 @@ static bool JSB_glDrawArrays(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glDrawArrays)
 
+// Arguments: GLenum, GLint, GLsizei, GLsizei
+// Ret value: void
+static bool JSB_glDrawArraysInstanced(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 4, false, "Invalid number of arguments");
+    bool ok = true;
+    uint32_t arg0; int32_t arg1; int32_t arg2; int32_t arg3;
+
+    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_int32(args[1], &arg1);
+    ok &= seval_to_int32(args[2], &arg2);
+    ok &= seval_to_int32(args[3], &arg3);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+#if OPENGL_PARAMETER_CHECK
+    SE_PRECONDITION4(arg1 >= 0 && arg3 >= 0, false, GL_INVALID_VALUE);
+
+    int buffer = 0;
+    JSB_GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &buffer));
+
+    SE_PRECONDITION4(buffer > 0, false, GL_INVALID_OPERATION);
+
+    GLint data = 0;
+    glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &data);
+    int64_t size = ccGetBufferDataSize(), first = arg1;
+    int64_t total = (int64_t)(size * (arg2 > 0 ? first + arg2 : arg2));
+    SE_PRECONDITION4(total <= data, false, GL_INVALID_OPERATION);
+#endif
+    JSB_GL_CHECK(glDrawArraysInstanced((GLenum)arg0, (GLint)arg1, (GLsizei)arg2, (GLsizei)arg3));
+
+    return true;
+}
+SE_BIND_FUNC(JSB_glDrawArraysInstanced)
+
 // Arguments: GLenum, GLsizei, GLenum, ArrayBufferView
 // Ret value: void
 static bool JSB_glDrawElements(se::State& s) {
@@ -1356,20 +1433,20 @@ static bool JSB_glDrawElements(se::State& s) {
     ok &= seval_to_int32(args[1], &arg1 );
     ok &= seval_to_uint32(args[2], &arg2 );
 
-    const se::Value& offsetVal = args[3];
-    int offset = 0;
+    const se::Value& indicesVal = args[3];
+    int indices = 0;
 
-    if (offsetVal.isNumber())
+    if (indicesVal.isNumber())
     {
-        ok &= seval_to_int32(offsetVal, &offset);
-        arg3 = (void*)(intptr_t)offset;
+        ok &= seval_to_int32(indicesVal, &indices);
+        arg3 = (void*)(intptr_t)indices;
     }
 
     SE_PRECONDITION2(ok, false, "Error processing arguments");
 #if OPENGL_PARAMETER_CHECK
     SE_PRECONDITION4(arg2 == GL_UNSIGNED_BYTE || arg2 == GL_UNSIGNED_SHORT, false, GL_INVALID_ENUM);
 
-    SE_PRECONDITION4(arg1 >= 0 && offset >= 0, false, GL_INVALID_VALUE);
+    SE_PRECONDITION4(arg1 >= 0 && indices >= 0, false, GL_INVALID_VALUE);
 
     int size = 0;
 
@@ -1383,7 +1460,7 @@ static bool JSB_glDrawElements(se::State& s) {
             break;
     }
 
-    SE_PRECONDITION4(offset % size == 0, false, GL_INVALID_OPERATION);
+    SE_PRECONDITION4(indices % size == 0, false, GL_INVALID_OPERATION);
 
     int buffer = 0;
     JSB_GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &buffer));
@@ -1394,13 +1471,73 @@ static bool JSB_glDrawElements(se::State& s) {
 
     GLint elementSize = 0;
     glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &elementSize);
-    SE_PRECONDITION4(arg1 == 0 || ((elementSize > offset) && arg1 <= ((elementSize - offset) / size)), false, GL_INVALID_OPERATION);
+    SE_PRECONDITION4(arg1 == 0 || ((elementSize > indices) && arg1 <= ((elementSize - indices) / size)), false, GL_INVALID_OPERATION);
 #endif
     JSB_GL_CHECK(glDrawElements((GLenum)arg0 , (GLsizei)arg1 , (GLenum)arg2 , (GLvoid*)arg3  ));
 
     return true;
 }
 SE_BIND_FUNC(JSB_glDrawElements)
+
+// Arguments: GLenum, GLsizei, GLenum, ArrayBufferView, GLsizei
+// Ret value: void
+static bool JSB_glDrawElementsInstanced(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 5, false, "Invalid number of arguments");
+    bool ok = true;
+    uint32_t arg0; int32_t arg1; uint32_t arg2; void* arg3 = nullptr; int32_t arg4;
+
+    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_int32(args[1], &arg1);
+    ok &= seval_to_uint32(args[2], &arg2);
+    ok &= seval_to_int32(args[4], &arg4);
+
+    const se::Value& indicesVal = args[3];
+    int indices = 0;
+
+    if (indicesVal.isNumber())
+    {
+        ok &= seval_to_int32(indicesVal, &indices);
+        arg3 = (void*)(intptr_t)indices;
+    }
+
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+#if OPENGL_PARAMETER_CHECK
+    SE_PRECONDITION4(arg2 == GL_UNSIGNED_BYTE || arg2 == GL_UNSIGNED_SHORT, false, GL_INVALID_ENUM);
+
+    SE_PRECONDITION4(arg1 >= 0 && indices >= 0 && arg4 >= 0, false, GL_INVALID_VALUE);
+
+    int size = 0;
+
+    switch (arg2)
+    {
+    case GL_UNSIGNED_BYTE:
+        size = sizeof(GLbyte);
+        break;
+    case GL_UNSIGNED_SHORT:
+        size = sizeof(GLshort);
+        break;
+    }
+
+    SE_PRECONDITION4(indices % size == 0, false, GL_INVALID_OPERATION);
+
+    int buffer = 0;
+    JSB_GL_CHECK(glGetIntegerv(GL_CURRENT_PROGRAM, &buffer));
+    SE_PRECONDITION4(buffer > 0, false, GL_INVALID_OPERATION);
+
+    JSB_GL_CHECK(glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &buffer));
+    SE_PRECONDITION4(buffer > 0, false, GL_INVALID_OPERATION);
+
+    GLint elementSize = 0;
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &elementSize);
+    SE_PRECONDITION4(arg1 == 0 || ((elementSize > indices) && arg1 <= ((elementSize - indices) / size)), false, GL_INVALID_OPERATION);
+#endif
+    JSB_GL_CHECK(glDrawElementsInstanced((GLenum)arg0, (GLsizei)arg1, (GLenum)arg2, (GLvoid*)arg3, (GLsizei)arg4));
+
+    return true;
+}
+SE_BIND_FUNC(JSB_glDrawElementsInstanced)
 
 // Arguments: GLenum
 // Ret value: void
@@ -1641,6 +1778,26 @@ static bool JSB_glHint(se::State& s) {
     return true;
 }
 SE_BIND_FUNC(JSB_glHint)
+
+// Arguments: GLuint
+// Ret value: GLboolean
+static bool JSB_glIsVertexArray(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments");
+    bool ok = true;
+    WebGLObject* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLboolean ret_val = GL_FALSE;
+
+    if (dynamic_cast<WebGLVertexArrayObject*>(arg0))
+        ret_val = glIsVertexArray(arg0->_id);
+
+    s.rval().setBoolean(ret_val == GL_TRUE);
+    return true;
+}
+SE_BIND_FUNC(JSB_glIsVertexArray)
 
 // Arguments: GLuint
 // Ret value: GLboolean
@@ -2953,6 +3110,29 @@ static bool JSB_glVertexAttribPointer(se::State& s) {
 }
 SE_BIND_FUNC(JSB_glVertexAttribPointer)
 
+// Arguments: GLuint, GLuint
+// Ret value: void
+static bool JSB_glVertexAttribDivisor(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 2, false, "Invalid number of arguments");
+    bool ok = true;
+    uint32_t arg0; uint32_t arg1;
+
+    ok &= seval_to_uint32(args[0], &arg0);
+    ok &= seval_to_uint32(args[1], &arg1);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+#if OPENGL_PARAMETER_CHECK
+    int maxAttributes;
+    JSB_GL_CHECK(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttributes));
+    SE_PRECONDITION4(arg0 < (uint32_t) maxAttributes, false, GL_INVALID_VALUE);
+#endif
+    JSB_GL_CHECK(glVertexAttribDivisor((GLuint)arg0, (GLuint)arg1));
+
+    return true;
+}
+SE_BIND_FUNC(JSB_glVertexAttribDivisor)
+
 // (index, pname)
 static bool JSB_glGetVertexAttrib(se::State& s)
 {
@@ -3081,6 +3261,35 @@ static bool JSB_glTextureFinalize(se::State& s)
 }
 SE_BIND_FINALIZE_FUNC(JSB_glTextureFinalize)
 
+static bool JSB_glCreateVertexArray(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 0, false, "Invalid number of arguments");
+
+    GLuint vao;
+    JSB_GL_CHECK(glGenVertexArrays(1, &vao));
+
+    auto obj = se::Object::createObjectWithClass(__jsb_WebGLVertexArray_class);
+    s.rval().setObject(obj, true);
+    obj->setProperty("_id", se::Value(vao));
+    auto cobj = new (std::nothrow) WebGLVertexArrayObject(vao);
+    obj->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_FUNC(JSB_glCreateVertexArray)
+
+static bool JSB_glVertexArrayFinalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (WebGLVertexArrayObject)", s.nativeThisObject());
+    WebGLVertexArrayObject* cobj = (WebGLVertexArrayObject*)s.nativeThisObject();
+    if (se::ScriptEngine::getInstance()->isInCleanup())
+        cobj->release();
+    else
+        cobj->autorelease();
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(JSB_glVertexArrayFinalize)
+
 static bool JSB_glCreateBuffer(se::State& s) {
     const auto& args = s.args();
     int argc = (int)args.size();
@@ -3182,6 +3391,23 @@ static bool JSB_glDeleteTextures(se::State& s) {
     return true;
 }
 SE_BIND_FUNC(JSB_glDeleteTextures)
+
+static bool JSB_glDeleteVertexArray(se::State& s) {
+    const auto& args = s.args();
+    int argc = (int)args.size();
+    SE_PRECONDITION2(argc == 1, false, "Invalid number of arguments");
+
+    bool ok = true;
+    WebGLVertexArrayObject* arg0;
+    ok &= seval_to_native_ptr(args[0], &arg0);
+    SE_PRECONDITION2(ok, false, "Error processing arguments");
+    GLuint vaoId = arg0 != nullptr ? arg0->_id : 0;
+    JSB_GL_CHECK(glDeleteVertexArrays(1, &vaoId));
+    safeRemoveElementFromGLObjectMap(__webglVertexArrayMap, vaoId);
+    if (arg0 != nullptr) arg0->_id = 0;
+    return true;
+}
+SE_BIND_FUNC(JSB_glDeleteVertexArray)
 
 static bool JSB_glDeleteBuffer(se::State& s) {
     const auto& args = s.args();
@@ -3600,12 +3826,20 @@ static bool JSB_glGetSupportedExtensions(se::State& s) {
     if (config->supportsETC2()) {
         jsobj->setArrayElement(element++, se::Value("WEBGL_compressed_texture_etc"));
     }
-
     if (config->supportsDepthTexture()) {
         jsobj->setArrayElement(element++, se::Value("WEBGL_depth_texture"));
     }
     if (config->supportsFloatTexture()) {
         jsobj->setArrayElement(element++, se::Value("OES_texture_float"));
+    }
+    if (config->supportsHalfFloatTexture()) {
+        jsobj->setArrayElement(element++, se::Value("OES_texture_half_float"));
+    }
+    if (config->supportsShareableVAO()) {
+        jsobj->setArrayElement(element++, se::Value("OES_vertex_array_object"));
+    }
+    if (config->supportsInstancing()) {
+        jsobj->setArrayElement(element++, se::Value("ANGLE_instanced_arrays"));
     }
 
     s.rval().setObject(jsobj.get());
@@ -4354,6 +4588,11 @@ static bool JSB_glFlushCommand(se::State& s) {
                 JSB_GL_CHECK_VOID(glAttachShader((GLuint)p[1], (GLuint)p[2]));
                 p += 3;
                 break;
+            case GL_COMMAND_BIND_VERTEX_ARRAY:
+                LOG_GL_COMMAND("Flush: BIND_VERTEX_ARRAY, %u\n", (GLuint)p[1]);
+                JSB_GL_CHECK_VOID(ccBindVertexArray((GLuint)p[1]));
+                p += 2;
+                break;
             case GL_COMMAND_BIND_BUFFER:
                 LOG_GL_COMMAND("Flush: BIND_BUFFER, %u\n", (GLuint)p[2]);
                 JSB_GL_CHECK_VOID(ccBindBuffer((GLenum)p[1], (GLuint)p[2]));
@@ -4452,6 +4691,15 @@ static bool JSB_glFlushCommand(se::State& s) {
                 JSB_GL_CHECK_VOID(glCullFace((GLenum)p[1]));
                 p += 2;
                 break;
+            case GL_COMMAND_DELETE_VERTEX_ARRAY:
+            {
+                LOG_GL_COMMAND("Flush: DELETE_VERTEX_ARRAY\n");
+                GLuint id = (GLuint)p[1];
+                JSB_GL_CHECK_VOID(glDeleteVertexArrays(1, &id));
+                safeRemoveElementFromGLObjectMap(__webglVertexArrayMap, id);
+                p += 2;
+                break;
+            }
             case GL_COMMAND_DELETE_BUFFER:
             {
                 LOG_GL_COMMAND("Flush: DELETE_BUFFER\n");
@@ -4545,6 +4793,16 @@ static bool JSB_glFlushCommand(se::State& s) {
                 LOG_GL_COMMAND("Flush: DRAW_ELEMENTS\n");
                 JSB_GL_CHECK_VOID(glDrawElements((GLenum)p[1], (GLsizei)p[2], (GLenum)p[3], (const GLvoid*)(intptr_t)p[4]));
                 p += 5;
+                break;
+            case GL_COMMAND_DRAW_ARRAYS_INSTANCED:
+                LOG_GL_COMMAND("Flush: DRAW_ARRAYS_INSTANCED, %u, %d, %d\n", (GLenum)p[1], (GLint)p[2], (int)p[3]);
+                JSB_GL_CHECK_VOID(glDrawArraysInstanced((GLenum)p[1], (GLint)p[2], (GLsizei)p[3], (GLsizei)p[4]));
+                p += 5;
+                break;
+            case GL_COMMAND_DRAW_ELEMENTS_INSTANCED:
+                LOG_GL_COMMAND("Flush: DRAW_ELEMENTS_INSTANCED\n");
+                JSB_GL_CHECK_VOID(glDrawElementsInstanced((GLenum)p[1], (GLsizei)p[2], (GLenum)p[3], (const GLvoid*)(intptr_t)p[4], (GLsizei)p[5]));
+                p += 6;
                 break;
             case GL_COMMAND_ENABLE:
                 LOG_GL_COMMAND("Flush: ENABLE\n");
@@ -4885,6 +5143,11 @@ static bool JSB_glFlushCommand(se::State& s) {
                 JSB_GL_CHECK_VOID(ccVertexAttribPointer((GLuint)p[1], (GLint)p[2], (GLenum)p[3], (GLboolean)p[4], (GLsizei)p[5], (const GLvoid*)(GLintptr)p[6]));
                 p += 7;
                 break;
+            case GL_COMMAND_VERTEX_ATTRIB_DIVISOR:
+                LOG_GL_COMMAND("Flush: VERTEX_ATTRIB_DIVISOR\n");
+                JSB_GL_CHECK_VOID(glVertexAttribDivisor((GLuint)p[1], (GLuint)p[2]));
+                p += 3;
+                break;
             case GL_COMMAND_VIEW_PORT:
                 LOG_GL_COMMAND("Flush: VIEW_PORT\n");
                 JSB_GL_CHECK_VOID(ccViewport((GLint)p[1], (GLint)p[2], (GLsizei)p[3], (GLsizei)p[4]));
@@ -4914,6 +5177,10 @@ bool JSB_register_opengl(se::Object* obj)
     __jsb_WebGLTexture_class->defineFinalizeFunction(_SE(JSB_glTextureFinalize));
     __jsb_WebGLTexture_class->install();
 
+    __jsb_WebGLVertexArray_class = se::Class::create("WebGLVertexArrayObject", obj, glObjectProto, nullptr);
+    __jsb_WebGLVertexArray_class->defineFinalizeFunction(_SE(JSB_glVertexArrayFinalize));
+    __jsb_WebGLVertexArray_class->install();
+
     __jsb_WebGLProgram_class = se::Class::create("WebGLProgram", obj, glObjectProto, nullptr);
     __jsb_WebGLProgram_class->defineFinalizeFunction(_SE(JSB_glProgramFinalize));
     __jsb_WebGLProgram_class->install();
@@ -4942,6 +5209,7 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("activeTexture", _SE(JSB_glActiveTexture));
     __glObj->defineFunction("attachShader", _SE(JSB_glAttachShader));
     __glObj->defineFunction("bindAttribLocation", _SE(JSB_glBindAttribLocation));
+    __glObj->defineFunction("bindVertexArray", _SE(JSB_glBindVertexArray));
     __glObj->defineFunction("bindBuffer", _SE(JSB_glBindBuffer));
     __glObj->defineFunction("bindFramebuffer", _SE(JSB_glBindFramebuffer));
     __glObj->defineFunction("bindRenderbuffer", _SE(JSB_glBindRenderbuffer));
@@ -4967,6 +5235,7 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("createProgram", _SE(JSB_glCreateProgram));
     __glObj->defineFunction("createShader", _SE(JSB_glCreateShader));
     __glObj->defineFunction("cullFace", _SE(JSB_glCullFace));
+    __glObj->defineFunction("deleteVertexArray", _SE(JSB_glDeleteVertexArray));
     __glObj->defineFunction("deleteBuffer", _SE(JSB_glDeleteBuffer));
     __glObj->defineFunction("deleteFramebuffer", _SE(JSB_glDeleteFramebuffer));
     __glObj->defineFunction("deleteProgram", _SE(JSB_glDeleteProgram));
@@ -4981,6 +5250,8 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("disableVertexAttribArray", _SE(JSB_glDisableVertexAttribArray));
     __glObj->defineFunction("drawArrays", _SE(JSB_glDrawArrays));
     __glObj->defineFunction("drawElements", _SE(JSB_glDrawElements));
+    __glObj->defineFunction("drawArraysInstanced", _SE(JSB_glDrawArraysInstanced));
+    __glObj->defineFunction("drawElementsInstanced", _SE(JSB_glDrawElementsInstanced));
     __glObj->defineFunction("enable", _SE(JSB_glEnable));
     __glObj->defineFunction("enableVertexAttribArray", _SE(JSB_glEnableVertexAttribArray));
     __glObj->defineFunction("finish", _SE(JSB_glFinish));
@@ -4988,6 +5259,7 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("framebufferRenderbuffer", _SE(JSB_glFramebufferRenderbuffer));
     __glObj->defineFunction("framebufferTexture2D", _SE(JSB_glFramebufferTexture2D));
     __glObj->defineFunction("frontFace", _SE(JSB_glFrontFace));
+    __glObj->defineFunction("createVertexArray", _SE(JSB_glCreateVertexArray));
     __glObj->defineFunction("createBuffer", _SE(JSB_glCreateBuffer));
     __glObj->defineFunction("createFramebuffer", _SE(JSB_glCreateFramebuffer));
     __glObj->defineFunction("createRenderbuffer", _SE(JSB_glCreateRenderbuffer));
@@ -5008,6 +5280,7 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("getUniformLocation", _SE(JSB_glGetUniformLocation));
     __glObj->defineFunction("getUniform", _SE(JSB_glGetUniformfv));
     __glObj->defineFunction("hint", _SE(JSB_glHint));
+    __glObj->defineFunction("isVertexArray", _SE(JSB_glIsVertexArray));
     __glObj->defineFunction("isBuffer", _SE(JSB_glIsBuffer));
     __glObj->defineFunction("isEnabled", _SE(JSB_glIsEnabled));
     __glObj->defineFunction("isFramebuffer", _SE(JSB_glIsFramebuffer));
@@ -5065,6 +5338,7 @@ bool JSB_register_opengl(se::Object* obj)
     __glObj->defineFunction("vertexAttrib4f", _SE(JSB_glVertexAttrib4f));
     __glObj->defineFunction("vertexAttrib4fv", _SE(JSB_glVertexAttrib4fv));
     __glObj->defineFunction("vertexAttribPointer", _SE(JSB_glVertexAttribPointer));
+    __glObj->defineFunction("vertexAttribDivisor", _SE(JSB_glVertexAttribDivisor));
     __glObj->defineFunction("getVertexAttrib", _SE(JSB_glGetVertexAttrib));
     __glObj->defineFunction("getVertexAttribOffset", _SE(JSB_glGetVertexAttribOffset));
     __glObj->defineFunction("viewport", _SE(JSB_glViewport));
