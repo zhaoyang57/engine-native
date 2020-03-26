@@ -37,9 +37,10 @@ public:
     virtual ~TiledMapAssembler();
     virtual void handle(NodeProxy *node, ModelBatcher* batcher, Scene* scene) override;
     virtual void beforeFillBuffers(std::size_t index) override;
-    virtual void fillBuffers(NodeProxy *node, ModelBatcher* batcher, std::size_t index) override;
     void updateNodes(std::size_t iaIndex, const std::vector<std::string>& nodes);
     void clearNodes(std::size_t iaIndex);
+private:
+    void renderNodes(std::size_t index);
 private:
     std::map<std::size_t, std::vector<std::string>> _nodesMap;
     NodeProxy* _node = nullptr;

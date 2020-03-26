@@ -55,9 +55,17 @@ void TiledMapAssembler::handle(NodeProxy *node, ModelBatcher* batcher, Scene* sc
     _batcher = batcher;
     
     Assembler::handle(node, batcher, scene);
+
+    // Last tiles data may be empty, but has user node, so render it by manual.
+    auto lastNodesIndex = getIACount();
+    auto it = _nodesMap.find(lastNodesIndex);
+    if (it != _nodesMap.end())
+    {
+        renderNodes(lastNodesIndex);
+    }
 }
 
-void TiledMapAssembler::beforeFillBuffers(std::size_t index)
+void TiledMapAssembler::renderNodes(std::size_t index)
 {
     static cocos2d::Mat4 tempWorldMat;
     const auto& worldMat = _node->getWorldMatrix();
@@ -84,9 +92,9 @@ void TiledMapAssembler::beforeFillBuffers(std::size_t index)
     _batcher->changeCommitState(ModelBatcher::Common);
 }
 
-void TiledMapAssembler::fillBuffers(NodeProxy* node, ModelBatcher* batcher, std::size_t index)
+void TiledMapAssembler::beforeFillBuffers(std::size_t index)
 {
-    Assembler::fillBuffers(node, batcher, index);
+    renderNodes(index);
 }
 
 RENDERER_END
