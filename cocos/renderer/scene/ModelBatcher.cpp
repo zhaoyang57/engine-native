@@ -122,8 +122,10 @@ void ModelBatcher::commit(NodeProxy* node, Assembler* assembler, int cullingMask
     
     bool useModel = assembler->getUseModel();
     bool ignoreWorldMatrix = assembler->isIgnoreWorldMatrix();
-    const Mat4& nodeWorldMat = node->getWorldMatrix();
-    const Mat4& worldMat = useModel && !ignoreWorldMatrix ? nodeWorldMat : Mat4::IDENTITY;
+
+    auto customWorldMat = assembler->getCustomWorldMatrix();
+    customWorldMat = customWorldMat ? customWorldMat : &node->getWorldMatrix();
+    const Mat4& worldMat = useModel && !ignoreWorldMatrix ? *customWorldMat : Mat4::IDENTITY;
     
     auto asmDirty = assembler->isDirty(AssemblerBase::VERTICES_OPACITY_CHANGED);
     auto nodeDirty = node->isDirty(RenderFlow::NODE_OPACITY_CHANGED);
@@ -171,7 +173,9 @@ void ModelBatcher::commitIA(NodeProxy* node, CustomAssembler* assembler, int cul
     
     std::size_t iaCount = assembler->getIACount();
     bool useModel = assembler->getUseModel();
-    const Mat4& worldMat = useModel ? node->getWorldMatrix() : Mat4::IDENTITY;
+    auto customWorldMat = assembler->getCustomWorldMatrix();
+    customWorldMat = customWorldMat ? customWorldMat : &node->getWorldMatrix();
+    const Mat4& worldMat = useModel ? *customWorldMat : Mat4::IDENTITY;
     
     if (_currEffect == nullptr ||
     _currEffect->getHash() != effect->getHash() ||

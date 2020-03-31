@@ -173,7 +173,7 @@ void ParticleSimulator::emitParticle(cocos2d::Vec3 &pos)
     particle.startPos.y = pos.y;
     
     // direction
-    float a = CC_DEGREES_TO_RADIANS(angle + angleVar * random(-1.0f, 1.0f));
+    float a = CC_DEGREES_TO_RADIANS(angle + _worldRotation + angleVar * random(-1.0f, 1.0f));
     // Mode Gravity: A
     if (emitterMode == EmitterMode::GRAVITY)
     {
@@ -245,25 +245,56 @@ void ParticleSimulator::render(float dt)
     middleware::IOBuffer& vb = mb->getVB();
     middleware::IOBuffer& ib = mb->getIB();
     
-    // Calculate pos
-    auto worldMatrix = _nodeProxy->getWorldMatrix();
-    
     cocos2d::Vec3 pos;
     cocos2d::Vec3 tpa;
     cocos2d::Vec3 tpb;
     cocos2d::Vec3 tpc;
+    Quaternion tempQuat;
+    Vec3 tempEuler;
     
     if (positionType == PositionType::FREE)
     {
-        worldMatrix.transformPoint(&pos);
+        // FREE MODE's CC_USE_MODEL flag is false, so must manual calculate global rotation to get emit direction
+        _nodeProxy->getWorldRotation(&tempQuat);
+        tempQuat.toEuler(&tempEuler);
+        _worldRotation = tempEuler.z;
+
+        // 'pos' is used to move particle to node's current position
+        auto& worldMat = _nodeProxy->getWorldMatrix();
+        auto& wm = worldMat.m;
+        pos.x = wm[12];
+        pos.y = wm[13];
+
+        assembler->setUseModel(false);
     }
+    // RELATIVE MODE is about 'parent node is group mode' but 'current node is free mode'
     else if (positionType == PositionType::RELATIVE)
     {
+        _nodeProxy->getRotation(&tempQuat);
+        tempQuat.toEuler(&tempEuler);
+        _worldRotation = tempEuler.z;
         _nodeProxy->getPosition(&pos);
+
+        assembler->setUseModel(true);
+        auto parent = _nodeProxy->getParent();
+        if (parent)
+        {
+            auto& parentWorldMat = parent->getWorldMatrix();
+            assembler->setCustomWorldMatrix(parentWorldMat);
+        }
+        else
+        {
+            assembler->setCustomWorldMatrix(cocos2d::Mat4::IDENTITY);
+        }
     }
-    
-    // Get world to node trans only once
-    worldMatrix.inverse();
+    // GROUP MODE
+    else
+    {
+        _worldRotation = 0;
+        assembler->setUseModel(true);
+        // use node world matrix instead
+        assembler->clearCustomWorldMatirx();
+    }
     
     // Emission
     if (_active && emissionRate)
@@ -370,21 +401,11 @@ void ParticleSimulator::render(float dt)
             
             // update values in quad buffer
             auto& newPos = tpa;
-            if (positionType == PositionType::FREE || positionType == PositionType::RELATIVE)
+            newPos.set(particle.pos);
+            // free and relative mode need move particle to origin position by manual
+            if (positionType != PositionType::GROUPED)
             {
-                auto& diff = tpb;
-                auto& startPos = tpc;
-                // current Position convert To Node Space
-                worldMatrix.transformPoint(pos, &diff);
-                // start Position convert To Node Space
-                worldMatrix.transformPoint(particle.startPos, &startPos);
-                diff.add(-startPos.x, -startPos.y, -startPos.z);
-                newPos.set(particle.pos);
-                newPos.add(-diff.x, -diff.y, -diff.z);
-            }
-            else
-            {
-                newPos.set(particle.pos);
+                newPos.add(particle.startPos);
             }
             
             auto x = newPos.x, y = newPos.y;

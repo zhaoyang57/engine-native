@@ -41,6 +41,8 @@ AssemblerBase::~AssemblerBase()
     }
     _dirty = nullptr;
     _dirtyLen = 0;
+
+    clearCustomWorldMatirx();
 }
 
 void AssemblerBase::setDirty(se_object_ptr jsDirty)

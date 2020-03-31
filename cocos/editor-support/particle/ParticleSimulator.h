@@ -235,6 +235,7 @@ private:
     bool                            _finished = false;
     float                           _elapsed = 0;
     float                           _emitCounter = 0;
+    float                           _worldRotation = 0;
     std::size_t                     _uvFilled = 0;
     finishedCallback                _finishedCallback = nullptr;
     stopCallback                    _stopCallback = nullptr;

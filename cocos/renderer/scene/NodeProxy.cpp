@@ -351,6 +351,20 @@ void NodeProxy::getScale(cocos2d::Vec3* out) const
     out->z = _trs->sz;
 }
 
+void NodeProxy::getWorldRotation(cocos2d::Quaternion* out) const
+{
+    getRotation(out);
+
+    cocos2d::Quaternion rot;
+    NodeProxy* curr = _parent;
+    while (curr != nullptr)
+    {
+        curr->getRotation(&rot);
+        Quaternion::multiply(rot, *out, out);
+        curr = curr->getParent();
+    }
+}
+
 void NodeProxy::getWorldPosition(cocos2d::Vec3* out) const
 {
     getPosition(out);

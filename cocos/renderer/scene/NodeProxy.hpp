@@ -188,6 +188,11 @@ public:
      */
     void getScale(cocos2d::Vec3* out) const;
     /*
+     *  @brief Gets world rotation.
+     *  @param[out] out The rotation quaternion.
+     */
+    void getWorldRotation(cocos2d::Quaternion* out) const;
+    /*
      *  @brief Gets the position in world coordinates.
      *  @param[out] out The world position vector.
      */

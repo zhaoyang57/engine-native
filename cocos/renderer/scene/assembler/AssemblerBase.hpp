@@ -29,6 +29,7 @@
 #include "base/CCVector.h"
 #include "../../renderer/Effect.h"
 #include "scripting/js-bindings/jswrapper/Object.hpp"
+#include "math/Mat4.h"
 
 RENDERER_BEGIN
 
@@ -88,7 +89,39 @@ public:
     {
         _useModel = useModel;
     }
-    
+
+    /**
+     *  @brief Gets custom world matrix
+     */
+    const cocos2d::Mat4* getCustomWorldMatrix() const
+    {
+        return _worldMatrix;
+    }
+
+    /**
+     *  @brief Sets custom world matrix
+     */
+    void setCustomWorldMatrix(const cocos2d::Mat4& matrix)
+    {
+        if (!_worldMatrix)
+        {
+            _worldMatrix = new cocos2d::Mat4();
+        }
+        *_worldMatrix = matrix;
+    }
+
+    /**
+     *  @brief Clear custom world matrix
+     */
+    void clearCustomWorldMatirx()
+    {
+        if (_worldMatrix)
+        {
+            delete _worldMatrix;
+            _worldMatrix = nullptr;
+        }
+    }
+
     /**
      *  @brief Sync script dirty flag.
      */
@@ -138,6 +171,7 @@ protected:
     std::size_t _dirtyLen = 0;
     
     bool _useModel = false;
+    cocos2d::Mat4* _worldMatrix = nullptr;
 };
 
 // end of scene group
