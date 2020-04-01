@@ -34,7 +34,7 @@
 #include "CCEAGLView-ios.h"
 #include "base/CCGLUtils.h"
 #include "audio/include/AudioEngine.h"
-
+#include "platform/CCDevice.h"
 
 namespace
 {
@@ -52,13 +52,13 @@ namespace
     {
         cocos2d::Vec2 resolution = getResolution();
         se::ScriptEngine* se = se::ScriptEngine::getInstance();
-        uint8_t devicePixelRatio = cocos2d::Application::getInstance()->getScreenScale();
+        uint8_t devicePixelRatio = cocos2d::Device::getDevicePixelRatio();
         char commandBuf[200] = {0};
         sprintf(commandBuf, "window.innerWidth = %d; window.innerHeight = %d;",
                 (int)(resolution.x / devicePixelRatio),
                 (int)(resolution.y / devicePixelRatio));
         se->evalString(commandBuf);
-        cocos2d::ccViewport(0, 0, resolution.x / devicePixelRatio, resolution.y / devicePixelRatio);
+        cocos2d::ccViewport(0, 0, resolution.x, resolution.y);
         glDepthMask(GL_TRUE);
         return true;
     }
