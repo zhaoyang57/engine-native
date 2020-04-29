@@ -396,7 +396,8 @@ namespace se {
 
         NativePtrToObjectMap::init();
         NonRefNativePtrCreatedByCtorMap::init();
-
+        
+        Object::setup();
         Class::setIsolate(_isolate);
         Object::setIsolate(_isolate);
 
@@ -591,7 +592,8 @@ namespace se {
 
     void ScriptEngine::garbageCollect()
     {
-        SE_LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
+        int objSize = __objectMap ? (int)__objectMap->size() : -1;
+        SE_LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
         const double kLongIdlePauseInSeconds = 1.0;
         _isolate->ContextDisposedNotification();
         _isolate->IdleNotificationDeadline(_platform->MonotonicallyIncreasingTime() + kLongIdlePauseInSeconds);
@@ -599,7 +601,8 @@ namespace se {
         // garbage and will therefore also invoke all weak callbacks of actually
         // unreachable persistent handles.
         _isolate->LowMemoryNotification();
-        SE_LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
+        objSize = __objectMap ? (int)__objectMap->size() : -1;
+        SE_LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
     }
 
     bool ScriptEngine::isGarbageCollecting()
