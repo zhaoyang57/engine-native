@@ -957,3 +957,47 @@ float
 },
 
 };
+
+/**
+ * @class LabelRenderer
+ */
+jsb.LabelRenderer = {
+
+/**
+ * @method setEffect
+ * @param {cc.renderer::EffectVariant} arg0
+ */
+setEffect : function (
+effectvariant 
+)
+{
+},
+
+/**
+ * @method render
+ */
+render : function (
+)
+{
+},
+
+/**
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+bindNodeProxy : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method LabelRenderer
+ * @constructor
+ */
+LabelRenderer : function (
+)
+{
+},
+
+};

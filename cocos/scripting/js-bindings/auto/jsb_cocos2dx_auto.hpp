@@ -111,3 +111,13 @@ SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_createLinearGradient);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_closePath);
 SE_DECLARE_FUNC(js_engine_CanvasRenderingContext2D_CanvasRenderingContext2D);
 
+extern se::Object* __jsb_cocos2d_LabelRenderer_proto;
+extern se::Class* __jsb_cocos2d_LabelRenderer_class;
+
+bool js_register_cocos2d_LabelRenderer(se::Object* obj);
+bool register_all_engine(se::Object* obj);
+SE_DECLARE_FUNC(js_engine_LabelRenderer_setEffect);
+SE_DECLARE_FUNC(js_engine_LabelRenderer_render);
+SE_DECLARE_FUNC(js_engine_LabelRenderer_bindNodeProxy);
+SE_DECLARE_FUNC(js_engine_LabelRenderer_LabelRenderer);
+

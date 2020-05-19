@@ -2,6 +2,7 @@
 #include "scripting/js-bindings/manual/jsb_conversions.hpp"
 #include "scripting/js-bindings/manual/jsb_global.h"
 #include "cocos2d.h"
+#include "2d/CCTTFLabelRenderer.h"
 
 se::Object* __jsb_cocos2d_FileUtils_proto = nullptr;
 se::Class* __jsb_cocos2d_FileUtils_class = nullptr;
@@ -1836,6 +1837,113 @@ bool js_register_engine_CanvasRenderingContext2D(se::Object* obj)
     return true;
 }
 
+se::Object* __jsb_cocos2d_LabelRenderer_proto = nullptr;
+se::Class* __jsb_cocos2d_LabelRenderer_class = nullptr;
+
+static bool js_engine_LabelRenderer_setEffect(se::State& s)
+{
+    cocos2d::LabelRenderer* cobj = (cocos2d::LabelRenderer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_LabelRenderer_setEffect : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::EffectVariant* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_engine_LabelRenderer_setEffect : Error processing arguments");
+        cobj->setEffect(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_engine_LabelRenderer_setEffect)
+
+static bool js_engine_LabelRenderer_render(se::State& s)
+{
+    cocos2d::LabelRenderer* cobj = (cocos2d::LabelRenderer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_LabelRenderer_render : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->render();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_engine_LabelRenderer_render)
+
+static bool js_engine_LabelRenderer_bindNodeProxy(se::State& s)
+{
+    cocos2d::LabelRenderer* cobj = (cocos2d::LabelRenderer*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_engine_LabelRenderer_bindNodeProxy : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        cocos2d::renderer::NodeProxy* arg0 = nullptr;
+        ok &= seval_to_native_ptr(args[0], &arg0);
+        SE_PRECONDITION2(ok, false, "js_engine_LabelRenderer_bindNodeProxy : Error processing arguments");
+        cobj->bindNodeProxy(arg0);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_engine_LabelRenderer_bindNodeProxy)
+
+SE_DECLARE_FINALIZE_FUNC(js_cocos2d_LabelRenderer_finalize)
+
+static bool js_engine_LabelRenderer_constructor(se::State& s)
+{
+    cocos2d::LabelRenderer* cobj = new (std::nothrow) cocos2d::LabelRenderer();
+    s.thisObject()->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_CTOR(js_engine_LabelRenderer_constructor, __jsb_cocos2d_LabelRenderer_class, js_cocos2d_LabelRenderer_finalize)
+
+static bool js_engine_LabelRenderer_ctor(se::State& s)
+{
+    cocos2d::LabelRenderer* cobj = new (std::nothrow) cocos2d::LabelRenderer();
+    s.thisObject()->setPrivateData(cobj);
+    return true;
+}
+SE_BIND_SUB_CLS_CTOR(js_engine_LabelRenderer_ctor, __jsb_cocos2d_LabelRenderer_class, js_cocos2d_LabelRenderer_finalize)
+
+
+    
+
+
+static bool js_cocos2d_LabelRenderer_finalize(se::State& s)
+{
+    CCLOGINFO("jsbindings: finalizing JS object %p (cocos2d::LabelRenderer)", s.nativeThisObject());
+    cocos2d::LabelRenderer* cobj = (cocos2d::LabelRenderer*)s.nativeThisObject();
+    cobj->release();
+    return true;
+}
+SE_BIND_FINALIZE_FUNC(js_cocos2d_LabelRenderer_finalize)
+
+bool js_register_engine_LabelRenderer(se::Object* obj)
+{
+    auto cls = se::Class::create("LabelRenderer", obj, nullptr, _SE(js_engine_LabelRenderer_constructor));
+
+    cls->defineFunction("setEffect", _SE(js_engine_LabelRenderer_setEffect));
+    cls->defineFunction("render", _SE(js_engine_LabelRenderer_render));
+    cls->defineFunction("bindNodeProxy", _SE(js_engine_LabelRenderer_bindNodeProxy));
+    cls->defineFunction("ctor", _SE(js_engine_LabelRenderer_ctor));
+    cls->defineFinalizeFunction(_SE(js_cocos2d_LabelRenderer_finalize));
+    cls->install();
+    JSBClassType::registerClass<cocos2d::LabelRenderer>(cls);
+
+    __jsb_cocos2d_LabelRenderer_proto = cls->getProto();
+    __jsb_cocos2d_LabelRenderer_class = cls;
+
+    jsb_set_extend_property("jsb", "LabelRenderer");
+    se::ScriptEngine::getInstance()->clearException();
+    return true;
+}
+
 bool register_all_engine(se::Object* obj)
 {
     // Get the ns
@@ -1848,11 +1956,12 @@ bool register_all_engine(se::Object* obj)
     }
     se::Object* ns = nsVal.toObject();
 
-    js_register_engine_FileUtils(ns);
-    js_register_engine_Device(ns);
     js_register_engine_CanvasGradient(ns);
+    js_register_engine_LabelRenderer(ns);
     js_register_engine_CanvasRenderingContext2D(ns);
+    js_register_engine_Device(ns);
     js_register_engine_SAXParser(ns);
+    js_register_engine_FileUtils(ns);
     return true;
 }
 
