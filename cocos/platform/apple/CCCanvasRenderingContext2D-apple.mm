@@ -538,11 +538,14 @@ namespace
     }
 }
 
-#define SEND_DATA_TO_JS(CB, IMPL) \
+#define SEND_DATA_TO_JS(CB, IMPL, PREMULTIPLY) \
 if (CB) \
 { \
     Data data([IMPL getDataRef]); \
-    unMultiplyAlpha(data.getBytes(), data.getSize() ); \
+    if (!PREMULTIPLY) \
+    { \
+        unMultiplyAlpha(data.getBytes(), data.getSize() ); \
+    } \
     CB(data); \
 }
 
@@ -568,7 +571,7 @@ void CanvasRenderingContext2D::recreateBufferIfNeeded()
         _isBufferSizeDirty = false;
 //        SE_LOGD("CanvasRenderingContext2D::recreateBufferIfNeeded %p, w: %f, h:%f\n", this, __width, __height);
         [_impl recreateBufferWithWidth: __width height:__height];
-        SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl);
+        SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl, _premultiply);
     }
 }
 
@@ -583,7 +586,7 @@ void CanvasRenderingContext2D::fillRect(float x, float y, float width, float hei
 {
     recreateBufferIfNeeded();
     [_impl fillRect:CGRectMake(x, y, width, height)];
-    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl);
+    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl, _premultiply);
 }
 
 void CanvasRenderingContext2D::fillText(const std::string& text, float x, float y, float maxWidth)
@@ -601,7 +604,7 @@ void CanvasRenderingContext2D::fillText(const std::string& text, float x, float 
     }
     
     [_impl fillText:textUtf8 x:x y:y maxWidth:maxWidth];
-    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl);
+    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl, _premultiply);
 }
 
 void CanvasRenderingContext2D::strokeText(const std::string& text, float x, float y, float maxWidth)
@@ -618,7 +621,7 @@ void CanvasRenderingContext2D::strokeText(const std::string& text, float x, floa
     }
     
     [_impl strokeText:textUtf8 x:x y:y maxWidth:maxWidth];
-    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl);
+    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl, _premultiply);
 }
 
 cocos2d::Size CanvasRenderingContext2D::measureText(const std::string& text)
@@ -666,7 +669,7 @@ void CanvasRenderingContext2D::lineTo(float x, float y)
 void CanvasRenderingContext2D::stroke()
 {
     [_impl stroke];
-    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl);
+    SEND_DATA_TO_JS(_canvasBufferUpdatedCB, _impl, _premultiply);
 }
 
 void CanvasRenderingContext2D::fill()
@@ -687,6 +690,11 @@ void CanvasRenderingContext2D::restore()
 void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
 {
     _canvasBufferUpdatedCB = cb;
+}
+
+void CanvasRenderingContext2D::setPremultiply(bool multiply)
+{
+    _premultiply = multiply;
 }
 
 void CanvasRenderingContext2D::set__width(float width)
