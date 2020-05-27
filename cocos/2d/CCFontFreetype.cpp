@@ -44,7 +44,25 @@ THE SOFTWARE.
 #define SCALE_BY_DPI(x) (int)(x)
 #endif
 
-#define FFT_SDF_TMP_VECTOR 1
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+// `thread_local` can not compile on iOS 9.0 below device
+#   define FFT_SDF_TMP_VECTOR (__IPHONE_OS_VERSION_MIN_REQUIRED >= 90000)
+#else
+#   define FFT_SDF_TMP_VECTOR 1
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+
+#if FFT_SDF_TMP_VECTOR
+namespace {
+    //cache vector in thread
+    thread_local std::vector<short> xdistV;
+    thread_local std::vector<short> ydistV;
+    thread_local std::vector<double> gxV;
+    thread_local std::vector<double> gyV;
+    thread_local std::vector<double> dataV;
+    thread_local std::vector<double> outsideV;
+    thread_local std::vector<double> insideV;
+}
+#endif
 
 namespace cocos2d {
 
@@ -87,16 +105,8 @@ namespace cocos2d {
         std::vector<uint8_t> makeDistanceMap(unsigned char *img, long width, long height, int distanceMapSpread)
         {
             long pixelAmount = (width + 2 * distanceMapSpread) * (height + 2 * distanceMapSpread);
-#if FFT_SDF_TMP_VECTOR
-            //cache vector in thread
-            static thread_local std::vector<short> xdistV;
-            static thread_local std::vector<short> ydistV;
-            static thread_local std::vector<double> gxV;
-            static thread_local std::vector<double> gyV;
-            static thread_local std::vector<double> dataV;
-            static thread_local std::vector<double> outsideV;
-            static thread_local std::vector<double> insideV;
 
+#if FFT_SDF_TMP_VECTOR
             xdistV.resize(pixelAmount);
             ydistV.resize(pixelAmount);
             gxV.resize(pixelAmount);
