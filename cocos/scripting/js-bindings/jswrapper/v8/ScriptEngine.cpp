@@ -40,7 +40,9 @@
 #include "debugger/node.h"
 #endif
 
-#include "platform/CCFileUtils.h"
+#include <sstream>
+
+#define EXPOSE_GC "__jsb_gc__"
 
 uint32_t __jsbInvocationCount = 0;
 uint32_t __jsbStackFrameLimit = 20;
@@ -302,6 +304,38 @@ namespace se {
         }
     }
 
+    void ScriptEngine::onPromiseRejectCallback(v8::PromiseRejectMessage msg)
+    {
+        v8::Isolate *isolate = getInstance()->_isolate;
+        v8::HandleScope scope(isolate);
+        std::stringstream ss;
+        auto event = msg.GetEvent();
+        auto value = msg.GetValue();
+        const char *eventName = "[invalidatePromiseEvent]";
+        
+        if(event == v8::kPromiseRejectWithNoHandler) {
+            eventName = "unhandledRejectedPromise";
+        }else if(event == v8::kPromiseHandlerAddedAfterReject) {
+            eventName = "handlerAddedAfterPromiseRejected";
+        }else if(event == v8::kPromiseRejectAfterResolved) {
+            eventName = "rejectAfterPromiseResolved";
+        }else if( event == v8::kPromiseResolveAfterResolved) {
+            eventName = "resolveAfterPromiseResolved";
+        }
+        
+        if(!value.IsEmpty()) {
+            // prepend error object to stack message
+            v8::Local<v8::String> str = value->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+            v8::String::Utf8Value valueUtf8(isolate, str);
+            ss << *valueUtf8 << std::endl;
+        }
+        
+        auto stackStr = getInstance()->getCurrentStackTrace();
+        ss << "stacktrace: " << std::endl;
+        ss << stackStr << std::endl;
+        getInstance()->_exceptionCallback("", eventName, ss.str().c_str());
+    }
+
     void ScriptEngine::privateDataFinalize(void* nativeObj)
     {
         internal::PrivateData* p = (internal::PrivateData*)nativeObj;
@@ -348,10 +382,21 @@ namespace se {
     , _isInCleanup(false)
     , _isErrorHandleWorking(false)
     {
-        //        RETRUN_VAL_IF_FAIL(v8::V8::InitializeICUDefaultLocation(nullptr, "/Users/james/Project/v8/out.gn/x64.debug/icudtl.dat"), false);
-        //        v8::V8::InitializeExternalStartupData("/Users/james/Project/v8/out.gn/x64.debug/natives_blob.bin", "/Users/james/Project/v8/out.gn/x64.debug/snapshot_blob.bin"); //REFINE
         _platform = v8::platform::NewDefaultPlatform().release();
         v8::V8::InitializePlatform(_platform);
+
+        std::string flags;
+        //NOTICE: spaces are required between flags
+        flags.append(" --expose-gc-as=" EXPOSE_GC);
+        // flags.append(" --trace-gc"); // v8 trace gc
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        flags.append(" --jitless");
+#endif
+        if(!flags.empty())
+        {
+            v8::V8::SetFlagsFromString(flags.c_str(), (int)flags.length());
+        }
+        
         bool ok = v8::V8::Initialize();
         assert(ok);
     }
@@ -375,11 +420,6 @@ namespace se {
             hook();
         }
         _beforeInitHookArray.clear();
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-        std::string flags("--jitless");
-        v8::V8::SetFlagsFromString(flags.c_str(), (int)flags.length());
-#endif
         v8::Isolate::CreateParams create_params;
         create_params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
         _isolate = v8::Isolate::New(create_params);
@@ -391,6 +431,7 @@ namespace se {
         _isolate->SetFatalErrorHandler(onFatalErrorCallback);
         _isolate->SetOOMErrorHandler(onOOMErrorCallback);
         _isolate->AddMessageListener(onMessageCallback);
+        _isolate->SetPromiseRejectCallback(onPromiseRejectCallback);
 
         _context.Reset(_isolate, v8::Context::New(_isolate));
         _context.Get(_isolate)->Enter();
@@ -432,6 +473,15 @@ namespace se {
 
         _globalObj->defineFunction("log", __log);
         _globalObj->defineFunction("forceGC", __forceGC);
+        
+        
+        _globalObj->getProperty(EXPOSE_GC, &_gcFuncValue);
+        if(_gcFuncValue.isObject() && _gcFuncValue.toObject()->isFunction()) {
+            _gcFunc = _gcFuncValue.toObject();
+        } else {
+            _gcFunc = nullptr;
+        }
+        
 
         __jsb_CCPrivateData_class = Class::create("__PrivateData", _globalObj, nullptr, nullptr);
         __jsb_CCPrivateData_class->defineFinalizeFunction(privateDataFinalize);
@@ -514,7 +564,7 @@ namespace se {
         _isInCleanup = false;
         NativePtrToObjectMap::destroy();
         NonRefNativePtrCreatedByCtorMap::destroy();
-
+        _gcFunc = nullptr;
         SE_LOGD("ScriptEngine::cleanup end ...\n");
     }
 
@@ -595,14 +645,23 @@ namespace se {
     {
         int objSize = __objectMap ? (int)__objectMap->size() : -1;
         SE_LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
-        const double kLongIdlePauseInSeconds = 1.0;
-        _isolate->ContextDisposedNotification();
-        _isolate->IdleNotificationDeadline(_platform->MonotonicallyIncreasingTime() + kLongIdlePauseInSeconds);
-        // By sending a low memory notifications, we will try hard to collect all
-        // garbage and will therefore also invoke all weak callbacks of actually
-        // unreachable persistent handles.
-        _isolate->LowMemoryNotification();
+        
+        if(_gcFunc == nullptr)
+        {
+            const double kLongIdlePauseInSeconds = 1.0;
+            _isolate->ContextDisposedNotification();
+            _isolate->IdleNotificationDeadline(_platform->MonotonicallyIncreasingTime() + kLongIdlePauseInSeconds);
+            // By sending a low memory notifications, we will try hard to collect all
+            // garbage and will therefore also invoke all weak callbacks of actually
+            // unreachable persistent handles.
+            _isolate->LowMemoryNotification();
+        }
+        else
+        {
+            _gcFunc->call({}, nullptr);
+        }
         objSize = __objectMap ? (int)__objectMap->size() : -1;
+        
         SE_LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
     }
 
@@ -640,7 +699,7 @@ namespace se {
         }
 
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
         if(strncmp("(no filename)", sourceUrl.c_str(), sizeof("(no filename)") )!= 0)
         {
             sourceUrl = cocos2d::FileUtils::getInstance()->fullPathForFilename(sourceUrl);
@@ -666,6 +725,8 @@ namespace se {
 
         if (!maybeScript.IsEmpty())
         {
+            v8::TryCatch block(_isolate);
+
             v8::Local<v8::Script> v8Script = maybeScript.ToLocalChecked();
             v8::MaybeLocal<v8::Value> maybeResult = v8Script->Run(_context.Get(_isolate));
 
@@ -679,6 +740,12 @@ namespace se {
                 }
 
                 success = true;
+            }
+
+            if (block.HasCaught()) {
+                v8::Local<v8::Message> message = block.Message();
+                SE_LOGE("ScriptEngine::evalString catch exception:\n");
+                onMessageCallback(message, v8::Undefined(_isolate));
             }
         }
 
