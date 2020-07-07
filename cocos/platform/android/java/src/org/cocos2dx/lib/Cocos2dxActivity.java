@@ -273,11 +273,20 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         try {
             Field field = lp.getClass().getField("layoutInDisplayCutoutMode");
-            if(field != null) {
-                //Field constValue = lp.getClass().getDeclaredField("LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER");
-                Field constValue = lp.getClass().getDeclaredField("LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES");
-                field.setInt(lp, constValue.getInt(null));
-            }
+            //Field constValue = lp.getClass().getDeclaredField("LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER");
+            Field constValue = lp.getClass().getDeclaredField("LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES");
+            field.setInt(lp, constValue.getInt(null));
+            
+            // https://developer.android.com/training/system-ui/immersive
+            int flag = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
+            flag |= immersiveSticky.getInt(null);
+            View view = getWindow().getDecorView();
+            view.setSystemUiVisibility(flag);
 
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
