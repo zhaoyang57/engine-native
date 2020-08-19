@@ -45,6 +45,11 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching()
 {
+
+#ifdef CC_IOS_APPCLIP
+    cocos2d::FileUtils::getInstance()->addSearchPath("ios-app-clip");
+#endif
+
     se::ScriptEngine *se = se::ScriptEngine::getInstance();
     
     jsb_set_xxtea_key("");
