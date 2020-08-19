@@ -48,8 +48,7 @@
 
 #if COCOS2D_DEBUG > 0
     #define JSB_GL_CHECK(_call)   _JSB_GL_CHECK(_call)
-    //#define JSB_GL_CHECK_VOID(_call)   _JSB_GL_CHECK_VOID(_call)
-    #define JSB_GL_CHECK_VOID(_call) _call
+    #define JSB_GL_CHECK_VOID(_call)   _JSB_GL_CHECK_VOID(_call)
     #define JSB_GL_CHECK_ERROR() \
                 do { \
                     GLenum gl_err = glGetError(); \
