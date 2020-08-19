@@ -45,10 +45,14 @@
     #endif
 
     #if TARGET_OS_IOS
-        #ifdef __arm64__
-            #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_V8
-        #else
+        #if CC_IOS_APPCLIP
             #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_JSC
+        #else
+            #ifdef __arm64__
+                #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_V8
+            #else
+                #define SCRIPT_ENGINE_TYPE           SCRIPT_ENGINE_JSC
+            #endif
         #endif
     #endif
 

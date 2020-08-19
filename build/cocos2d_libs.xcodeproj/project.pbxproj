@@ -613,6 +613,385 @@
 		50ABC0631926664800A911A9 /* CCDevice-mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBF521926664700A911A9 /* CCDevice-mac.mm */; };
 		50ABC0651926664800A911A9 /* CCGL-mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF531926664700A911A9 /* CCGL-mac.h */; };
 		50ABC0671926664800A911A9 /* CCPlatformDefine-mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF541926664700A911A9 /* CCPlatformDefine-mac.h */; };
+		6D787BDC24EBA4EC00E4A839 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED30577B1BEC76C90083C3ED /* unzip.cpp */; };
+		6D787BDD24EBA4EC00E4A839 /* EJConvertTypedArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A586C422064C90500B47573 /* EJConvertTypedArray.m */; };
+		6D787BDE24EBA4EC00E4A839 /* CCDownloaderImpl-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4617861620522469008256E1 /* CCDownloaderImpl-apple.mm */; };
+		6D787BDF24EBA4EC00E4A839 /* SRProxyConnect.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF2A1F20AFAB007A1D9D /* SRProxyConnect.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787BE024EBA4EC00E4A839 /* NSRunLoop+SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF451F20AFAB007A1D9D /* NSRunLoop+SRWebSocket.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787BE124EBA4EC00E4A839 /* CCImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBF271926664700A911A9 /* CCImage.cpp */; };
+		6D787BE224EBA4EC00E4A839 /* tommyhash.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B38236C28C600F3D55F /* tommyhash.c */; };
+		6D787BE324EBA4EC00E4A839 /* Mat3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 425D3FEF22D86BEF00BCED11 /* Mat3.cpp */; };
+		6D787BE424EBA4EC00E4A839 /* MappingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693023A2046AE05004A3D6C /* MappingUtils.cpp */; };
+		6D787BE524EBA4EC00E4A839 /* pvr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB16202ADDCE00931238 /* pvr.cpp */; };
+		6D787BE624EBA4EC00E4A839 /* CCSAXParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBF291926664700A911A9 /* CCSAXParser.cpp */; };
+		6D787BE724EBA4EC00E4A839 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302462046AE05004A3D6C /* Utils.cpp */; };
+		6D787BE824EBA4EC00E4A839 /* CCImage-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 503DD8DC1926736A00CD74DD /* CCImage-ios.mm */; };
+		6D787BE924EBA4EC00E4A839 /* ioapi_mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3057771BEC76C90083C3ED /* ioapi_mem.cpp */; };
+		6D787BEA24EBA4EC00E4A839 /* SRSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF4A1F20AFAB007A1D9D /* SRSecurityPolicy.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787BEB24EBA4EC00E4A839 /* SRIOConsumerPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF251F20AFAB007A1D9D /* SRIOConsumerPool.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787BEC24EBA4EC00E4A839 /* StringUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = BA06A63E23583DBD007740C5 /* StringUtil.cc */; };
+		6D787BED24EBA4EC00E4A839 /* SHA1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FCF2092F3A600F3A228 /* SHA1.cpp */; };
+		6D787BEE24EBA4EC00E4A839 /* ConvertUTFWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3057991BEC77B70083C3ED /* ConvertUTFWrapper.cpp */; };
+		6D787BEF24EBA4EC00E4A839 /* SRMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF3D1F20AFAB007A1D9D /* SRMutex.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787BF024EBA4EC00E4A839 /* env.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FDC2092F3A600F3A228 /* env.cc */; };
+		6D787BF124EBA4EC00E4A839 /* CCApplication-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDC68202D733700931238 /* CCApplication-ios.mm */; };
+		6D787BF224EBA4EC00E4A839 /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = ED30579F1BEC77D50083C3ED /* xxhash.c */; };
+		6D787BF324EBA4EC00E4A839 /* CCAsyncTaskPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4037F5CB2108751E001C205C /* CCAsyncTaskPool.cpp */; };
+		6D787BF424EBA4EC00E4A839 /* ioapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3057791BEC76C90083C3ED /* ioapi.cpp */; };
+		6D787BF524EBA4EC00E4A839 /* tommytrieinp.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B2E236C28C600F3D55F /* tommytrieinp.c */; };
+		6D787BF624EBA4EC00E4A839 /* jsb_cocos2dx_network_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461786692052609B008256E1 /* jsb_cocos2dx_network_auto.cpp */; };
+		6D787BF724EBA4EC00E4A839 /* tommytree.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B28236C28C600F3D55F /* tommytree.c */; };
+		6D787BF824EBA4EC00E4A839 /* AudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC882205CB6E9005321B9 /* AudioEngine.cpp */; };
+		6D787BF924EBA4EC00E4A839 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693023E2046AE05004A3D6C /* config.cpp */; };
+		6D787BFA24EBA4EC00E4A839 /* jsb_video_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40AEF7BD216DF21B00729AA5 /* jsb_video_auto.cpp */; };
+		6D787BFB24EBA4EC00E4A839 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED3057861BEC773E0083C3ED /* tinyxml2.cpp */; };
+		6D787BFC24EBA4EC00E4A839 /* jsb_cocos2dx_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D767205665BE00168D9A /* jsb_cocos2dx_auto.cpp */; };
+		6D787BFD24EBA4EC00E4A839 /* tommyhashtbl.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B25236C28C600F3D55F /* tommyhashtbl.c */; };
+		6D787BFE24EBA4EC00E4A839 /* ccCArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB42202ADDCE00931238 /* ccCArray.cpp */; };
+		6D787BFF24EBA4EC00E4A839 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB00205BCD9200350EE3 /* Utils.cpp */; };
+		6D787C0024EBA4EC00E4A839 /* CCRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB02202ADDCE00931238 /* CCRef.cpp */; };
+		6D787C0124EBA4EC00E4A839 /* etc2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DCEC124233236D60020F8E3 /* etc2.cpp */; };
+		6D787C0224EBA4EC00E4A839 /* tommyarrayof.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B21236C28C600F3D55F /* tommyarrayof.c */; };
+		6D787C0324EBA4EC00E4A839 /* CCConfiguration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469301CE203FC695004A3D6C /* CCConfiguration.cpp */; };
+		6D787C0424EBA4EC00E4A839 /* JavaScriptObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 461DCA5620C7E4B900B22827 /* JavaScriptObjCBridge.mm */; };
+		6D787C0524EBA4EC00E4A839 /* etc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB41202ADDCE00931238 /* etc1.cpp */; };
+		6D787C0624EBA4EC00E4A839 /* Vec2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD2F1925AB0000A911A9 /* Vec2.cpp */; };
+		6D787C0724EBA4EC00E4A839 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8DBD452431E75200215C5B /* Utils.cpp */; };
+		6D787C0824EBA4EC00E4A839 /* SRPinningSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF301F20AFAB007A1D9D /* SRPinningSecurityPolicy.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C0924EBA4EC00E4A839 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF4C1F20AFAB007A1D9D /* SRWebSocket.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C0A24EBA4EC00E4A839 /* jsb_module_register.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 403ACAD820CE4EB000BB433D /* jsb_module_register.cpp */; };
+		6D787C0B24EBA4EC00E4A839 /* Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693023F2046AE05004A3D6C /* Value.cpp */; };
+		6D787C0C24EBA4EC00E4A839 /* ScriptEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 469302492046AE05004A3D6C /* ScriptEngine.mm */; };
+		6D787C0D24EBA4EC00E4A839 /* CCAutoreleasePool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB0A202ADDCE00931238 /* CCAutoreleasePool.cpp */; };
+		6D787C0E24EBA4EC00E4A839 /* jsb_socketio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461786592052607E008256E1 /* jsb_socketio.cpp */; };
+		6D787C0F24EBA4EC00E4A839 /* Object.mm in Sources */ = {isa = PBXBuildFile; fileRef = 469302482046AE05004A3D6C /* Object.mm */; };
+		6D787C1024EBA4EC00E4A839 /* tommyarrayblk.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B23236C28C600F3D55F /* tommyarrayblk.c */; };
+		6D787C1124EBA4EC00E4A839 /* CCScheduler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461786522052301A008256E1 /* CCScheduler.cpp */; };
+		6D787C1224EBA4EC00E4A839 /* ccTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB0B202ADDCE00931238 /* ccTypes.cpp */; };
+		6D787C1324EBA4EC00E4A839 /* MathUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD261925AB0000A911A9 /* MathUtil.cpp */; };
+		6D787C1424EBA4EC00E4A839 /* node_debug_options.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FDA2092F3A600F3A228 /* node_debug_options.cc */; };
+		6D787C1524EBA4EC00E4A839 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB5B205BCDC700350EE3 /* Class.cpp */; };
+		6D787C1624EBA4EC00E4A839 /* AudioDecoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC87B205CB6E9005321B9 /* AudioDecoder.mm */; };
+		6D787C1724EBA4EC00E4A839 /* ccUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB0C202ADDCE00931238 /* ccUtils.cpp */; };
+		6D787C1824EBA4EC00E4A839 /* CCFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBF231926664700A911A9 /* CCFileUtils.cpp */; };
+		6D787C1924EBA4EC00E4A839 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB55205BCDC700350EE3 /* Utils.cpp */; };
+		6D787C1A24EBA4EC00E4A839 /* jsb_cocos2dx_manual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D76D205665D100168D9A /* jsb_cocos2dx_manual.cpp */; };
+		6D787C1B24EBA4EC00E4A839 /* tommyalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B33236C28C600F3D55F /* tommyalloc.c */; };
+		6D787C1C24EBA4EC00E4A839 /* inspector_agent.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FCE2092F3A600F3A228 /* inspector_agent.cc */; };
+		6D787C1D24EBA4EC00E4A839 /* CCThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DAF5205BB81400350EE3 /* CCThreadPool.cpp */; };
+		6D787C1E24EBA4EC00E4A839 /* CCDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4617861720522469008256E1 /* CCDownloader.cpp */; };
+		6D787C1F24EBA4EC00E4A839 /* tommy.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B1F236C28C600F3D55F /* tommy.c */; };
+		6D787C2024EBA4EC00E4A839 /* astc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED88193A24B453F400B7ABCE /* astc.cpp */; };
+		6D787C2124EBA4EC00E4A839 /* Vec4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD351925AB0000A911A9 /* Vec4.cpp */; };
+		6D787C2224EBA4EC00E4A839 /* ccUTF8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB11202ADDCE00931238 /* ccUTF8.cpp */; };
+		6D787C2324EBA4EC00E4A839 /* jsb_global.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302CB2046AE05004A3D6C /* jsb_global.cpp */; };
+		6D787C2424EBA4EC00E4A839 /* ScriptEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB57205BCDC700350EE3 /* ScriptEngine.cpp */; };
+		6D787C2524EBA4EC00E4A839 /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
+		6D787C2624EBA4EC00E4A839 /* SRHash.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF371F20AFAB007A1D9D /* SRHash.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C2724EBA4EC00E4A839 /* ZipUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDAFC202ADDCE00931238 /* ZipUtils.cpp */; };
+		6D787C2824EBA4EC00E4A839 /* Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD2A1925AB0000A911A9 /* Quaternion.cpp */; };
+		6D787C2924EBA4EC00E4A839 /* CCLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46930465204FE20F004A3D6C /* CCLog.cpp */; };
+		6D787C2A24EBA4EC00E4A839 /* jsb_cocos2dx_audioengine_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC871205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.cpp */; };
+		6D787C2B24EBA4EC00E4A839 /* Mat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD231925AB0000A911A9 /* Mat4.cpp */; };
+		6D787C2C24EBA4EC00E4A839 /* HandleObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693022A2046AE05004A3D6C /* HandleObject.cpp */; };
+		6D787C2D24EBA4EC00E4A839 /* EditBox-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 461DCA3A20BBFCA300B22827 /* EditBox-ios.mm */; };
+		6D787C2E24EBA4EC00E4A839 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB56205BCDC700350EE3 /* Object.cpp */; };
+		6D787C2F24EBA4EC00E4A839 /* PlatformUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4693024C2046AE05004A3D6C /* PlatformUtils.mm */; };
+		6D787C3024EBA4EC00E4A839 /* VideoPlayer-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40FF7A9E216B29CB00E73029 /* VideoPlayer-ios.mm */; };
+		6D787C3124EBA4EC00E4A839 /* CCReachability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A37E9C4200DD0680078AF72 /* CCReachability.cpp */; };
+		6D787C3224EBA4EC00E4A839 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB19205BCD9200350EE3 /* Class.cpp */; };
+		6D787C3324EBA4EC00E4A839 /* ConvertUTF.c in Sources */ = {isa = PBXBuildFile; fileRef = ED3057971BEC77B70083C3ED /* ConvertUTF.c */; };
+		6D787C3424EBA4EC00E4A839 /* node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FC72092F3A600F3A228 /* node.cc */; };
+		6D787C3524EBA4EC00E4A839 /* WebSocket-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4617860820522469008256E1 /* WebSocket-apple.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C3624EBA4EC00E4A839 /* AudioPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC87A205CB6E9005321B9 /* AudioPlayer.mm */; };
+		6D787C3724EBA4EC00E4A839 /* tommylist.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B2F236C28C600F3D55F /* tommylist.c */; };
+		6D787C3824EBA4EC00E4A839 /* ScriptEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB0A205BCD9200350EE3 /* ScriptEngine.cpp */; };
+		6D787C3924EBA4EC00E4A839 /* jsb_classtype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302D02046AE05004A3D6C /* jsb_classtype.cpp */; };
+		6D787C3A24EBA4EC00E4A839 /* NSURLRequest+SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF471F20AFAB007A1D9D /* NSURLRequest+SRWebSocket.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C3B24EBA4EC00E4A839 /* jsb_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302DE2046AE05004A3D6C /* jsb_helper.cpp */; };
+		6D787C3C24EBA4EC00E4A839 /* CCValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB43202ADDCE00931238 /* CCValue.cpp */; };
+		6D787C3D24EBA4EC00E4A839 /* SRLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF3B1F20AFAB007A1D9D /* SRLog.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C3E24EBA4EC00E4A839 /* SRRunLoopThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF2D1F20AFAB007A1D9D /* SRRunLoopThread.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C3F24EBA4EC00E4A839 /* SRConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF321F20AFAB007A1D9D /* SRConstants.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C4024EBA4EC00E4A839 /* AudioEngine-inl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC87D205CB6E9005321B9 /* AudioEngine-inl.mm */; };
+		6D787C4124EBA4EC00E4A839 /* HttpCookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4617860220522468008256E1 /* HttpCookie.cpp */; };
+		6D787C4224EBA4EC00E4A839 /* EJConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A586C482064C97800B47573 /* EJConvert.m */; };
+		6D787C4324EBA4EC00E4A839 /* jsb_conversions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302DA2046AE05004A3D6C /* jsb_conversions.cpp */; };
+		6D787C4424EBA4EC00E4A839 /* tommyhashlin.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B22236C28C600F3D55F /* tommyhashlin.c */; };
+		6D787C4524EBA4EC00E4A839 /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FD82092F3A600F3A228 /* http_parser.c */; };
+		6D787C4624EBA4EC00E4A839 /* jsb_xmlhttprequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461786582052607E008256E1 /* jsb_xmlhttprequest.cpp */; };
+		6D787C4724EBA4EC00E4A839 /* Uri.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4617860C20522469008256E1 /* Uri.cpp */; };
+		6D787C4824EBA4EC00E4A839 /* jsb_cocos2dx_network_manual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4008729220CE20C2002EB77B /* jsb_cocos2dx_network_manual.cpp */; };
+		6D787C4924EBA4EC00E4A839 /* ObjectWrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DAFE205BCD9200350EE3 /* ObjectWrap.cpp */; };
+		6D787C4A24EBA4EC00E4A839 /* CCGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD1D1925AB0000A911A9 /* CCGeometry.cpp */; };
+		6D787C4B24EBA4EC00E4A839 /* SRURLUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF431F20AFAB007A1D9D /* SRURLUtilities.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C4C24EBA4EC00E4A839 /* SRIOConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF231F20AFAB007A1D9D /* SRIOConsumer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C4D24EBA4EC00E4A839 /* tommytrie.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B37236C28C600F3D55F /* tommytrie.c */; };
+		6D787C4E24EBA4EC00E4A839 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693022B2046AE05004A3D6C /* State.cpp */; };
+		6D787C4F24EBA4EC00E4A839 /* jsb_opengl_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D78C205666F200168D9A /* jsb_opengl_utils.cpp */; };
+		6D787C5024EBA4EC00E4A839 /* jsb_webview_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40AEF7B4216D982600729AA5 /* jsb_webview_auto.cpp */; };
+		6D787C5124EBA4EC00E4A839 /* tommyhashdyn.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B1D236C28C600F3D55F /* tommyhashdyn.c */; };
+		6D787C5224EBA4EC00E4A839 /* cocos2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50272539190BF1B900AAF4ED /* cocos2d.cpp */; };
+		6D787C5324EBA4EC00E4A839 /* SRHTTPConnectMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF391F20AFAB007A1D9D /* SRHTTPConnectMessage.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C5424EBA4EC00E4A839 /* SRSIMDHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF411F20AFAB007A1D9D /* SRSIMDHelpers.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C5524EBA4EC00E4A839 /* CCVertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD211925AB0000A911A9 /* CCVertex.cpp */; };
+		6D787C5624EBA4EC00E4A839 /* CCDevice-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 294D7D991D0E93A2002CE7B7 /* CCDevice-apple.mm */; };
+		6D787C5724EBA4EC00E4A839 /* HttpAsynConnection-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4617860D20522469008256E1 /* HttpAsynConnection-apple.m */; };
+		6D787C5824EBA4EC00E4A839 /* jsb_cocos2dx_extension_auto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21055721008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp */; };
+		6D787C5924EBA4EC00E4A839 /* jsb_platfrom_apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB862060B11800350EE3 /* jsb_platfrom_apple.mm */; };
+		6D787C5A24EBA4EC00E4A839 /* CCEAGLView-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 503DD8D51926736A00CD74DD /* CCEAGLView-ios.mm */; };
+		6D787C5B24EBA4EC00E4A839 /* LocalStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D781205666B100168D9A /* LocalStorage.cpp */; };
+		6D787C5C24EBA4EC00E4A839 /* inspector_socket_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FCB2092F3A600F3A228 /* inspector_socket_server.cc */; };
+		6D787C5D24EBA4EC00E4A839 /* SocketIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 461785FE20522468008256E1 /* SocketIO.cpp */; };
+		6D787C5E24EBA4EC00E4A839 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDAFD202ADDCE00931238 /* base64.cpp */; };
+		6D787C5F24EBA4EC00E4A839 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4693024E2046AE05004A3D6C /* Class.cpp */; };
+		6D787C6024EBA4EC00E4A839 /* CCCanvasRenderingContext2D-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1ABAD24D20C29F3800BC71C0 /* CCCanvasRenderingContext2D-apple.mm */; };
+		6D787C6124EBA4EC00E4A839 /* inspector_socket.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FD32092F3A600F3A228 /* inspector_socket.cc */; };
+		6D787C6224EBA4EC00E4A839 /* AudioCache.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AAAC87F205CB6E9005321B9 /* AudioCache.mm */; };
+		6D787C6324EBA4EC00E4A839 /* CCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB36202ADDCE00931238 /* CCData.cpp */; };
+		6D787C6424EBA4EC00E4A839 /* EventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302F92046AE05004A3D6C /* EventDispatcher.cpp */; };
+		6D787C6524EBA4EC00E4A839 /* HttpClient-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4617860A20522469008256E1 /* HttpClient-apple.mm */; };
+		6D787C6624EBA4EC00E4A839 /* WebViewImpl-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40AEF7A9216D940200729AA5 /* WebViewImpl-ios.mm */; };
+		6D787C6724EBA4EC00E4A839 /* TGAlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDB0E202ADDCE00931238 /* TGAlib.cpp */; };
+		6D787C6824EBA4EC00E4A839 /* ccRandom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FDDAF7202ADDCE00931238 /* ccRandom.cpp */; };
+		6D787C6924EBA4EC00E4A839 /* SRRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF3F1F20AFAB007A1D9D /* SRRandom.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C6A24EBA4EC00E4A839 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A52DB08205BCD9200350EE3 /* Object.cpp */; };
+		6D787C6B24EBA4EC00E4A839 /* RefCounter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469302422046AE05004A3D6C /* RefCounter.cpp */; };
+		6D787C6C24EBA4EC00E4A839 /* Vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBD321925AB0000A911A9 /* Vec3.cpp */; };
+		6D787C6D24EBA4EC00E4A839 /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FD12092F3A600F3A228 /* util.cc */; };
+		6D787C6E24EBA4EC00E4A839 /* tommyarrayblkof.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B1C236C28C600F3D55F /* tommyarrayblkof.c */; };
+		6D787C6F24EBA4EC00E4A839 /* jsb_websocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4617865B2052607E008256E1 /* jsb_websocket.cpp */; };
+		6D787C7024EBA4EC00E4A839 /* CCFileUtils-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 50ABBF1C1926664700A911A9 /* CCFileUtils-apple.mm */; };
+		6D787C7124EBA4EC00E4A839 /* xxtea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DC57D1F1F7A58B5005B6546 /* xxtea.cpp */; };
+		6D787C7224EBA4EC00E4A839 /* csscolorparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D7792056667700168D9A /* csscolorparser.cpp */; };
+		6D787C7324EBA4EC00E4A839 /* jsb_opengl_manual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D78B205666F200168D9A /* jsb_opengl_manual.cpp */; };
+		6D787C7424EBA4EC00E4A839 /* inspector_io.cc in Sources */ = {isa = PBXBuildFile; fileRef = 46AE3FD42092F3A600F3A228 /* inspector_io.cc */; };
+		6D787C7524EBA4EC00E4A839 /* CCRenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4648882420AC2BC900CD1E4A /* CCRenderTexture.cpp */; };
+		6D787C7624EBA4EC00E4A839 /* CCDevice-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 503DD8D11926736A00CD74DD /* CCDevice-ios.mm */; };
+		6D787C7724EBA4EC00E4A839 /* SRError.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF351F20AFAB007A1D9D /* SRError.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C7824EBA4EC00E4A839 /* SRDelegateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A28FF201F20AFAB007A1D9D /* SRDelegateController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		6D787C7924EBA4EC00E4A839 /* AssetsManagerEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21054721008AC300E19975 /* AssetsManagerEx.cpp */; };
+		6D787C7A24EBA4EC00E4A839 /* tommyarray.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC32B2C236C28C600F3D55F /* tommyarray.c */; };
+		6D787C7B24EBA4EC00E4A839 /* CCEventAssetsManagerEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21054921008AC300E19975 /* CCEventAssetsManagerEx.cpp */; };
+		6D787C7C24EBA4EC00E4A839 /* Manifest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA21054D21008AC300E19975 /* Manifest.cpp */; };
+		6D787C7E24EBA4EC00E4A839 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA4E2C83237E770300287DD6 /* JavaScriptCore.framework */; };
+		6D787C7F24EBA4EC00E4A839 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC32B79236C2B9D00F3D55F /* CoreFoundation.framework */; };
+		6D787C8024EBA4EC00E4A839 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1551A342158F2AB200E66CFE /* Foundation.framework */; };
+		6D787C8124EBA4EC00E4A839 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC32B75236C28F200F3D55F /* UIKit.framework */; };
+		6D787C8224EBA4EC00E4A839 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC32B77236C291000F3D55F /* OpenGLES.framework */; };
+		6D787C8324EBA4EC00E4A839 /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDE5DFF71C0D6B3F0014147A /* libwebsockets.a */; };
+		6D787C8424EBA4EC00E4A839 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ACF6A3A1E4AFDC80033C137 /* libcrypto.a */; };
+		6D787C8524EBA4EC00E4A839 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1ACF6A3B1E4AFDC80033C137 /* libssl.a */; };
+		6D787C8624EBA4EC00E4A839 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 468A968622F440AC005034BE /* libuv_a.a */; };
+		6D787C8724EBA4EC00E4A839 /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B5191D4A106A00BBB345 /* libtiff.a */; };
+		6D787C8824EBA4EC00E4A839 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B5171D4A106A00BBB345 /* libjpeg.a */; };
+		6D787C8924EBA4EC00E4A839 /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B51A1D4A106A00BBB345 /* libwebp.a */; };
+		6D787C8A24EBA4EC00E4A839 /* libv8_monolith.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 468A968422F43F8F005034BE /* libv8_monolith.a */; };
+		6D787C8B24EBA4EC00E4A839 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B291B5181D4A106A00BBB345 /* libpng.a */; };
+		6D787C8D24EBA4EC00E4A839 /* Uri.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860720522469008256E1 /* Uri.h */; };
+		6D787C8E24EBA4EC00E4A839 /* HandleObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693023C2046AE05004A3D6C /* HandleObject.hpp */; };
+		6D787C8F24EBA4EC00E4A839 /* CCPlatformDefine-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 503DD8DD1926736A00CD74DD /* CCPlatformDefine-ios.h */; };
+		6D787C9024EBA4EC00E4A839 /* NSURLRequest+SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF461F20AFAB007A1D9D /* NSURLRequest+SRWebSocket.h */; };
+		6D787C9124EBA4EC00E4A839 /* CCData.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAF2202ADDCE00931238 /* CCData.h */; };
+		6D787C9224EBA4EC00E4A839 /* Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302392046AE05004A3D6C /* Value.hpp */; };
+		6D787C9324EBA4EC00E4A839 /* SocketRocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF481F20AFAB007A1D9D /* SocketRocket.h */; };
+		6D787C9424EBA4EC00E4A839 /* HttpAsynConnection-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617861520522469008256E1 /* HttpAsynConnection-apple.h */; };
+		6D787C9524EBA4EC00E4A839 /* vk_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83B23584B92007740C5 /* vk_platform.h */; };
+		6D787C9624EBA4EC00E4A839 /* jsb_opengl_utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D78E205666F200168D9A /* jsb_opengl_utils.hpp */; };
+		6D787C9724EBA4EC00E4A839 /* NSRunLoop+SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF441F20AFAB007A1D9D /* NSRunLoop+SRWebSocket.h */; };
+		6D787C9824EBA4EC00E4A839 /* tommyhashdyn.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B2B236C28C600F3D55F /* tommyhashdyn.h */; };
+		6D787C9924EBA4EC00E4A839 /* Mat3.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 425D3FF022D86BEF00BCED11 /* Mat3.hpp */; };
+		6D787C9A24EBA4EC00E4A839 /* egl.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83623584B92007740C5 /* egl.h */; };
+		6D787C9B24EBA4EC00E4A839 /* CCVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB14202ADDCE00931238 /* CCVector.h */; };
+		6D787C9C24EBA4EC00E4A839 /* tommytree.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B36236C28C600F3D55F /* tommytree.h */; };
+		6D787C9D24EBA4EC00E4A839 /* utlist.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAEE202ADDCE00931238 /* utlist.h */; };
+		6D787C9E24EBA4EC00E4A839 /* SHA1.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD72092F3A600F3A228 /* SHA1.h */; };
+		6D787C9F24EBA4EC00E4A839 /* SeApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302412046AE05004A3D6C /* SeApi.h */; };
+		6D787CA024EBA4EC00E4A839 /* jsb_cocos2dx_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D768205665BE00168D9A /* jsb_cocos2dx_auto.hpp */; };
+		6D787CA124EBA4EC00E4A839 /* ccUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB20202ADDCE00931238 /* ccUtils.h */; };
+		6D787CA224EBA4EC00E4A839 /* CCPlatformConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 50643BE019BFCF1800EF68ED /* CCPlatformConfig.h */; };
+		6D787CA324EBA4EC00E4A839 /* pvr.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAEB202ADDCE00931238 /* pvr.h */; };
+		6D787CA424EBA4EC00E4A839 /* uthash.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB1F202ADDCE00931238 /* uthash.h */; };
+		6D787CA524EBA4EC00E4A839 /* ccMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAF3202ADDCE00931238 /* ccMacros.h */; };
+		6D787CA624EBA4EC00E4A839 /* CCDevice-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 294D7D981D0E93A2002CE7B7 /* CCDevice-apple.h */; };
+		6D787CA724EBA4EC00E4A839 /* CCDownloaderImpl-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860F20522469008256E1 /* CCDownloaderImpl-apple.h */; };
+		6D787CA824EBA4EC00E4A839 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FC92092F3A600F3A228 /* base64.h */; };
+		6D787CA924EBA4EC00E4A839 /* glext.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83023584B92007740C5 /* glext.h */; };
+		6D787CAA24EBA4EC00E4A839 /* EJConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A586C472064C97800B47573 /* EJConvert.h */; };
+		6D787CAB24EBA4EC00E4A839 /* inspector_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FCA2092F3A600F3A228 /* inspector_io.h */; };
+		6D787CAC24EBA4EC00E4A839 /* AudioDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC879205CB6E9005321B9 /* AudioDecoder.h */; };
+		6D787CAD24EBA4EC00E4A839 /* SRRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF3E1F20AFAB007A1D9D /* SRRandom.h */; };
+		6D787CAE24EBA4EC00E4A839 /* Object.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB58205BCDC700350EE3 /* Object.hpp */; };
+		6D787CAF24EBA4EC00E4A839 /* CCPlatformDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 5091A7A219BFABA800AC8789 /* CCPlatformDefine.h */; };
+		6D787CB024EBA4EC00E4A839 /* Vec4.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD361925AB0000A911A9 /* Vec4.h */; };
+		6D787CB124EBA4EC00E4A839 /* inspector_socket_server.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FC52092F3A600F3A228 /* inspector_socket_server.h */; };
+		6D787CB224EBA4EC00E4A839 /* EJConvertTypedArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A586C412064C90500B47573 /* EJConvertTypedArray.h */; };
+		6D787CB324EBA4EC00E4A839 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD52092F3A600F3A228 /* util.h */; };
+		6D787CB424EBA4EC00E4A839 /* jsb_webview_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7B5216D982600729AA5 /* jsb_webview_auto.hpp */; };
+		6D787CB524EBA4EC00E4A839 /* CCFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF241926664700A911A9 /* CCFileUtils.h */; };
+		6D787CB624EBA4EC00E4A839 /* VideoPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 40FF7A9F216B29CB00E73029 /* VideoPlayer.h */; };
+		6D787CB724EBA4EC00E4A839 /* tommyarray.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B1E236C28C600F3D55F /* tommyarray.h */; };
+		6D787CB824EBA4EC00E4A839 /* csscolorparser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D77A2056667800168D9A /* csscolorparser.hpp */; };
+		6D787CB924EBA4EC00E4A839 /* tommyarrayblkof.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B2D236C28C600F3D55F /* tommyarrayblkof.h */; };
+		6D787CBA24EBA4EC00E4A839 /* inspector_socket.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD92092F3A600F3A228 /* inspector_socket.h */; };
+		6D787CBB24EBA4EC00E4A839 /* WebView-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7AB216D940200729AA5 /* WebView-inl.h */; };
+		6D787CBC24EBA4EC00E4A839 /* CCEAGLView-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 503DD8D41926736A00CD74DD /* CCEAGLView-ios.h */; };
+		6D787CBD24EBA4EC00E4A839 /* Class.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302442046AE05004A3D6C /* Class.hpp */; };
+		6D787CBE24EBA4EC00E4A839 /* jsb_helper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302CF2046AE05004A3D6C /* jsb_helper.hpp */; };
+		6D787CBF24EBA4EC00E4A839 /* CCThreadPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DAF4205BB81400350EE3 /* CCThreadPool.h */; };
+		6D787CC024EBA4EC00E4A839 /* Vec2.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD301925AB0000A911A9 /* Vec2.h */; };
+		6D787CC124EBA4EC00E4A839 /* jsb_cocos2dx_network_manual.h in Headers */ = {isa = PBXBuildFile; fileRef = 4008729320CE20C2002EB77B /* jsb_cocos2dx_network_manual.h */; };
+		6D787CC224EBA4EC00E4A839 /* CCMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD1F1925AB0000A911A9 /* CCMath.h */; };
+		6D787CC324EBA4EC00E4A839 /* Macro.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B89236C36D300F3D55F /* Macro.h */; };
+		6D787CC424EBA4EC00E4A839 /* jsb_websocket.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4617865C2052607E008256E1 /* jsb_websocket.hpp */; };
+		6D787CC524EBA4EC00E4A839 /* tommyhashtbl.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B32236C28C600F3D55F /* tommyhashtbl.h */; };
+		6D787CC624EBA4EC00E4A839 /* jsb_xmlhttprequest.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 461786572052607E008256E1 /* jsb_xmlhttprequest.hpp */; };
+		6D787CC724EBA4EC00E4A839 /* CCGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD1E1925AB0000A911A9 /* CCGeometry.h */; };
+		6D787CC824EBA4EC00E4A839 /* tommychain.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B31236C28C600F3D55F /* tommychain.h */; };
+		6D787CC924EBA4EC00E4A839 /* PlatformUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302472046AE05004A3D6C /* PlatformUtils.h */; };
+		6D787CCA24EBA4EC00E4A839 /* khrplatform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83423584B92007740C5 /* khrplatform.h */; };
+		6D787CCB24EBA4EC00E4A839 /* jsb_cocos2dx_network_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4617866A2052609B008256E1 /* jsb_cocos2dx_network_auto.hpp */; };
+		6D787CCC24EBA4EC00E4A839 /* SRConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF311F20AFAB007A1D9D /* SRConstants.h */; };
+		6D787CCD24EBA4EC00E4A839 /* CCFileUtils-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF1B1926664700A911A9 /* CCFileUtils-apple.h */; };
+		6D787CCE24EBA4EC00E4A839 /* CCAutoreleasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB39202ADDCE00931238 /* CCAutoreleasePool.h */; };
+		6D787CCF24EBA4EC00E4A839 /* jsb_socketio.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4617865A2052607E008256E1 /* jsb_socketio.hpp */; };
+		6D787CD024EBA4EC00E4A839 /* jsb_video_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7BE216DF21B00729AA5 /* jsb_video_auto.hpp */; };
+		6D787CD124EBA4EC00E4A839 /* v8_inspector_protocol_json.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD62092F3A600F3A228 /* v8_inspector_protocol_json.h */; };
+		6D787CD224EBA4EC00E4A839 /* SRIOConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF221F20AFAB007A1D9D /* SRIOConsumer.h */; };
+		6D787CD324EBA4EC00E4A839 /* SRSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF491F20AFAB007A1D9D /* SRSecurityPolicy.h */; };
+		6D787CD424EBA4EC00E4A839 /* gl3.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82623584B92007740C5 /* gl3.h */; };
+		6D787CD524EBA4EC00E4A839 /* CCReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A37E9C3200DD0680078AF72 /* CCReachability.h */; };
+		6D787CD624EBA4EC00E4A839 /* CCAsyncTaskPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4037F5CA2108751E001C205C /* CCAsyncTaskPool.h */; };
+		6D787CD724EBA4EC00E4A839 /* Class.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB53205BCDC700350EE3 /* Class.hpp */; };
+		6D787CD824EBA4EC00E4A839 /* gl2.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82C23584B92007740C5 /* gl2.h */; };
+		6D787CD924EBA4EC00E4A839 /* egl.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82F23584B92007740C5 /* egl.h */; };
+		6D787CDA24EBA4EC00E4A839 /* eglext.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83723584B92007740C5 /* eglext.h */; };
+		6D787CDB24EBA4EC00E4A839 /* CCStdC.h in Headers */ = {isa = PBXBuildFile; fileRef = 50643BD819BFAF4400EF68ED /* CCStdC.h */; };
+		6D787CDC24EBA4EC00E4A839 /* Base.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302502046AE05004A3D6C /* Base.h */; };
+		6D787CDD24EBA4EC00E4A839 /* CCLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 46930464204FE20F004A3D6C /* CCLog.h */; };
+		6D787CDE24EBA4EC00E4A839 /* SRHTTPConnectMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF381F20AFAB007A1D9D /* SRHTTPConnectMessage.h */; };
+		6D787CDF24EBA4EC00E4A839 /* vulkan.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83A23584B92007740C5 /* vulkan.h */; };
+		6D787CE024EBA4EC00E4A839 /* CCRefPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB22202ADDCE00931238 /* CCRefPtr.h */; };
+		6D787CE124EBA4EC00E4A839 /* node_mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FCC2092F3A600F3A228 /* node_mutex.h */; };
+		6D787CE224EBA4EC00E4A839 /* HttpCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617861820522469008256E1 /* HttpCookie.h */; };
+		6D787CE324EBA4EC00E4A839 /* Base.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB5D205BCDC700350EE3 /* Base.h */; };
+		6D787CE424EBA4EC00E4A839 /* jsb_global.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302C72046AE05004A3D6C /* jsb_global.h */; };
+		6D787CE524EBA4EC00E4A839 /* util-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD22092F3A600F3A228 /* util-inl.h */; };
+		6D787CE624EBA4EC00E4A839 /* WebViewImpl-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7AD216D940200729AA5 /* WebViewImpl-ios.h */; };
+		6D787CE724EBA4EC00E4A839 /* SRRunLoopThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF2C1F20AFAB007A1D9D /* SRRunLoopThread.h */; };
+		6D787CE824EBA4EC00E4A839 /* Core.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A62C23583DBD007740C5 /* Core.h */; };
+		6D787CE924EBA4EC00E4A839 /* ccTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB05202ADDCE00931238 /* ccTypes.h */; };
+		6D787CEA24EBA4EC00E4A839 /* CCDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF221926664700A911A9 /* CCDevice.h */; };
+		6D787CEB24EBA4EC00E4A839 /* SRLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF3A1F20AFAB007A1D9D /* SRLog.h */; };
+		6D787CEC24EBA4EC00E4A839 /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FD02092F3A600F3A228 /* node.h */; };
+		6D787CED24EBA4EC00E4A839 /* CCApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDC62202D502E00931238 /* CCApplication.h */; };
+		6D787CEE24EBA4EC00E4A839 /* MappingUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302402046AE05004A3D6C /* MappingUtils.hpp */; };
+		6D787CEF24EBA4EC00E4A839 /* HttpRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617861420522469008256E1 /* HttpRequest.h */; };
+		6D787CF024EBA4EC00E4A839 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FCD2092F3A600F3A228 /* http_parser.h */; };
+		6D787CF124EBA4EC00E4A839 /* EventDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302FA2046AE05004A3D6C /* EventDispatcher.h */; };
+		6D787CF224EBA4EC00E4A839 /* tommylist.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B1B236C28C600F3D55F /* tommylist.h */; };
+		6D787CF324EBA4EC00E4A839 /* gl2ext.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82B23584B92007740C5 /* gl2ext.h */; };
+		6D787CF424EBA4EC00E4A839 /* ZipUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB2A202ADDCE00931238 /* ZipUtils.h */; };
+		6D787CF524EBA4EC00E4A839 /* CCValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAEC202ADDCE00931238 /* CCValue.h */; };
+		6D787CF624EBA4EC00E4A839 /* HelperMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 469302452046AE05004A3D6C /* HelperMacros.h */; };
+		6D787CF724EBA4EC00E4A839 /* AudioCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC880205CB6E9005321B9 /* AudioCache.h */; };
+		6D787CF824EBA4EC00E4A839 /* SRHash.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF361F20AFAB007A1D9D /* SRHash.h */; };
+		6D787CF924EBA4EC00E4A839 /* CCMathBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD201925AB0000A911A9 /* CCMathBase.h */; };
+		6D787CFA24EBA4EC00E4A839 /* TGAlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB33202ADDCE00931238 /* TGAlib.h */; };
+		6D787CFB24EBA4EC00E4A839 /* config.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302382046AE05004A3D6C /* config.hpp */; };
+		6D787CFC24EBA4EC00E4A839 /* gl2platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82D23584B92007740C5 /* gl2platform.h */; };
+		6D787CFD24EBA4EC00E4A839 /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF4B1F20AFAB007A1D9D /* SRWebSocket.h */; };
+		6D787CFE24EBA4EC00E4A839 /* tinydir.h in Headers */ = {isa = PBXBuildFile; fileRef = BAEA45541E279D5C00FA219F /* tinydir.h */; };
+		6D787CFF24EBA4EC00E4A839 /* State.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693023D2046AE05004A3D6C /* State.hpp */; };
+		6D787D0024EBA4EC00E4A839 /* astc.h in Headers */ = {isa = PBXBuildFile; fileRef = ED88193B24B453F400B7ABCE /* astc.h */; };
+		6D787D0124EBA4EC00E4A839 /* tommyalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B24236C28C600F3D55F /* tommyalloc.h */; };
+		6D787D0224EBA4EC00E4A839 /* JavaScriptObjCBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 461DCA5720C7E4B900B22827 /* JavaScriptObjCBridge.h */; };
+		6D787D0324EBA4EC00E4A839 /* CCRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB09202ADDCE00931238 /* CCRef.h */; };
+		6D787D0424EBA4EC00E4A839 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAFA202ADDCE00931238 /* base64.h */; };
+		6D787D0524EBA4EC00E4A839 /* RefCounter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302292046AE05004A3D6C /* RefCounter.hpp */; };
+		6D787D0624EBA4EC00E4A839 /* WebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 40AEF7AC216D940200729AA5 /* WebView.h */; };
+		6D787D0724EBA4EC00E4A839 /* gl3platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82823584B92007740C5 /* gl3platform.h */; };
+		6D787D0824EBA4EC00E4A839 /* AudioEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC884205CB6E9005321B9 /* AudioEngine.h */; };
+		6D787D0924EBA4EC00E4A839 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = ED8DBD442431E75200215C5B /* Utils.h */; };
+		6D787D0A24EBA4EC00E4A839 /* CCCanvasRenderingContext2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D7A220566CAB00168D9A /* CCCanvasRenderingContext2D.h */; };
+		6D787D0B24EBA4EC00E4A839 /* SeApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB5A205BCDC700350EE3 /* SeApi.h */; };
+		6D787D0C24EBA4EC00E4A839 /* SeApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 4693024D2046AE05004A3D6C /* SeApi.h */; };
+		6D787D0D24EBA4EC00E4A839 /* StringUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A63D23583DBD007740C5 /* StringUtil.h */; };
+		6D787D0E24EBA4EC00E4A839 /* Object.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693023B2046AE05004A3D6C /* Object.hpp */; };
+		6D787D0F24EBA4EC00E4A839 /* SRProxyConnect.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF291F20AFAB007A1D9D /* SRProxyConnect.h */; };
+		6D787D1024EBA4EC00E4A839 /* Utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693024F2046AE05004A3D6C /* Utils.hpp */; };
+		6D787D1124EBA4EC00E4A839 /* SRDelegateController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF1F1F20AFAB007A1D9D /* SRDelegateController.h */; };
+		6D787D1224EBA4EC00E4A839 /* CCConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 469301CD203FC695004A3D6C /* CCConfiguration.h */; };
+		6D787D1324EBA4EC00E4A839 /* etc1.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDAFB202ADDCE00931238 /* etc1.h */; };
+		6D787D1424EBA4EC00E4A839 /* EditBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 461DCA3420BBFA2D00B22827 /* EditBox.h */; };
+		6D787D1524EBA4EC00E4A839 /* AudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC87C205CB6E9005321B9 /* AudioPlayer.h */; };
+		6D787D1624EBA4EC00E4A839 /* ScriptEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693024B2046AE05004A3D6C /* ScriptEngine.hpp */; };
+		6D787D1724EBA4EC00E4A839 /* SRURLUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF421F20AFAB007A1D9D /* SRURLUtilities.h */; };
+		6D787D1824EBA4EC00E4A839 /* tommyhashlin.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B35236C28C600F3D55F /* tommyhashlin.h */; };
+		6D787D1924EBA4EC00E4A839 /* Mat4.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD241925AB0000A911A9 /* Mat4.h */; };
+		6D787D1A24EBA4EC00E4A839 /* Quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD2B1925AB0000A911A9 /* Quaternion.h */; };
+		6D787D1B24EBA4EC00E4A839 /* HttpResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617861120522469008256E1 /* HttpResponse.h */; };
+		6D787D1C24EBA4EC00E4A839 /* CCScheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = 461786512052301A008256E1 /* CCScheduler.h */; };
+		6D787D1D24EBA4EC00E4A839 /* CCImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF281926664700A911A9 /* CCImage.h */; };
+		6D787D1E24EBA4EC00E4A839 /* CCGL-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 503DD8D91926736A00CD74DD /* CCGL-ios.h */; };
+		6D787D1F24EBA4EC00E4A839 /* CCIDownloaderImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860420522469008256E1 /* CCIDownloaderImpl.h */; };
+		6D787D2024EBA4EC00E4A839 /* cocos2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 50272538190BF1B900AAF4ED /* cocos2d.h */; };
+		6D787D2124EBA4EC00E4A839 /* jsb_cocos2dx_audioengine_auto.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC872205CB647005321B9 /* jsb_cocos2dx_audioengine_auto.hpp */; };
+		6D787D2224EBA4EC00E4A839 /* gl31.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82923584B92007740C5 /* gl31.h */; };
+		6D787D2324EBA4EC00E4A839 /* ScriptEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB59205BCDC700350EE3 /* ScriptEngine.hpp */; };
+		6D787D2424EBA4EC00E4A839 /* CCRenderTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 4648882320AC2BC800CD1E4A /* CCRenderTexture.h */; };
+		6D787D2524EBA4EC00E4A839 /* jsb_cocos2dx_manual.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D76E205665D100168D9A /* jsb_cocos2dx_manual.hpp */; };
+		6D787D2624EBA4EC00E4A839 /* LocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D783205666B100168D9A /* LocalStorage.h */; };
+		6D787D2724EBA4EC00E4A839 /* tommytrie.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B27236C28C600F3D55F /* tommytrie.h */; };
+		6D787D2824EBA4EC00E4A839 /* CCApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDC65202D504D00931238 /* CCApplication.h */; };
+		6D787D2924EBA4EC00E4A839 /* inspector_agent.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FC82092F3A600F3A228 /* inspector_agent.h */; };
+		6D787D2A24EBA4EC00E4A839 /* MathUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD271925AB0000A911A9 /* MathUtil.h */; };
+		6D787D2B24EBA4EC00E4A839 /* SRIOConsumerPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF241F20AFAB007A1D9D /* SRIOConsumerPool.h */; };
+		6D787D2C24EBA4EC00E4A839 /* SRMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF3C1F20AFAB007A1D9D /* SRMutex.h */; };
+		6D787D2D24EBA4EC00E4A839 /* jsb_module_register.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 403ACAD920CE4EB000BB433D /* jsb_module_register.hpp */; };
+		6D787D2E24EBA4EC00E4A839 /* CCGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 50643BD319BFAECF00EF68ED /* CCGL.h */; };
+		6D787D2F24EBA4EC00E4A839 /* ccRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB06202ADDCE00931238 /* ccRandom.h */; };
+		6D787D3024EBA4EC00E4A839 /* AudioMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC87E205CB6E9005321B9 /* AudioMacros.h */; };
+		6D787D3124EBA4EC00E4A839 /* node_debug_options.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FDB2092F3A600F3A228 /* node_debug_options.h */; };
+		6D787D3224EBA4EC00E4A839 /* CCDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860520522469008256E1 /* CCDownloader.h */; };
+		6D787D3324EBA4EC00E4A839 /* etc2.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DCEC125233236D60020F8E3 /* etc2.h */; };
+		6D787D3424EBA4EC00E4A839 /* ccUTF8.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB2D202ADDCE00931238 /* ccUTF8.h */; };
+		6D787D3524EBA4EC00E4A839 /* CCGLUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A14FD902080B4E300E10ABE /* CCGLUtils.h */; };
+		6D787D3624EBA4EC00E4A839 /* glplatform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83123584B92007740C5 /* glplatform.h */; };
+		6D787D3724EBA4EC00E4A839 /* tommyarrayblk.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B34236C28C600F3D55F /* tommyarrayblk.h */; };
+		6D787D3824EBA4EC00E4A839 /* Vec3.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD331925AB0000A911A9 /* Vec3.h */; };
+		6D787D3924EBA4EC00E4A839 /* ccCArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB45202ADDCE00931238 /* ccCArray.h */; };
+		6D787D3A24EBA4EC00E4A839 /* jsb_opengl_manual.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D790205666F500168D9A /* jsb_opengl_manual.hpp */; };
+		6D787D3B24EBA4EC00E4A839 /* tommy.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B29236C28C600F3D55F /* tommy.h */; };
+		6D787D3C24EBA4EC00E4A839 /* tommytrieinp.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B1A236C28C600F3D55F /* tommytrieinp.h */; };
+		6D787D3D24EBA4EC00E4A839 /* CCVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBD221925AB0000A911A9 /* CCVertex.h */; };
+		6D787D3E24EBA4EC00E4A839 /* WebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860620522469008256E1 /* WebSocket.h */; };
+		6D787D3F24EBA4EC00E4A839 /* SocketIO.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860B20522469008256E1 /* SocketIO.h */; };
+		6D787D4024EBA4EC00E4A839 /* NSURLRequest+SRWebSocketPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF271F20AFAB007A1D9D /* NSURLRequest+SRWebSocketPrivate.h */; };
+		6D787D4124EBA4EC00E4A839 /* eglplatform.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83823584B92007740C5 /* eglplatform.h */; };
+		6D787D4224EBA4EC00E4A839 /* AudioEngine-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC881205CB6E9005321B9 /* AudioEngine-inl.h */; };
+		6D787D4324EBA4EC00E4A839 /* SRError.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF341F20AFAB007A1D9D /* SRError.h */; };
+		6D787D4424EBA4EC00E4A839 /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AAAC885205CB6E9005321B9 /* Export.h */; };
+		6D787D4524EBA4EC00E4A839 /* ccConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB26202ADDCE00931238 /* ccConfig.h */; };
+		6D787D4624EBA4EC00E4A839 /* env.h in Headers */ = {isa = PBXBuildFile; fileRef = 46AE3FC62092F3A600F3A228 /* env.h */; };
+		6D787D4724EBA4EC00E4A839 /* Object.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4693024A2046AE05004A3D6C /* Object.hpp */; };
+		6D787D4824EBA4EC00E4A839 /* SRPinningSecurityPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF2F1F20AFAB007A1D9D /* SRPinningSecurityPolicy.h */; };
+		6D787D4924EBA4EC00E4A839 /* jsb_conversions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4617866F205262BB008256E1 /* jsb_conversions.hpp */; };
+		6D787D4A24EBA4EC00E4A839 /* gl.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A83223584B92007740C5 /* gl.h */; };
+		6D787D4B24EBA4EC00E4A839 /* tommyhash.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B26236C28C600F3D55F /* tommyhash.h */; };
+		6D787D4C24EBA4EC00E4A839 /* gl32.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82723584B92007740C5 /* gl32.h */; };
+		6D787D4D24EBA4EC00E4A839 /* CCSAXParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ABBF2A1926664700A911A9 /* CCSAXParser.h */; };
+		6D787D4E24EBA4EC00E4A839 /* gl3ext.h in Headers */ = {isa = PBXBuildFile; fileRef = BA06A82523584B92007740C5 /* gl3ext.h */; };
+		6D787D4F24EBA4EC00E4A839 /* HelperMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB54205BCDC700350EE3 /* HelperMacros.h */; };
+		6D787D5024EBA4EC00E4A839 /* jsb_classtype.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 469302DF2046AE05004A3D6C /* jsb_classtype.hpp */; };
+		6D787D5124EBA4EC00E4A839 /* tommyarrayof.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B30236C28C600F3D55F /* tommyarrayof.h */; };
+		6D787D5224EBA4EC00E4A839 /* CCMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 46FDDB2C202ADDCE00931238 /* CCMap.h */; };
+		6D787D5324EBA4EC00E4A839 /* Utils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A52DB5C205BCDC700350EE3 /* Utils.hpp */; };
+		6D787D5424EBA4EC00E4A839 /* OpenGL_Internal-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 503DD8DF1926736A00CD74DD /* OpenGL_Internal-ios.h */; };
+		6D787D5524EBA4EC00E4A839 /* NSRunLoop+SRWebSocketPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF261F20AFAB007A1D9D /* NSRunLoop+SRWebSocketPrivate.h */; };
+		6D787D5624EBA4EC00E4A839 /* SRSIMDHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A28FF401F20AFAB007A1D9D /* SRSIMDHelpers.h */; };
+		6D787D5724EBA4EC00E4A839 /* HttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4617860E20522469008256E1 /* HttpClient.h */; };
+		6D787D5824EBA4EC00E4A839 /* tommytypes.h in Headers */ = {isa = PBXBuildFile; fileRef = BAC32B2A236C28C600F3D55F /* tommytypes.h */; };
 		A07A4CAF1783777C0073F6A7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1551A342158F2AB200E66CFE /* Foundation.framework */; };
 		A679D0D91C71D90A00620A6C /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6A554241C2A7C4400FDD954 /* libssl.a */; };
 		A679D0DA1C71D93200620A6C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6A554221C2A7C3100FDD954 /* libcrypto.a */; };
@@ -1126,6 +1505,7 @@
 		50ABBF521926664700A911A9 /* CCDevice-mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "CCDevice-mac.mm"; sourceTree = "<group>"; };
 		50ABBF531926664700A911A9 /* CCGL-mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCGL-mac.h"; sourceTree = "<group>"; };
 		50ABBF541926664700A911A9 /* CCPlatformDefine-mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCPlatformDefine-mac.h"; sourceTree = "<group>"; };
+		6D787D5C24EBA4EC00E4A839 /* libcocos2d iOS AppClip.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d iOS AppClip.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A07A4D641783777C0073F6A7 /* libcocos2d iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6A554201C2A7C1300FDD954 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = ../external/mac/libs/libcurl.a; sourceTree = "<group>"; };
 		A6A554221C2A7C3100FDD954 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../external/mac/libs/libcrypto.a; sourceTree = "<group>"; };
@@ -1267,6 +1647,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6D787C7D24EBA4EC00E4A839 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D787C7E24EBA4EC00E4A839 /* JavaScriptCore.framework in Frameworks */,
+				6D787C7F24EBA4EC00E4A839 /* CoreFoundation.framework in Frameworks */,
+				6D787C8024EBA4EC00E4A839 /* Foundation.framework in Frameworks */,
+				6D787C8124EBA4EC00E4A839 /* UIKit.framework in Frameworks */,
+				6D787C8224EBA4EC00E4A839 /* OpenGLES.framework in Frameworks */,
+				6D787C8324EBA4EC00E4A839 /* libwebsockets.a in Frameworks */,
+				6D787C8424EBA4EC00E4A839 /* libcrypto.a in Frameworks */,
+				6D787C8524EBA4EC00E4A839 /* libssl.a in Frameworks */,
+				6D787C8624EBA4EC00E4A839 /* libuv_a.a in Frameworks */,
+				6D787C8724EBA4EC00E4A839 /* libtiff.a in Frameworks */,
+				6D787C8824EBA4EC00E4A839 /* libjpeg.a in Frameworks */,
+				6D787C8924EBA4EC00E4A839 /* libwebp.a in Frameworks */,
+				6D787C8A24EBA4EC00E4A839 /* libv8_monolith.a in Frameworks */,
+				6D787C8B24EBA4EC00E4A839 /* libpng.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A07A4CAD1783777C0073F6A7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1318,6 +1719,7 @@
 			children = (
 				1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */,
 				A07A4D641783777C0073F6A7 /* libcocos2d iOS.a */,
+				6D787D5C24EBA4EC00E4A839 /* libcocos2d iOS AppClip.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2467,6 +2869,217 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6D787C8C24EBA4EC00E4A839 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D787C8D24EBA4EC00E4A839 /* Uri.h in Headers */,
+				6D787C8E24EBA4EC00E4A839 /* HandleObject.hpp in Headers */,
+				6D787C8F24EBA4EC00E4A839 /* CCPlatformDefine-ios.h in Headers */,
+				6D787C9024EBA4EC00E4A839 /* NSURLRequest+SRWebSocket.h in Headers */,
+				6D787C9124EBA4EC00E4A839 /* CCData.h in Headers */,
+				6D787C9224EBA4EC00E4A839 /* Value.hpp in Headers */,
+				6D787C9324EBA4EC00E4A839 /* SocketRocket.h in Headers */,
+				6D787C9424EBA4EC00E4A839 /* HttpAsynConnection-apple.h in Headers */,
+				6D787C9524EBA4EC00E4A839 /* vk_platform.h in Headers */,
+				6D787C9624EBA4EC00E4A839 /* jsb_opengl_utils.hpp in Headers */,
+				6D787C9724EBA4EC00E4A839 /* NSRunLoop+SRWebSocket.h in Headers */,
+				6D787C9824EBA4EC00E4A839 /* tommyhashdyn.h in Headers */,
+				6D787C9924EBA4EC00E4A839 /* Mat3.hpp in Headers */,
+				6D787C9A24EBA4EC00E4A839 /* egl.h in Headers */,
+				6D787C9B24EBA4EC00E4A839 /* CCVector.h in Headers */,
+				6D787C9C24EBA4EC00E4A839 /* tommytree.h in Headers */,
+				6D787C9D24EBA4EC00E4A839 /* utlist.h in Headers */,
+				6D787C9E24EBA4EC00E4A839 /* SHA1.h in Headers */,
+				6D787C9F24EBA4EC00E4A839 /* SeApi.h in Headers */,
+				6D787CA024EBA4EC00E4A839 /* jsb_cocos2dx_auto.hpp in Headers */,
+				6D787CA124EBA4EC00E4A839 /* ccUtils.h in Headers */,
+				6D787CA224EBA4EC00E4A839 /* CCPlatformConfig.h in Headers */,
+				6D787CA324EBA4EC00E4A839 /* pvr.h in Headers */,
+				6D787CA424EBA4EC00E4A839 /* uthash.h in Headers */,
+				6D787CA524EBA4EC00E4A839 /* ccMacros.h in Headers */,
+				6D787CA624EBA4EC00E4A839 /* CCDevice-apple.h in Headers */,
+				6D787CA724EBA4EC00E4A839 /* CCDownloaderImpl-apple.h in Headers */,
+				6D787CA824EBA4EC00E4A839 /* base64.h in Headers */,
+				6D787CA924EBA4EC00E4A839 /* glext.h in Headers */,
+				6D787CAA24EBA4EC00E4A839 /* EJConvert.h in Headers */,
+				6D787CAB24EBA4EC00E4A839 /* inspector_io.h in Headers */,
+				6D787CAC24EBA4EC00E4A839 /* AudioDecoder.h in Headers */,
+				6D787CAD24EBA4EC00E4A839 /* SRRandom.h in Headers */,
+				6D787CAE24EBA4EC00E4A839 /* Object.hpp in Headers */,
+				6D787CAF24EBA4EC00E4A839 /* CCPlatformDefine.h in Headers */,
+				6D787CB024EBA4EC00E4A839 /* Vec4.h in Headers */,
+				6D787CB124EBA4EC00E4A839 /* inspector_socket_server.h in Headers */,
+				6D787CB224EBA4EC00E4A839 /* EJConvertTypedArray.h in Headers */,
+				6D787CB324EBA4EC00E4A839 /* util.h in Headers */,
+				6D787CB424EBA4EC00E4A839 /* jsb_webview_auto.hpp in Headers */,
+				6D787CB524EBA4EC00E4A839 /* CCFileUtils.h in Headers */,
+				6D787CB624EBA4EC00E4A839 /* VideoPlayer.h in Headers */,
+				6D787CB724EBA4EC00E4A839 /* tommyarray.h in Headers */,
+				6D787CB824EBA4EC00E4A839 /* csscolorparser.hpp in Headers */,
+				6D787CB924EBA4EC00E4A839 /* tommyarrayblkof.h in Headers */,
+				6D787CBA24EBA4EC00E4A839 /* inspector_socket.h in Headers */,
+				6D787CBB24EBA4EC00E4A839 /* WebView-inl.h in Headers */,
+				6D787CBC24EBA4EC00E4A839 /* CCEAGLView-ios.h in Headers */,
+				6D787CBD24EBA4EC00E4A839 /* Class.hpp in Headers */,
+				6D787CBE24EBA4EC00E4A839 /* jsb_helper.hpp in Headers */,
+				6D787CBF24EBA4EC00E4A839 /* CCThreadPool.h in Headers */,
+				6D787CC024EBA4EC00E4A839 /* Vec2.h in Headers */,
+				6D787CC124EBA4EC00E4A839 /* jsb_cocos2dx_network_manual.h in Headers */,
+				6D787CC224EBA4EC00E4A839 /* CCMath.h in Headers */,
+				6D787CC324EBA4EC00E4A839 /* Macro.h in Headers */,
+				6D787CC424EBA4EC00E4A839 /* jsb_websocket.hpp in Headers */,
+				6D787CC524EBA4EC00E4A839 /* tommyhashtbl.h in Headers */,
+				6D787CC624EBA4EC00E4A839 /* jsb_xmlhttprequest.hpp in Headers */,
+				6D787CC724EBA4EC00E4A839 /* CCGeometry.h in Headers */,
+				6D787CC824EBA4EC00E4A839 /* tommychain.h in Headers */,
+				6D787CC924EBA4EC00E4A839 /* PlatformUtils.h in Headers */,
+				6D787CCA24EBA4EC00E4A839 /* khrplatform.h in Headers */,
+				6D787CCB24EBA4EC00E4A839 /* jsb_cocos2dx_network_auto.hpp in Headers */,
+				6D787CCC24EBA4EC00E4A839 /* SRConstants.h in Headers */,
+				6D787CCD24EBA4EC00E4A839 /* CCFileUtils-apple.h in Headers */,
+				6D787CCE24EBA4EC00E4A839 /* CCAutoreleasePool.h in Headers */,
+				6D787CCF24EBA4EC00E4A839 /* jsb_socketio.hpp in Headers */,
+				6D787CD024EBA4EC00E4A839 /* jsb_video_auto.hpp in Headers */,
+				6D787CD124EBA4EC00E4A839 /* v8_inspector_protocol_json.h in Headers */,
+				6D787CD224EBA4EC00E4A839 /* SRIOConsumer.h in Headers */,
+				6D787CD324EBA4EC00E4A839 /* SRSecurityPolicy.h in Headers */,
+				6D787CD424EBA4EC00E4A839 /* gl3.h in Headers */,
+				6D787CD524EBA4EC00E4A839 /* CCReachability.h in Headers */,
+				6D787CD624EBA4EC00E4A839 /* CCAsyncTaskPool.h in Headers */,
+				6D787CD724EBA4EC00E4A839 /* Class.hpp in Headers */,
+				6D787CD824EBA4EC00E4A839 /* gl2.h in Headers */,
+				6D787CD924EBA4EC00E4A839 /* egl.h in Headers */,
+				6D787CDA24EBA4EC00E4A839 /* eglext.h in Headers */,
+				6D787CDB24EBA4EC00E4A839 /* CCStdC.h in Headers */,
+				6D787CDC24EBA4EC00E4A839 /* Base.h in Headers */,
+				6D787CDD24EBA4EC00E4A839 /* CCLog.h in Headers */,
+				6D787CDE24EBA4EC00E4A839 /* SRHTTPConnectMessage.h in Headers */,
+				6D787CDF24EBA4EC00E4A839 /* vulkan.h in Headers */,
+				6D787CE024EBA4EC00E4A839 /* CCRefPtr.h in Headers */,
+				6D787CE124EBA4EC00E4A839 /* node_mutex.h in Headers */,
+				6D787CE224EBA4EC00E4A839 /* HttpCookie.h in Headers */,
+				6D787CE324EBA4EC00E4A839 /* Base.h in Headers */,
+				6D787CE424EBA4EC00E4A839 /* jsb_global.h in Headers */,
+				6D787CE524EBA4EC00E4A839 /* util-inl.h in Headers */,
+				6D787CE624EBA4EC00E4A839 /* WebViewImpl-ios.h in Headers */,
+				6D787CE724EBA4EC00E4A839 /* SRRunLoopThread.h in Headers */,
+				6D787CE824EBA4EC00E4A839 /* Core.h in Headers */,
+				6D787CE924EBA4EC00E4A839 /* ccTypes.h in Headers */,
+				6D787CEA24EBA4EC00E4A839 /* CCDevice.h in Headers */,
+				6D787CEB24EBA4EC00E4A839 /* SRLog.h in Headers */,
+				6D787CEC24EBA4EC00E4A839 /* node.h in Headers */,
+				6D787CED24EBA4EC00E4A839 /* CCApplication.h in Headers */,
+				6D787CEE24EBA4EC00E4A839 /* MappingUtils.hpp in Headers */,
+				6D787CEF24EBA4EC00E4A839 /* HttpRequest.h in Headers */,
+				6D787CF024EBA4EC00E4A839 /* http_parser.h in Headers */,
+				6D787CF124EBA4EC00E4A839 /* EventDispatcher.h in Headers */,
+				6D787CF224EBA4EC00E4A839 /* tommylist.h in Headers */,
+				6D787CF324EBA4EC00E4A839 /* gl2ext.h in Headers */,
+				6D787CF424EBA4EC00E4A839 /* ZipUtils.h in Headers */,
+				6D787CF524EBA4EC00E4A839 /* CCValue.h in Headers */,
+				6D787CF624EBA4EC00E4A839 /* HelperMacros.h in Headers */,
+				6D787CF724EBA4EC00E4A839 /* AudioCache.h in Headers */,
+				6D787CF824EBA4EC00E4A839 /* SRHash.h in Headers */,
+				6D787CF924EBA4EC00E4A839 /* CCMathBase.h in Headers */,
+				6D787CFA24EBA4EC00E4A839 /* TGAlib.h in Headers */,
+				6D787CFB24EBA4EC00E4A839 /* config.hpp in Headers */,
+				6D787CFC24EBA4EC00E4A839 /* gl2platform.h in Headers */,
+				6D787CFD24EBA4EC00E4A839 /* SRWebSocket.h in Headers */,
+				6D787CFE24EBA4EC00E4A839 /* tinydir.h in Headers */,
+				6D787CFF24EBA4EC00E4A839 /* State.hpp in Headers */,
+				6D787D0024EBA4EC00E4A839 /* astc.h in Headers */,
+				6D787D0124EBA4EC00E4A839 /* tommyalloc.h in Headers */,
+				6D787D0224EBA4EC00E4A839 /* JavaScriptObjCBridge.h in Headers */,
+				6D787D0324EBA4EC00E4A839 /* CCRef.h in Headers */,
+				6D787D0424EBA4EC00E4A839 /* base64.h in Headers */,
+				6D787D0524EBA4EC00E4A839 /* RefCounter.hpp in Headers */,
+				6D787D0624EBA4EC00E4A839 /* WebView.h in Headers */,
+				6D787D0724EBA4EC00E4A839 /* gl3platform.h in Headers */,
+				6D787D0824EBA4EC00E4A839 /* AudioEngine.h in Headers */,
+				6D787D0924EBA4EC00E4A839 /* Utils.h in Headers */,
+				6D787D0A24EBA4EC00E4A839 /* CCCanvasRenderingContext2D.h in Headers */,
+				6D787D0B24EBA4EC00E4A839 /* SeApi.h in Headers */,
+				6D787D0C24EBA4EC00E4A839 /* SeApi.h in Headers */,
+				6D787D0D24EBA4EC00E4A839 /* StringUtil.h in Headers */,
+				6D787D0E24EBA4EC00E4A839 /* Object.hpp in Headers */,
+				6D787D0F24EBA4EC00E4A839 /* SRProxyConnect.h in Headers */,
+				6D787D1024EBA4EC00E4A839 /* Utils.hpp in Headers */,
+				6D787D1124EBA4EC00E4A839 /* SRDelegateController.h in Headers */,
+				6D787D1224EBA4EC00E4A839 /* CCConfiguration.h in Headers */,
+				6D787D1324EBA4EC00E4A839 /* etc1.h in Headers */,
+				6D787D1424EBA4EC00E4A839 /* EditBox.h in Headers */,
+				6D787D1524EBA4EC00E4A839 /* AudioPlayer.h in Headers */,
+				6D787D1624EBA4EC00E4A839 /* ScriptEngine.hpp in Headers */,
+				6D787D1724EBA4EC00E4A839 /* SRURLUtilities.h in Headers */,
+				6D787D1824EBA4EC00E4A839 /* tommyhashlin.h in Headers */,
+				6D787D1924EBA4EC00E4A839 /* Mat4.h in Headers */,
+				6D787D1A24EBA4EC00E4A839 /* Quaternion.h in Headers */,
+				6D787D1B24EBA4EC00E4A839 /* HttpResponse.h in Headers */,
+				6D787D1C24EBA4EC00E4A839 /* CCScheduler.h in Headers */,
+				6D787D1D24EBA4EC00E4A839 /* CCImage.h in Headers */,
+				6D787D1E24EBA4EC00E4A839 /* CCGL-ios.h in Headers */,
+				6D787D1F24EBA4EC00E4A839 /* CCIDownloaderImpl.h in Headers */,
+				6D787D2024EBA4EC00E4A839 /* cocos2d.h in Headers */,
+				6D787D2124EBA4EC00E4A839 /* jsb_cocos2dx_audioengine_auto.hpp in Headers */,
+				6D787D2224EBA4EC00E4A839 /* gl31.h in Headers */,
+				6D787D2324EBA4EC00E4A839 /* ScriptEngine.hpp in Headers */,
+				6D787D2424EBA4EC00E4A839 /* CCRenderTexture.h in Headers */,
+				6D787D2524EBA4EC00E4A839 /* jsb_cocos2dx_manual.hpp in Headers */,
+				6D787D2624EBA4EC00E4A839 /* LocalStorage.h in Headers */,
+				6D787D2724EBA4EC00E4A839 /* tommytrie.h in Headers */,
+				6D787D2824EBA4EC00E4A839 /* CCApplication.h in Headers */,
+				6D787D2924EBA4EC00E4A839 /* inspector_agent.h in Headers */,
+				6D787D2A24EBA4EC00E4A839 /* MathUtil.h in Headers */,
+				6D787D2B24EBA4EC00E4A839 /* SRIOConsumerPool.h in Headers */,
+				6D787D2C24EBA4EC00E4A839 /* SRMutex.h in Headers */,
+				6D787D2D24EBA4EC00E4A839 /* jsb_module_register.hpp in Headers */,
+				6D787D2E24EBA4EC00E4A839 /* CCGL.h in Headers */,
+				6D787D2F24EBA4EC00E4A839 /* ccRandom.h in Headers */,
+				6D787D3024EBA4EC00E4A839 /* AudioMacros.h in Headers */,
+				6D787D3124EBA4EC00E4A839 /* node_debug_options.h in Headers */,
+				6D787D3224EBA4EC00E4A839 /* CCDownloader.h in Headers */,
+				6D787D3324EBA4EC00E4A839 /* etc2.h in Headers */,
+				6D787D3424EBA4EC00E4A839 /* ccUTF8.h in Headers */,
+				6D787D3524EBA4EC00E4A839 /* CCGLUtils.h in Headers */,
+				6D787D3624EBA4EC00E4A839 /* glplatform.h in Headers */,
+				6D787D3724EBA4EC00E4A839 /* tommyarrayblk.h in Headers */,
+				6D787D3824EBA4EC00E4A839 /* Vec3.h in Headers */,
+				6D787D3924EBA4EC00E4A839 /* ccCArray.h in Headers */,
+				6D787D3A24EBA4EC00E4A839 /* jsb_opengl_manual.hpp in Headers */,
+				6D787D3B24EBA4EC00E4A839 /* tommy.h in Headers */,
+				6D787D3C24EBA4EC00E4A839 /* tommytrieinp.h in Headers */,
+				6D787D3D24EBA4EC00E4A839 /* CCVertex.h in Headers */,
+				6D787D3E24EBA4EC00E4A839 /* WebSocket.h in Headers */,
+				6D787D3F24EBA4EC00E4A839 /* SocketIO.h in Headers */,
+				6D787D4024EBA4EC00E4A839 /* NSURLRequest+SRWebSocketPrivate.h in Headers */,
+				6D787D4124EBA4EC00E4A839 /* eglplatform.h in Headers */,
+				6D787D4224EBA4EC00E4A839 /* AudioEngine-inl.h in Headers */,
+				6D787D4324EBA4EC00E4A839 /* SRError.h in Headers */,
+				6D787D4424EBA4EC00E4A839 /* Export.h in Headers */,
+				6D787D4524EBA4EC00E4A839 /* ccConfig.h in Headers */,
+				6D787D4624EBA4EC00E4A839 /* env.h in Headers */,
+				6D787D4724EBA4EC00E4A839 /* Object.hpp in Headers */,
+				6D787D4824EBA4EC00E4A839 /* SRPinningSecurityPolicy.h in Headers */,
+				6D787D4924EBA4EC00E4A839 /* jsb_conversions.hpp in Headers */,
+				6D787D4A24EBA4EC00E4A839 /* gl.h in Headers */,
+				6D787D4B24EBA4EC00E4A839 /* tommyhash.h in Headers */,
+				6D787D4C24EBA4EC00E4A839 /* gl32.h in Headers */,
+				6D787D4D24EBA4EC00E4A839 /* CCSAXParser.h in Headers */,
+				6D787D4E24EBA4EC00E4A839 /* gl3ext.h in Headers */,
+				6D787D4F24EBA4EC00E4A839 /* HelperMacros.h in Headers */,
+				6D787D5024EBA4EC00E4A839 /* jsb_classtype.hpp in Headers */,
+				6D787D5124EBA4EC00E4A839 /* tommyarrayof.h in Headers */,
+				6D787D5224EBA4EC00E4A839 /* CCMap.h in Headers */,
+				6D787D5324EBA4EC00E4A839 /* Utils.hpp in Headers */,
+				6D787D5424EBA4EC00E4A839 /* OpenGL_Internal-ios.h in Headers */,
+				6D787D5524EBA4EC00E4A839 /* NSRunLoop+SRWebSocketPrivate.h in Headers */,
+				6D787D5624EBA4EC00E4A839 /* SRSIMDHelpers.h in Headers */,
+				6D787D5724EBA4EC00E4A839 /* HttpClient.h in Headers */,
+				6D787D5824EBA4EC00E4A839 /* tommytypes.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A07A4CB11783777C0073F6A7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2698,6 +3311,23 @@
 			productReference = 1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		6D787BDA24EBA4EC00E4A839 /* libcocos2d iOS AppClip */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D787D5924EBA4EC00E4A839 /* Build configuration list for PBXNativeTarget "libcocos2d iOS AppClip" */;
+			buildPhases = (
+				6D787BDB24EBA4EC00E4A839 /* Sources */,
+				6D787C7D24EBA4EC00E4A839 /* Frameworks */,
+				6D787C8C24EBA4EC00E4A839 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "libcocos2d iOS AppClip";
+			productName = cocos2dx;
+			productReference = 6D787D5C24EBA4EC00E4A839 /* libcocos2d iOS AppClip.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		A07A4C241783777C0073F6A7 /* libcocos2d iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A07A4D611783777C0073F6A7 /* Build configuration list for PBXNativeTarget "libcocos2d iOS" */;
@@ -2739,6 +3369,7 @@
 			targets = (
 				1551A33E158F2AB200E66CFE /* libcocos2d Mac */,
 				A07A4C241783777C0073F6A7 /* libcocos2d iOS */,
+				6D787BDA24EBA4EC00E4A839 /* libcocos2d iOS AppClip */,
 			);
 		};
 /* End PBXProject section */
@@ -2908,6 +3539,174 @@
 				BAC32B5B236C28C600F3D55F /* tommyarray.c in Sources */,
 				BA21055C21009A2C00E19975 /* Manifest.cpp in Sources */,
 				1A28FF931F20AFAB007A1D9D /* NSURLRequest+SRWebSocket.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D787BDB24EBA4EC00E4A839 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D787BDC24EBA4EC00E4A839 /* unzip.cpp in Sources */,
+				6D787BDD24EBA4EC00E4A839 /* EJConvertTypedArray.m in Sources */,
+				6D787BDE24EBA4EC00E4A839 /* CCDownloaderImpl-apple.mm in Sources */,
+				6D787BDF24EBA4EC00E4A839 /* SRProxyConnect.m in Sources */,
+				6D787BE024EBA4EC00E4A839 /* NSRunLoop+SRWebSocket.m in Sources */,
+				6D787BE124EBA4EC00E4A839 /* CCImage.cpp in Sources */,
+				6D787BE224EBA4EC00E4A839 /* tommyhash.c in Sources */,
+				6D787BE324EBA4EC00E4A839 /* Mat3.cpp in Sources */,
+				6D787BE424EBA4EC00E4A839 /* MappingUtils.cpp in Sources */,
+				6D787BE524EBA4EC00E4A839 /* pvr.cpp in Sources */,
+				6D787BE624EBA4EC00E4A839 /* CCSAXParser.cpp in Sources */,
+				6D787BE724EBA4EC00E4A839 /* Utils.cpp in Sources */,
+				6D787BE824EBA4EC00E4A839 /* CCImage-ios.mm in Sources */,
+				6D787BE924EBA4EC00E4A839 /* ioapi_mem.cpp in Sources */,
+				6D787BEA24EBA4EC00E4A839 /* SRSecurityPolicy.m in Sources */,
+				6D787BEB24EBA4EC00E4A839 /* SRIOConsumerPool.m in Sources */,
+				6D787BEC24EBA4EC00E4A839 /* StringUtil.cc in Sources */,
+				6D787BED24EBA4EC00E4A839 /* SHA1.cpp in Sources */,
+				6D787BEE24EBA4EC00E4A839 /* ConvertUTFWrapper.cpp in Sources */,
+				6D787BEF24EBA4EC00E4A839 /* SRMutex.m in Sources */,
+				6D787BF024EBA4EC00E4A839 /* env.cc in Sources */,
+				6D787BF124EBA4EC00E4A839 /* CCApplication-ios.mm in Sources */,
+				6D787BF224EBA4EC00E4A839 /* xxhash.c in Sources */,
+				6D787BF324EBA4EC00E4A839 /* CCAsyncTaskPool.cpp in Sources */,
+				6D787BF424EBA4EC00E4A839 /* ioapi.cpp in Sources */,
+				6D787BF524EBA4EC00E4A839 /* tommytrieinp.c in Sources */,
+				6D787BF624EBA4EC00E4A839 /* jsb_cocos2dx_network_auto.cpp in Sources */,
+				6D787BF724EBA4EC00E4A839 /* tommytree.c in Sources */,
+				6D787BF824EBA4EC00E4A839 /* AudioEngine.cpp in Sources */,
+				6D787BF924EBA4EC00E4A839 /* config.cpp in Sources */,
+				6D787BFA24EBA4EC00E4A839 /* jsb_video_auto.cpp in Sources */,
+				6D787BFB24EBA4EC00E4A839 /* tinyxml2.cpp in Sources */,
+				6D787BFC24EBA4EC00E4A839 /* jsb_cocos2dx_auto.cpp in Sources */,
+				6D787BFD24EBA4EC00E4A839 /* tommyhashtbl.c in Sources */,
+				6D787BFE24EBA4EC00E4A839 /* ccCArray.cpp in Sources */,
+				6D787BFF24EBA4EC00E4A839 /* Utils.cpp in Sources */,
+				6D787C0024EBA4EC00E4A839 /* CCRef.cpp in Sources */,
+				6D787C0124EBA4EC00E4A839 /* etc2.cpp in Sources */,
+				6D787C0224EBA4EC00E4A839 /* tommyarrayof.c in Sources */,
+				6D787C0324EBA4EC00E4A839 /* CCConfiguration.cpp in Sources */,
+				6D787C0424EBA4EC00E4A839 /* JavaScriptObjCBridge.mm in Sources */,
+				6D787C0524EBA4EC00E4A839 /* etc1.cpp in Sources */,
+				6D787C0624EBA4EC00E4A839 /* Vec2.cpp in Sources */,
+				6D787C0724EBA4EC00E4A839 /* Utils.cpp in Sources */,
+				6D787C0824EBA4EC00E4A839 /* SRPinningSecurityPolicy.m in Sources */,
+				6D787C0924EBA4EC00E4A839 /* SRWebSocket.m in Sources */,
+				6D787C0A24EBA4EC00E4A839 /* jsb_module_register.cpp in Sources */,
+				6D787C0B24EBA4EC00E4A839 /* Value.cpp in Sources */,
+				6D787C0C24EBA4EC00E4A839 /* ScriptEngine.mm in Sources */,
+				6D787C0D24EBA4EC00E4A839 /* CCAutoreleasePool.cpp in Sources */,
+				6D787C0E24EBA4EC00E4A839 /* jsb_socketio.cpp in Sources */,
+				6D787C0F24EBA4EC00E4A839 /* Object.mm in Sources */,
+				6D787C1024EBA4EC00E4A839 /* tommyarrayblk.c in Sources */,
+				6D787C1124EBA4EC00E4A839 /* CCScheduler.cpp in Sources */,
+				6D787C1224EBA4EC00E4A839 /* ccTypes.cpp in Sources */,
+				6D787C1324EBA4EC00E4A839 /* MathUtil.cpp in Sources */,
+				6D787C1424EBA4EC00E4A839 /* node_debug_options.cc in Sources */,
+				6D787C1524EBA4EC00E4A839 /* Class.cpp in Sources */,
+				6D787C1624EBA4EC00E4A839 /* AudioDecoder.mm in Sources */,
+				6D787C1724EBA4EC00E4A839 /* ccUtils.cpp in Sources */,
+				6D787C1824EBA4EC00E4A839 /* CCFileUtils.cpp in Sources */,
+				6D787C1924EBA4EC00E4A839 /* Utils.cpp in Sources */,
+				6D787C1A24EBA4EC00E4A839 /* jsb_cocos2dx_manual.cpp in Sources */,
+				6D787C1B24EBA4EC00E4A839 /* tommyalloc.c in Sources */,
+				6D787C1C24EBA4EC00E4A839 /* inspector_agent.cc in Sources */,
+				6D787C1D24EBA4EC00E4A839 /* CCThreadPool.cpp in Sources */,
+				6D787C1E24EBA4EC00E4A839 /* CCDownloader.cpp in Sources */,
+				6D787C1F24EBA4EC00E4A839 /* tommy.c in Sources */,
+				6D787C2024EBA4EC00E4A839 /* astc.cpp in Sources */,
+				6D787C2124EBA4EC00E4A839 /* Vec4.cpp in Sources */,
+				6D787C2224EBA4EC00E4A839 /* ccUTF8.cpp in Sources */,
+				6D787C2324EBA4EC00E4A839 /* jsb_global.cpp in Sources */,
+				6D787C2424EBA4EC00E4A839 /* ScriptEngine.cpp in Sources */,
+				6D787C2524EBA4EC00E4A839 /* CCGLUtils.cpp in Sources */,
+				6D787C2624EBA4EC00E4A839 /* SRHash.m in Sources */,
+				6D787C2724EBA4EC00E4A839 /* ZipUtils.cpp in Sources */,
+				6D787C2824EBA4EC00E4A839 /* Quaternion.cpp in Sources */,
+				6D787C2924EBA4EC00E4A839 /* CCLog.cpp in Sources */,
+				6D787C2A24EBA4EC00E4A839 /* jsb_cocos2dx_audioengine_auto.cpp in Sources */,
+				6D787C2B24EBA4EC00E4A839 /* Mat4.cpp in Sources */,
+				6D787C2C24EBA4EC00E4A839 /* HandleObject.cpp in Sources */,
+				6D787C2D24EBA4EC00E4A839 /* EditBox-ios.mm in Sources */,
+				6D787C2E24EBA4EC00E4A839 /* Object.cpp in Sources */,
+				6D787C2F24EBA4EC00E4A839 /* PlatformUtils.mm in Sources */,
+				6D787C3024EBA4EC00E4A839 /* VideoPlayer-ios.mm in Sources */,
+				6D787C3124EBA4EC00E4A839 /* CCReachability.cpp in Sources */,
+				6D787C3224EBA4EC00E4A839 /* Class.cpp in Sources */,
+				6D787C3324EBA4EC00E4A839 /* ConvertUTF.c in Sources */,
+				6D787C3424EBA4EC00E4A839 /* node.cc in Sources */,
+				6D787C3524EBA4EC00E4A839 /* WebSocket-apple.mm in Sources */,
+				6D787C3624EBA4EC00E4A839 /* AudioPlayer.mm in Sources */,
+				6D787C3724EBA4EC00E4A839 /* tommylist.c in Sources */,
+				6D787C3824EBA4EC00E4A839 /* ScriptEngine.cpp in Sources */,
+				6D787C3924EBA4EC00E4A839 /* jsb_classtype.cpp in Sources */,
+				6D787C3A24EBA4EC00E4A839 /* NSURLRequest+SRWebSocket.m in Sources */,
+				6D787C3B24EBA4EC00E4A839 /* jsb_helper.cpp in Sources */,
+				6D787C3C24EBA4EC00E4A839 /* CCValue.cpp in Sources */,
+				6D787C3D24EBA4EC00E4A839 /* SRLog.m in Sources */,
+				6D787C3E24EBA4EC00E4A839 /* SRRunLoopThread.m in Sources */,
+				6D787C3F24EBA4EC00E4A839 /* SRConstants.m in Sources */,
+				6D787C4024EBA4EC00E4A839 /* AudioEngine-inl.mm in Sources */,
+				6D787C4124EBA4EC00E4A839 /* HttpCookie.cpp in Sources */,
+				6D787C4224EBA4EC00E4A839 /* EJConvert.m in Sources */,
+				6D787C4324EBA4EC00E4A839 /* jsb_conversions.cpp in Sources */,
+				6D787C4424EBA4EC00E4A839 /* tommyhashlin.c in Sources */,
+				6D787C4524EBA4EC00E4A839 /* http_parser.c in Sources */,
+				6D787C4624EBA4EC00E4A839 /* jsb_xmlhttprequest.cpp in Sources */,
+				6D787C4724EBA4EC00E4A839 /* Uri.cpp in Sources */,
+				6D787C4824EBA4EC00E4A839 /* jsb_cocos2dx_network_manual.cpp in Sources */,
+				6D787C4924EBA4EC00E4A839 /* ObjectWrap.cpp in Sources */,
+				6D787C4A24EBA4EC00E4A839 /* CCGeometry.cpp in Sources */,
+				6D787C4B24EBA4EC00E4A839 /* SRURLUtilities.m in Sources */,
+				6D787C4C24EBA4EC00E4A839 /* SRIOConsumer.m in Sources */,
+				6D787C4D24EBA4EC00E4A839 /* tommytrie.c in Sources */,
+				6D787C4E24EBA4EC00E4A839 /* State.cpp in Sources */,
+				6D787C4F24EBA4EC00E4A839 /* jsb_opengl_utils.cpp in Sources */,
+				6D787C5024EBA4EC00E4A839 /* jsb_webview_auto.cpp in Sources */,
+				6D787C5124EBA4EC00E4A839 /* tommyhashdyn.c in Sources */,
+				6D787C5224EBA4EC00E4A839 /* cocos2d.cpp in Sources */,
+				6D787C5324EBA4EC00E4A839 /* SRHTTPConnectMessage.m in Sources */,
+				6D787C5424EBA4EC00E4A839 /* SRSIMDHelpers.m in Sources */,
+				6D787C5524EBA4EC00E4A839 /* CCVertex.cpp in Sources */,
+				6D787C5624EBA4EC00E4A839 /* CCDevice-apple.mm in Sources */,
+				6D787C5724EBA4EC00E4A839 /* HttpAsynConnection-apple.m in Sources */,
+				6D787C5824EBA4EC00E4A839 /* jsb_cocos2dx_extension_auto.cpp in Sources */,
+				6D787C5924EBA4EC00E4A839 /* jsb_platfrom_apple.mm in Sources */,
+				6D787C5A24EBA4EC00E4A839 /* CCEAGLView-ios.mm in Sources */,
+				6D787C5B24EBA4EC00E4A839 /* LocalStorage.cpp in Sources */,
+				6D787C5C24EBA4EC00E4A839 /* inspector_socket_server.cc in Sources */,
+				6D787C5D24EBA4EC00E4A839 /* SocketIO.cpp in Sources */,
+				6D787C5E24EBA4EC00E4A839 /* base64.cpp in Sources */,
+				6D787C5F24EBA4EC00E4A839 /* Class.cpp in Sources */,
+				6D787C6024EBA4EC00E4A839 /* CCCanvasRenderingContext2D-apple.mm in Sources */,
+				6D787C6124EBA4EC00E4A839 /* inspector_socket.cc in Sources */,
+				6D787C6224EBA4EC00E4A839 /* AudioCache.mm in Sources */,
+				6D787C6324EBA4EC00E4A839 /* CCData.cpp in Sources */,
+				6D787C6424EBA4EC00E4A839 /* EventDispatcher.cpp in Sources */,
+				6D787C6524EBA4EC00E4A839 /* HttpClient-apple.mm in Sources */,
+				6D787C6624EBA4EC00E4A839 /* WebViewImpl-ios.mm in Sources */,
+				6D787C6724EBA4EC00E4A839 /* TGAlib.cpp in Sources */,
+				6D787C6824EBA4EC00E4A839 /* ccRandom.cpp in Sources */,
+				6D787C6924EBA4EC00E4A839 /* SRRandom.m in Sources */,
+				6D787C6A24EBA4EC00E4A839 /* Object.cpp in Sources */,
+				6D787C6B24EBA4EC00E4A839 /* RefCounter.cpp in Sources */,
+				6D787C6C24EBA4EC00E4A839 /* Vec3.cpp in Sources */,
+				6D787C6D24EBA4EC00E4A839 /* util.cc in Sources */,
+				6D787C6E24EBA4EC00E4A839 /* tommyarrayblkof.c in Sources */,
+				6D787C6F24EBA4EC00E4A839 /* jsb_websocket.cpp in Sources */,
+				6D787C7024EBA4EC00E4A839 /* CCFileUtils-apple.mm in Sources */,
+				6D787C7124EBA4EC00E4A839 /* xxtea.cpp in Sources */,
+				6D787C7224EBA4EC00E4A839 /* csscolorparser.cpp in Sources */,
+				6D787C7324EBA4EC00E4A839 /* jsb_opengl_manual.cpp in Sources */,
+				6D787C7424EBA4EC00E4A839 /* inspector_io.cc in Sources */,
+				6D787C7524EBA4EC00E4A839 /* CCRenderTexture.cpp in Sources */,
+				6D787C7624EBA4EC00E4A839 /* CCDevice-ios.mm in Sources */,
+				6D787C7724EBA4EC00E4A839 /* SRError.m in Sources */,
+				6D787C7824EBA4EC00E4A839 /* SRDelegateController.m in Sources */,
+				6D787C7924EBA4EC00E4A839 /* AssetsManagerEx.cpp in Sources */,
+				6D787C7A24EBA4EC00E4A839 /* tommyarray.c in Sources */,
+				6D787C7B24EBA4EC00E4A839 /* CCEventAssetsManagerEx.cpp in Sources */,
+				6D787C7C24EBA4EC00E4A839 /* Manifest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3086,6 +3885,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -3163,6 +3966,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -3298,6 +4105,147 @@
 			};
 			name = Release;
 		};
+		6D787D5A24EBA4EC00E4A839 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 051C016F21E2F85C00D4A347 /* CCModuleConfigIOS.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_BITCODE = NO;
+				EXECUTABLE_PREFIX = "";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "../cocos/platform/ios/cocos2d-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"V8_TYPED_ARRAY_MAX_SIZE_IN_HEAP=64",
+					ENABLE_MINOR_MC,
+					V8_CONCURRENT_MARKING,
+					V8_ENABLE_LAZY_SOURCE_POSITIONS,
+					V8_EMBEDDED_BUILTINS,
+					V8_SHARED_RO_HEAP,
+					V8_WIN64_UNWINDING_INFO,
+					V8_ENABLE_REGEXP_INTERPRETER_THREADED_DISPATCH,
+					V8_31BIT_SMIS_ON_64BIT_ARCH,
+					V8_DEPRECATION_WARNINGS,
+					V8_IMMINENT_DEPRECATION_WARNINGS,
+					V8_TARGET_ARCH_ARM64,
+					V8_HAVE_TARGET_OS,
+					V8_TARGET_OS_IOS,
+					DISABLE_UNTRUSTED_CODE_MITIGATIONS,
+					CC_IOS_APPCLIP,
+				);
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../external/ios/libs\"";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"-fstrict-aliasing",
+					"-Wno-multichar",
+					"-Wall",
+					"-Wextra",
+					"-Wno-expansion-to-defined",
+					"-Wno-unused-parameter",
+					"-Wno-unknown-pragmas",
+					"-Wno-ignored-qualifiers",
+					"-Wno-long-long",
+					"-Wno-overloaded-virtual",
+					"-Wno-unused-volatile-lvalue",
+					"-Wno-deprecated-writable-strings",
+					"-D_DEBUG_",
+					"-D_DEBUG",
+					"-DFIPS_DEBUG=1",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-std=c++11",
+					"${OTHER_CFLAGS}",
+				);
+				OTHER_LDFLAGS = (
+					"-llibsql3",
+					"-ObjC",
+					"-lpthread",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8 $(SRCROOT)/../external/ios/include/uv";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype";
+				VALID_ARCHS = "x86_64 arm64";
+			};
+			name = Debug;
+		};
+		6D787D5B24EBA4EC00E4A839 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 051C017021E2F85C00D4A347 /* CCModuleConfigIOS.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
+				EXECUTABLE_PREFIX = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "../cocos/platform/ios/cocos2d-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"V8_TYPED_ARRAY_MAX_SIZE_IN_HEAP=64",
+					ENABLE_MINOR_MC,
+					V8_CONCURRENT_MARKING,
+					V8_ENABLE_LAZY_SOURCE_POSITIONS,
+					V8_EMBEDDED_BUILTINS,
+					V8_SHARED_RO_HEAP,
+					V8_WIN64_UNWINDING_INFO,
+					V8_ENABLE_REGEXP_INTERPRETER_THREADED_DISPATCH,
+					V8_31BIT_SMIS_ON_64BIT_ARCH,
+					V8_DEPRECATION_WARNINGS,
+					V8_IMMINENT_DEPRECATION_WARNINGS,
+					V8_TARGET_ARCH_ARM64,
+					V8_HAVE_TARGET_OS,
+					V8_TARGET_OS_IOS,
+					DISABLE_UNTRUSTED_CODE_MITIGATIONS,
+					CC_IOS_APPCLIP,
+				);
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../external/ios/libs\"";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = (
+					"-fstrict-aliasing",
+					"-Wno-multichar",
+					"-Wall",
+					"-Wextra",
+					"-Wno-expansion-to-defined",
+					"-Wno-unused-parameter",
+					"-Wno-unknown-pragmas",
+					"-Wno-ignored-qualifiers",
+					"-Wno-long-long",
+					"-Wno-overloaded-virtual",
+					"-Wno-unused-volatile-lvalue",
+					"-Wno-deprecated-writable-strings",
+					"-msse3",
+					"-DNDEBUG",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-std=c++11",
+					"${OTHER_CFLAGS}",
+				);
+				OTHER_LDFLAGS = (
+					"-llibsql3",
+					"-ObjC",
+					"-lpthread",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../external/ios/include/v8 $(SRCROOT)/../external/ios/include/uv";
+				VALID_ARCHS = "x86_64 arm64";
+			};
+			name = Release;
+		};
 		A07A4D621783777C0073F6A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 051C016F21E2F85C00D4A347 /* CCModuleConfigIOS.debug.xcconfig */;
@@ -3362,7 +4310,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8 $(SRCROOT)/../external/ios/include/uv";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype";
-				VALID_ARCHS = "arm64 armv7 arm64e armv7s";
+				VALID_ARCHS = "arm64 x86_64 armv7";
 			};
 			name = Debug;
 		};
@@ -3431,7 +4379,7 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../cocos/editor-support/ $(SRCROOT)/../external/ios/include/v8";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(inherited) $(SRCROOT)/../external/sources $(SRCROOT)/../external/ios/include $(SRCROOT)/../external/ios/include/freetype $(SRCROOT)/../external/ios/include/v8 $(SRCROOT)/../external/ios/include/uv";
-				VALID_ARCHS = "arm64 armv7 arm64e armv7s";
+				VALID_ARCHS = "arm64 x86_64 armv7";
 			};
 			name = Release;
 		};
@@ -3452,6 +4400,15 @@
 			buildConfigurations = (
 				1551A34D158F2AB200E66CFE /* Debug */,
 				1551A34E158F2AB200E66CFE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D787D5924EBA4EC00E4A839 /* Build configuration list for PBXNativeTarget "libcocos2d iOS AppClip" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D787D5A24EBA4EC00E4A839 /* Debug */,
+				6D787D5B24EBA4EC00E4A839 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
