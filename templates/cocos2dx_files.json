@@ -528,6 +528,7 @@
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxHttpURLConnection.java", 
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxJavascriptJavaBridge.java", 
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxLocalStorage.java", 
+        "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxOrientationHelper.java", 
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxReflectionHelper.java", 
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxRenderer.java", 
         "cocos/platform/android/java/src/org/cocos2dx/lib/Cocos2dxTypefaces.java", 

@@ -89,6 +89,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     private TextView mGameInfoTextView_2;
     // DEBUG VIEW END
 
+    private Cocos2dxOrientationHelper mCocos2dxOrientationHelper = null;
     // ===========================================================
     // Inner class
     // ===========================================================
@@ -294,6 +295,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        mCocos2dxOrientationHelper = new Cocos2dxOrientationHelper(this);
     }
 
     public void setKeepScreenOn(boolean value) {
@@ -387,6 +390,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             Cocos2dxAudioFocusManager.registerAudioFocusListener(this);
         Utils.hideVirtualButton();
        	resumeIfHasFocus();
+       	mCocos2dxOrientationHelper.onResume();
     }
 
     @Override
@@ -415,6 +419,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             Cocos2dxAudioFocusManager.unregisterAudioFocusListener(this);
         Cocos2dxHelper.onPause();
         mGLSurfaceView.onPause();
+        mCocos2dxOrientationHelper.onPause();
     }
 
     @Override
