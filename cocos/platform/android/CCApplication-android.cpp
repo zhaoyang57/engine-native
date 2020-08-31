@@ -77,7 +77,7 @@ extern "C" {
         // nativeOnSizeChanged is firstly called before Application initiating.
         if (inst != nullptr) {
             // handle orientation change event
-            Application::getInstance()->getScheduler()->performFunctionInCocosThread([=]() {
+            inst->getScheduler()->performFunctionInCocosThread([=]() {
                 EventDispatcher::dispatchOrientationChangeEvent(rotation);
             });
         }
