@@ -36,6 +36,7 @@
 #include "base/CCGLUtils.h"
 #include "audio/include/AudioEngine.h"
 #include "platform/CCDevice.h"
+#include "cocos/renderer/gfx/DeviceGraphics.h"
 
 namespace
 {
@@ -51,7 +52,7 @@ namespace
                 (int)(viewSize.x / screenScale / devicePixelRatio),
                 (int)(viewSize.y / screenScale / devicePixelRatio));
         se->evalString(commandBuf);
-        cocos2d::ccViewport(0,0, viewSize.x / devicePixelRatio, viewSize.y / devicePixelRatio);
+        
         glDepthMask(GL_TRUE);
         return true;
     }
