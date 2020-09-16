@@ -95,29 +95,32 @@ namespace
         [nc addObserver:self selector:@selector(appDidBecomeInactive) name:UIApplicationWillResignActiveNotification object:nil];
         
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [nc addObserver:self selector:@selector(orientationChanged:)name:UIDeviceOrientationDidChangeNotification
-              object:[UIDevice currentDevice]];
+        [nc addObserver:self selector:@selector(statusBarOrientationChanged:)name:UIApplicationDidChangeStatusBarOrientationNotification
+              object:nil];
     }
     return self;
 }
 
-- (void) orientationChanged:(NSNotification *)note
+- (void) statusBarOrientationChanged:(NSNotification *)note
 {
     cocos2d::Device::Rotation rotation = cocos2d::Device::Rotation::_0;
-    UIDevice * device = note.object;
+    UIDevice * device = [UIDevice currentDevice];
     
+    // NOTE: https://developer.apple.com/documentation/uikit/uideviceorientation
+    // when the device rotates to LandscapeLeft, device.orientation returns UIDeviceOrientationLandscapeRight
+    // when the device rotates to LandscapeRight, device.orientation returns UIDeviceOrientationLandscapeLeft
     switch(device.orientation)
     {
         case UIDeviceOrientationPortrait:
             rotation = cocos2d::Device::Rotation::_0;
             break;
-        case UIDeviceOrientationLandscapeRight:
+        case UIDeviceOrientationLandscapeLeft:
             rotation = cocos2d::Device::Rotation::_90;
             break;
         case UIDeviceOrientationPortraitUpsideDown:
             rotation = cocos2d::Device::Rotation::_180;
             break;
-        case UIDeviceOrientationLandscapeLeft:
+        case UIDeviceOrientationLandscapeRight:
             rotation = cocos2d::Device::Rotation::_270;
             break;
         default:
@@ -127,6 +130,12 @@ namespace
         cocos2d::EventDispatcher::dispatchOrientationChangeEvent((int) rotation);
         _lastRotation = rotation;
     }
+    
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    float scale = [[UIScreen mainScreen] scale];
+    float width = bounds.size.width * scale;
+    float height = bounds.size.height * scale;
+    cocos2d::Application::getInstance()->updateViewSize(width, height);
 }
 
 -(void) dealloc
