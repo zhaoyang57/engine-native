@@ -4156,10 +4156,12 @@
 					"-D_DEBUG_",
 					"-D_DEBUG",
 					"-DFIPS_DEBUG=1",
+					"-fobjc-exceptions",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-std=c++11",
 					"${OTHER_CFLAGS}",
+					"-frtti",
 				);
 				OTHER_LDFLAGS = (
 					"-llibsql3",
@@ -4227,10 +4229,12 @@
 					"-Wno-deprecated-writable-strings",
 					"-msse3",
 					"-DNDEBUG",
+					"-fobjc-exceptions",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-std=c++11",
 					"${OTHER_CFLAGS}",
+					"-frtti",
 				);
 				OTHER_LDFLAGS = (
 					"-llibsql3",
