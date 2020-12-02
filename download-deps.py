@@ -167,7 +167,7 @@ class CocosZipInstaller(object):
         # 'v' letter was swallowed by github, so we need to substring it from the 2nd letter
         self._extracted_folder_name = os.path.join(self._workpath, self._repo_name + '-' + self._current_version[1:])
         
-        mirror_repo_url = "http://gitlab.cocos.net:8929/publics/%s/-/archive/%s/%s-%s.zip" % (self._repo_name, self._current_version, self._repo_name, self._current_version)
+        mirror_repo_url = "https://gitlab.cocos.net/publics/%s/-/archive/%s/%s-%s.zip" % (self._repo_name, self._current_version, self._repo_name, self._current_version)
         if mirror is None:
             self._url = select_fastest_url([self._url, mirror_repo_url])
         elif mirror == "gitlab":

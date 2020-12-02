@@ -131,7 +131,7 @@ gulp.task('update', function (cb) {
     var branch = git.getCurrentBranch('.');
     
     if (program.gitlab || process.env.GITLAB) {
-        git.pull('.', 'http://gitlab.cocos.net:8929/publics/cocos2d-x-lite.git', branch, cb);
+        git.pull('.', 'https://gitlab.cocos.net/publics/cocos2d-x-lite.git', branch, cb);
     } else {
         git.pull('.', 'git@github.com:cocos-creator/cocos2d-x-lite.git', branch, cb);
     }
