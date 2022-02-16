@@ -74,6 +74,7 @@ class Context;
 
 using TextureBarrierList = vector<TextureBarrier *>;
 using BufferDataList     = vector<const uint8_t *>;
+using BufferSrcList      = vector<uint8_t *>;
 using CommandBufferList  = vector<CommandBuffer *>;
 using QueryPoolList      = vector<QueryPool *>;
 

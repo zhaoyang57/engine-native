@@ -28,7 +28,9 @@
 #include "base/Macros.h"
 #include "base/threading/MessageQueue.h"
 
-#include "bindings/jswrapper/SeApi.h"
+#ifndef CC_WGPU_WASM
+    #include "bindings/jswrapper/SeApi.h"
+#endif
 
 #include "BufferValidator.h"
 #include "DeviceValidator.h"
@@ -64,8 +66,9 @@ void BufferValidator::doInit(const BufferInfo &info) {
     CCASSERT(info.size, "zero-sized buffer?");
     CCASSERT(info.size / info.stride * info.stride == info.size, "size is not multiple of stride?");
 
+#ifndef CC_WGPU_WASM
     _initStack = se::ScriptEngine::getInstance()->getCurrentStackTrace();
-
+#endif
     _creationFrame    = DeviceValidator::getInstance()->currentFrame();
     _totalUpdateTimes = 0U;
 
