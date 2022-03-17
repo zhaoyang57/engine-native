@@ -1,9 +1,9 @@
 engine-native
 ==========================
 
-<a href="https://travis-ci.org/cocos-creator/engine-native"><img src="https://travis-ci.org/cocos-creator/engine-native.svg?branch=develop " alt="Build Status"></a>
-
 It is the native backend of [Cocos Creator](https://www.cocos.com/en/creator). It works on `iOS`, `Android`, `Mac OS` and `Windows`.
+
+**Since v3.5, Cocos Creator native engine have been merged into [engine repository](https://github.com/cocos/cocos-engine), please stop using this repository for future reference**
 
 Coding format and coding style
 ---------------------------------
