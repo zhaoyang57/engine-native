@@ -686,6 +686,7 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
     if (HttpRequest::Type::GET != requestType &&
         HttpRequest::Type::POST != requestType &&
         HttpRequest::Type::PUT != requestType &&
+        HttpRequest::Type::HEAD != requestType &&
         HttpRequest::Type::DELETE != requestType)
     {
         CCASSERT(true, "CCHttpClient: unknown request type, only GET、POST、PUT、DELETE are supported");
@@ -715,6 +716,10 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
 
         case HttpRequest::Type::PUT:
             urlConnection.setRequestMethod("PUT");
+            break;
+
+        case HttpRequest::Type::HEAD:
+            urlConnection.setRequestMethod("HEAD");
             break;
 
         case HttpRequest::Type::DELETE:
@@ -838,9 +843,9 @@ void HttpClient::networkThread()
         _responseQueueMutex.unlock();
         
         _schedulerMutex.lock();
-        if (nullptr != _scheduler)
+        if (auto sche = _scheduler.lock())
         {
-            _scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
+            sche->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
         }
         _schedulerMutex.unlock();
     }
@@ -866,9 +871,9 @@ void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response
     processResponse(response, responseMessage);
 
     _schedulerMutex.lock();
-    if (_scheduler != nullptr)
+    if (auto sche = _scheduler.lock())
     {
-        _scheduler->performFunctionInCocosThread([this, response, request]{
+        sche->performFunctionInCocosThread([this, response, request]{
             const ccHttpRequestCallback& callback = request->getResponseCallback();
 
             if (callback != nullptr)
@@ -909,10 +914,12 @@ void HttpClient::destroyInstance()
     auto thiz = _httpClient;
     _httpClient = nullptr;
 
-    thiz->_scheduler->unscheduleAllForTarget(thiz);
 
+    if(auto sche = thiz->_scheduler.lock()) {
+        sche->unscheduleAllForTarget(thiz);
+    }
     thiz->_schedulerMutex.lock();
-    thiz->_scheduler = nullptr;
+    thiz->_scheduler.reset();
     thiz->_schedulerMutex.unlock();
 
     {

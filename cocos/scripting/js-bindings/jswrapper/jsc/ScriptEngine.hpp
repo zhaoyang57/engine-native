@@ -29,6 +29,7 @@
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_JSC
 
 #include "Base.h"
+#include <thread>
 
 namespace se {
 
@@ -230,6 +231,11 @@ namespace se {
         void setExceptionCallback(const ExceptionCallback& cb);
 
         /**
+         *  @brief Sets the callback function while an exception is fired in JS.
+         *  @param[in] cb The callback function to notify that an exception is fired.
+         */
+        void setJSExceptionCallback(const ExceptionCallback& cb);
+        /**
          *  @brief Gets the start time of script engine.
          *  @return The start time of script engine.
          */
@@ -290,6 +296,8 @@ namespace se {
         };
         ExceptionInfo _formatException(JSValueRef exception);
 
+        void callExceptionCallback(const char*, const char*, const char*);
+        
         std::chrono::steady_clock::time_point _startTime;
         std::vector<RegisterCallback> _registerCallbackArray;
         std::vector<std::function<void()>> _beforeInitHookArray;
@@ -302,9 +310,12 @@ namespace se {
 
         Object* _globalObj;
         FileOperationDelegate _fileOperationDelegate;
-        ExceptionCallback _exceptionCallback;
+        ExceptionCallback _nativeExceptionCallback = nullptr;
+        ExceptionCallback _jsExceptionCallback = nullptr;
 
         uint32_t _vmId;
+
+        std::thread::id _engineThreadId;
 
         bool _isGarbageCollecting;
         bool _isValid;

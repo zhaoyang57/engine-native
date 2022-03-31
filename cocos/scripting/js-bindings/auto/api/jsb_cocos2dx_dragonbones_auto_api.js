@@ -171,6 +171,109 @@ createRectangle : function (
 };
 
 /**
+ * @class UserData
+ */
+dragonBones.UserData = {
+
+/**
+ * @method getFloat
+ * @param {unsigned int} arg0
+ * @return {float}
+ */
+getFloat : function (
+int 
+)
+{
+    return 0;
+},
+
+/**
+ * @method getFloats
+ * @return {Array}
+ */
+getFloats : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method getString
+ * @param {unsigned int} arg0
+ * @return {String}
+ */
+getString : function (
+int 
+)
+{
+    return ;
+},
+
+/**
+ * @method getInts
+ * @return {Array}
+ */
+getInts : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method getInt
+ * @param {unsigned int} arg0
+ * @return {int}
+ */
+getInt : function (
+int 
+)
+{
+    return 0;
+},
+
+/**
+ * @method addInt
+ * @param {int} arg0
+ */
+addInt : function (
+int 
+)
+{
+},
+
+/**
+ * @method getStrings
+ * @return {Array}
+ */
+getStrings : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method addFloat
+ * @param {float} arg0
+ */
+addFloat : function (
+float 
+)
+{
+},
+
+/**
+ * @method addString
+ * @param {String} arg0
+ */
+addString : function (
+str 
+)
+{
+},
+
+};
+
+/**
  * @class ArmatureData
  */
 dragonBones.ArmatureData = {
@@ -670,6 +773,249 @@ str
 };
 
 /**
+ * @class BoundingBoxData
+ */
+dragonBones.BoundingBoxData = {
+
+/**
+ * @method intersectsSegment
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {dragonBones::Point} arg4
+ * @param {dragonBones::Point} arg5
+ * @param {dragonBones::Point} arg6
+ * @return {int}
+ */
+intersectsSegment : function (
+float, 
+float, 
+float, 
+float, 
+point, 
+point, 
+point 
+)
+{
+    return 0;
+},
+
+/**
+ * @method containsPoint
+ * @param {float} arg0
+ * @param {float} arg1
+ * @return {bool}
+ */
+containsPoint : function (
+float, 
+float 
+)
+{
+    return false;
+},
+
+/**
+ * @method getType
+ * @return {int}
+ */
+getType : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method setType
+ * @param {int} arg0
+ */
+setType : function (
+int 
+)
+{
+},
+
+};
+
+/**
+ * @class RectangleBoundingBoxData
+ */
+dragonBones.RectangleBoundingBoxData = {
+
+/**
+ * @method rectangleIntersectsSegment
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ * @param {float} arg6
+ * @param {float} arg7
+ * @param {dragonBones::Point} arg8
+ * @param {dragonBones::Point} arg9
+ * @param {dragonBones::Point} arg10
+ * @return {int}
+ */
+rectangleIntersectsSegment : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+point, 
+point, 
+point 
+)
+{
+    return 0;
+},
+
+/**
+ * @method getTypeIndex
+ * @return {unsigned int}
+ */
+getTypeIndex : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method RectangleBoundingBoxData
+ * @constructor
+ */
+RectangleBoundingBoxData : function (
+)
+{
+},
+
+};
+
+/**
+ * @class EllipseBoundingBoxData
+ */
+dragonBones.EllipseBoundingBoxData = {
+
+/**
+ * @method getTypeIndex
+ * @return {unsigned int}
+ */
+getTypeIndex : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method ellipseIntersectsSegment
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {float} arg4
+ * @param {float} arg5
+ * @param {float} arg6
+ * @param {float} arg7
+ * @param {dragonBones::Point} arg8
+ * @param {dragonBones::Point} arg9
+ * @param {dragonBones::Point} arg10
+ * @return {int}
+ */
+ellipseIntersectsSegment : function (
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+float, 
+point, 
+point, 
+point 
+)
+{
+    return 0;
+},
+
+/**
+ * @method EllipseBoundingBoxData
+ * @constructor
+ */
+EllipseBoundingBoxData : function (
+)
+{
+},
+
+};
+
+/**
+ * @class PolygonBoundingBoxData
+ */
+dragonBones.PolygonBoundingBoxData = {
+
+/**
+ * @method getVertices
+ * @return {Array}
+ */
+getVertices : function (
+)
+{
+    return new Array();
+},
+
+/**
+ * @method getTypeIndex
+ * @return {unsigned int}
+ */
+getTypeIndex : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method polygonIntersectsSegment
+ * @param {float} arg0
+ * @param {float} arg1
+ * @param {float} arg2
+ * @param {float} arg3
+ * @param {Array} arg4
+ * @param {dragonBones::Point} arg5
+ * @param {dragonBones::Point} arg6
+ * @param {dragonBones::Point} arg7
+ * @return {int}
+ */
+polygonIntersectsSegment : function (
+float, 
+float, 
+float, 
+float, 
+array, 
+point, 
+point, 
+point 
+)
+{
+    return 0;
+},
+
+/**
+ * @method PolygonBoundingBoxData
+ * @constructor
+ */
+PolygonBoundingBoxData : function (
+)
+{
+},
+
+};
+
+/**
  * @class AnimationData
  */
 dragonBones.AnimationData = {
@@ -800,6 +1146,14 @@ getClock : function (
 },
 
 /**
+ * @method render
+ */
+render : function (
+)
+{
+},
+
+/**
  * @method getSlot
  * @param {String} arg0
  * @return {dragonBones::Slot}
@@ -834,13 +1188,13 @@ bool
 },
 
 /**
- * @method getCacheFrameRate
- * @return {unsigned int}
+ * @method _addBone
+ * @param {dragonBones::Bone} arg0
  */
-getCacheFrameRate : function (
+_addBone : function (
+bone 
 )
 {
-    return 0;
 },
 
 /**
@@ -880,13 +1234,13 @@ invalidUpdate : function (
 },
 
 /**
- * @method _addBone
- * @param {dragonBones::Bone} arg0
+ * @method getCacheFrameRate
+ * @return {unsigned int}
  */
-_addBone : function (
-bone 
+getCacheFrameRate : function (
 )
 {
+    return 0;
 },
 
 /**
@@ -974,16 +1328,6 @@ bool
 },
 
 /**
- * @method getArmatureData
- * @return {dragonBones::ArmatureData}
- */
-getArmatureData : function (
-)
-{
-    return dragonBones::ArmatureData;
-},
-
-/**
  * @method _addSlot
  * @param {dragonBones::Slot} arg0
  */
@@ -1021,6 +1365,16 @@ getParent : function (
 )
 {
     return dragonBones::Slot;
+},
+
+/**
+ * @method getArmatureData
+ * @return {dragonBones::ArmatureData}
+ */
+getArmatureData : function (
+)
+{
+    return dragonBones::ArmatureData;
 },
 
 /**
@@ -1663,6 +2017,14 @@ bool
  * @class WorldClock
  */
 dragonBones.WorldClock = {
+
+/**
+ * @method render
+ */
+render : function (
+)
+{
+},
 
 /**
  * @method clear
@@ -2344,38 +2706,6 @@ updateWorldMatrix : function (
 dragonBones.CCArmatureDisplay = {
 
 /**
- * @method getAnimation
- * @return {dragonBones::Animation}
- */
-getAnimation : function (
-)
-{
-    return dragonBones::Animation;
-},
-
-/**
- * @method hasDBEventListener
- * @param {String} arg0
- * @return {bool}
- */
-hasDBEventListener : function (
-str 
-)
-{
-    return false;
-},
-
-/**
- * @method setColor
- * @param {color4b_object} arg0
- */
-setColor : function (
-color4b 
-)
-{
-},
-
-/**
  * @method dbInit
  * @param {dragonBones::Armature} arg0
  */
@@ -2398,31 +2728,43 @@ func
 },
 
 /**
- * @method getMaterialData
- * @return {se::Object}
+ * @method getRootDisplay
+ * @return {dragonBones::CCArmatureDisplay}
  */
-getMaterialData : function (
+getRootDisplay : function (
 )
 {
-    return se::Object;
+    return dragonBones::CCArmatureDisplay;
 },
 
 /**
- * @method dbUpdate
+ * @method setAttachUtil
+ * @param {dragonBones::RealTimeAttachUtil} arg0
  */
-dbUpdate : function (
+setAttachUtil : function (
+realtimeattachutil 
 )
 {
 },
 
 /**
- * @method dispatchDBEvent
+ * @method removeDBEventListener
  * @param {String} arg0
- * @param {dragonBones::EventObject} arg1
+ * @param {function} arg1
  */
-dispatchDBEvent : function (
+removeDBEventListener : function (
 str, 
-eventobject 
+func 
+)
+{
+},
+
+/**
+ * @method setEffect
+ * @param {cc.renderer::EffectVariant} arg0
+ */
+setEffect : function (
+effectvariant 
 )
 {
 },
@@ -2446,13 +2788,53 @@ bool
 },
 
 /**
- * @method getRootDisplay
- * @return {dragonBones::CCArmatureDisplay}
+ * @method dbClear
  */
-getRootDisplay : function (
+dbClear : function (
 )
 {
-    return dragonBones::CCArmatureDisplay;
+},
+
+/**
+ * @method dispatchDBEvent
+ * @param {String} arg0
+ * @param {dragonBones::EventObject} arg1
+ */
+dispatchDBEvent : function (
+str, 
+eventobject 
+)
+{
+},
+
+/**
+ * @method getDebugData
+ * @return {se::Object}
+ */
+getDebugData : function (
+)
+{
+    return se::Object;
+},
+
+/**
+ * @method hasDBEventListener
+ * @param {String} arg0
+ * @return {bool}
+ */
+hasDBEventListener : function (
+str 
+)
+{
+    return false;
+},
+
+/**
+ * @method dbUpdate
+ */
+dbUpdate : function (
+)
+{
 },
 
 /**
@@ -2476,21 +2858,49 @@ bool
 },
 
 /**
- * @method removeDBEventListener
- * @param {String} arg0
- * @param {function} arg1
+ * @method getAnimation
+ * @return {dragonBones::Animation}
  */
-removeDBEventListener : function (
-str, 
-func 
+getAnimation : function (
+)
+{
+    return dragonBones::Animation;
+},
+
+/**
+ * @method setColor
+ * @param {color4b_object} arg0
+ */
+setColor : function (
+color4b 
 )
 {
 },
 
 /**
- * @method dbClear
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
  */
-dbClear : function (
+bindNodeProxy : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method setBatchEnabled
+ * @param {bool} arg0
+ */
+setBatchEnabled : function (
+bool 
+)
+{
+},
+
+/**
+ * @method dbRender
+ */
+dbRender : function (
 )
 {
 },
@@ -2515,16 +2925,6 @@ vec2
 )
 {
     return cc.Vec2;
-},
-
-/**
- * @method getDebugData
- * @return {se::Object}
- */
-getDebugData : function (
-)
-{
-    return se::Object;
 },
 
 /**
@@ -2554,19 +2954,13 @@ CCArmatureDisplay : function (
 dragonBones.CCFactory = {
 
 /**
- * @method parseDragonBonesDataOnly
- * @param {String} arg0
- * @param {String} arg1
- * @param {float} arg2
- * @return {dragonBones::DragonBonesData}
+ * @method setTimeScale
+ * @param {float} arg0
  */
-parseDragonBonesDataOnly : function (
-str, 
-str, 
+setTimeScale : function (
 float 
 )
 {
-    return dragonBones::DragonBonesData;
 },
 
 /**
@@ -2580,15 +2974,23 @@ getSoundEventManager : function (
 },
 
 /**
- * @method handleTextureAtlasData
- * @param {bool} arg0
- * @param {String} arg1
- * @param {float} arg2
+ * @method render
+ * @param {float} arg0
  */
-handleTextureAtlasData : function (
-bool, 
-str, 
+render : function (
 float 
+)
+{
+},
+
+/**
+ * @method removeDragonBonesDataByUUID
+ * @param {String} arg0
+ * @param {bool} arg1
+ */
+removeDragonBonesDataByUUID : function (
+str, 
+bool 
 )
 {
 },
@@ -2625,6 +3027,32 @@ int
 )
 {
     return dragonBones::CCTextureAtlasData;
+},
+
+/**
+ * @method getDragonBones
+ * @return {dragonBones::DragonBones}
+ */
+getDragonBones : function (
+)
+{
+    return dragonBones::DragonBones;
+},
+
+/**
+ * @method parseDragonBonesDataByPath
+ * @param {String} arg0
+ * @param {String} arg1
+ * @param {float} arg2
+ * @return {dragonBones::DragonBonesData}
+ */
+parseDragonBonesDataByPath : function (
+str, 
+str, 
+float 
+)
+{
+    return dragonBones::DragonBonesData;
 },
 
 /**
@@ -2676,6 +3104,16 @@ int
 },
 
 /**
+ * @method getTimeScale
+ * @return {float}
+ */
+getTimeScale : function (
+)
+{
+    return 0;
+},
+
+/**
  * @method isInit
  * @return {bool}
  */
@@ -2718,6 +3156,364 @@ getFactory : function (
  * @constructor
  */
 CCFactory : function (
+)
+{
+},
+
+};
+
+/**
+ * @class ArmatureCacheMgr
+ */
+dragonBones.ArmatureCacheMgr = {
+
+/**
+ * @method removeArmatureCache
+ * @param {String} arg0
+ */
+removeArmatureCache : function (
+str 
+)
+{
+},
+
+/**
+ * @method buildArmatureCache
+ * @param {String} arg0
+ * @param {String} arg1
+ * @param {String} arg2
+ * @return {dragonBones::ArmatureCache}
+ */
+buildArmatureCache : function (
+str, 
+str, 
+str 
+)
+{
+    return dragonBones::ArmatureCache;
+},
+
+/**
+ * @method destroyInstance
+ */
+destroyInstance : function (
+)
+{
+},
+
+/**
+ * @method getInstance
+ * @return {dragonBones::ArmatureCacheMgr}
+ */
+getInstance : function (
+)
+{
+    return dragonBones::ArmatureCacheMgr;
+},
+
+};
+
+/**
+ * @class CCArmatureCacheDisplay
+ */
+dragonBones.CCArmatureCacheDisplay = {
+
+/**
+ * @method setTimeScale
+ * @param {float} arg0
+ */
+setTimeScale : function (
+float 
+)
+{
+},
+
+/**
+ * @method render
+ * @param {float} arg0
+ */
+render : function (
+float 
+)
+{
+},
+
+/**
+ * @method addDBEventListener
+ * @param {String} arg0
+ */
+addDBEventListener : function (
+str 
+)
+{
+},
+
+/**
+ * @method setAttachUtil
+ * @param {dragonBones::CacheModeAttachUtil} arg0
+ */
+setAttachUtil : function (
+cachemodeattachutil 
+)
+{
+},
+
+/**
+ * @method removeDBEventListener
+ * @param {String} arg0
+ */
+removeDBEventListener : function (
+str 
+)
+{
+},
+
+/**
+ * @method onEnable
+ */
+onEnable : function (
+)
+{
+},
+
+/**
+ * @method setEffect
+ * @param {cc.renderer::EffectVariant} arg0
+ */
+setEffect : function (
+effectvariant 
+)
+{
+},
+
+/**
+ * @method dispose
+ */
+dispose : function (
+)
+{
+},
+
+/**
+ * @method setOpacityModifyRGB
+ * @param {bool} arg0
+ */
+setOpacityModifyRGB : function (
+bool 
+)
+{
+},
+
+/**
+ * @method dispatchDBEvent
+ * @param {String} arg0
+ * @param {dragonBones::EventObject} arg1
+ */
+dispatchDBEvent : function (
+str, 
+eventobject 
+)
+{
+},
+
+/**
+ * @method beginSchedule
+ */
+beginSchedule : function (
+)
+{
+},
+
+/**
+ * @method updateAllAnimationCache
+ */
+updateAllAnimationCache : function (
+)
+{
+},
+
+/**
+ * @method update
+ * @param {float} arg0
+ */
+update : function (
+float 
+)
+{
+},
+
+/**
+ * @method playAnimation
+ * @param {String} arg0
+ * @param {int} arg1
+ */
+playAnimation : function (
+str, 
+int 
+)
+{
+},
+
+/**
+ * @method setDBEventCallback
+ * @param {function} arg0
+ */
+setDBEventCallback : function (
+func 
+)
+{
+},
+
+/**
+ * @method updateAnimationCache
+ * @param {String} arg0
+ */
+updateAnimationCache : function (
+str 
+)
+{
+},
+
+/**
+ * @method getTimeScale
+ * @return {float}
+ */
+getTimeScale : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getAnimation
+ * @return {dragonBones::Animation}
+ */
+getAnimation : function (
+)
+{
+    return dragonBones::Animation;
+},
+
+/**
+ * @method onDisable
+ */
+onDisable : function (
+)
+{
+},
+
+/**
+ * @method setColor
+ * @param {color4b_object} arg0
+ */
+setColor : function (
+color4b 
+)
+{
+},
+
+/**
+ * @method bindNodeProxy
+ * @param {cc.renderer::NodeProxy} arg0
+ */
+bindNodeProxy : function (
+nodeproxy 
+)
+{
+},
+
+/**
+ * @method setBatchEnabled
+ * @param {bool} arg0
+ */
+setBatchEnabled : function (
+bool 
+)
+{
+},
+
+/**
+ * @method getArmature
+ * @return {dragonBones::Armature}
+ */
+getArmature : function (
+)
+{
+    return dragonBones::Armature;
+},
+
+/**
+ * @method stopSchedule
+ */
+stopSchedule : function (
+)
+{
+},
+
+/**
+ * @method CCArmatureCacheDisplay
+ * @constructor
+ * @param {String} arg0
+ * @param {String} arg1
+ * @param {String} arg2
+ * @param {bool} arg3
+ */
+CCArmatureCacheDisplay : function (
+str, 
+str, 
+str, 
+bool 
+)
+{
+},
+
+};
+
+/**
+ * @class AttachUtilBase
+ */
+dragonBones.AttachUtilBase = {
+
+/**
+ * @method associateAttachedNode
+ * @param {dragonBones::Armature} arg0
+ * @param {cc.renderer::NodeProxy} arg1
+ */
+associateAttachedNode : function (
+armature, 
+nodeproxy 
+)
+{
+},
+
+};
+
+/**
+ * @class RealTimeAttachUtil
+ */
+dragonBones.RealTimeAttachUtil = {
+
+/**
+ * @method RealTimeAttachUtil
+ * @constructor
+ */
+RealTimeAttachUtil : function (
+)
+{
+},
+
+};
+
+/**
+ * @class CacheModeAttachUtil
+ */
+dragonBones.CacheModeAttachUtil = {
+
+/**
+ * @method CacheModeAttachUtil
+ * @constructor
+ */
+CacheModeAttachUtil : function (
 )
 {
 },

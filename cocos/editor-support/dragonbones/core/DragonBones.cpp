@@ -5,11 +5,13 @@
 #include "../event/EventObject.h"
 #include "../event/IEventDispatcher.h"
 
+#include "../../dragonbones-creator-support/CCArmatureDisplay.h"
+
 DRAGONBONES_NAMESPACE_BEGIN
 
 const std::string DragonBones::VEISION = "5.6.300";
 
-bool DragonBones::yDown = true;
+bool DragonBones::yDown = false;
 bool DragonBones::debug = false;
 bool DragonBones::debugDraw = false;
 bool DragonBones::webAssembly = false;
@@ -32,6 +34,14 @@ DragonBones::~DragonBones()
     }
 
     _clock = nullptr;
+    
+    if (_eventManager) {
+        auto mgr = dynamic_cast<CCArmatureDisplay*>(_eventManager);
+        if (NULL != mgr) {
+            mgr->release();
+        }
+    }
+    
     _eventManager = nullptr;
 }
 
@@ -71,6 +81,11 @@ void DragonBones::advanceTime(float passedTime)
     }
 
     _clock->advanceTime(passedTime);
+}
+
+void DragonBones::render()
+{
+    _clock->render();
 }
 
 void DragonBones::bufferEvent(EventObject* value)

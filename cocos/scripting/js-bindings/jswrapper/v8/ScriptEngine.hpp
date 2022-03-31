@@ -31,6 +31,8 @@
 #include "Base.h"
 #include "../Value.hpp"
 
+#include <thread>
+
 #if SE_ENABLE_INSPECTOR
 namespace node {
     namespace inspector {
@@ -255,6 +257,13 @@ namespace se {
         void setExceptionCallback(const ExceptionCallback& cb);
 
         /**
+         *  @brief Sets the callback function while an exception is fired in JS.
+         *  @param[in] cb The callback function to notify that an exception is fired.
+         */
+        void setJSExceptionCallback(const ExceptionCallback& cb);
+
+
+        /**
          *  @brief Gets the start time of script engine.
          *  @return The start time of script engine.
          */
@@ -298,6 +307,9 @@ namespace se {
         static void onFatalErrorCallback(const char* location, const char* message);
         static void onOOMErrorCallback(const char* location, bool is_heap_oom);
         static void onMessageCallback(v8::Local<v8::Message> message, v8::Local<v8::Value> data);
+        static void onPromiseRejectCallback(v8::PromiseRejectMessage msg);
+
+        void callExceptionCallback(const char*, const char*, const char*);
 
         std::chrono::steady_clock::time_point _startTime;
         std::vector<RegisterCallback> _registerCallbackArray;
@@ -307,21 +319,24 @@ namespace se {
         std::vector<std::function<void()>> _afterCleanupHookArray;
 
         v8::Persistent<v8::Context> _context;
-        v8::Isolate::CreateParams _createParams;
 
         v8::Platform* _platform;
         v8::Isolate* _isolate;
         v8::HandleScope* _handleScope;
-        v8::ArrayBuffer::Allocator* _allocator;
         Object* _globalObj;
+        Value _gcFuncValue;
+        Object *_gcFunc = nullptr;
 
         FileOperationDelegate _fileOperationDelegate;
-        ExceptionCallback _exceptionCallback;
+        ExceptionCallback _nativeExceptionCallback = nullptr;
+        ExceptionCallback _jsExceptionCallback = nullptr;
 
 #if SE_ENABLE_INSPECTOR
         node::Environment* _env;
         node::IsolateData* _isolateData;
 #endif
+
+        std::thread::id _engineThreadId;
 
         std::string _debuggerServerAddr;
         uint32_t _debuggerServerPort;

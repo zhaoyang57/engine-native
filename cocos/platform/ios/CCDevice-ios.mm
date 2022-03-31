@@ -173,11 +173,7 @@ int Device::getDPI()
 
     if (dpi == -1)
     {
-        float scale = 1.0f;
-
-        if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
-            scale = [[UIScreen mainScreen] scale];
-        }
+        float scale = scale = [[UIScreen mainScreen] scale];
 
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             dpi = 132 * scale;
@@ -290,6 +286,7 @@ Device::NetworkType Device::getNetworkType()
             break;
         case Reachability::NetworkStatus::REACHABLE_VIA_WWAN:
             ret = NetworkType::WWAN;
+            break;
         default:
             ret = NetworkType::NONE;
             break;
@@ -310,14 +307,6 @@ cocos2d::Vec4 Device::getSafeAreaEdge()
 #pragma clang diagnostic ignored "-Wpartial-availability"
         UIEdgeInsets safeAreaEdge = screenView.safeAreaInsets;
 #pragma clang diagnostic pop
-
-        // Multiply contentScaleFactor since safeAreaInsets return points.
-        uint8_t scale = screenView.contentScaleFactor;
-        safeAreaEdge.left *= scale;
-        safeAreaEdge.right *= scale;
-        safeAreaEdge.top *= scale;
-        safeAreaEdge.bottom *= scale;
-
         return cocos2d::Vec4(safeAreaEdge.top, safeAreaEdge.left, safeAreaEdge.bottom, safeAreaEdge.right);
     }
 #endif

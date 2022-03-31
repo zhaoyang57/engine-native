@@ -23,6 +23,8 @@
  THE SOFTWARE.
  ****************************************************************************/
 #include "ScriptEngine.hpp"
+#include "platform/CCPlatformConfig.h"
+#include "base/ccConfig.h"
 
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
@@ -32,11 +34,23 @@
 #include "../State.hpp"
 #include "../MappingUtils.hpp"
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#include <mach/machine.h>
+#include <string.h>
+#include <iostream>
+#endif
+
 #if SE_ENABLE_INSPECTOR
 #include "debugger/inspector_agent.h"
 #include "debugger/env.h"
 #include "debugger/node.h"
 #endif
+
+#include <sstream>
+
+#define EXPOSE_GC "__jsb_gc__"
 
 uint32_t __jsbInvocationCount = 0;
 uint32_t __jsbStackFrameLimit = 20;
@@ -55,7 +69,7 @@ namespace se {
         {
             if (info[0]->IsString())
             {
-                v8::String::Utf8Value utf8(info[0]);
+                v8::String::Utf8Value utf8(v8::Isolate::GetCurrent(), info[0]);
                 SE_LOGD("JS: %s\n", *utf8);
             }
         }
@@ -74,19 +88,19 @@ namespace se {
             char tmp[100] = {0};
             for (int i = 0, e = stack->GetFrameCount(); i < e; ++i)
             {
-                v8::Local<v8::StackFrame> frame = stack->GetFrame(i);
+                v8::Local<v8::StackFrame> frame = stack->GetFrame(v8::Isolate::GetCurrent(), i);
                 v8::Local<v8::String> script = frame->GetScriptName();
                 std::string scriptName;
                 if (!script.IsEmpty())
                 {
-                    scriptName = *v8::String::Utf8Value(script);
+                    scriptName = *v8::String::Utf8Value(v8::Isolate::GetCurrent(), script);
                 }
 
                 v8::Local<v8::String> func = frame->GetFunctionName();
                 std::string funcName;
                 if (!func.IsEmpty())
                 {
-                    funcName = *v8::String::Utf8Value(func);
+                    funcName = *v8::String::Utf8Value(v8::Isolate::GetCurrent(), func);
                 }
 
                 stackStr += "[";
@@ -205,8 +219,75 @@ namespace se {
             return true;
         }
         SE_BIND_FUNC(JSB_console_assert)
+    
+    
+        #if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        /**
+         *  JIT is enabled on iOS 14.2+ & chipset A12+
+         *  ref https://github.com/flutter/engine/pull/22377
+         */
+        bool jitSupported() {
+            #if CC_IOS_FORCE_DISABLE_JIT
+            return false;
+            #elif TARGET_CPU_X86 || TARGET_CPU_X86_64
+            return true;
+            #else
+            
+            // Check for arm64e.
+            cpu_type_t cpuType = 0;
+            size_t cpuTypeSize = sizeof(cpu_type_t);
+            if (::sysctlbyname("hw.cputype", &cpuType, &cpuTypeSize, nullptr, 0) < 0) {
+                SE_LOGD("Could not execute sysctl() to get CPU type: %s", strerror(errno));
+            }
+            
+            cpu_subtype_t cpuSubType = 0;
+            if (::sysctlbyname("hw.cpusubtype", &cpuSubType, &cpuTypeSize, nullptr, 0) < 0) {
+                SE_LOGD("Could not execute sysctl() to get CPU subtype: %s", strerror(errno));
+            }
+            
+            // Tracing is necessary unless the device is arm64e (A12 chip or higher).
+            if (cpuType != CPU_TYPE_ARM64 || cpuSubType != CPU_SUBTYPE_ARM64E) {
+                return false;
+            }
+            
+            // Check for iOS 14.2 and higher.
+            size_t osVersionSize;
+            ::sysctlbyname("kern.osversion", NULL, &osVersionSize, NULL, 0);
+            char osversionBuffer[osVersionSize];
+            
+            if (::sysctlbyname("kern.osversion", osversionBuffer, &osVersionSize, NULL, 0) < 0) {
+                SE_LOGD("Could not execute sysctl() to get current OS version: %s", strerror(errno));
+                return false;
+            }
+            
+            int majorVersion = 0;
+            char minorLetter = 'Z';
+            
+            for (size_t index = 0; index < osVersionSize; index++) {
+                char version_char = osversionBuffer[index];
+                // Find the minor version build letter.
+                if (isalpha(version_char)) {
+                    majorVersion = atoi((const char*)osversionBuffer);
+                    minorLetter = toupper(version_char);
+                    break;
+                }
+            }
+            // 18B92 is iOS 14.2 beta release candidate where tracing became unnecessary.
+            return majorVersion > 18 || (majorVersion == 18 && minorLetter >= 'B');
+            #endif //TARGET_CPU_X86 || TARGET_CPU_X86_64
+        }
+        #endif //CC_TARGET_PLATFORM == CC_PLATFORM_IOS
 
     } // namespace {
+
+    void ScriptEngine::callExceptionCallback(const char* location, const char* message, const char *stack) {
+        if (_nativeExceptionCallback) {
+            _nativeExceptionCallback(location, message, stack);
+        }
+        if (_jsExceptionCallback) {
+            _jsExceptionCallback(location, message, stack);
+        }
+    }
 
     void ScriptEngine::onFatalErrorCallback(const char* location, const char* message)
     {
@@ -216,10 +297,8 @@ namespace se {
         errorStr += message;
 
         SE_LOGE("%s\n", errorStr.c_str());
-        if (getInstance()->_exceptionCallback != nullptr)
-        {
-            getInstance()->_exceptionCallback(location, message, "(no stack information)");
-        }
+
+        getInstance()->callExceptionCallback(location, message, "(no stack information)");
     }
 
     void ScriptEngine::onOOMErrorCallback(const char* location, bool is_heap_oom)
@@ -235,10 +314,8 @@ namespace se {
 
         errorStr += ", " + message;
         SE_LOGE("%s\n", errorStr.c_str());
-        if (getInstance()->_exceptionCallback != nullptr)
-        {
-            getInstance()->_exceptionCallback(location, message.c_str(), "(no stack information)");
-        }
+        getInstance()->callExceptionCallback(location, message.c_str(), "(no stack information)");
+        
     }
 
     void ScriptEngine::onMessageCallback(v8::Local<v8::Message> message, v8::Local<v8::Value> data)
@@ -270,17 +347,14 @@ namespace se {
         }
         SE_LOGE("ERROR: %s\n", errorStr.c_str());
 
-        if (thiz->_exceptionCallback != nullptr)
-        {
-            thiz->_exceptionCallback(location.c_str(), msgVal.toString().c_str(), stackStr.c_str());
-        }
+        thiz->callExceptionCallback(location.c_str(), msgVal.toString().c_str(), stackStr.c_str());
 
         if (!thiz->_isErrorHandleWorking)
         {
             thiz->_isErrorHandleWorking = true;
 
             Value errorHandler;
-            if (thiz->_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
+            if (thiz->_globalObj && thiz->_globalObj->getProperty("__errorHandler", &errorHandler) && errorHandler.isObject() && errorHandler.toObject()->isFunction())
             {
                 ValueArray args;
                 args.push_back(resouceNameVal);
@@ -296,6 +370,39 @@ namespace se {
         {
             SE_LOGE("ERROR: __errorHandler has exception\n");
         }
+    }
+
+    void ScriptEngine::onPromiseRejectCallback(v8::PromiseRejectMessage msg)
+    {
+        v8::Isolate *isolate = getInstance()->_isolate;
+        v8::HandleScope scope(isolate);
+        std::stringstream ss;
+        auto event = msg.GetEvent();
+        auto value = msg.GetValue();
+        const char *eventName = "[invalidatePromiseEvent]";
+        
+        if(event == v8::kPromiseRejectWithNoHandler) {
+            eventName = "unhandledRejectedPromise";
+        }else if(event == v8::kPromiseHandlerAddedAfterReject) {
+            eventName = "handlerAddedAfterPromiseRejected";
+        }else if(event == v8::kPromiseRejectAfterResolved) {
+            eventName = "rejectAfterPromiseResolved";
+        }else if( event == v8::kPromiseResolveAfterResolved) {
+            eventName = "resolveAfterPromiseResolved";
+        }
+        
+        if(!value.IsEmpty()) {
+            // prepend error object to stack message
+            v8::Local<v8::String> str = value->ToString(isolate->GetCurrentContext()).ToLocalChecked();
+            v8::String::Utf8Value valueUtf8(isolate, str);
+            ss << *valueUtf8 << std::endl;
+        }
+        
+        auto stackStr = getInstance()->getCurrentStackTrace();
+        ss << "stacktrace: " << std::endl;
+        ss << stackStr << std::endl;
+        getInstance()->callExceptionCallback("", eventName, ss.str().c_str());
+        
     }
 
     void ScriptEngine::privateDataFinalize(void* nativeObj)
@@ -331,9 +438,7 @@ namespace se {
     : _platform(nullptr)
     , _isolate(nullptr)
     , _handleScope(nullptr)
-    , _allocator(nullptr)
     , _globalObj(nullptr)
-    , _exceptionCallback(nullptr)
 #if SE_ENABLE_INSPECTOR
     , _env(nullptr)
     , _isolateData(nullptr)
@@ -345,10 +450,23 @@ namespace se {
     , _isInCleanup(false)
     , _isErrorHandleWorking(false)
     {
-        //        RETRUN_VAL_IF_FAIL(v8::V8::InitializeICUDefaultLocation(nullptr, "/Users/james/Project/v8/out.gn/x64.debug/icudtl.dat"), false);
-        //        v8::V8::InitializeExternalStartupData("/Users/james/Project/v8/out.gn/x64.debug/natives_blob.bin", "/Users/james/Project/v8/out.gn/x64.debug/snapshot_blob.bin"); //REFINE
-        _platform = v8::platform::CreateDefaultPlatform();
+        _platform = v8::platform::NewDefaultPlatform().release();
         v8::V8::InitializePlatform(_platform);
+
+        std::string flags;
+        //NOTICE: spaces are required between flags
+        flags.append(" --expose-gc-as=" EXPOSE_GC);
+        // flags.append(" --trace-gc"); // v8 trace gc
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+        if(!jitSupported()) {
+            flags.append(" --jitless");
+        }
+#endif
+        if(!flags.empty())
+        {
+            v8::V8::SetFlagsFromString(flags.c_str(), (int)flags.length());
+        }
+        
         bool ok = v8::V8::Initialize();
         assert(ok);
     }
@@ -359,7 +477,6 @@ namespace se {
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
         delete _platform;
-        _platform = nullptr;
     }
 
     bool ScriptEngine::init()
@@ -368,17 +485,16 @@ namespace se {
         SE_LOGD("Initializing V8, version: %s\n", v8::V8::GetVersion());
         ++_vmId;
 
+        _engineThreadId = std::this_thread::get_id();
+
         for (const auto& hook : _beforeInitHookArray)
         {
             hook();
         }
         _beforeInitHookArray.clear();
-
-        assert(_allocator == nullptr);
-        _allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-        // Create a new Isolate and make it the current one.
-        _createParams.array_buffer_allocator = _allocator;
-        _isolate = v8::Isolate::New(_createParams);
+        v8::Isolate::CreateParams create_params;
+        create_params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        _isolate = v8::Isolate::New(create_params);
         v8::HandleScope hs(_isolate);
         _isolate->Enter();
 
@@ -387,13 +503,15 @@ namespace se {
         _isolate->SetFatalErrorHandler(onFatalErrorCallback);
         _isolate->SetOOMErrorHandler(onOOMErrorCallback);
         _isolate->AddMessageListener(onMessageCallback);
+        _isolate->SetPromiseRejectCallback(onPromiseRejectCallback);
 
         _context.Reset(_isolate, v8::Context::New(_isolate));
         _context.Get(_isolate)->Enter();
 
         NativePtrToObjectMap::init();
         NonRefNativePtrCreatedByCtorMap::init();
-
+        
+        Object::setup();
         Class::setIsolate(_isolate);
         Object::setIsolate(_isolate);
 
@@ -427,6 +545,15 @@ namespace se {
 
         _globalObj->defineFunction("log", __log);
         _globalObj->defineFunction("forceGC", __forceGC);
+        
+        
+        _globalObj->getProperty(EXPOSE_GC, &_gcFuncValue);
+        if(_gcFuncValue.isObject() && _gcFuncValue.toObject()->isFunction()) {
+            _gcFunc = _gcFuncValue.toObject();
+        } else {
+            _gcFunc = nullptr;
+        }
+        
 
         __jsb_CCPrivateData_class = Class::create("__PrivateData", _globalObj, nullptr, nullptr);
         __jsb_CCPrivateData_class->defineFinalizeFunction(privateDataFinalize);
@@ -494,8 +621,6 @@ namespace se {
         }
         _isolate->Dispose();
 
-        delete _allocator;
-        _allocator = nullptr;
         _isolate = nullptr;
         _globalObj = nullptr;
         _isValid = false;
@@ -511,7 +636,7 @@ namespace se {
         _isInCleanup = false;
         NativePtrToObjectMap::destroy();
         NonRefNativePtrCreatedByCtorMap::destroy();
-
+        _gcFunc = nullptr;
         SE_LOGD("ScriptEngine::cleanup end ...\n");
     }
 
@@ -590,15 +715,26 @@ namespace se {
 
     void ScriptEngine::garbageCollect()
     {
-        SE_LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
-        const double kLongIdlePauseInSeconds = 1.0;
-        _isolate->ContextDisposedNotification();
-        _isolate->IdleNotificationDeadline(_platform->MonotonicallyIncreasingTime() + kLongIdlePauseInSeconds);
-        // By sending a low memory notifications, we will try hard to collect all
-        // garbage and will therefore also invoke all weak callbacks of actually
-        // unreachable persistent handles.
-        _isolate->LowMemoryNotification();
-        SE_LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), (int)__objectMap.size());
+        int objSize = __objectMap ? (int)__objectMap->size() : -1;
+        SE_LOGD("GC begin ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
+        
+        if(_gcFunc == nullptr)
+        {
+            const double kLongIdlePauseInSeconds = 1.0;
+            _isolate->ContextDisposedNotification();
+            _isolate->IdleNotificationDeadline(_platform->MonotonicallyIncreasingTime() + kLongIdlePauseInSeconds);
+            // By sending a low memory notifications, we will try hard to collect all
+            // garbage and will therefore also invoke all weak callbacks of actually
+            // unreachable persistent handles.
+            _isolate->LowMemoryNotification();
+        }
+        else
+        {
+            _gcFunc->call({}, nullptr);
+        }
+        objSize = __objectMap ? (int)__objectMap->size() : -1;
+        
+        SE_LOGD("GC end ..., (js->native map) size: %d, all objects: %d\n", (int)NativePtrToObjectMap::size(), objSize);
     }
 
     bool ScriptEngine::isGarbageCollecting()
@@ -618,6 +754,13 @@ namespace se {
 
     bool ScriptEngine::evalString(const char* script, ssize_t length/* = -1 */, Value* ret/* = nullptr */, const char* fileName/* = nullptr */)
     {
+        if(_engineThreadId != std::this_thread::get_id())
+        {
+            // `evalString` should run in main thread
+            assert(false);
+            return false;
+        }
+
         assert(script != nullptr);
         if (length < 0)
             length = strlen(script);
@@ -634,8 +777,10 @@ namespace se {
             sourceUrl = sourceUrl.substr(prefixPos + prefixKey.length());
         }
 
-        std::string scriptStr(script, length);
+        // It is needed, or will crash if invoked from non C++ context, such as invoked from objective-c context(for example, handler of UIKit).
+        v8::HandleScope handle_scope(_isolate);
 
+        std::string scriptStr(script, length);
         v8::MaybeLocal<v8::String> source = v8::String::NewFromUtf8(_isolate, scriptStr.c_str(), v8::NewStringType::kNormal);
         if (source.IsEmpty())
             return false;
@@ -651,6 +796,8 @@ namespace se {
 
         if (!maybeScript.IsEmpty())
         {
+            v8::TryCatch block(_isolate);
+
             v8::Local<v8::Script> v8Script = maybeScript.ToLocalChecked();
             v8::MaybeLocal<v8::Value> maybeResult = v8Script->Run(_context.Get(_isolate));
 
@@ -664,6 +811,12 @@ namespace se {
                 }
 
                 success = true;
+            }
+
+            if (block.HasCaught()) {
+                v8::Local<v8::Message> message = block.Message();
+                SE_LOGE("ScriptEngine::evalString catch exception:\n");
+                onMessageCallback(message, v8::Undefined(_isolate));
             }
         }
 
@@ -717,7 +870,12 @@ namespace se {
 
     void ScriptEngine::setExceptionCallback(const ExceptionCallback& cb)
     {
-        _exceptionCallback = cb;
+        _nativeExceptionCallback = cb;
+    }
+
+    void ScriptEngine::setJSExceptionCallback(const ExceptionCallback& cb)
+    {
+        _jsExceptionCallback = cb;
     }
 
     v8::Local<v8::Context> ScriptEngine::_getContext() const

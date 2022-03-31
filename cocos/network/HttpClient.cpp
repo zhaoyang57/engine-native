@@ -115,9 +115,9 @@ void HttpClient::networkThread()
         _responseQueueMutex.unlock();
 
         _schedulerMutex.lock();
-        if (nullptr != _scheduler)
+        if (auto sche = _scheduler.lock())
         {
-            _scheduler->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
+            sche->performFunctionInCocosThread(CC_CALLBACK_0(HttpClient::dispatchResponseCallbacks, this));
         }
         _schedulerMutex.unlock();
     }
@@ -143,9 +143,9 @@ void HttpClient::networkThreadAlone(HttpRequest* request, HttpResponse* response
     processResponse(response, responseMessage);
 
     _schedulerMutex.lock();
-    if (nullptr != _scheduler)
+    if (auto sche = _scheduler.lock())
     {
-        _scheduler->performFunctionInCocosThread([this, response, request]{
+        sche->performFunctionInCocosThread([this, response, request]{
             const ccHttpRequestCallback& callback = request->getResponseCallback();
 
             if (callback != nullptr)
@@ -322,6 +322,17 @@ static int processPutTask(HttpClient* client, HttpRequest* request, write_callba
     return ok ? 0 : 1;
 }
 
+static int processHeadTask(HttpClient* client, HttpRequest* request, write_callback callback, void* stream, long* responseCode, write_callback headerCallback, void* headerStream, char* errorBuffer)
+{
+    CURLRaii curl;
+    bool ok = curl.init(client, request, callback, stream, headerCallback, headerStream, errorBuffer)
+            && curl.setOption(CURLOPT_NOBODY, "HEAD")
+            && curl.setOption(CURLOPT_POSTFIELDS, request->getRequestData())
+            && curl.setOption(CURLOPT_POSTFIELDSIZE, request->getRequestDataSize())
+            && curl.perform(responseCode);
+    return ok ? 0 : 1;
+}
+
 //Process DELETE Request
 static int processDeleteTask(HttpClient* client, HttpRequest* request, write_callback callback, void* stream, long* responseCode, write_callback headerCallback, void* headerStream, char* errorBuffer)
 {
@@ -356,9 +367,13 @@ void HttpClient::destroyInstance()
     auto thiz = _httpClient;
     _httpClient = nullptr;
 
-    thiz->_scheduler->unscheduleAllForTarget(thiz);
+    if(auto sche = thiz->_scheduler.lock())
+    {
+        sche->unscheduleAllForTarget(thiz);
+    }
+
     thiz->_schedulerMutex.lock();
-    thiz->_scheduler = nullptr;
+    thiz->_scheduler.reset();
     thiz->_schedulerMutex.unlock();
 
     thiz->_requestQueueMutex.lock();
@@ -536,6 +551,16 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
             responseMessage);
         break;
 
+	case HttpRequest::Type::HEAD:
+		retValue = processHeadTask(this, request,
+			writeData,
+			response->getResponseData(),
+			&responseCode,
+			writeHeaderData,
+			response->getResponseHeader(),
+			responseMessage);
+		break;
+
     case HttpRequest::Type::DELETE:
         retValue = processDeleteTask(this, request,
             writeData,
@@ -547,7 +572,7 @@ void HttpClient::processResponse(HttpResponse* response, char* responseMessage)
         break;
 
     default:
-        CCASSERT(false, "CCHttpClient: unknown request type, only GET, POST, PUT or DELETE is supported");
+        CCASSERT(false, "CCHttpClient: unknown request type, only GET, POST, PUT, HEAD or DELETE is supported");
         break;
     }
 

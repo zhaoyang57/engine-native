@@ -67,7 +67,7 @@ namespace se {
                     break;
                 case Value::Type::String:
                 {
-                    v8::MaybeLocal<v8::String> str = v8::String::NewFromUtf8(isolate, v.toString().c_str(), v8::NewStringType::kNormal);
+                    v8::MaybeLocal<v8::String> str = v8::String::NewFromUtf8(isolate, v.toString().data(), v8::NewStringType::kNormal, (int) v.toString().length());
                     if (!str.IsEmpty())
                         *outJsVal = str.ToLocalChecked();
                     else
@@ -109,10 +109,10 @@ namespace se {
                 else
                     v->setUndefined();
             } else if (jsval->IsString()) {
-                v8::String::Utf8Value utf8(jsval);
-                v->setString(std::string(*utf8));
+                v8::String::Utf8Value utf8(isolate, jsval);
+                v->setString(std::string(*utf8, utf8.length()));
             } else if (jsval->IsBoolean()) {
-                v8::MaybeLocal<v8::Boolean> jsBoolean = jsval->ToBoolean(isolate->GetCurrentContext());
+                v8::MaybeLocal<v8::Boolean> jsBoolean = jsval->ToBoolean(isolate);
                 if (!jsBoolean.IsEmpty())
                     v->setBoolean(jsBoolean.ToLocalChecked()->Value());
                 else

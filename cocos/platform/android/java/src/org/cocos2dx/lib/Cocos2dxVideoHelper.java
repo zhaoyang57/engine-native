@@ -33,7 +33,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import org.cocos2dx.lib.Cocos2dxVideoView.OnVideoEventListener;
 
@@ -44,13 +43,13 @@ import java.util.concurrent.FutureTask;
 
 public class Cocos2dxVideoHelper {
 
-    private RelativeLayout mLayout = null;
+    private FrameLayout mLayout = null;
     private Cocos2dxActivity mActivity = null;  
     private static SparseArray<Cocos2dxVideoView> sVideoViews = null;
     static VideoHandler mVideoHandler = null;
     private static Handler sHandler = null;
     
-    Cocos2dxVideoHelper(Cocos2dxActivity activity,RelativeLayout layout)
+    Cocos2dxVideoHelper(Cocos2dxActivity activity, FrameLayout layout)
     {
         mActivity = activity;
         mLayout = layout;
@@ -122,10 +121,7 @@ public class Cocos2dxVideoHelper {
                 helper._pauseVideo(msg.arg1);
                 break;
             }
-            case VideoTaskResume: {
-                helper._resumeVideo(msg.arg1);
-                break;
-            }
+
             case VideoTaskStop: {
                 helper._stopVideo(msg.arg1);
                 break;
@@ -140,10 +136,6 @@ public class Cocos2dxVideoHelper {
                 } else {
                     helper._setVideoVisible(msg.arg1, false);
                 }
-                break;
-            }
-            case VideoTaskRestart: {
-                helper._restartVideo(msg.arg1);
                 break;
             }
             case VideoTaskKeepRatio: {
@@ -214,7 +206,7 @@ public class Cocos2dxVideoHelper {
                 FrameLayout.LayoutParams.WRAP_CONTENT);
         mLayout.addView(videoView, lParams);
         videoView.setZOrderOnTop(true);
-        videoView.setOnCompletionListener(videoEventListener);
+        videoView.setVideoViewEventListener(videoEventListener);
     }
 
     public static void removeVideoWidget(int index){
@@ -332,20 +324,6 @@ public class Cocos2dxVideoHelper {
         }
     }
 
-    public static void resumeVideo(int index) {
-        Message msg = new Message();
-        msg.what = VideoTaskResume;
-        msg.arg1 = index;
-        mVideoHandler.sendMessage(msg);
-    }
-
-    private void _resumeVideo(int index) {
-        Cocos2dxVideoView videoView = sVideoViews.get(index);
-        if (videoView != null) {
-            videoView.resume();
-        }
-    }
-
     public static void stopVideo(int index) {
         Message msg = new Message();
         msg.what = VideoTaskStop;
@@ -357,20 +335,6 @@ public class Cocos2dxVideoHelper {
         Cocos2dxVideoView videoView = sVideoViews.get(index);
         if (videoView != null) {
             videoView.stop();
-        }
-    }
-
-    public static void restartVideo(int index) {
-        Message msg = new Message();
-        msg.what = VideoTaskRestart;
-        msg.arg1 = index;
-        mVideoHandler.sendMessage(msg);
-    }
-
-    private void _restartVideo(int index) {
-        Cocos2dxVideoView videoView = sVideoViews.get(index);
-        if (videoView != null) {
-            videoView.restart();
         }
     }
 
@@ -443,25 +407,6 @@ public class Cocos2dxVideoHelper {
         }
     }
 
-    public  static  boolean isPlaying(final int index) {
-        Callable<Boolean> callable = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                Cocos2dxVideoView video = sVideoViews.get(index);
-                return video != null && video.isPlaying();
-            }
-        };
-
-        try {
-            return callInMainThread(callable);
-        } catch (ExecutionException e) {
-            return false;
-        } catch (InterruptedException e) {
-            return false;
-        }
-    }
-
-
     public static void setVideoVisible(int index, boolean visible) {
         Message msg = new Message();
         msg.what = VideoTaskSetVisible;
@@ -521,4 +466,110 @@ public class Cocos2dxVideoHelper {
         mVideoHandler.sendMessage(msg);
     }
 
+    private byte[] getFrame(final int index) {
+        Callable<byte[]> callable = new Callable<byte[]>() {
+            @Override
+            public byte[] call() throws Exception {
+                Cocos2dxVideoView video = sVideoViews.get(index);
+                byte datas[] = null;
+                if (video != null) datas = video.getFrame();
+                if (datas == null) {
+                    Log.w("Cocos2dxVideoHelper", "Video player's frame is not ready to get now!");
+                }
+                return datas;
+            }
+        };
+
+        try {
+            return callInMainThread(callable);
+        } catch (ExecutionException e) {
+            Log.w("ExecutionException", e.getMessage());
+            return null;
+        } catch (InterruptedException e) {
+            Log.w("InterruptedException", e.getMessage());
+            return null;
+        }
+    }
+
+    private float getFrameChannel(final int index) {
+        Callable<Float> callable = new Callable<Float>() {
+            @Override
+            public Float call() throws Exception {
+                Cocos2dxVideoView video = sVideoViews.get(index);
+                int channel = 0;
+                if (video != null) {
+                    channel = video.getFrameChannel();
+                }
+                if (channel == 0) {
+                    Log.w("Cocos2dxVideoHelper", "Video player's frame channel is unknown!");
+                }
+                return new Float((float)channel);
+            }
+        };
+
+        try {
+            return callInMainThread(callable);
+        } catch (ExecutionException e) {
+            return -1.0f;
+        } catch (InterruptedException e) {
+            return -1.0f;
+        }
+    }
+
+    private float getFrameWidth(final int index) {
+        Callable<Float> callable = new Callable<Float>() {
+            @Override
+            public Float call() {
+                Cocos2dxVideoView video = sVideoViews.get(index);
+                int width = 0;
+                if (video != null) {
+                    width = video.getFrameWidth();
+                }
+                if (width == 0) {
+                    Log.w("Cocos2dxVideoHelper", "Video player's frame width is not ready to get now!");
+                }
+                return new Float((float)width);
+            }
+        };
+
+        try {
+            return callInMainThread(callable);
+        } catch (ExecutionException e) {
+            return -1.0f;
+        } catch (InterruptedException e) {
+            return -1.0f;
+        }
+    }
+
+    private float getFrameHeight(final int index) {
+        Callable<Float> callable = new Callable<Float>() {
+            @Override
+            public Float call() {
+                Cocos2dxVideoView video = sVideoViews.get(index);
+                int height = 0;
+                if (video != null) {
+                    height = video.getFrameHeight();
+                }
+                if (height == 0) {
+                    Log.w("Cocos2dxVideoHelper", "Video player's frame height is not ready to get now!");
+                }
+                return new Float((float)height);
+            }
+        };
+
+        try {
+            return callInMainThread(callable);
+        } catch (ExecutionException e) {
+            return -1.0f;
+        } catch (InterruptedException e) {
+            return -1.0f;
+        }
+    }
+
+    private void setShowRawFrame(final int index, final boolean show) {
+        Cocos2dxVideoView video = sVideoViews.get(index);
+        if (video != null) {
+            video.setShowRawFrame(show);
+        }
+    }
 }

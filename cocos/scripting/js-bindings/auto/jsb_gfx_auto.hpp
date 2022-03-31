@@ -17,7 +17,6 @@ extern se::Class* __jsb_cocos2d_renderer_IndexBuffer_class;
 
 bool js_register_cocos2d_renderer_IndexBuffer(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
-SE_DECLARE_FUNC(js_gfx_IndexBuffer_setBytes);
 SE_DECLARE_FUNC(js_gfx_IndexBuffer_getUsage);
 SE_DECLARE_FUNC(js_gfx_IndexBuffer_setFormat);
 SE_DECLARE_FUNC(js_gfx_IndexBuffer_setCount);
@@ -33,7 +32,6 @@ extern se::Class* __jsb_cocos2d_renderer_VertexBuffer_class;
 
 bool js_register_cocos2d_renderer_VertexBuffer(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
-SE_DECLARE_FUNC(js_gfx_VertexBuffer_setBytes);
 SE_DECLARE_FUNC(js_gfx_VertexBuffer_getUsage);
 SE_DECLARE_FUNC(js_gfx_VertexBuffer_setCount);
 SE_DECLARE_FUNC(js_gfx_VertexBuffer_destroy);
@@ -47,7 +45,6 @@ extern se::Class* __jsb_cocos2d_renderer_DeviceGraphics_class;
 
 bool js_register_cocos2d_renderer_DeviceGraphics(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
-SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setTexture);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setBlendFuncSeparate);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_enableBlend);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setPrimitiveType);
@@ -60,22 +57,23 @@ SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setBlendColor);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setScissor);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setVertexBuffer);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_enableDepthWrite);
-SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setTextureArray);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_getCapacity);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilOpBack);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setViewport);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_draw);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setDepthFunc);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_enableDepthTest);
+SE_DECLARE_FUNC(js_gfx_DeviceGraphics_resetDrawCalls);
+SE_DECLARE_FUNC(js_gfx_DeviceGraphics_getDrawCalls);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setBlendEquation);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilFuncFront);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilOpFront);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilFuncBack);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setBlendFunc);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setCullMode);
-SE_DECLARE_FUNC(js_gfx_DeviceGraphics_supportGLExtension);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_setStencilOp);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_enableStencilTest);
+SE_DECLARE_FUNC(js_gfx_DeviceGraphics_destroy);
 SE_DECLARE_FUNC(js_gfx_DeviceGraphics_getInstance);
 
 extern se::Object* __jsb_cocos2d_renderer_FrameBuffer_proto;
@@ -83,6 +81,8 @@ extern se::Class* __jsb_cocos2d_renderer_FrameBuffer_class;
 
 bool js_register_cocos2d_renderer_FrameBuffer(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
+SE_DECLARE_FUNC(js_gfx_FrameBuffer_getHeight);
+SE_DECLARE_FUNC(js_gfx_FrameBuffer_getWidth);
 SE_DECLARE_FUNC(js_gfx_FrameBuffer_destroy);
 SE_DECLARE_FUNC(js_gfx_FrameBuffer_FrameBuffer);
 
@@ -98,6 +98,7 @@ extern se::Class* __jsb_cocos2d_renderer_RenderBuffer_class;
 bool js_register_cocos2d_renderer_RenderBuffer(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
 SE_DECLARE_FUNC(js_gfx_RenderBuffer_init);
+SE_DECLARE_FUNC(js_gfx_RenderBuffer_update);
 SE_DECLARE_FUNC(js_gfx_RenderBuffer_create);
 SE_DECLARE_FUNC(js_gfx_RenderBuffer_RenderBuffer);
 
@@ -107,7 +108,9 @@ extern se::Class* __jsb_cocos2d_renderer_Texture_class;
 bool js_register_cocos2d_renderer_Texture(se::Object* obj);
 bool register_all_gfx(se::Object* obj);
 SE_DECLARE_FUNC(js_gfx_Texture_getWidth);
+SE_DECLARE_FUNC(js_gfx_Texture_setAlphaAtlas);
 SE_DECLARE_FUNC(js_gfx_Texture_getHeight);
+SE_DECLARE_FUNC(js_gfx_Texture_isAlphaAtlas);
 SE_DECLARE_FUNC(js_gfx_Texture_getTarget);
 
 extern se::Object* __jsb_cocos2d_renderer_Texture2D_proto;

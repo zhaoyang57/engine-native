@@ -47,6 +47,11 @@ extern "C" {
 JNIEXPORT jint JNICALL JNI_JSJAVABRIDGE(evalString)
         (JNIEnv *env, jclass cls, jstring value)
 {
+    if (!se::ScriptEngine::getInstance()->isValid()) {
+        CCLOG("ScriptEngine has not been initialized");
+        return 0;
+    }
+
     se::AutoHandleScope hs;
     bool strFlag = false;
     std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(env, value, &strFlag);
@@ -178,8 +183,10 @@ public:
 
 JavaScriptJavaBridge::CallInfo::~CallInfo()
 {
+    m_env->DeleteLocalRef(m_classID);
     if (m_returnType == ValueType::STRING && m_ret.stringValue)
     {
+        m_env->DeleteLocalRef(m_retjstring);
         delete m_ret.stringValue;
     }
 }
@@ -211,6 +218,13 @@ bool JavaScriptJavaBridge::CallInfo::execute()
         case JavaScriptJavaBridge::ValueType::STRING:
         {
             m_retjstring = (jstring)m_env->CallStaticObjectMethod(m_classID, m_methodID);
+
+            if(m_env->ExceptionCheck()) {
+                m_env->ExceptionDescribe();
+                m_env->ExceptionClear();
+                m_retjstring = nullptr;
+            }
+
             if (m_retjstring)
             {
                 std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjstring);

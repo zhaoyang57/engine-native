@@ -382,32 +382,32 @@ Local<Value> ErrnoException(Isolate* isolate,
     Local<String> message = OneByteString(env->isolate(), msg);
 
     Local<String> cons =
-    String::Concat(estring, FIXED_ONE_BYTE_STRING(env->isolate(), ", "));
-    cons = String::Concat(cons, message);
+    String::Concat(env->isolate(), estring, FIXED_ONE_BYTE_STRING(env->isolate(), ", "));
+    cons = String::Concat(env->isolate(), cons, message);
 
     Local<String> path_string;
     if (path != nullptr) {
         // IDEA(bnoordhuis) It's questionable to interpret the file path as UTF-8.
-        path_string = String::NewFromUtf8(env->isolate(), path);
+        path_string = String::NewFromUtf8(env->isolate(), path, v8::NewStringType::kNormal).ToLocalChecked();
     }
 
     if (path_string.IsEmpty() == false) {
-        cons = String::Concat(cons, FIXED_ONE_BYTE_STRING(env->isolate(), " '"));
-        cons = String::Concat(cons, path_string);
-        cons = String::Concat(cons, FIXED_ONE_BYTE_STRING(env->isolate(), "'"));
+        cons = String::Concat(env->isolate(), cons, FIXED_ONE_BYTE_STRING(env->isolate(), " '"));
+        cons = String::Concat(env->isolate(), cons, path_string);
+        cons = String::Concat(env->isolate(), cons, FIXED_ONE_BYTE_STRING(env->isolate(), "'"));
     }
     e = Exception::Error(cons);
 
-    Local<Object> obj = e->ToObject(env->isolate());
-    obj->Set(env->errno_string(), Integer::New(env->isolate(), errorno));
-    obj->Set(env->code_string(), estring);
+    Local<Object> obj = e->ToObject(env->context()).ToLocalChecked();
+    obj->Set(env->context(), env->errno_string(), Integer::New(env->isolate(), errorno));
+    obj->Set(env->context(), env->code_string(), estring);
 
     if (path_string.IsEmpty() == false) {
-        obj->Set(env->path_string(), path_string);
+        obj->Set(env->context(), env->path_string(), path_string);
     }
 
     if (syscall != nullptr) {
-        obj->Set(env->syscall_string(), OneByteString(env->isolate(), syscall));
+        obj->Set(env->context(), env->syscall_string(), OneByteString(env->isolate(), syscall));
     }
 
     return e;
@@ -417,14 +417,14 @@ Local<Value> ErrnoException(Isolate* isolate,
 static Local<String> StringFromPath(Isolate* isolate, const char* path) {
 #ifdef _WIN32
     if (strncmp(path, "\\\\?\\UNC\\", 8) == 0) {
-        return String::Concat(FIXED_ONE_BYTE_STRING(isolate, "\\\\"),
-                              String::NewFromUtf8(isolate, path + 8));
+        return String::Concat(isolate, FIXED_ONE_BYTE_STRING(isolate, "\\\\"),
+                              String::NewFromUtf8(isolate, path + 8).ToLocalChecked());
     } else if (strncmp(path, "\\\\?\\", 4) == 0) {
-        return String::NewFromUtf8(isolate, path + 4);
+        return String::NewFromUtf8(isolate, path + 4).ToLocalChecked();
     }
 #endif
 
-    return String::NewFromUtf8(isolate, path);
+    return String::NewFromUtf8(isolate, path, v8::NewStringType::kNormal).ToLocalChecked();
 }
 
 
@@ -454,36 +454,36 @@ Local<Value> UVException(Isolate* isolate,
     Local<String> js_dest;
 
     Local<String> js_msg = js_code;
-    js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, ": "));
-    js_msg = String::Concat(js_msg, OneByteString(isolate, msg));
-    js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, ", "));
-    js_msg = String::Concat(js_msg, js_syscall);
+    js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, ": "));
+    js_msg = String::Concat(isolate, js_msg, OneByteString(isolate, msg));
+    js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, ", "));
+    js_msg = String::Concat(isolate, js_msg, js_syscall);
 
     if (path != nullptr) {
         js_path = StringFromPath(isolate, path);
 
-        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, " '"));
-        js_msg = String::Concat(js_msg, js_path);
-        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
+        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, " '"));
+        js_msg = String::Concat(isolate, js_msg, js_path);
+        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
     }
 
     if (dest != nullptr) {
         js_dest = StringFromPath(isolate, dest);
         
-        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, " -> '"));
-        js_msg = String::Concat(js_msg, js_dest);
-        js_msg = String::Concat(js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
+        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, " -> '"));
+        js_msg = String::Concat(isolate, js_msg, js_dest);
+        js_msg = String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
     }
     
-    Local<Object> e = Exception::Error(js_msg)->ToObject(isolate);
+    Local<Object> e = Exception::Error(js_msg)->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
     
-    e->Set(env->errno_string(), Integer::New(isolate, errorno));
-    e->Set(env->code_string(), js_code);
-    e->Set(env->syscall_string(), js_syscall);
+    e->Set(env->context(), env->errno_string(), Integer::New(isolate, errorno));
+    e->Set(env->context(), env->code_string(), js_code);
+    e->Set(env->context(), env->syscall_string(), js_syscall);
     if (!js_path.IsEmpty())
-        e->Set(env->path_string(), js_path);
+        e->Set(env->context(), env->path_string(), js_path);
     if (!js_dest.IsEmpty())
-        e->Set(env->dest_string(), js_dest);
+        e->Set(env->context(), env->dest_string(), js_dest);
     
     return e;
 }
@@ -594,7 +594,7 @@ MaybeLocal<Value> MakeCallback(Isolate* isolate,
                                int argc,
                                Local<Value> argv[],
                                async_context asyncContext) {
-    Local<Value> callback_v = recv->Get(symbol);
+    Local<Value> callback_v = recv->Get(isolate->GetCurrentContext(), symbol).ToLocalChecked();
     if (callback_v.IsEmpty()) return Local<Value>();
     if (!callback_v->IsFunction()) return Local<Value>();
     Local<Function> callback = callback_v.As<Function>();
@@ -747,7 +747,7 @@ static void ProcessTitleGetter(Local<Name> property,
                                const PropertyCallbackInfo<Value>& info) {
     char buffer[512];
     uv_get_process_title(buffer, sizeof(buffer));
-    info.GetReturnValue().Set(String::NewFromUtf8(info.GetIsolate(), buffer));
+    info.GetReturnValue().Set(String::NewFromUtf8(info.GetIsolate(), buffer, v8::NewStringType::kNormal).ToLocalChecked());
 }
 
 
@@ -908,16 +908,16 @@ void SetupProcessObject(Environment* env,
     // process.argv
     Local<Array> arguments = Array::New(env->isolate(), argc);
     for (int i = 0; i < argc; ++i) {
-        arguments->Set(i, String::NewFromUtf8(env->isolate(), argv[i]));
+        arguments->Set(env->context(), i, String::NewFromUtf8(env->isolate(), argv[i], v8::NewStringType::kNormal).ToLocalChecked());
     }
-    process->Set(FIXED_ONE_BYTE_STRING(env->isolate(), "argv"), arguments);
+    process->Set(env->context(), FIXED_ONE_BYTE_STRING(env->isolate(), "argv"), arguments);
 
     // process.execArgv
     Local<Array> exec_arguments = Array::New(env->isolate(), exec_argc);
     for (int i = 0; i < exec_argc; ++i) {
-        exec_arguments->Set(i, String::NewFromUtf8(env->isolate(), exec_argv[i]));
+        exec_arguments->Set(env->context(), i, String::NewFromUtf8(env->isolate(), exec_argv[i], v8::NewStringType::kNormal).ToLocalChecked());
     }
-    process->Set(FIXED_ONE_BYTE_STRING(env->isolate(), "execArgv"),
+    process->Set(env->context(), FIXED_ONE_BYTE_STRING(env->isolate(), "execArgv"),
                  exec_arguments);
 
     // create process.env
@@ -1127,7 +1127,7 @@ void SetupProcessObject(Environment* env,
     Local<Object> events_obj = Object::New(env->isolate());
     CHECK(events_obj->SetPrototype(env->context(),
                                    Null(env->isolate())).FromJust());
-    process->Set(env->events_string(), events_obj);
+    process->Set(env->context(),env->events_string(), events_obj);
 }
 
 

@@ -23,9 +23,9 @@
             "height": 1334
         },
         {
-            "title": "Apple iPhone 6Plus (1242x2208)",
-            "width": 1242,
-            "height": 2208
+            "title": "Apple iPhone 6Plus (1080x1920)",
+            "width": 1080,
+            "height": 1920
         },
         {
             "title": "Apple iPhone 7 (750x1334)",
@@ -33,13 +33,13 @@
             "height": 1334
         },
         {
-            "title": "Apple iPhone 7Plus (1242x2208)",
-            "width": 1242,
-            "height": 2208
+            "title": "Apple iPhone 7Plus (1080x1920)",
+            "width": 1080,
+            "height": 1920
         },
         {
-            "title": "Apple iPhone X (750x2436)",
-            "width": 750,
+            "title": "Apple iPhone X (1125x2436)",
+            "width": 1125,
             "height": 2436
         },
         {
@@ -59,7 +59,7 @@
         },
         {
             "title": "Apple iPad Pro 12.9-inch (2048x2732)",
-            "width": 1280,
+            "width": 2048,
             "height": 2732
         },
         {
@@ -73,22 +73,22 @@
           "height": 2560
         },
         {
-          "title": "Goolge Nexus 5 (1080x2880)",
+          "title": "Google Nexus 5 (1080x2880)",
           "width": 1080,
           "height": 2880
         },
         {
-          "title": "Goolge Nexus 5X (1079x1919)",
+          "title": "Google Nexus 5X (1079x1919)",
           "width": 1079,
           "height": 1919
         },
         {
-          "title": "Goolge Nexus 6 (1442x2562)",
+          "title": "Google Nexus 6 (1442x2562)",
           "width": 1442,
           "height": 2562
         },
         {
-          "title": "Goolge Nexus 7 (1920x1200)",
+          "title": "Google Nexus 7 (1920x1200)",
           "width": 1920,
           "height": 1200
         }

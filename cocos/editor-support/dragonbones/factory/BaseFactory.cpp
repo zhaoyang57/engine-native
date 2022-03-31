@@ -213,7 +213,6 @@ std::pair<void*, DisplayType> BaseFactory::_getSlotDisplay(const BuildArmaturePa
             dataName = displayData->parent->parent->parent->name;
         }
     }
-        dataPackage != nullptr ? dataPackage->dataName : displayData->parent->parent->parent->name;
 
     std::pair<void*, DisplayType> display(nullptr, DisplayType::Image);
     switch (displayData->type)
@@ -221,14 +220,15 @@ std::pair<void*, DisplayType> BaseFactory::_getSlotDisplay(const BuildArmaturePa
         case DisplayType::Image:
         {
             auto imageDisplayData = static_cast<ImageDisplayData*>(displayData);
+
+            if (dataPackage != nullptr && !dataPackage->textureAtlasName.empty())
+            {
+                imageDisplayData->texture = _getTextureData(dataPackage->textureAtlasName, displayData->path);
+            }
+
             if (imageDisplayData->texture == nullptr)
             {
                 imageDisplayData->texture = _getTextureData(dataName, displayData->path);
-            }
-            
-            if (imageDisplayData->texture == nullptr || (dataPackage != nullptr && !dataPackage->textureAtlasName.empty()))
-            {
-                imageDisplayData->texture = _getTextureData(dataPackage->textureAtlasName, displayData->path);
             }
 
             display.first = slot->_rawDisplay;
@@ -239,13 +239,15 @@ std::pair<void*, DisplayType> BaseFactory::_getSlotDisplay(const BuildArmaturePa
         case DisplayType::Mesh:
         {
             auto meshDisplayData = static_cast<MeshDisplayData*>(displayData);
+            
+            if (dataPackage != nullptr && !dataPackage->textureAtlasName.empty())
+            {
+                meshDisplayData->texture = _getTextureData(dataPackage->textureAtlasName, meshDisplayData->path);
+            }
+
             if (meshDisplayData->texture == nullptr)
             {
                 meshDisplayData->texture = _getTextureData(dataName, meshDisplayData->path);
-            }
-            else if (dataPackage != nullptr && !dataPackage->textureAtlasName.empty())
-            {
-                meshDisplayData->texture = _getTextureData(dataPackage->textureAtlasName, meshDisplayData->path);
             }
 
             if (_isSupportMesh())
@@ -548,7 +550,7 @@ bool BaseFactory::replaceSlotDisplayList(const std::string& dragonBonesName, con
     return true;
 }
 
-bool BaseFactory::replaceSkin(Armature* armature, SkinData* skin, bool isOverride, const std::vector<std::string>* exclude) const
+bool BaseFactory::replaceSkin(Armature* armature, SkinData* skin, bool isOverride, const std::vector<std::string>& exclude) const
 {
     DRAGONBONES_ASSERT(armature && skin, "Arguments error.");
 
@@ -557,7 +559,7 @@ bool BaseFactory::replaceSkin(Armature* armature, SkinData* skin, bool isOverrid
 
     for (const auto slot : armature->getSlots()) 
     {
-        if (exclude != nullptr && std::find(exclude->cbegin(), exclude->cend(), slot->getName()) != exclude->cend()) 
+        if (std::find(exclude.cbegin(), exclude.cend(), slot->getName()) != exclude.cend())
         {
             continue;
         }

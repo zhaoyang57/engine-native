@@ -37,13 +37,14 @@ var fs = require('fs-extra');
 var program = require('commander');
 program
     .option('-b, --bump [version]', 'bump to a new version, or +1')
+    .option('--gitlab', 'use gitlab remote to update all code')
     .parse(process.argv);
 
 gulp.task('make-cocos2d-x', gulpSequence('gen-cocos2d-x', 'upload-cocos2d-x'));
 gulp.task('make-simulator', gulpSequence('gen-simulator', 'sign-simulator', 'update-simulator-config', 'update-simulator-dll', 'archive-simulator', 'upload-simulator'));
 
 if (process.platform === 'darwin') {
-    gulp.task('publish', gulpSequence('update', 'init', 'bump-version', 'make-cocos2d-x', 'make-simulator', 'push-tag'));
+    gulp.task('publish', gulpSequence('update', 'init', 'bump-version', 'make-cocos2d-x', 'make-simulator'));
 }
 else {
     gulp.task('publish', gulpSequence('update', 'init', 'bump-version', 'make-simulator'));
@@ -60,10 +61,11 @@ function execSync(cmd, workPath) {
 function downloadSimulatorDLL(callback) {
     var Download = require('download');
     var destPath = Path.join('simulator', 'win32');
-    Download('http://192.168.52.109/TestBuilds/Fireball/simulator/dlls/dll.zip', destPath, {
+    Download('http://ftp.cocos.org/TestBuilds/Fireball/simulator/dlls/dll.zip', destPath, {
         mode: '755',
         extract: true,
-        strip: 0
+        strip: 0,
+        agent: null,
     }).then(function(res) {
         callback();
     }).catch(callback);
@@ -111,7 +113,7 @@ function uploadZipFile(zipFileName, path, cb) {
     var remotePath = Path.join('TestBuilds', 'Fireball', 'cocos2d-x', branch, zipFileName);
     var zipFilePath = Path.join(path, zipFileName);
     upload2Ftp(zipFilePath, remotePath, {
-        host: '192.168.52.109',
+        host: 'ftp.cocos.org',
         user: process.env.ftpUser,
         password: process.env.ftpPass
     }, cb);
@@ -127,7 +129,12 @@ function getCurrentBranch() {
 gulp.task('update', function (cb) {
     const git = require('./utils/git');
     var branch = git.getCurrentBranch('.');
-    git.pull('.', 'git@github.com:cocos-creator/cocos2d-x-lite.git', branch, cb);
+    
+    if (program.gitlab || process.env.GITLAB) {
+        git.pull('.', 'https://gitlab.cocos.net/publics/cocos2d-x-lite.git', branch, cb);
+    } else {
+        git.pull('.', 'git@github.com:cocos-creator/cocos2d-x-lite.git', branch, cb);
+    }
 });
 
 gulp.task('init', function(cb) {
@@ -149,7 +156,7 @@ gulp.task('gen-simulator', function(cb) {
     if (process.platform === 'darwin') {
         args = ['gen-simulator', '-m', 'debug', '-p', 'mac'];
     } else {
-        args = ['gen-simulator', '-m', 'debug', '-p', 'win32', '--vs', '2015', '--ol', 'en'];
+        args = ['gen-simulator', '-c', '-m', 'debug', '-p', 'win32', '--vs', '2017', '--ol', 'en'];
     }
     try {
         var child = spawn(cocosConsoleBin, args);
@@ -248,18 +255,4 @@ gulp.task('bump-version', function (cb) {
     fs.writeFileSync(filePath, content, 'utf8');
 
     cb();
-});
-
-gulp.task('push-tag', function () {
-    if (process.platform === 'darwin') {
-        if (process.env.COCOS_WORKFLOW_ROOT) {
-            execSync('npm run tag -- --path ' + process.cwd(), process.env.COCOS_WORKFLOW_ROOT);
-        }
-        else {
-            console.warn(Chalk.cyan('COCOS_WORKFLOW_ROOT is undefined in the environment, skip push-tag'));
-        }
-    }
-    else {
-        console.log('skip push-tag on Windows');
-    }
 });

@@ -4,6 +4,7 @@
 
 #include "cocos/scripting/js-bindings/jswrapper/SeApi.h"
 #include "platform/android/jni/JniHelper.h"
+#include "platform/android/jni/JniImp.h"
 
 #include <regex>
 
@@ -214,12 +215,43 @@ public:
         return _data;
     }
 
+    void setPremultiply(bool multiply)
+    {
+        _premultiply = multiply;
+    }
+    
+#define CLAMP(V, HI) std::min( (V), (HI) )
+    void unMultiplyAlpha(unsigned char* ptr, ssize_t size)
+    {
+        // Android source data is not premultiplied alpha when API >= 19
+        // please refer CanvasRenderingContext2DImpl::recreateBuffer(float w, float h)
+        // in CanvasRenderingContext2DImpl.java
+//        if (getAndroidSDKInt() >= 19)
+//            return;
+
+        float alpha;
+        for (int i = 0; i < size; i += 4)
+        {
+            alpha = (float)ptr[i + 3];
+            if (alpha > 0)
+            {
+                ptr[i] = CLAMP((int)((float)ptr[i] / alpha * 255), 255);
+                ptr[i+1] = CLAMP((int)((float)ptr[i+1] / alpha * 255), 255);
+                ptr[i+2] =  CLAMP((int)((float)ptr[i+2] / alpha * 255), 255);
+            }
+        }
+    }
+
     void fillData()
     {
         jbyteArray arr = JniHelper::callObjectByteArrayMethod(_obj, JCLS_CANVASIMPL, "getDataRef");
         jsize len  = JniHelper::getEnv()->GetArrayLength(arr);
         jbyte* jbarray = (jbyte *)malloc(len * sizeof(jbyte));
         JniHelper::getEnv()->GetByteArrayRegion(arr,0,len,jbarray);
+        if (!_premultiply)
+        {
+            unMultiplyAlpha( (unsigned char*) jbarray, len);
+        }
         _data.fastSet((unsigned char*) jbarray, len); //IDEA: DON'T create new jbarray every time.
         JniHelper::getEnv()->DeleteLocalRef(arr);
     }
@@ -229,6 +261,7 @@ private:
     Data _data;
     float _bufferWidth = 0.0f;
     float _bufferHeight = 0.0f;
+    bool _premultiply = true;
 };
 
 namespace {
@@ -407,6 +440,11 @@ void CanvasRenderingContext2D::restore()
 void CanvasRenderingContext2D::setCanvasBufferUpdatedCallback(const CanvasBufferUpdatedCallback& cb)
 {
     _canvasBufferUpdatedCB = cb;
+}
+
+void CanvasRenderingContext2D::setPremultiply(bool multiply)
+{
+    _impl->setPremultiply(multiply);
 }
 
 void CanvasRenderingContext2D::set__width(float width)

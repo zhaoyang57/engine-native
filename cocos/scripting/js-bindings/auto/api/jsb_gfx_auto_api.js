@@ -35,16 +35,6 @@ GraphicsHandle : function (
 gfx.IndexBuffer = {
 
 /**
- * @method setBytes
- * @param {unsigned int} arg0
- */
-setBytes : function (
-int 
-)
-{
-},
-
-/**
  * @method getUsage
  * @return {cc.renderer::Usage}
  */
@@ -139,16 +129,6 @@ IndexBuffer : function (
 gfx.VertexBuffer = {
 
 /**
- * @method setBytes
- * @param {unsigned int} arg0
- */
-setBytes : function (
-int 
-)
-{
-},
-
-/**
  * @method getUsage
  * @return {cc.renderer::Usage}
  */
@@ -221,20 +201,6 @@ VertexBuffer : function (
  * @class DeviceGraphics
  */
 gfx.Device = {
-
-/**
- * @method setTexture
- * @param {String} arg0
- * @param {cc.renderer::Texture} arg1
- * @param {int} arg2
- */
-setTexture : function (
-str, 
-texture, 
-int 
-)
-{
-},
 
 /**
  * @method setBlendFuncSeparate
@@ -381,20 +347,6 @@ enableDepthWrite : function (
 },
 
 /**
- * @method setTextureArray
- * @param {String} arg0
- * @param {Array} arg1
- * @param {Array} arg2
- */
-setTextureArray : function (
-str, 
-array, 
-array 
-)
-{
-},
-
-/**
  * @method getCapacity
  * @return {cc.renderer::DeviceGraphics::Capacity}
  */
@@ -464,6 +416,24 @@ comparisonfunc
 enableDepthTest : function (
 )
 {
+},
+
+/**
+ * @method resetDrawCalls
+ */
+resetDrawCalls : function (
+)
+{
+},
+
+/**
+ * @method getDrawCalls
+ * @return {unsigned int}
+ */
+getDrawCalls : function (
+)
+{
+    return 0;
 },
 
 /**
@@ -543,18 +513,6 @@ cullmode
 },
 
 /**
- * @method supportGLExtension
- * @param {String} arg0
- * @return {bool}
- */
-supportGLExtension : function (
-str 
-)
-{
-    return false;
-},
-
-/**
  * @method setStencilOp
  * @param {cc.renderer::StencilOp} arg0
  * @param {cc.renderer::StencilOp} arg1
@@ -579,6 +537,14 @@ enableStencilTest : function (
 },
 
 /**
+ * @method destroy
+ */
+destroy : function (
+)
+{
+},
+
+/**
  * @method getInstance
  * @return {cc.renderer::DeviceGraphics}
  */
@@ -594,6 +560,26 @@ getInstance : function (
  * @class FrameBuffer
  */
 gfx.FrameBuffer = {
+
+/**
+ * @method getHeight
+ * @return {int}
+ */
+getHeight : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getWidth
+ * @return {int}
+ */
+getWidth : function (
+)
+{
+    return 0;
+},
 
 /**
  * @method destroy
@@ -637,6 +623,20 @@ gfx.RenderBuffer = {
 init : function (
 devicegraphics, 
 format, 
+short, 
+short 
+)
+{
+    return false;
+},
+
+/**
+ * @method update
+ * @param {unsigned short} arg0
+ * @param {unsigned short} arg1
+ * @return {bool}
+ */
+update : function (
 short, 
 short 
 )
@@ -689,6 +689,16 @@ getWidth : function (
 },
 
 /**
+ * @method setAlphaAtlas
+ * @param {bool} arg0
+ */
+setAlphaAtlas : function (
+bool 
+)
+{
+},
+
+/**
  * @method getHeight
  * @return {unsigned short}
  */
@@ -696,6 +706,16 @@ getHeight : function (
 )
 {
     return 0;
+},
+
+/**
+ * @method isAlphaAtlas
+ * @return {bool}
+ */
+isAlphaAtlas : function (
+)
+{
+    return false;
 },
 
 /**

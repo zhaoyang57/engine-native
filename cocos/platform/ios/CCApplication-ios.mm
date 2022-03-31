@@ -35,31 +35,24 @@
 #include "CCEAGLView-ios.h"
 #include "base/CCGLUtils.h"
 #include "audio/include/AudioEngine.h"
-
+#include "platform/CCDevice.h"
+#include "cocos/renderer/gfx/DeviceGraphics.h"
 
 namespace
 {
-    cocos2d::Vec2 getResolution()
-    {
-        CGRect bounds = [UIScreen mainScreen].bounds;
-        float scale = [[UIScreen mainScreen] scale];
-        float width = bounds.size.width * scale;
-        float height = bounds.size.height * scale;
-        
-        return cocos2d::Vec2(width, height);
-    }
-    
     bool setCanvasCallback(se::Object* global)
     {
-        cocos2d::Vec2 resolution = getResolution();
+        auto &viewSize = cocos2d::Application::getInstance()->getViewSize();
         se::ScriptEngine* se = se::ScriptEngine::getInstance();
         uint8_t devicePixelRatio = cocos2d::Application::getInstance()->getDevicePixelRatio();
+        int screenScale =  cocos2d::Device::getDevicePixelRatio();
         char commandBuf[200] = {0};
+        //set window.innerWidth/innerHeight in CSS pixel units, not physical pixel units.
         sprintf(commandBuf, "window.innerWidth = %d; window.innerHeight = %d;",
-                (int)(resolution.x / devicePixelRatio),
-                (int)(resolution.y / devicePixelRatio));
+                (int)(viewSize.x / screenScale / devicePixelRatio),
+                (int)(viewSize.y / screenScale / devicePixelRatio));
         se->evalString(commandBuf);
-        cocos2d::ccViewport(0, 0, resolution.x / devicePixelRatio, resolution.y / devicePixelRatio);
+        
         glDepthMask(GL_TRUE);
         return true;
     }
@@ -71,8 +64,9 @@ namespace
     int _fps;
     float _systemVersion;
     BOOL _isAppActive;
+    cocos2d::Device::Rotation _lastRotation;
     cocos2d::Application* _application;
-    cocos2d::Scheduler* _scheduler;
+    std::shared_ptr<cocos2d::Scheduler> _scheduler;
 }
 -(void) startMainLoop;
 -(void) stopMainLoop;
@@ -94,12 +88,54 @@ namespace
         _application = application;
         _scheduler = _application->getScheduler();
         
+        _lastRotation = cocos2d::Device::getDeviceRotation();
         _isAppActive = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         [nc addObserver:self selector:@selector(appDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
         [nc addObserver:self selector:@selector(appDidBecomeInactive) name:UIApplicationWillResignActiveNotification object:nil];
+        
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        [nc addObserver:self selector:@selector(statusBarOrientationChanged:)name:UIApplicationDidChangeStatusBarOrientationNotification
+              object:nil];
     }
     return self;
+}
+
+- (void) statusBarOrientationChanged:(NSNotification *)note
+{
+    cocos2d::Device::Rotation rotation = cocos2d::Device::Rotation::_0;
+    UIDevice * device = [UIDevice currentDevice];
+    
+    // NOTE: https://developer.apple.com/documentation/uikit/uideviceorientation
+    // when the device rotates to LandscapeLeft, device.orientation returns UIDeviceOrientationLandscapeRight
+    // when the device rotates to LandscapeRight, device.orientation returns UIDeviceOrientationLandscapeLeft
+    switch(device.orientation)
+    {
+        case UIDeviceOrientationPortrait:
+            rotation = cocos2d::Device::Rotation::_0;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            rotation = cocos2d::Device::Rotation::_90;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            rotation = cocos2d::Device::Rotation::_180;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            rotation = cocos2d::Device::Rotation::_270;
+            break;
+        default:
+            break;
+    };
+    if(_lastRotation != rotation){
+        cocos2d::EventDispatcher::dispatchOrientationChangeEvent((int) rotation);
+        _lastRotation = rotation;
+    }
+    
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    float scale = [[UIScreen mainScreen] scale];
+    float width = bounds.size.width * scale;
+    float height = bounds.size.height * scale;
+    cocos2d::Application::getInstance()->updateViewSize(width, height);
 }
 
 -(void) dealloc
@@ -142,7 +178,12 @@ namespace
         [self startMainLoop];
     }
     else
-        [self performSelector:@selector(firstStart:) withObject:view afterDelay:0];
+        // Replace performSelector usage for Apple review policy
+        // https://github.com/cocos-creator/3d-tasks/issues/9770
+        // [self performSelector:@selector(firstStart:) withObject:view afterDelay:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self firstStart:view];
+        });
 }
 
 -(void) startMainLoop
@@ -178,23 +219,33 @@ namespace
     static std::chrono::steady_clock::time_point now;
     static float dt = 0.f;
 
-    prevTime = std::chrono::steady_clock::now();
-    
-    bool downsampleEnabled = _application->isDownsampleEnabled();
-    if (downsampleEnabled)
-        _application->getRenderTexture()->prepare();
-    
-    _scheduler->update(dt);
-    cocos2d::EventDispatcher::dispatchTickEvent(dt);
-    
-    if (downsampleEnabled)
-        _application->getRenderTexture()->draw();
-    
-    [(CCEAGLView*)(_application->getView()) swapBuffers];
-    cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
-    
-    now = std::chrono::steady_clock::now();
-    dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    if (_isAppActive)
+    {
+        EAGLContext* context = [(CCEAGLView*)(_application->getView()) getContext];
+        if (context != [EAGLContext currentContext])
+        {
+            glFlush();
+        }
+        [EAGLContext setCurrentContext: context];
+        
+        prevTime = std::chrono::steady_clock::now();
+        
+        bool downsampleEnabled = _application->isDownsampleEnabled();
+        if (downsampleEnabled)
+            _application->getRenderTexture()->prepare();
+        
+        _scheduler->update(dt);
+        cocos2d::EventDispatcher::dispatchTickEvent(dt);
+        
+        if (downsampleEnabled)
+            _application->getRenderTexture()->draw();
+        
+        [(CCEAGLView*)(_application->getView()) swapBuffers];
+        cocos2d::PoolManager::getInstance()->getCurrentPool()->clear();
+        
+        now = std::chrono::steady_clock::now();
+        dt = std::chrono::duration_cast<std::chrono::microseconds>(now - prevTime).count() / 1000000.f;
+    }
 }
 
 @end
@@ -219,6 +270,8 @@ Application::Application(const std::string& name, int width, int height)
     EventDispatcher::init();
     
     _delegate = [[MainLoop alloc] initWithApplication:this];
+    
+    updateViewSize(width, height);
 }
 
 Application::~Application()
@@ -245,17 +298,39 @@ Application::~Application()
     Application::_instance = nullptr;
 }
 
+const cocos2d::Vec2& Application::getViewSize() const
+{
+    return _viewSize;
+}
+
+void Application::updateViewSize(int width, int height)
+{
+    _viewSize.x = width;
+    _viewSize.y = height;
+    cocos2d::EventDispatcher::dispatchResizeEvent(width, height);
+}
+
 void Application::start()
 {
     if (_delegate)
-        [(MainLoop*)_delegate performSelector:@selector(firstStart:) withObject:(CCEAGLView*)_view afterDelay:0];    
+            // Replace performSelector usage for Apple review policy
+            // https://github.com/cocos-creator/3d-tasks/issues/9770
+            // [(MainLoop*)_delegate performSelector:@selector(firstStart:) withObject:(CCEAGLView*)_view afterDelay:0];
+            dispatch_async(dispatch_get_main_queue(), ^{
+            [(MainLoop*)_delegate firstStart:(CCEAGLView*)_view];
+        });
 }
 
 void Application::restart()
 {
     if (_delegate) {
         [(MainLoop*)_delegate stopMainLoop];
-        [(MainLoop*)_delegate performSelector:@selector(firstStart:) withObject:(CCEAGLView*)_view afterDelay:0];
+        // Replace performSelector usage for Apple review policy
+        // https://github.com/cocos-creator/3d-tasks/issues/9770
+        // [(MainLoop*)_delegate performSelector:@selector(firstStart:) withObject:(CCEAGLView*)_view afterDelay:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [(MainLoop*)_delegate firstStart:(CCEAGLView*)_view];
+        });
     }
 }
 
@@ -337,7 +412,7 @@ Application::Platform Application::getPlatform() const
 
 float Application::getScreenScale() const
 {
-    return 1.f;
+    return [(UIView*)_view contentScaleFactor];
 }
 
 GLint Application::getMainFBO() const
@@ -363,11 +438,11 @@ bool Application::applicationDidFinishLaunching()
     return true;
 }
 
-void Application::applicationDidEnterBackground()
+void Application::onPause()
 {
 }
 
-void Application::applicationWillEnterForeground()
+void Application::onResume()
 {
 }
 

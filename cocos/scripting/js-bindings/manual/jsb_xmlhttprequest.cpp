@@ -214,6 +214,8 @@ private:
     bool _isLoadStart;
     bool _isLoadEnd;
     bool _isDiscardedByReset;
+    bool _isTimeout;
+    bool _isSending;
 };
 
 XMLHttpRequest::XMLHttpRequest()
@@ -235,13 +237,16 @@ XMLHttpRequest::XMLHttpRequest()
 , _isLoadStart(false)
 , _isLoadEnd(false)
 , _isDiscardedByReset(false)
+, _isTimeout(false)
+, _isSending(false)
 {
 }
 
 XMLHttpRequest::~XMLHttpRequest()
 {
     Application::getInstance()->getScheduler()->unscheduleAllForTarget(this);
-
+    // Avoid HttpClient response call a released object!
+    _httpRequest->setResponseCallback(nullptr);
     CC_SAFE_RELEASE(_httpRequest);
 }
 
@@ -261,6 +266,8 @@ bool XMLHttpRequest::open(const std::string& method, const std::string& url)
         requestType = HttpRequest::Type::POST;
     else if (_method == "put" || _method == "PUT")
         requestType = HttpRequest::Type::PUT;
+    else if (_method == "head" || _method == "HEAD")
+        requestType = HttpRequest::Type::HEAD;
     else if (_method == "delete" || _method == "DELETE")
         requestType = HttpRequest::Type::DELETE;
 
@@ -271,6 +278,7 @@ bool XMLHttpRequest::open(const std::string& method, const std::string& url)
 
     _status = 0;
     _isAborted = false;
+    _isTimeout = false;
 
     setReadyState(ReadyState::OPENED);
 
@@ -311,6 +319,7 @@ void XMLHttpRequest::abort()
         return;
 
     _isAborted = true;
+    _isSending = false;
 
     setReadyState(ReadyState::DONE);
 
@@ -324,8 +333,11 @@ void XMLHttpRequest::abort()
     {
         onloadend();
     }
-
+    
     _readyState = ReadyState::UNSENT;
+    
+    //request is aborted, no more callback needed.
+    _httpRequest->setResponseCallback(nullptr);
 }
 
 void XMLHttpRequest::setReadyState(ReadyState readyState)
@@ -378,7 +390,7 @@ void XMLHttpRequest::getHeader(const std::string& header)
         {
             int _v1, _v2, code = 0;
             char statusText[64] = {0};
-            sscanf(header.c_str(), "HTTP/%d.%d %d %64[^\n]", &_v1, &_v2, &code, statusText);
+            sscanf(header.c_str(), "HTTP/%d.%d %d %63[^\n]", &_v1, &_v2, &code, statusText);
             _statusText = statusText;
             if(_statusText.empty())
             {
@@ -399,7 +411,17 @@ void XMLHttpRequest::getHeader(const std::string& header)
 void XMLHttpRequest::onResponse(HttpClient* client, HttpResponse* response)
 {
     Application::getInstance()->getScheduler()->unscheduleAllForTarget(this);
-
+    _isSending = false;
+    
+    if(_isTimeout) {
+        _isLoadEnd = true;
+        if(onloadend)
+        {
+            onloadend();
+        }
+        return;
+    }
+    
     if (_isAborted || _readyState == ReadyState::UNSENT)
     {
         return;
@@ -497,18 +519,21 @@ std::string XMLHttpRequest::getMimeType() const
 
 void XMLHttpRequest::sendRequest()
 {
+    if(_isSending)
+    {
+        //ref https://xhr.spec.whatwg.org/#the-send()-method
+        //TODO: if send() flag is set, an exception should be thrown out.
+        return;
+    }
+    _isSending = true;
+    _isTimeout = false;
     if (_timeoutInMilliseconds > 0)
     {
         Application::getInstance()->getScheduler()->schedule([this](float dt){
             if (ontimeout != nullptr)
                 ontimeout();
-
+            _isTimeout = true;
             _readyState = ReadyState::UNSENT;
-
-            _isLoadEnd = true;
-            if (onloadend != nullptr)
-                onloadend();
-
         }, this, _timeoutInMilliseconds / 1000.0f, 0, 0.0f, false, "XMLHttpRequest");
     }
     setHttpRequestHeader();
@@ -650,7 +675,7 @@ static bool XMLHttpRequest_constructor(se::State& s)
             func.toObject()->call(se::EmptyValueArray, thizObj);
         }
     };
-
+    
     request->onloadstart = [=](){
         if (!request->isDiscardedByReset())
         {

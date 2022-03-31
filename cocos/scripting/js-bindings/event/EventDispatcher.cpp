@@ -35,6 +35,7 @@ namespace {
     se::Object* _jsMouseEventObj = nullptr;
     se::Object* _jsKeyboardEventObj = nullptr;
     se::Object* _jsResizeEventObj = nullptr;
+    se::Object* _jsOrientationEventObj = nullptr;
     bool _inited = false;
 }
 
@@ -86,6 +87,14 @@ namespace cocos2d
             _jsResizeEventObj->decRef();
             _jsResizeEventObj = nullptr;
         }
+        
+        if (_jsOrientationEventObj != nullptr)
+        {
+            _jsOrientationEventObj->unroot();
+            _jsOrientationEventObj->decRef();
+            _jsOrientationEventObj = nullptr;
+        }
+        
         _inited = false;
         _tickVal.setUndefined();
     }
@@ -309,6 +318,32 @@ void EventDispatcher::dispatchResizeEvent(int width, int height)
     }
 }
 
+void EventDispatcher::dispatchOrientationChangeEvent(int rotation)
+{
+    if (!se::ScriptEngine::getInstance()->isValid())
+        return;
+
+    se::AutoHandleScope scope;
+    assert(_inited);
+
+    if (_jsOrientationEventObj == nullptr)
+    {
+        _jsOrientationEventObj = se::Object::createPlainObject();
+        _jsOrientationEventObj->root();
+    }
+
+    se::Value func;
+    __jsbObj->getProperty("onOrientationChanged", &func);
+    if (func.isObject() && func.toObject()->isFunction())
+    {
+        _jsOrientationEventObj->setProperty("rotation", se::Value(rotation));
+
+        se::ValueArray args;
+        args.push_back(se::Value(_jsOrientationEventObj));
+        func.toObject()->call(args, nullptr);
+    }
+}
+
 static void dispatchEnterBackgroundOrForegroundEvent(const char* funcName)
 {
     if (!se::ScriptEngine::getInstance()->isValid())
@@ -325,26 +360,26 @@ static void dispatchEnterBackgroundOrForegroundEvent(const char* funcName)
     }
 }
 
-void EventDispatcher::dispatchEnterBackgroundEvent()
+void EventDispatcher::dispatchOnPauseEvent()
 {
     // dispatch to Native
     CustomEvent event;
-    event.name = EVENT_COME_TO_BACKGROUND;
+    event.name = EVENT_ON_PAUSE;
     EventDispatcher::dispatchCustomEvent(event);
 
     // dispatch to JavaScript
-    dispatchEnterBackgroundOrForegroundEvent("onHide");
+    dispatchEnterBackgroundOrForegroundEvent("onPause");
 }
 
-void EventDispatcher::dispatchEnterForegroundEvent()
+void EventDispatcher::dispatchOnResumeEvent()
 {
     // dispatch to Native
     CustomEvent event;
-    event.name = EVENT_COME_TO_FOREGROUND;
+    event.name = EVENT_ON_RESUME;
     EventDispatcher::dispatchCustomEvent(event);
 
     // dispatch to JavaScript
-    dispatchEnterBackgroundOrForegroundEvent("onShow");
+    dispatchEnterBackgroundOrForegroundEvent("onResume");
 }
 
 uint32_t EventDispatcher::addCustomEventListener(const std::string& eventName, const CustomEventListener& listener)
@@ -426,8 +461,9 @@ void EventDispatcher::removeAllCustomEventListeners(const std::string& eventName
         Node* node = iter->second;
         while (node != nullptr)
         {
+            Node* next = node->next;
             delete node;
-            node = node->next;
+            node = next;
         }
         _listeners.erase(iter);
     }

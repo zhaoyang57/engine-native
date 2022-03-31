@@ -215,6 +215,8 @@ namespace
         if (! g_textField)
         {
             g_textField = [[UITextField alloc] initWithFrame:rect];
+            g_textField.textColor = [UIColor blackColor];
+            g_textField.backgroundColor = [UIColor whiteColor];
             [g_textField setBorderStyle:UITextBorderStyleLine];
             g_textField.backgroundColor = [UIColor whiteColor];
             
@@ -240,7 +242,8 @@ namespace
         if (!g_textView)
         {
             g_textView = [[UITextView alloc] initWithFrame:btnRect];
-            
+            g_textView.textColor = [UIColor blackColor];
+            g_textView.backgroundColor = [UIColor whiteColor];
             g_textViewDelegate = [[TextViewDelegate alloc] init];
             g_textView.delegate = g_textViewDelegate;
             
@@ -253,22 +256,46 @@ namespace
         g_textView.text = [NSString stringWithUTF8String: showInfo.defaultValue.c_str()];
         [g_textViewConfirmButton setTitle:getConfirmButtonTitle(showInfo.confirmType) forState:UIControlStateNormal];
     }
-    
-    void addTextInput(const cocos2d::EditBox::ShowInfo& showInfo)
+
+    CGRect getSafeAreaRect()
     {
         UIView* view = (UIView*)cocos2d::Application::getInstance()->getView();
         CGRect viewRect = view.frame;
+
+        // safeAreaInsets is avaible since iOS 11.
+        if (@available(iOS 11.0, *))
+        {
+            auto safeAreaInsets = view.safeAreaInsets;
+            
+            UIInterfaceOrientation sataus = [UIApplication sharedApplication].statusBarOrientation;
+            if (UIInterfaceOrientationLandscapeLeft == sataus) {
+                viewRect.origin.x = 0;
+                viewRect.size.width -= safeAreaInsets.right;
+            }
+            else {
+                viewRect.origin.x += safeAreaInsets.left;
+                viewRect.size.width -= safeAreaInsets.left;
+            }
+        }
+
+        return viewRect;
+    }
+    
+    void addTextInput(const cocos2d::EditBox::ShowInfo& showInfo)
+    {
+        auto safeAreaRect = getSafeAreaRect();
         int height = getTextInputHeight();
-        CGRect rect = CGRectMake(viewRect.origin.x,
-                                 viewRect.size.height - height,
-                                 viewRect.size.width,
+        CGRect rect = CGRectMake(safeAreaRect.origin.x,
+                                 safeAreaRect.size.height - height,
+                                 safeAreaRect.size.width,
                                  height);
         if (showInfo.isMultiline)
-            initTextView(viewRect, rect, showInfo);
+            initTextView(safeAreaRect, rect, showInfo);
         else
             initTextField(rect, showInfo);
         
         UIView* textInput = getCurrentView();
+        UIView* view = (UIView*)cocos2d::Application::getInstance()->getView();
         [view addSubview:textInput];
         [textInput becomeFirstResponder];
     }
@@ -317,9 +344,7 @@ namespace
 
     int textHeight = getTextInputHeight();
 
-    UIView* screenView = (UIView*)cocos2d::Application::getInstance()->getView();
-    CGRect screenRect = screenView.frame;
-
+    CGRect screenRect = getSafeAreaRect();
     textView.frame = CGRectMake(screenRect.origin.x,
                                 screenRect.size.height - textHeight - kbSize.height,
                                 screenRect.size.width,
@@ -328,7 +353,16 @@ namespace
 
 -(void)keyboardWillHide: (NSNotification*) notification
 {
-    cocos2d::EditBox::hide();
+    NSDictionary *info = [notification userInfo];
+    
+    CGRect beginKeyboardRect = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect endKeyboardRect = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat yOffset = endKeyboardRect.origin.y - beginKeyboardRect.origin.y;
+    
+    if (yOffset <= 0) {
+        cocos2d::EditBox::complete();
+        cocos2d::EditBox::hide();
+    }
 }
 @end
 
@@ -345,11 +379,15 @@ namespace
         return;
 
     // check length limit after text changed, a little rude
-    if (textField.text.length > g_maxLength)
-        textField.text = [textField.text substringToIndex:g_maxLength];
+    if (textField.text.length > g_maxLength) {
+        NSRange rangeIndex = [textField.text rangeOfComposedCharacterSequenceAtIndex:g_maxLength];
+        auto newText = [textField.text substringToIndex:rangeIndex.location];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            textField.text = newText;
+        });
+    }
 
     callJSFunc("input", [textField.text UTF8String]);
-    setText(textField.text);
 }
 
 -(BOOL) textFieldShouldReturn:(UITextField *)textField
@@ -383,11 +421,15 @@ namespace
         return;
 
     // check length limit after text changed, a little rude
-    if (textView.text.length > g_maxLength)
-        textView.text = [textView.text substringToIndex:g_maxLength];
+    if (textView.text.length > g_maxLength) {
+        auto newText = [textView.text substringToIndex:g_maxLength];
+        // fix undo crash
+        dispatch_async(dispatch_get_main_queue(), ^{
+            textView.text = newText;
+        });
+    }
 
     callJSFunc("input", [textView.text UTF8String]);
-    setText(textView.text);
 }
 @end
 
@@ -423,6 +465,11 @@ void EditBox::hide()
     }
     
     [(CCEAGLView*)cocos2d::Application::getInstance()->getView() setPreventTouchEvent:false];
+}
+
+void EditBox::updateRect(int x, int y, int width, int height)
+{
+    // not supported ...
 }
 
 void EditBox::complete()
