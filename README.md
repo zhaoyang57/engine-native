@@ -63,4 +63,4 @@ Git user attention
 Contributing to the Project
 --------------------------------
 
-cocos2d-x-lite is licensed under the [MIT License](https://opensource.org/licenses/MIT). We welcome participation!
+The engine code is open sourced under the [License](https://github.com/cocos/cocos-engine/blob/develop/licenses/ENGINE_license.txt). We welcome participation!
