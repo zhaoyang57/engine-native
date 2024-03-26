@@ -25,74 +25,44 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "audio/android/utils/Errors.h"
-#include "platform/CCPlatformConfig.h"
-#include <thread>
+#include "audio/android/IAudioPlayer.h"
+#include "audio/android/PcmData.h"
+#include "audio/android/utils/Compat.h"
+#include "base/CCData.h"
+
 #include <mutex>
 #include <condition_variable>
-#include <atomic>
-#include <vector>
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_OPENHARMONY
-// for openharmony platform, buffer size is 4458 in normal latency mode, 240 in fast latency mode
-#define MAX_AUDIO_BUFFER_SIZE 4458
-#endif
+#include <ohaudio/native_audiostreambuilder.h>
+#include <ohaudio/native_audiorenderer.h>
 
 namespace cocos2d { 
 
-class Track;
-class AudioMixer;
 
-class AudioMixerController
+class AudioMixerController;
+
+class PcmAudioService
 {
 public:
+    PcmAudioService();
+    virtual ~PcmAudioService();
 
-    struct OutputBuffer
-    {
-        void* buf;
-        size_t size;
-    };
+    // openharmony platform add bufferSizeInBytes pointer param to get ohaudio buffersize, which is needed by AudioMixer.
+    bool init(AudioMixerController* controller, int numChannels, int sampleRate, int* bufferSizeInBytes);
     
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    AudioMixerController(int bufferSizeInFrames, int sampleRate, int channelCount);
-    bool init();
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_OPENHARMONY
-    AudioMixerController(int sampleRate, int channelCount);
-    void updateBufferSize(int bufferSize);
-    bool init(int bufferSizeInFrames);
-#endif
-
-    ~AudioMixerController();
-
-    bool addTrack(Track* track);
-    bool hasPlayingTacks();
 
     void pause();
     void resume();
-    inline bool isPaused() const { return _isPaused; };
-
-    void mixOneFrame();
-
-    inline OutputBuffer* current() { return &_mixingBuffer; }
 
 private:
-    void destroy();
-    void initTrack(Track* track, std::vector<Track*>& tracksToRemove);
+    static int32_t AudioRendererOnWriteData(OH_AudioRenderer* renderer, void* userData, void* buffer, int32_t bufferLen);
+    int _bufferSizeInBytes;
 
-private:
-    int _bufferSizeInFrames;
-    int _sampleRate;
-    int _channelCount;
+    AudioMixerController* _controller;
+    OH_AudioRenderer *_audioRenderer;
+    OH_AudioStreamBuilder *_builder;
 
-    AudioMixer* _mixer;
-
-    std::mutex _activeTracksMutex;
-    std::vector<Track*> _activeTracks;
-
-    OutputBuffer _mixingBuffer;
-
-    std::atomic_bool _isPaused;
-    std::atomic_bool _isMixingFrame;
+    friend class AudioPlayerProvider;
 };
 
 } // namespace cocos2d { 
+
