@@ -461,6 +461,8 @@ namespace se {
         if(!jitSupported()) {
             flags.append(" --jitless");
         }
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_OPENHARMONY
+        flags.append(" --jitless");
 #endif
         if(!flags.empty())
         {
