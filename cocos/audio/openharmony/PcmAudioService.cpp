@@ -91,6 +91,7 @@ bool PcmAudioService::init(AudioMixerController *controller, int numChannels, in
     OH_AudioStreamBuilder_SetSamplingRate(_builder, sampleRate);
     OH_AudioStreamBuilder_SetChannelCount(_builder, numChannels);
     OH_AudioStreamBuilder_SetLatencyMode(_builder, AUDIOSTREAM_LATENCY_MODE_FAST);
+    OH_AudioStreamBuilder_SetRendererInfo(_builder, AUDIOSTREAM_USAGE_GAME);
 
     OH_AudioRenderer_Callbacks callbacks;
     callbacks.OH_AudioRenderer_OnWriteData = AudioRendererOnWriteData;

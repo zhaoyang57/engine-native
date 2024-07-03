@@ -208,15 +208,24 @@ void OpenHarmonyPlatform::onCreateNative(napi_env env, uv_loop_t* loop) {
 void OpenHarmonyPlatform::onShowNative() {
     LOGD("OpenHarmonyPlatform::onShowNative");
     EventDispatcher::dispatchOnResumeEvent();
+    if (_timerInited) {
+        uv_timer_start(&_timerHandle, &OpenHarmonyPlatform::timerCb, 0, 1);
+    }
 }
 
 void OpenHarmonyPlatform::onHideNative() {
     LOGD("OpenHarmonyPlatform::onHideNative");
     EventDispatcher::dispatchOnPauseEvent();
+    if (_timerInited) {
+        uv_timer_stop(&_timerHandle);
+    }
 }
 
 void OpenHarmonyPlatform::onDestroyNative() {
     LOGD("OpenHarmonyPlatform::onDestroyNative");
+     if (_timerInited) {
+        uv_timer_stop(&_timerHandle);
+    }
 }
 
 void OpenHarmonyPlatform::timerCb(uv_timer_t* handle) {
@@ -233,6 +242,8 @@ void OpenHarmonyPlatform::restartJSVM() {
 void OpenHarmonyPlatform::workerInit(uv_loop_t* loop) {
     _workerLoop = loop;
     if (_workerLoop) {
+        uv_timer_init(_workerLoop, &_timerHandle);
+        _timerInited = true;
         uv_async_init(_workerLoop, &_messageSignal, reinterpret_cast<uv_async_cb>(OpenHarmonyPlatform::onMessageCallback));
         if (!_messageQueue.empty()) {
             triggerMessageSignal(); // trigger the signal to handle the pending message
@@ -241,13 +252,6 @@ void OpenHarmonyPlatform::workerInit(uv_loop_t* loop) {
 }
 
 void OpenHarmonyPlatform::requestVSync() {
-    // OH_NativeVSync_RequestFrame(OpenHarmonyPlatform::getInstance()->_nativeVSync, OnVSync, nullptr);
-     if (_workerLoop) {
-        // Todo: Starting the timer in this way is inaccurate and will be fixed later.
-        uv_timer_init(_workerLoop, &_timerHandle);
-        // The tick function needs to be called as quickly as possible because it is controlling the frame rate inside the engine.
-        uv_timer_start(&_timerHandle, &OpenHarmonyPlatform::timerCb, 0, 1);
-     }
 }
 
 int32_t OpenHarmonyPlatform::loop() {
@@ -267,6 +271,7 @@ void OpenHarmonyPlatform::onSurfaceCreated(OH_NativeXComponent* component, void*
         }
         LOGD("egl init finished.");
     }
+    _lastTickInNanoSeconds = std::chrono::steady_clock::now();
 }
 
 void OpenHarmonyPlatform::onSurfaceChanged(OH_NativeXComponent* component, void* window) {
@@ -310,22 +315,20 @@ void OpenHarmonyPlatform::tick() {
         g_started = true;
     }
 
-    static std::chrono::steady_clock::time_point prevTime;
     static std::chrono::steady_clock::time_point now;
     static float dt = 0.f;
-    static double dtNS = NANOSECONDS_60FPS;
+    now = std::chrono::steady_clock::now();
+    static double dtNS = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(now - _lastTickInNanoSeconds).count());
+
     if(dtNS < static_cast<double>(_prefererredNanosecondsPerFrame)) {
         std::this_thread::sleep_for(std::chrono::nanoseconds(
         _prefererredNanosecondsPerFrame - static_cast<int64_t>(dtNS)));
-        dtNS = static_cast<double>(_prefererredNanosecondsPerFrame);
     }
-    prevTime = std::chrono::steady_clock::now();
+    _lastTickInNanoSeconds = std::chrono::steady_clock::now();
     std::shared_ptr<Scheduler> scheduler = g_app->getScheduler();
     scheduler->update(dt);
     EventDispatcher::dispatchTickEvent(dt);
     PoolManager::getInstance()->getCurrentPool()->clear();
-    now = std::chrono::steady_clock::now();
-    dtNS = dtNS * 0.1 + 0.9 * static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(now - prevTime).count());
     dt = static_cast<float>(dtNS) / NANOSECONDS_PER_SECOND;
 }
 

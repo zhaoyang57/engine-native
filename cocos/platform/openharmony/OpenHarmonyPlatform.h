@@ -82,11 +82,13 @@ public:
     void setPreferedFramePersecond(int fps);
 
     int64_t _prefererredNanosecondsPerFrame{NANOSECONDS_60FPS};
+    std::chrono::steady_clock::time_point _lastTickInNanoSeconds;
     OH_NativeXComponent* _component{nullptr};
     OH_NativeXComponent_Callback _callback;
     uv_timer_t _timerHandle;
     uv_loop_t* _workerLoop{nullptr};
     uv_async_t _messageSignal{};
+    bool _timerInited{false};
     WorkerMessageQueue _messageQueue;
     EGLCore* eglCore_{nullptr};
 

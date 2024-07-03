@@ -91,6 +91,8 @@ private:
 
     static void onInfo(OH_AVPlayer *player, AVPlayerOnInfoType type, int32_t extra);
 
+    static void onError(OH_AVPlayer *player, int32_t errorCode, const char *errorMsg)
+
     static void stopAll();
 
     void destroy();

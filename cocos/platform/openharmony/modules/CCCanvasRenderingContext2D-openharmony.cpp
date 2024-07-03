@@ -91,10 +91,6 @@ public:
             _typographyStyle = nullptr;
         }
 
-        if(_fontCollection) {
-            OH_Drawing_DestroyFontCollection(_fontCollection);
-        }
-
         if(_typographyCreate) {
             OH_Drawing_DestroyTypographyHandler(_typographyCreate);
             _typographyCreate = nullptr;
@@ -228,9 +224,6 @@ public:
         _fontName = fontName;
         _fontSize = static_cast<int>(fontSize);
         
-        if (_fontCollection) {
-            OH_Drawing_DestroyFontCollection(_fontCollection);
-        }
         if (_typographyCreate) {
             OH_Drawing_DestroyTypographyHandler(_typographyCreate);
         }
@@ -243,7 +236,7 @@ public:
         if (it != fontInfoMap.end()) {
             _fontCollection = it->second;
         } else {
-            _fontCollection = OH_Drawing_CreateSharedFontCollection();
+            _fontCollection = fontInfoMap.at("openharmony_system_font");
         }
         _typographyStyle = OH_Drawing_CreateTypographyStyle();
         OH_Drawing_SetTypographyTextDirection(_typographyStyle, TEXT_DIRECTION_LTR);
