@@ -60,7 +60,7 @@ export struct EditBoxDialog {
         })
       }.padding({ left: 8, right: 8, top: 8, bottom: 8 })
       .backgroundColor(Color.Gray)
-
+      .offset({ x : 0, y : 15 })
     }
     .width('100%')
 
