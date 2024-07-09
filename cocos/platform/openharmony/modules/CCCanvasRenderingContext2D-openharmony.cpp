@@ -236,7 +236,8 @@ public:
         if (it != fontInfoMap.end()) {
             _fontCollection = it->second;
         } else {
-            _fontCollection = fontInfoMap.at("openharmony_system_font");
+            const std::string defaultFontKey = "openharmony_system_font";
+            _fontCollection = fontInfoMap.at(defaultFontKey);
         }
         _typographyStyle = OH_Drawing_CreateTypographyStyle();
         OH_Drawing_SetTypographyTextDirection(_typographyStyle, TEXT_DIRECTION_LTR);

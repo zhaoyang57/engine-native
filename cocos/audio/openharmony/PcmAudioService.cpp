@@ -78,6 +78,22 @@ int32_t PcmAudioService::AudioRendererOnWriteData(OH_AudioRenderer* renderer,
     return 0;
 }
 
+int32_t PcmAudioService::AudioRendererOnInterrupt(OH_AudioRenderer* renderer,
+    void* userData,
+    OH_AudioInterrupt_ForceType type,
+    OH_AudioInterrupt_Hint hint)
+{
+    auto *thiz = reinterpret_cast<PcmAudioService *>(userData);
+    if (thiz->_audioRenderer != nullptr) {
+        if (hint == AUDIOSTREAM_INTERRUPT_HINT_RESUME) {
+            OH_AudioRenderer_Start(thiz->_audioRenderer);
+        } else if (hint == AUDIOSTREAM_INTERRUPT_HINT_PAUSE) {
+            OH_AudioRenderer_Pause(thiz->_audioRenderer);
+        }
+    }
+    return 0;
+}
+
 bool PcmAudioService::init(AudioMixerController *controller, int numChannels, int sampleRate, int *bufferSizeInBytes) {
     _controller = controller;
 
@@ -95,6 +111,9 @@ bool PcmAudioService::init(AudioMixerController *controller, int numChannels, in
 
     OH_AudioRenderer_Callbacks callbacks;
     callbacks.OH_AudioRenderer_OnWriteData = AudioRendererOnWriteData;
+    callbacks.OH_AudioRenderer_OnInterruptEvent = AudioRendererOnInterrupt;
+    callbacks.OH_AudioRenderer_OnError = nullptr;
+    callbacks.OH_AudioRenderer_OnStreamEvent = nullptr;
     ret = OH_AudioStreamBuilder_SetRendererCallback(_builder, callbacks, this);
     if (ret != AUDIOSTREAM_SUCCESS) {
         return false;

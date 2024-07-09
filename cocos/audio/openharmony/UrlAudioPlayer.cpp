@@ -245,6 +245,20 @@ void UrlAudioPlayer::onInfo(OH_AVPlayer *player, AVPlayerOnInfoType type, int32_
                 audioPlayer->playEventCallback();
             }
         }
+    } else if (type == AV_INFO_TYPE_INTERRUPT_EVENT) {
+        auto it = __playerContainer.find(player);
+        if (it != __playerContainer.end()) {
+            UrlAudioPlayer *audioPlayer = it->second;
+            const int32_t interruptHintResume = 1;
+            const int32_t interruptHintPause = 2;
+            if (extra == interruptHintResume) {
+                audioPlayer->resume();
+            } else if (extra == interruptHintPause) {
+                audioPlayer->pause();
+            } else {
+                ALOGV("UrlAudioPlayer was interrupted, hint type is %d", extra);
+            }
+        }
     }
 }
 
