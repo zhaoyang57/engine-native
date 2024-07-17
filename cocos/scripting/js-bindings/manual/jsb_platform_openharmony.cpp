@@ -40,8 +40,6 @@
 
 using namespace cocos2d;
 
-static const std::string defaultFontKey = "openharmony_system_font";
-
 static std::unordered_map<std::string, OH_Drawing_FontCollection*> _fontCollectionMap = {
     { defaultFontKey, OH_Drawing_CreateSharedFontCollection() }
 };
