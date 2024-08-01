@@ -386,9 +386,8 @@ AudioPlayerProvider::AudioFileInfo AudioPlayerProvider::getFileInfo(
     long fileSize = 0;
     off_t start = 0, length = 0;
     int assetFd = -1;
+    if (audioFilePath[0] != '/') {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    if (audioFilePath[0] != '/')
-    {
         std::string relativePath;
         size_t position = audioFilePath.find("@assets/");
 
@@ -411,6 +410,22 @@ AudioPlayerProvider::AudioFileInfo AudioPlayerProvider::getFileInfo(
         }
 
         fileSize = length;
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_OPENHARMONY
+        RawFileDescriptor descriptor;
+        FileUtilsOpenHarmony* fileUtils = static_cast<FileUtilsOpenHarmony*>(FileUtils::getInstance());
+        if(!fileUtils) {
+            return info;
+        }
+        FileUtils::Status status = fileUtils->getRawFileDescriptor(audioFilePath, descriptor);
+
+        if(status != FileUtils::Status::OK || descriptor.fd<= 0) {
+            ALOGE("Failed to open file descriptor for %s", audioFilePath.c_str());
+            return info;
+        }
+        assetFd = descriptor.fd;
+        start = descriptor.start;
+        fileSize = descriptor.length;
+#endif
     }
     else
     {
@@ -431,21 +446,7 @@ AudioPlayerProvider::AudioFileInfo AudioPlayerProvider::getFileInfo(
     info.assetFd = std::make_shared<AssetFd>(assetFd);
     info.start = start;
     info.length = fileSize;
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_OPENHARMONY
-    FileUtilsOpenHarmony* fileUtils = static_cast<FileUtilsOpenHarmony*>(FileUtils::getInstance());
-    if(!fileUtils) {
-        return info;
-    }
-
-    RawFileDescriptor descriptor;
-    fileUtils->getRawFileDescriptor(audioFilePath, descriptor);
-    info.url     = audioFilePath;
-    info.assetFd = std::make_shared<AssetFd>(descriptor.fd);
-    info.start   = descriptor.start;
-    info.length  = descriptor.length;
-#endif
     ALOGV("(%s) file size: %ld", audioFilePath.c_str(), fileSize);
-
     return info;
 }
 

@@ -318,8 +318,9 @@ void OpenHarmonyPlatform::tick() {
     static std::chrono::steady_clock::time_point now;
     static float dt = 0.f;
     now = std::chrono::steady_clock::now();
-    static double dtNS = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(now - _lastTickInNanoSeconds).count());
+    static double dtNS = NANOSECONDS_60FPS;
 
+    dtNS = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(now - _lastTickInNanoSeconds).count());
     if(dtNS < static_cast<double>(_prefererredNanosecondsPerFrame)) {
         std::this_thread::sleep_for(std::chrono::nanoseconds(
         _prefererredNanosecondsPerFrame - static_cast<int64_t>(dtNS)));
